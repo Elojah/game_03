@@ -20,6 +20,7 @@ M          = $(shell printf "\033[0;35m▶\033[0m")
 
 GO_PACKAGE        = github.com/elojah/game_03
 API               = api
+WEB               = web
 
 GEN_PB            = protoc -I=$(GOPATH)/src --gogoslick_out=$(GOPATH)/src
 GEN_PB_SERVICE    = protoc -I=$(GOPATH)/src --gogoslick_out=plugins=grpc,Mgoogle/protobuf/empty.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/wrappers.proto=github.com/gogo/protobuf/types:$(GOPATH)/src
@@ -36,6 +37,16 @@ api:  ## Build api binary
 		-ldflags '-X main.version=$(VERSION)' \
 		-o ../../bin/$(PACKAGE)_$(API)_$(VERSION)
 	$Q cp bin/$(PACKAGE)_$(API)_$(VERSION) bin/$(PACKAGE)_$(API)
+
+.PHONY: web
+web:  ## Build web binary
+	$(info $(M) building executable web…) @
+	$Q cd cmd/$(WEB) && $(GO) build \
+		-mod=readonly \
+		-tags release \
+		-ldflags '-X main.version=$(VERSION)' \
+		-o ../../bin/$(PACKAGE)_$(WEB)_$(VERSION)
+	$Q cp bin/$(PACKAGE)_$(WEB)_$(VERSION) bin/$(PACKAGE)_$(WEB)
 
 # Utils
 .PHONY: proto
