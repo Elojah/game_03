@@ -1,0 +1,9 @@
+{
+    "http": {
+        "hostname": "localhost",
+        "port": "8080"
+    },
+    "web": {
+        "static": "static"
+    }
+}
