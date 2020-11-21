@@ -11,4 +11,4 @@ steps:
       - docker/check/Dockerfile
       - --build-arg
       - GITHUB_TOKEN=${_GITHUB_TOKEN}
-    id: Check
+    id: check
