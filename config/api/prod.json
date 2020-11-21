@@ -1,0 +1,20 @@
+{
+    "grpc": {
+        "hostname": "0.0.0.0",
+        "connection_timeout": 5,
+        "num_stream_workers": 3,
+        "max_recv_msg_size": 64000,
+        "origin": {}
+    },
+    "scylla": {
+    },
+    "redis": {
+        "addr": "0.0.0.0:6379",
+        "password": "",
+        "db": 0,
+        "lock_expire_unit": 100
+    },
+    "firebase": {
+        "credentials": "firebase.json"
+    }
+}
