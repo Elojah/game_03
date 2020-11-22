@@ -10,14 +10,14 @@ import (
 
 	apigrpc "github.com/elojah/game_03/cmd/api/grpc"
 	"github.com/elojah/go-firebase"
-	"github.com/elojah/go-grpc"
+	"github.com/elojah/go-grpcweb"
+	ghttp "github.com/elojah/go-http"
 	glog "github.com/elojah/go-log"
 	"github.com/elojah/go-redis"
 	"github.com/elojah/go-scylla"
 	"github.com/hashicorp/go-multierror"
 	"github.com/rs/zerolog/log"
 	_ "google.golang.org/grpc/encoding/gzip"
-	"google.golang.org/grpc/reflection"
 )
 
 const (
@@ -101,30 +101,40 @@ func run(prog string, filename string) {
 
 	cs = append(cs, &fbs)
 
-	// init handler
-	h := handler{}
+	// init http api server
+	https := ghttp.Service{}
 
-	// init grpc api server
-	grpcapi := grpc.Service{}
-
-	grpcapi.Register = func() {
-		apigrpc.RegisterAPIServer(grpcapi.Server, &h)
-
-		reflection.Register(grpcapi.Server)
-	}
-
-	if err := grpcapi.Dial(ctx, cfg.GRPC); err != nil {
-		log.Error().Err(err).Msg("failed to dial grpc")
+	if err := https.Dial(ctx, cfg.HTTP); err != nil {
+		log.Error().Err(err).Msg("failed to dial http")
 
 		return
 	}
 
-	cs = append(cs, &grpcapi)
+	cs = append(cs, &https)
 
-	// serve grpc api
+	// init handler
+	h := handler{}
+
+	// init grpc api server
+	grpcwapi := grpcweb.Service{}
+	grpcwapi.Register = func() {
+		apigrpc.RegisterAPIServer(grpcwapi.Server, &h)
+		// reflection.Register(grpcwapi.Server)
+		https.Handler = grpcwapi.WrappedGrpcServer
+	}
+
+	if err := grpcwapi.Dial(ctx, cfg.GRPCWeb); err != nil {
+		log.Error().Err(err).Msg("failed to dial grpcweb")
+
+		return
+	}
+
+	cs = append(cs, &grpcwapi)
+
+	// serve grpcweb api
 	go func() {
-		if err := grpcapi.Serve(ctx); err != nil {
-			log.Error().Err(err).Msg("failed to serve grpc")
+		if err := https.Server.ListenAndServe(); err != nil {
+			log.Error().Err(err).Msg("failed to serve http")
 		}
 	}()
 	log.Info().Msg("api up")
@@ -140,13 +150,16 @@ func run(prog string, filename string) {
 		case syscall.SIGINT:
 			fallthrough
 		case syscall.SIGTERM:
+			ctx := context.Background()
+			ctx, cancel := context.WithTimeout(ctx, initTO)
+
+			defer cancel()
+
 			if err := closers(cs).Close(ctx); err != nil {
 				fmt.Printf("error closing service: %s\n", err.Error())
 
 				return
 			}
-
-			cancel()
 
 			fmt.Println("successfully closed service")
 

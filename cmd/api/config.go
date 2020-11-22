@@ -4,14 +4,16 @@ import (
 	"context"
 
 	"github.com/elojah/go-firebase"
-	"github.com/elojah/go-grpc"
+	"github.com/elojah/go-grpcweb"
+	"github.com/elojah/go-http"
 	"github.com/elojah/go-redis"
 	"github.com/elojah/go-scylla"
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
 type config struct {
-	GRPC     grpc.Config     `json:"grpc"`
+	HTTP     http.Config     `json:"http"`
+	GRPCWeb  grpcweb.Config  `json:"grpcweb"`
 	Scylla   scylla.Config   `json:"scylla"`
 	Redis    redis.Config    `json:"redis"`
 	Firebase firebase.Config `json:"firebase"`

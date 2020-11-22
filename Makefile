@@ -1,6 +1,7 @@
 PACKAGE    = game_03
 DATE      ?= $(shell date +%FT%T%z)
 VERSION   ?= $(shell echo $(shell cat $(PWD)/.version)-$(shell git describe --tags --always))
+DIR        = $(strip $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
 
 GO         = go
 GOROOT     ?= $(shell go env GOROOT)
@@ -21,12 +22,14 @@ M          = $(shell printf "\033[0;35m▶\033[0m")
 GO_PACKAGE        = github.com/elojah/game_03
 API               = api
 WEB               = web
+BROWSER           = browser
 
-GEN_PB            = protoc -I=$(GOPATH)/src --gogoslick_out=$(GOPATH)/src
-GEN_PB_SERVICE    = protoc -I=$(GOPATH)/src --gogoslick_out=plugins=grpc,Mgoogle/protobuf/empty.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/wrappers.proto=github.com/gogo/protobuf/types:$(GOPATH)/src
+PROTOC_GEN_TS     = $(DIR)/cmd/$(BROWSER)/node_modules/.bin/protoc-gen-ts
+GEN_PB            = protoc -I=$(GOPATH)/src --gogoslick_out=$(GOPATH)/src --plugin=protoc-gen-ts=$(PROTOC_GEN_TS) --js_out=import_style=commonjs,binary:$(GOPATH)/src --ts_out=$(GOPATH)/src
+GEN_PB_SERVICE    = protoc -I=$(GOPATH)/src --gogoslick_out=plugins=grpc,Mgoogle/protobuf/empty.proto=github.com/gogo/protobuf/types:$(GOPATH)/src --plugin=protoc-gen-ts=$(PROTOC_GEN_TS) --js_out=import_style=commonjs,binary:$(GOPATH)/src --ts_out=service=grpc-web:$(GOPATH)/src
 
 .PHONY: all
-all: api
+all: api web
 
 .PHONY: api
 api:  ## Build api binary
@@ -39,20 +42,29 @@ api:  ## Build api binary
 	$Q cp bin/$(PACKAGE)_$(API)_$(VERSION) bin/$(PACKAGE)_$(API)
 
 .PHONY: web
-web:  ## Build web binary
+web: browser ## Build web binary
 	$(info $(M) building executable web…) @
 	$Q cd cmd/$(WEB) && $(GO) build \
 		-mod=readonly \
 		-tags release \
 		-ldflags '-X main.version=$(VERSION)' \
 		-o ../../bin/$(PACKAGE)_$(WEB)_$(VERSION)
-	$Q cp bin/$(PACKAGE)_$(WEB)_$(VERSION) bin/$(PACKAGE)_$(WEB)
+	$Q yes | cp -rf bin/$(PACKAGE)_$(WEB)_$(VERSION) bin/$(PACKAGE)_$(WEB)
+
+.PHONY: browser
+browser:  ## Build browser content
+	$(info $(M) building bundle browser…) @
+	$Q cd cmd/$(BROWSER) && npx webpack --config webpack.config.js
+	$Q yes | cp -rf cmd/$(BROWSER)/index.html cmd/$(BROWSER)/dist/index.html
+	$Q yes | cp -rf cmd/$(BROWSER)/favicon.ico cmd/$(BROWSER)/dist/favicon.ico
+	$Q yes | cp -rf cmd/$(BROWSER)/dist/. bin/static/
 
 # Utils
 .PHONY: proto
 proto: ## Regenerate protobuf files
 	$(info $(M) running protobuf…) @
 	$(info $(M) generate utils…) @
+	$Q $(GEN_PB) github.com/gogo/protobuf/gogoproto/gogo.proto
 	$(info $(M) generate domain…) @
 	$(info $(M) generate clients…) @
 	$(info $(M) generate dto…) @
