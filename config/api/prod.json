@@ -1,6 +1,8 @@
 {
-    "grpc": {
-        "hostname": "0.0.0.0",
+    "http": {
+        "hostname": "0.0.0.0"
+    },
+    "grpcweb": {
         "connection_timeout": 5,
         "num_stream_workers": 3,
         "max_recv_msg_size": 64000,

@@ -4,6 +4,6 @@
         "port": "8080"
     },
     "web": {
-        "static": "static"
+        "static": "bin/static"
     }
 }

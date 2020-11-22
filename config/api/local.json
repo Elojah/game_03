@@ -1,11 +1,15 @@
 {
-    "grpc": {
+    "http": {
         "hostname": "localhost",
-        "port": "8080",
+        "port": "8081"
+    },
+    "grpcweb": {
         "connection_timeout": 5,
         "num_stream_workers": 3,
         "max_recv_msg_size": 2147483647,
-        "origin": {}
+        "origin": {
+            "http://localhost:8080":{}
+        }
     },
     "scylla": {
     },
