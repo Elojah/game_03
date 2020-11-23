@@ -77,6 +77,8 @@ proto: ## Regenerate protobuf files
 	$(info $(M) generate utils…) @
 	$Q $(GEN_PB) github.com/gogo/protobuf/gogoproto/gogo.proto
 	$(info $(M) generate domain…) @
+	$Q $(GEN_PB) $(GO_PACKAGE)/pkg/user/user.proto
+	$Q $(GEN_PB) $(GO_PACKAGE)/pkg/user/role.proto
 	$(info $(M) generate clients…) @
 	$(info $(M) generate dto…) @
 	$(info $(M) generate services…) @
