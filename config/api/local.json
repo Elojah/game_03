@@ -12,6 +12,11 @@
         }
     },
     "scylla": {
+        "hosts": ["localhost:9042"],
+        "username": "",
+        "password": "",
+        "keyspace": "main",
+        "consistency": "QUORUM"
     },
     "redis": {
         "addr": "localhost:6379",

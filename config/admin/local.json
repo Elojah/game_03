@@ -1,0 +1,16 @@
+{
+    "grpc": {
+        "hostname": "localhost",
+        "port": "8082",
+        "connection_timeout": 5,
+        "num_stream_workers": 3,
+        "max_recv_msg_size": 2147483647
+    },
+    "scylla": {
+        "hosts": ["localhost:9042"],
+        "username": "",
+        "password": "",
+        "keyspace": "main",
+        "consistency": "QUORUM"
+    }
+}

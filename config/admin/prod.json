@@ -1,0 +1,15 @@
+{
+    "grpc": {
+        "hostname": "0.0.0.0",
+        "connection_timeout": 5,
+        "num_stream_workers": 3,
+        "max_recv_msg_size": 2147483647
+    },
+    "scylla": {
+        "hosts": [":9092"],
+        "username": "",
+        "password": "",
+        "keyspace": "main",
+        "consistency": "QUORUM"
+    }
+}

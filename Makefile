@@ -21,15 +21,16 @@ M          = $(shell printf "\033[0;35m▶\033[0m")
 
 GO_PACKAGE        = github.com/elojah/game_03
 API               = api
+ADMIN             = admin
 WEB               = web
 BROWSER           = browser
 
 PROTOC_GEN_TS     = $(DIR)/cmd/$(BROWSER)/node_modules/.bin/protoc-gen-ts
 GEN_PB            = protoc -I=$(GOPATH)/src --gogoslick_out=$(GOPATH)/src --plugin=protoc-gen-ts=$(PROTOC_GEN_TS) --js_out=import_style=commonjs,binary:$(GOPATH)/src --ts_out=$(GOPATH)/src
-GEN_PB_SERVICE    = protoc -I=$(GOPATH)/src --gogoslick_out=plugins=grpc,Mgoogle/protobuf/empty.proto=github.com/gogo/protobuf/types:$(GOPATH)/src --plugin=protoc-gen-ts=$(PROTOC_GEN_TS) --js_out=import_style=commonjs,binary:$(GOPATH)/src --ts_out=service=grpc-web:$(GOPATH)/src
+GEN_PB_SERVICE    = protoc -I=$(GOPATH)/src --gogoslick_out=plugins=grpc,Mgoogle/protobuf/empty.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/wrappers.proto=github.com/gogo/protobuf/types:$(GOPATH)/src --plugin=protoc-gen-ts=$(PROTOC_GEN_TS) --js_out=import_style=commonjs,binary:$(GOPATH)/src --ts_out=service=grpc-web:$(GOPATH)/src
 
 .PHONY: all
-all: api web
+all: api admin web
 
 .PHONY: api
 api:  ## Build api binary
@@ -40,6 +41,16 @@ api:  ## Build api binary
 		-ldflags '-X main.version=$(VERSION)' \
 		-o ../../bin/$(PACKAGE)_$(API)_$(VERSION)
 	$Q cp bin/$(PACKAGE)_$(API)_$(VERSION) bin/$(PACKAGE)_$(API)
+
+.PHONY: admin
+admin:  ## Build admin binary
+	$(info $(M) building executable admin…) @
+	$Q cd cmd/$(ADMIN) && $(GO) build \
+		-mod=readonly \
+		-tags release \
+		-ldflags '-X main.version=$(VERSION)' \
+		-o ../../bin/$(PACKAGE)_$(ADMIN)_$(VERSION)
+	$Q cp bin/$(PACKAGE)_$(ADMIN)_$(VERSION) bin/$(PACKAGE)_$(ADMIN)
 
 .PHONY: web
 web: browser ## Build web binary
@@ -70,6 +81,7 @@ proto: ## Regenerate protobuf files
 	$(info $(M) generate dto…) @
 	$(info $(M) generate services…) @
 	$Q $(GEN_PB_SERVICE) $(GO_PACKAGE)/cmd/$(API)/grpc/$(API).proto
+	$Q $(GEN_PB_SERVICE) $(GO_PACKAGE)/cmd/$(ADMIN)/grpc/$(ADMIN).proto
 
 # Vendor
 .PHONY: vendor
