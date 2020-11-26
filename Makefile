@@ -79,6 +79,7 @@ proto: ## Regenerate protobuf files
 	$(info $(M) generate domain…) @
 	$Q $(GEN_PB) $(GO_PACKAGE)/pkg/user/user.proto
 	$Q $(GEN_PB) $(GO_PACKAGE)/pkg/user/role.proto
+	$Q $(GEN_PB) $(GO_PACKAGE)/pkg/user/session.proto
 	$(info $(M) generate clients…) @
 	$(info $(M) generate dto…) @
 	$(info $(M) generate services…) @

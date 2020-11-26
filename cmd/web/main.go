@@ -67,7 +67,7 @@ func run(prog string, filename string) {
 		return
 	}
 
-	// init ghttp web server
+	// init http web server
 	https := ghttp.Service{}
 
 	if err := https.Dial(ctx, cfg.HTTP); err != nil {
@@ -78,6 +78,17 @@ func run(prog string, filename string) {
 
 	cs = append(cs, &https)
 
+	h := handler{}
+
+	if err := h.Dial(ctx, cfg.Web); err != nil {
+		log.Error().Err(err).Msg("failed to dial web")
+
+		return
+	}
+
+	// login twitch redirect
+	https.Router.Path("/login").HandlerFunc(h.login)
+	https.Router.Path("/redirect").HandlerFunc(h.redirect)
 	// Serve static dir
 	https.Router.PathPrefix("/").Handler(http.FileServer(http.Dir(cfg.Web.Static)))
 

@@ -11,6 +11,15 @@ var API = (function () {
   return API;
 }());
 
+API.Login = {
+  methodName: "Login",
+  service: API,
+  requestStream: false,
+  responseStream: false,
+  requestType: google_protobuf_empty_pb.Empty,
+  responseType: google_protobuf_empty_pb.Empty
+};
+
 API.Ping = {
   methodName: "Ping",
   service: API,
@@ -26,6 +35,37 @@ function APIClient(serviceHost, options) {
   this.serviceHost = serviceHost;
   this.options = options || {};
 }
+
+APIClient.prototype.login = function login(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(API.Login, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
 
 APIClient.prototype.ping = function ping(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
