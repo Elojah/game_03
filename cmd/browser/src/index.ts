@@ -1,6 +1,5 @@
 import * as Phaser from "phaser";
-import {Menu} from "@cmd/browser/src/scene/menu";
-import {Lobby} from "@cmd/browser/src/scene/lobby";
+import {Signin} from "@cmd/browser/src/scene/signin";
 
 function main() {
 
@@ -18,17 +17,17 @@ function main() {
   };
 
   const g = new Phaser.Game(config)
-  g.scene.add('menu', new Menu({
-    key: 'menu',
+  g.scene.add('signin', new Signin({
+    key: 'signin',
     active: true,
     visible: true,
   }))
-  g.scene.add('lobby', new Lobby({
-    key: 'lobby',
-    active: false,
-    visible: true,
-  }))
-  g.scene.start('menu')
+  // g.scene.add('lobby', new Lobby({
+  //   key: 'lobby',
+  //   active: false,
+  //   visible: true,
+  // }))
+  g.scene.start('signin')
 };
 
 main();

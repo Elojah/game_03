@@ -41,6 +41,7 @@ func MustParse(s string) ID {
 // Parse alias ulid.Parse. Panics if s is invalid.
 func Parse(s string) (ID, error) {
 	id, err := ulid.Parse(s)
+
 	return ID(id), err
 }
 
@@ -77,6 +78,7 @@ func (id ID) Marshal() ([]byte, error) {
 // MarshalTo never returns any error.
 func (id ID) MarshalTo(data []byte) (n int, err error) {
 	copy(data[0:16], id[:])
+
 	return 16, nil //nolint: gomnd
 }
 
@@ -132,6 +134,7 @@ func (id ID) Equal(other ID) bool {
 // NewPopulatedID only required if populate option is set.
 func NewPopulatedID(r randyID) *ID {
 	id := ID(ulid.MustNew(uint64(r.Uint32()), rand.Reader))
+
 	return &id
 }
 

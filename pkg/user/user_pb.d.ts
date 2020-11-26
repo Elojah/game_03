@@ -18,11 +18,6 @@ export class U extends jspb.Message {
   getPassword_asB64(): string;
   setPassword(value: Uint8Array | string): void;
 
-  getFirebaseid(): Uint8Array | string;
-  getFirebaseid_asU8(): Uint8Array;
-  getFirebaseid_asB64(): string;
-  setFirebaseid(value: Uint8Array | string): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): U.AsObject;
   static toObject(includeInstance: boolean, msg: U): U.AsObject;
@@ -38,7 +33,6 @@ export namespace U {
     id: Uint8Array | string,
     email: string,
     password: Uint8Array | string,
-    firebaseid: Uint8Array | string,
   }
 }
 

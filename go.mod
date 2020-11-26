@@ -10,12 +10,16 @@ require (
 	github.com/elojah/go-log v0.0.0-20201121131125-8f1993f08a4b
 	github.com/elojah/go-redis v0.0.0-20201121123746-6614a554c9b4
 	github.com/elojah/go-scylla v0.0.0-20201123105755-97fe6ed44693
+	github.com/go-redis/redis/v8 v8.4.0
 	github.com/gogo/protobuf v1.3.1
 	github.com/golang/protobuf v1.4.3
+	github.com/gorilla/sessions v1.2.1
 	github.com/hashicorp/go-multierror v1.1.0
 	github.com/ilyakaznacheev/cleanenv v1.2.5
 	github.com/mwitkow/go-conntrack v0.0.0-20190716064945-2f068394615f // indirect
+	github.com/oklog/ulid v1.3.1
 	github.com/rs/zerolog v1.20.0
 	github.com/scylladb/gocqlx v1.5.0
+	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
 	google.golang.org/grpc v1.33.2
 )

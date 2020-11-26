@@ -18,3 +18,6 @@ cmd/browser/node_modules/
 
 # Config private
 config/api/firebase.json
+config/api/prod.json
+config/web/local.json
+config/web/prod.json

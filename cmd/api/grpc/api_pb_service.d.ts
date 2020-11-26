@@ -5,6 +5,15 @@ import * as github_com_elojah_game_03_cmd_api_grpc_api_pb from "../../../../../.
 import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty_pb";
 import {grpc} from "@improbable-eng/grpc-web";
 
+type APILogin = {
+  readonly methodName: string;
+  readonly service: typeof API;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof google_protobuf_empty_pb.Empty;
+  readonly responseType: typeof google_protobuf_empty_pb.Empty;
+};
+
 type APIPing = {
   readonly methodName: string;
   readonly service: typeof API;
@@ -16,6 +25,7 @@ type APIPing = {
 
 export class API {
   static readonly serviceName: string;
+  static readonly Login: APILogin;
   static readonly Ping: APIPing;
 }
 
@@ -51,6 +61,15 @@ export class APIClient {
   readonly serviceHost: string;
 
   constructor(serviceHost: string, options?: grpc.RpcOptions);
+  login(
+    requestMessage: google_protobuf_empty_pb.Empty,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: google_protobuf_empty_pb.Empty|null) => void
+  ): UnaryResponse;
+  login(
+    requestMessage: google_protobuf_empty_pb.Empty,
+    callback: (error: ServiceError|null, responseMessage: google_protobuf_empty_pb.Empty|null) => void
+  ): UnaryResponse;
   ping(
     requestMessage: google_protobuf_empty_pb.Empty,
     metadata: grpc.Metadata,

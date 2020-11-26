@@ -70,8 +70,7 @@ proto.user.U.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: msg.getId_asB64(),
     email: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    password: msg.getPassword_asB64(),
-    firebaseid: msg.getFirebaseid_asB64()
+    password: msg.getPassword_asB64()
   };
 
   if (includeInstance) {
@@ -120,10 +119,6 @@ proto.user.U.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setPassword(value);
       break;
-    case 4:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setFirebaseid(value);
-      break;
     default:
       reader.skipField();
       break;
@@ -171,13 +166,6 @@ proto.user.U.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeBytes(
       3,
-      f
-    );
-  }
-  f = message.getFirebaseid_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      4,
       f
     );
   }
@@ -283,48 +271,6 @@ proto.user.U.prototype.getPassword_asU8 = function() {
  */
 proto.user.U.prototype.setPassword = function(value) {
   return jspb.Message.setProto3BytesField(this, 3, value);
-};
-
-
-/**
- * optional bytes FirebaseID = 4;
- * @return {!(string|Uint8Array)}
- */
-proto.user.U.prototype.getFirebaseid = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
-};
-
-
-/**
- * optional bytes FirebaseID = 4;
- * This is a type-conversion wrapper around `getFirebaseid()`
- * @return {string}
- */
-proto.user.U.prototype.getFirebaseid_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getFirebaseid()));
-};
-
-
-/**
- * optional bytes FirebaseID = 4;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getFirebaseid()`
- * @return {!Uint8Array}
- */
-proto.user.U.prototype.getFirebaseid_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getFirebaseid()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
- * @return {!proto.user.U} returns this
- */
-proto.user.U.prototype.setFirebaseid = function(value) {
-  return jspb.Message.setProto3BytesField(this, 4, value);
 };
 
 
