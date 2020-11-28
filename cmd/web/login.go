@@ -17,6 +17,9 @@ func (h handler) login(w http.ResponseWriter, r *http.Request) {
 	session, err := h.CookieStore.Get(r, "oauth-session")
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to get oauth session")
+		http.Error(w, "failed to get oauth session", http.StatusInternalServerError)
+
+		return
 	}
 
 	session.AddFlash(id.String(), "oauth-state-callback")
