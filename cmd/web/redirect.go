@@ -13,6 +13,9 @@ func (h handler) redirect(w http.ResponseWriter, r *http.Request) {
 	session, err := h.CookieStore.Get(r, "oauth-session")
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to get oauth session")
+		http.Error(w, "failed to get oauth session", http.StatusInternalServerError)
+
+		return
 	}
 
 	defer func() { _ = session.Save(r, w) }()
@@ -39,8 +42,6 @@ func (h handler) redirect(w http.ResponseWriter, r *http.Request) {
 
 	// add the oauth token to session
 	session.Values["oauth-token"] = token
-
-	// fmt.Printf("Access token: %s\n", token.AccessToken)
 
 	logger.Info().Msg("success")
 
