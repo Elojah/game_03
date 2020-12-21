@@ -53,7 +53,7 @@ admin:  ## Build admin binary
 	$Q cp bin/$(PACKAGE)_$(ADMIN)_$(VERSION) bin/$(PACKAGE)_$(ADMIN)
 
 .PHONY: web
-web: browser ## Build web binary
+web: ## Build web binary
 	$(info $(M) building executable web…) @
 	$Q cd cmd/$(WEB) && $(GO) build \
 		-mod=readonly \

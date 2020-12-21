@@ -6,8 +6,6 @@ import * as API from "@cmd/api/grpc/api_pb_service";
 
 export class Home extends Scene {
 
-    Alpha: number;
-    Background: Phaser.GameObjects.Image;
     HTMLlogin: Phaser.GameObjects.DOMElement;
 
     constructor(config: string | Phaser.Types.Scenes.SettingsConfig) {
@@ -15,14 +13,20 @@ export class Home extends Scene {
     }
     preload() {
         this.load.html('login', 'html/login.html')
-        // this.load.image('background_menu', 'background_menu.png')
+        this.load.image('home_background_00', 'img/home_background_00.png')
+        this.load.image('home_background_01', 'img/home_background_01.png')
     }
     create() {
-        this.Alpha = 1;
-        this.ping();      
-        // this.Background = this.add.image(0, 0, 'background_menu').setOrigin(0)
+        // this.ping();
+        
+        // console.log(document.cookie.substring("oauth-session=".length))
 
-        this.HTMLlogin = this.add.dom(60, 120).createFromCache('login').setOrigin(0);
+        if (document.cookie.startsWith("oauth-session=")) {
+            this.add.image(0, 0, 'home_background_01').setOrigin(0)
+        } else {
+            this.add.image(0, 0, 'home_background_00').setOrigin(0)
+            this.HTMLlogin = this.add.dom(60, 120).createFromCache('login').setOrigin(0);
+        }
     }
     update() {}
     ping() {

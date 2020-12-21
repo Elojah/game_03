@@ -22,11 +22,7 @@ function main() {
     active: true,
     visible: true,
   }))
-  // g.scene.add('lobby', new Lobby({
-  //   key: 'lobby',
-  //   active: false,
-  //   visible: true,
-  // }))
+
   g.scene.start('home')
 };
 
