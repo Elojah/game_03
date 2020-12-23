@@ -25,9 +25,11 @@ ADMIN             = admin
 WEB               = web
 BROWSER           = browser
 
-PROTOC_GEN_TS     = $(DIR)/cmd/$(BROWSER)/node_modules/.bin/protoc-gen-ts
-GEN_PB            = protoc -I=$(GOPATH)/src --gogoslick_out=$(GOPATH)/src --plugin=protoc-gen-ts=$(PROTOC_GEN_TS) --js_out=import_style=commonjs,binary:$(GOPATH)/src --ts_out=$(GOPATH)/src
-GEN_PB_SERVICE    = protoc -I=$(GOPATH)/src --gogoslick_out=plugins=grpc,Mgoogle/protobuf/empty.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/wrappers.proto=github.com/gogo/protobuf/types:$(GOPATH)/src --plugin=protoc-gen-ts=$(PROTOC_GEN_TS) --js_out=import_style=commonjs,binary:$(GOPATH)/src --ts_out=service=grpc-web:$(GOPATH)/src
+PROTOC_GEN_TS      = $(DIR)/cmd/$(BROWSER)/node_modules/.bin/protoc-gen-ts
+GEN_PB_GO          = protoc -I=$(GOPATH)/src --gogoslick_out=$(GOPATH)/src
+GEN_PB_TS          = protoc -I=$(GOPATH)/src --plugin=protoc-gen-ts=$(PROTOC_GEN_TS) --js_out=import_style=commonjs,binary:$(GOPATH)/src --ts_out=$(GOPATH)/src
+GEN_PB_SERVICE_GO  = protoc -I=$(GOPATH)/src --gogoslick_out=plugins=grpc,Mgoogle/protobuf/empty.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/wrappers.proto=github.com/gogo/protobuf/types:$(GOPATH)/src
+GEN_PB_SERVICE_TS  = protoc -I=$(GOPATH)/src --plugin=protoc-gen-ts=$(PROTOC_GEN_TS) --js_out=import_style=commonjs,binary:$(GOPATH)/src --ts_out=service=grpc-web:$(GOPATH)/src
 
 .PHONY: all
 all: api admin web
@@ -69,20 +71,24 @@ browser:  ## Build browser content
 	$Q yes | cp -rf cmd/$(BROWSER)/dist/. bin/static/
 
 # Utils
-.PHONY: proto
-proto: ## Regenerate protobuf files
+.PHONY: proto-go proto-swift
+proto-go:    PB_LANG = GO
+proto-swift: PB_LANG = SWIFT
+proto-go proto-swift: ## Regenerate protobuf files
 	$(info $(M) running protobuf…) @
 	$(info $(M) generate utils…) @
-	$Q $(GEN_PB) github.com/gogo/protobuf/gogoproto/gogo.proto
+	$Q $(GEN_PB_$(PB_LANG)) github.com/gogo/protobuf/gogoproto/gogo.proto
 	$(info $(M) generate domain…) @
-	$Q $(GEN_PB) $(GO_PACKAGE)/pkg/user/user.proto
-	$Q $(GEN_PB) $(GO_PACKAGE)/pkg/user/role.proto
-	$Q $(GEN_PB) $(GO_PACKAGE)/pkg/user/session.proto
+	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/entity/entity.proto
+	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/geometry/geometry.proto
+	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/user/user.proto
+	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/user/role.proto
+	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/user/session.proto
 	$(info $(M) generate clients…) @
 	$(info $(M) generate dto…) @
 	$(info $(M) generate services…) @
-	$Q $(GEN_PB_SERVICE) $(GO_PACKAGE)/cmd/$(API)/grpc/$(API).proto
-	$Q $(GEN_PB_SERVICE) $(GO_PACKAGE)/cmd/$(ADMIN)/grpc/$(ADMIN).proto
+	$Q $(GEN_PB_SERVICE_$(PB_LANG)) $(GO_PACKAGE)/cmd/$(API)/grpc/$(API).proto
+	$Q $(GEN_PB_SERVICE_$(PB_LANG)) $(GO_PACKAGE)/cmd/$(ADMIN)/grpc/$(ADMIN).proto
 
 # Vendor
 .PHONY: vendor
