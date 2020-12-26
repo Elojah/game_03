@@ -17,10 +17,6 @@ export class Home extends Scene {
         this.load.image('home_background_01', 'img/home_background_01.png')
     }
     create() {
-        // this.ping();
-        
-        // console.log(document.cookie.substring("oauth-session=".length))
-
         if (document.cookie.startsWith("oauth-session=")) {
             this.add.image(0, 0, 'home_background_01').setOrigin(0)
         } else {

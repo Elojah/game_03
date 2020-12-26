@@ -68,6 +68,7 @@ web: ## Build web binary
 browser:  ## Build browser content
 	$(info $(M) building bundle browser…) @
 	$Q cd cmd/$(BROWSER) && npx webpack --config webpack.config.js
+	$Q mkdir -p bin && mkdir -p bin/static
 	$Q yes | cp -rf cmd/$(BROWSER)/dist/. bin/static/
 
 # Utils
