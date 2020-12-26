@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package space;
+
+option (gogoproto.testgen_all)  = true;
+option (gogoproto.benchgen_all) = true;
+option (gogoproto.populate_all) = true;
+option (gogoproto.goproto_registration) = true;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "github.com/elojah/game_03/pkg/geometry/geometry.proto";
+
+message World {
+    bytes ID                    = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    bytes OwnerID               = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+
+    geometry.Vec2 NSection      = 3 [(gogoproto.nullable) = false];
+    geometry.Vec2 DimSection    = 4 [(gogoproto.nullable) = false];
+}
+
+message Section {
+    bytes WorldID               = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    geometry.Vec2 Coord         = 2 [(gogoproto.nullable) = false];
+}
+
+enum Cross {
+    In                          = 0;
+    Out                         = 1;
+}
+
+message Entity {
+    bytes ID                    = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    Section Section             = 2 [(gogoproto.nullable) = false];
+    Cross Cross                 = 3;
+
+    bytes State                 = 4 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+}
