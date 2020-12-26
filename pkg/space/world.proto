@@ -22,16 +22,3 @@ message Section {
     bytes WorldID               = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
     geometry.Vec2 Coord         = 2 [(gogoproto.nullable) = false];
 }
-
-enum Cross {
-    In                          = 0;
-    Out                         = 1;
-}
-
-message Entity {
-    bytes ID                    = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
-    Section Section             = 2 [(gogoproto.nullable) = false];
-    Cross Cross                 = 3;
-
-    bytes State                 = 4 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
-}

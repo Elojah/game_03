@@ -6,6 +6,12 @@ import (
 	"github.com/elojah/game_03/pkg/ulid"
 )
 
+type App interface {
+	Cache
+	Store
+	StorePC
+}
+
 type Filter struct {
 	ID  *ulid.ID
 	IDs []ulid.ID
