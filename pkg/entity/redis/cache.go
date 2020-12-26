@@ -5,8 +5,8 @@ import (
 	"github.com/elojah/go-redis"
 )
 
-var _ entity.Store = (*Store)(nil)
+var _ entity.Cache = (*Cache)(nil)
 
-type Store struct {
+type Cache struct {
 	redis.Service
 }

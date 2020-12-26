@@ -6,6 +6,7 @@ package entity
 import (
 	fmt "fmt"
 	geometry "github.com/elojah/game_03/pkg/geometry"
+	space "github.com/elojah/game_03/pkg/space"
 	github_com_elojah_game_03_pkg_ulid "github.com/elojah/game_03/pkg/ulid"
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
@@ -30,8 +31,14 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type E struct {
-	ID       github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,1,opt,name=ID,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"ID"`
-	Location geometry.Vec3                         `protobuf:"bytes,2,opt,name=Location,proto3" json:"Location"`
+	ID      github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,1,opt,name=ID,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"ID"`
+	Section space.Section                         `protobuf:"bytes,2,opt,name=Section,proto3" json:"Section"`
+	Coord   geometry.Vec2                         `protobuf:"bytes,3,opt,name=Coord,proto3" json:"Coord"`
+	MaxHP   uint64                                `protobuf:"varint,4,opt,name=MaxHP,proto3" json:"MaxHP,omitempty"`
+	HP      uint64                                `protobuf:"varint,5,opt,name=HP,proto3" json:"HP,omitempty"`
+	MaxMP   uint64                                `protobuf:"varint,6,opt,name=MaxMP,proto3" json:"MaxMP,omitempty"`
+	MP      uint64                                `protobuf:"varint,7,opt,name=MP,proto3" json:"MP,omitempty"`
+	State   github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,8,opt,name=State,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"State"`
 }
 
 func (m *E) Reset()      { *m = E{} }
@@ -66,11 +73,46 @@ func (m *E) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_E proto.InternalMessageInfo
 
-func (m *E) GetLocation() geometry.Vec3 {
+func (m *E) GetSection() space.Section {
 	if m != nil {
-		return m.Location
+		return m.Section
 	}
-	return geometry.Vec3{}
+	return space.Section{}
+}
+
+func (m *E) GetCoord() geometry.Vec2 {
+	if m != nil {
+		return m.Coord
+	}
+	return geometry.Vec2{}
+}
+
+func (m *E) GetMaxHP() uint64 {
+	if m != nil {
+		return m.MaxHP
+	}
+	return 0
+}
+
+func (m *E) GetHP() uint64 {
+	if m != nil {
+		return m.HP
+	}
+	return 0
+}
+
+func (m *E) GetMaxMP() uint64 {
+	if m != nil {
+		return m.MaxMP
+	}
+	return 0
+}
+
+func (m *E) GetMP() uint64 {
+	if m != nil {
+		return m.MP
+	}
+	return 0
 }
 
 func init() {
@@ -86,24 +128,30 @@ func init() {
 }
 
 var fileDescriptor_e2701362edd4c296 = []byte{
-	// 265 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x32, 0x4c, 0xcf, 0x2c, 0xc9,
-	0x28, 0x4d, 0xd2, 0x4b, 0xce, 0xcf, 0xd5, 0x4f, 0xcd, 0xc9, 0xcf, 0x4a, 0xcc, 0xd0, 0x4f, 0x4f,
-	0xcc, 0x4d, 0x8d, 0x37, 0x30, 0xd6, 0x2f, 0xc8, 0x4e, 0xd7, 0x4f, 0xcd, 0x2b, 0xc9, 0x2c, 0xa9,
-	0x84, 0x52, 0x7a, 0x05, 0x45, 0xf9, 0x25, 0xf9, 0x42, 0x6c, 0x10, 0x9e, 0x94, 0x2e, 0x92, 0xd6,
-	0xf4, 0xfc, 0xf4, 0x7c, 0x7d, 0xb0, 0x74, 0x52, 0x69, 0x1a, 0x98, 0x07, 0xe6, 0x80, 0x59, 0x10,
-	0x6d, 0x52, 0xa6, 0xf8, 0x6d, 0x4a, 0x4f, 0xcd, 0xcf, 0x4d, 0x2d, 0x29, 0xaa, 0x84, 0x33, 0x20,
-	0xda, 0x94, 0x4a, 0xb8, 0x18, 0x5d, 0x85, 0x6c, 0xb9, 0x98, 0x3c, 0x5d, 0x24, 0x18, 0x15, 0x18,
-	0x35, 0x78, 0x9c, 0x74, 0x4f, 0xdc, 0x93, 0x67, 0xb8, 0x75, 0x4f, 0x5e, 0x15, 0xbf, 0x79, 0xa5,
-	0x39, 0x99, 0x29, 0x7a, 0x9e, 0x2e, 0x41, 0x4c, 0x9e, 0x2e, 0x42, 0x06, 0x5c, 0x1c, 0x3e, 0xf9,
-	0xc9, 0x89, 0x25, 0x99, 0xf9, 0x79, 0x12, 0x4c, 0x0a, 0x8c, 0x1a, 0xdc, 0x46, 0x7c, 0x7a, 0x70,
-	0x6b, 0xc2, 0x52, 0x93, 0x8d, 0x9d, 0x58, 0x40, 0x86, 0x06, 0xc1, 0x55, 0x39, 0xb9, 0x5c, 0x78,
-	0x28, 0xc7, 0x70, 0xe3, 0xa1, 0x1c, 0xc3, 0x87, 0x87, 0x72, 0x8c, 0x3f, 0x1e, 0xca, 0x31, 0x36,
-	0x3c, 0x92, 0x63, 0x5c, 0xf1, 0x48, 0x8e, 0x71, 0xc7, 0x23, 0x39, 0xc6, 0x03, 0x8f, 0xe4, 0x18,
-	0x4f, 0x3c, 0x92, 0x63, 0xbc, 0xf0, 0x48, 0x8e, 0xf1, 0xc1, 0x23, 0x39, 0xc6, 0x17, 0x8f, 0xe4,
-	0x18, 0x3e, 0x3c, 0x92, 0x63, 0x9c, 0xf0, 0x58, 0x8e, 0xe1, 0xc0, 0x63, 0x39, 0xc6, 0x0b, 0x8f,
-	0xe5, 0x18, 0x6e, 0x3c, 0x96, 0x63, 0x48, 0x62, 0x03, 0x7b, 0xc1, 0x18, 0x10, 0x00, 0x00, 0xff,
-	0xff, 0x98, 0xf9, 0x70, 0x62, 0x65, 0x01, 0x00, 0x00,
+	// 362 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x90, 0x31, 0x6b, 0xea, 0x50,
+	0x14, 0xc7, 0x73, 0xf2, 0x8c, 0x3e, 0xee, 0x7b, 0x38, 0x84, 0x37, 0x5c, 0x1c, 0x8e, 0xf2, 0xe0,
+	0x81, 0x3c, 0x30, 0x69, 0x95, 0x8e, 0x5d, 0x34, 0x05, 0x1d, 0x02, 0x41, 0xa1, 0x6b, 0x89, 0xf1,
+	0x36, 0xa6, 0x55, 0xaf, 0xd8, 0x2b, 0xd4, 0xad, 0x1f, 0xa1, 0x1f, 0xa3, 0x5b, 0xd7, 0x8e, 0x8e,
+	0x8e, 0x8e, 0xd2, 0x41, 0x9a, 0x9b, 0xa5, 0xa3, 0x63, 0xc7, 0xd2, 0xdc, 0x54, 0x3a, 0x39, 0x74,
+	0x49, 0xce, 0xff, 0xe4, 0xf7, 0x3b, 0x87, 0x13, 0x72, 0x1c, 0x46, 0x62, 0x38, 0xef, 0x5b, 0x01,
+	0x1f, 0xdb, 0x6c, 0xc4, 0xaf, 0xfc, 0xa1, 0x1d, 0xfa, 0x63, 0x76, 0x71, 0xd4, 0xb0, 0xa7, 0xd7,
+	0xa1, 0xcd, 0x26, 0x22, 0x12, 0x8b, 0xec, 0x65, 0x4d, 0x67, 0x5c, 0x70, 0x33, 0xaf, 0x52, 0xa9,
+	0xf6, 0x45, 0x0d, 0x79, 0xc8, 0xed, 0xf4, 0x73, 0x7f, 0x7e, 0x99, 0xa6, 0x34, 0xa4, 0x95, 0xd2,
+	0x4a, 0x27, 0x87, 0x37, 0x85, 0x8c, 0x8f, 0x99, 0x98, 0x2d, 0xf6, 0x45, 0xa6, 0xd9, 0x87, 0xb5,
+	0x9b, 0xa9, 0x1f, 0x30, 0xf5, 0x54, 0xc2, 0xdf, 0x47, 0x9d, 0xc0, 0x99, 0x79, 0x4a, 0xf4, 0x8e,
+	0x43, 0xa1, 0x02, 0xd5, 0xdf, 0xcd, 0xda, 0x6a, 0x5b, 0xd6, 0x9e, 0xb7, 0xe5, 0x7f, 0x87, 0x47,
+	0xcd, 0x47, 0xd1, 0xc0, 0xea, 0x38, 0x5d, 0xbd, 0xe3, 0x98, 0x16, 0x29, 0xf4, 0x58, 0x20, 0x22,
+	0x3e, 0xa1, 0x7a, 0x05, 0xaa, 0xbf, 0xea, 0x45, 0x4b, 0xed, 0xc8, 0xba, 0xcd, 0xdc, 0xc7, 0xcc,
+	0xee, 0x27, 0x64, 0xfe, 0x27, 0x46, 0x8b, 0xf3, 0xd9, 0x80, 0xfe, 0xc8, 0xe8, 0xfd, 0x15, 0xe7,
+	0x2c, 0xa8, 0x67, 0xb4, 0x42, 0xcc, 0x3f, 0xc4, 0x70, 0xfd, 0xdb, 0xb6, 0x47, 0x73, 0x15, 0xa8,
+	0xe6, 0xba, 0x2a, 0x98, 0x45, 0xa2, 0xb7, 0x3d, 0x6a, 0xa4, 0x2d, 0xbd, 0xed, 0x65, 0x94, 0xeb,
+	0xd1, 0xfc, 0x9e, 0x72, 0x53, 0xca, 0xf5, 0x68, 0x41, 0x51, 0xae, 0x67, 0xb6, 0x88, 0xd1, 0x13,
+	0xbe, 0x60, 0xf4, 0xe7, 0x77, 0x2e, 0x55, 0x6e, 0xd3, 0x59, 0xc7, 0xa8, 0x6d, 0x62, 0xd4, 0x76,
+	0x31, 0xc2, 0x5b, 0x8c, 0x70, 0x27, 0x11, 0x1e, 0x24, 0xc2, 0x93, 0x44, 0x58, 0x4a, 0x84, 0x95,
+	0x44, 0x58, 0x4b, 0x84, 0x17, 0x89, 0xf0, 0x2a, 0x51, 0xdb, 0x49, 0x84, 0xfb, 0x04, 0xb5, 0x65,
+	0x82, 0xb0, 0x4e, 0x50, 0xdb, 0x24, 0xa8, 0xf5, 0xf3, 0xe9, 0xef, 0x6f, 0xbc, 0x07, 0x00, 0x00,
+	0xff, 0xff, 0x93, 0x08, 0x90, 0xe2, 0x52, 0x02, 0x00, 0x00,
 }
 
 func (this *E) Equal(that interface{}) bool {
@@ -128,7 +176,25 @@ func (this *E) Equal(that interface{}) bool {
 	if !this.ID.Equal(that1.ID) {
 		return false
 	}
-	if !this.Location.Equal(&that1.Location) {
+	if !this.Section.Equal(&that1.Section) {
+		return false
+	}
+	if !this.Coord.Equal(&that1.Coord) {
+		return false
+	}
+	if this.MaxHP != that1.MaxHP {
+		return false
+	}
+	if this.HP != that1.HP {
+		return false
+	}
+	if this.MaxMP != that1.MaxMP {
+		return false
+	}
+	if this.MP != that1.MP {
+		return false
+	}
+	if !this.State.Equal(that1.State) {
 		return false
 	}
 	return true
@@ -137,10 +203,16 @@ func (this *E) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 6)
+	s := make([]string, 0, 12)
 	s = append(s, "&entity.E{")
 	s = append(s, "ID: "+fmt.Sprintf("%#v", this.ID)+",\n")
-	s = append(s, "Location: "+strings.Replace(this.Location.GoString(), `&`, ``, 1)+",\n")
+	s = append(s, "Section: "+strings.Replace(this.Section.GoString(), `&`, ``, 1)+",\n")
+	s = append(s, "Coord: "+strings.Replace(this.Coord.GoString(), `&`, ``, 1)+",\n")
+	s = append(s, "MaxHP: "+fmt.Sprintf("%#v", this.MaxHP)+",\n")
+	s = append(s, "HP: "+fmt.Sprintf("%#v", this.HP)+",\n")
+	s = append(s, "MaxMP: "+fmt.Sprintf("%#v", this.MaxMP)+",\n")
+	s = append(s, "MP: "+fmt.Sprintf("%#v", this.MP)+",\n")
+	s = append(s, "State: "+fmt.Sprintf("%#v", this.State)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -173,7 +245,47 @@ func (m *E) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	var l int
 	_ = l
 	{
-		size, err := m.Location.MarshalToSizedBuffer(dAtA[:i])
+		size := m.State.Size()
+		i -= size
+		if _, err := m.State.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintEntity(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x42
+	if m.MP != 0 {
+		i = encodeVarintEntity(dAtA, i, uint64(m.MP))
+		i--
+		dAtA[i] = 0x38
+	}
+	if m.MaxMP != 0 {
+		i = encodeVarintEntity(dAtA, i, uint64(m.MaxMP))
+		i--
+		dAtA[i] = 0x30
+	}
+	if m.HP != 0 {
+		i = encodeVarintEntity(dAtA, i, uint64(m.HP))
+		i--
+		dAtA[i] = 0x28
+	}
+	if m.MaxHP != 0 {
+		i = encodeVarintEntity(dAtA, i, uint64(m.MaxHP))
+		i--
+		dAtA[i] = 0x20
+	}
+	{
+		size, err := m.Coord.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintEntity(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x1a
+	{
+		size, err := m.Section.MarshalToSizedBuffer(dAtA[:i])
 		if err != nil {
 			return 0, err
 		}
@@ -210,8 +322,16 @@ func NewPopulatedE(r randyEntity, easy bool) *E {
 	this := &E{}
 	v1 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
 	this.ID = *v1
-	v2 := geometry.NewPopulatedVec3(r, easy)
-	this.Location = *v2
+	v2 := space.NewPopulatedSection(r, easy)
+	this.Section = *v2
+	v3 := geometry.NewPopulatedVec2(r, easy)
+	this.Coord = *v3
+	this.MaxHP = uint64(uint64(r.Uint32()))
+	this.HP = uint64(uint64(r.Uint32()))
+	this.MaxMP = uint64(uint64(r.Uint32()))
+	this.MP = uint64(uint64(r.Uint32()))
+	v4 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
+	this.State = *v4
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -236,9 +356,9 @@ func randUTF8RuneEntity(r randyEntity) rune {
 	return rune(ru + 61)
 }
 func randStringEntity(r randyEntity) string {
-	v3 := r.Intn(100)
-	tmps := make([]rune, v3)
-	for i := 0; i < v3; i++ {
+	v5 := r.Intn(100)
+	tmps := make([]rune, v5)
+	for i := 0; i < v5; i++ {
 		tmps[i] = randUTF8RuneEntity(r)
 	}
 	return string(tmps)
@@ -260,11 +380,11 @@ func randFieldEntity(dAtA []byte, r randyEntity, fieldNumber int, wire int) []by
 	switch wire {
 	case 0:
 		dAtA = encodeVarintPopulateEntity(dAtA, uint64(key))
-		v4 := r.Int63()
+		v6 := r.Int63()
 		if r.Intn(2) == 0 {
-			v4 *= -1
+			v6 *= -1
 		}
-		dAtA = encodeVarintPopulateEntity(dAtA, uint64(v4))
+		dAtA = encodeVarintPopulateEntity(dAtA, uint64(v6))
 	case 1:
 		dAtA = encodeVarintPopulateEntity(dAtA, uint64(key))
 		dAtA = append(dAtA, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
@@ -297,7 +417,23 @@ func (m *E) Size() (n int) {
 	_ = l
 	l = m.ID.Size()
 	n += 1 + l + sovEntity(uint64(l))
-	l = m.Location.Size()
+	l = m.Section.Size()
+	n += 1 + l + sovEntity(uint64(l))
+	l = m.Coord.Size()
+	n += 1 + l + sovEntity(uint64(l))
+	if m.MaxHP != 0 {
+		n += 1 + sovEntity(uint64(m.MaxHP))
+	}
+	if m.HP != 0 {
+		n += 1 + sovEntity(uint64(m.HP))
+	}
+	if m.MaxMP != 0 {
+		n += 1 + sovEntity(uint64(m.MaxMP))
+	}
+	if m.MP != 0 {
+		n += 1 + sovEntity(uint64(m.MP))
+	}
+	l = m.State.Size()
 	n += 1 + l + sovEntity(uint64(l))
 	return n
 }
@@ -314,7 +450,13 @@ func (this *E) String() string {
 	}
 	s := strings.Join([]string{`&E{`,
 		`ID:` + fmt.Sprintf("%v", this.ID) + `,`,
-		`Location:` + strings.Replace(strings.Replace(fmt.Sprintf("%v", this.Location), "Vec3", "geometry.Vec3", 1), `&`, ``, 1) + `,`,
+		`Section:` + strings.Replace(strings.Replace(fmt.Sprintf("%v", this.Section), "Section", "space.Section", 1), `&`, ``, 1) + `,`,
+		`Coord:` + strings.Replace(strings.Replace(fmt.Sprintf("%v", this.Coord), "Vec2", "geometry.Vec2", 1), `&`, ``, 1) + `,`,
+		`MaxHP:` + fmt.Sprintf("%v", this.MaxHP) + `,`,
+		`HP:` + fmt.Sprintf("%v", this.HP) + `,`,
+		`MaxMP:` + fmt.Sprintf("%v", this.MaxMP) + `,`,
+		`MP:` + fmt.Sprintf("%v", this.MP) + `,`,
+		`State:` + fmt.Sprintf("%v", this.State) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -391,7 +533,7 @@ func (m *E) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Location", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Section", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -418,7 +560,149 @@ func (m *E) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.Location.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.Section.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Coord", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEntity
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthEntity
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthEntity
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Coord.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MaxHP", wireType)
+			}
+			m.MaxHP = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEntity
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.MaxHP |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field HP", wireType)
+			}
+			m.HP = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEntity
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.HP |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 6:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MaxMP", wireType)
+			}
+			m.MaxMP = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEntity
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.MaxMP |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 7:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MP", wireType)
+			}
+			m.MP = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEntity
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.MP |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 8:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field State", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEntity
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthEntity
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEntity
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.State.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
