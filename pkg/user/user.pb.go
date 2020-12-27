@@ -4,7 +4,6 @@
 package user
 
 import (
-	bytes "bytes"
 	fmt "fmt"
 	github_com_elojah_game_03_pkg_ulid "github.com/elojah/game_03/pkg/ulid"
 	_ "github.com/gogo/protobuf/gogoproto"
@@ -31,8 +30,7 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type U struct {
 	ID       github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,1,opt,name=ID,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"ID"`
-	Email    string                                `protobuf:"bytes,2,opt,name=Email,proto3" json:"Email,omitempty"`
-	Password []byte                                `protobuf:"bytes,3,opt,name=Password,proto3" json:"Password,omitempty"`
+	TwitchID string                                `protobuf:"bytes,2,opt,name=TwitchID,proto3" json:"TwitchID,omitempty"`
 }
 
 func (m *U) Reset()      { *m = U{} }
@@ -67,18 +65,11 @@ func (m *U) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_U proto.InternalMessageInfo
 
-func (m *U) GetEmail() string {
+func (m *U) GetTwitchID() string {
 	if m != nil {
-		return m.Email
+		return m.TwitchID
 	}
 	return ""
-}
-
-func (m *U) GetPassword() []byte {
-	if m != nil {
-		return m.Password
-	}
-	return nil
 }
 
 func init() {
@@ -94,23 +85,22 @@ func init() {
 }
 
 var fileDescriptor_1133aa3887fb7186 = []byte{
-	// 248 bytes of a gzipped FileDescriptorProto
+	// 232 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xd2, 0x4d, 0xcf, 0x2c, 0xc9,
 	0x28, 0x4d, 0xd2, 0x4b, 0xce, 0xcf, 0xd5, 0x4f, 0xcd, 0xc9, 0xcf, 0x4a, 0xcc, 0xd0, 0x4f, 0x4f,
 	0xcc, 0x4d, 0x8d, 0x37, 0x30, 0xd6, 0x2f, 0xc8, 0x4e, 0xd7, 0x2f, 0x2d, 0x4e, 0x2d, 0x02, 0x13,
 	0x7a, 0x05, 0x45, 0xf9, 0x25, 0xf9, 0x42, 0x2c, 0x20, 0xb6, 0x14, 0xb2, 0xa6, 0xf4, 0xfc, 0xf4,
-	0x7c, 0x7d, 0xb0, 0x64, 0x52, 0x69, 0x1a, 0x98, 0x07, 0xe6, 0x80, 0x59, 0x10, 0x4d, 0x4a, 0x25,
+	0x7c, 0x7d, 0xb0, 0x64, 0x52, 0x69, 0x1a, 0x98, 0x07, 0xe6, 0x80, 0x59, 0x10, 0x4d, 0x4a, 0x71,
 	0x5c, 0x8c, 0xa1, 0x42, 0xb6, 0x5c, 0x4c, 0x9e, 0x2e, 0x12, 0x8c, 0x0a, 0x8c, 0x1a, 0x3c, 0x4e,
 	0xba, 0x27, 0xee, 0xc9, 0x33, 0xdc, 0xba, 0x27, 0xaf, 0x4a, 0xc0, 0xf2, 0x9c, 0xcc, 0x14, 0x3d,
-	0x4f, 0x97, 0x20, 0x26, 0x4f, 0x17, 0x21, 0x11, 0x2e, 0x56, 0xd7, 0xdc, 0xc4, 0xcc, 0x1c, 0x09,
-	0x26, 0x05, 0x46, 0x0d, 0xce, 0x20, 0x08, 0x47, 0x48, 0x8a, 0x8b, 0x23, 0x20, 0xb1, 0xb8, 0xb8,
-	0x3c, 0xbf, 0x28, 0x45, 0x82, 0x19, 0x64, 0x74, 0x10, 0x9c, 0xef, 0xe4, 0x72, 0xe1, 0xa1, 0x1c,
-	0xc3, 0x8d, 0x87, 0x72, 0x0c, 0x1f, 0x1e, 0xca, 0x31, 0xfe, 0x78, 0x28, 0xc7, 0xd8, 0xf0, 0x48,
-	0x8e, 0x71, 0xc5, 0x23, 0x39, 0xc6, 0x1d, 0x8f, 0xe4, 0x18, 0x0f, 0x3c, 0x92, 0x63, 0x3c, 0xf1,
-	0x48, 0x8e, 0xf1, 0xc2, 0x23, 0x39, 0xc6, 0x07, 0x8f, 0xe4, 0x18, 0x5f, 0x3c, 0x92, 0x63, 0xf8,
-	0xf0, 0x48, 0x8e, 0x71, 0xc2, 0x63, 0x39, 0x86, 0x03, 0x8f, 0xe5, 0x18, 0x2f, 0x3c, 0x96, 0x63,
-	0xb8, 0xf1, 0x58, 0x8e, 0x21, 0x89, 0x0d, 0xec, 0x05, 0x63, 0x40, 0x00, 0x00, 0x00, 0xff, 0xff,
-	0xbb, 0x62, 0x91, 0x42, 0x28, 0x01, 0x00, 0x00,
+	0x4f, 0x97, 0x20, 0x26, 0x4f, 0x17, 0x21, 0x29, 0x2e, 0x8e, 0x90, 0xf2, 0xcc, 0x92, 0xe4, 0x0c,
+	0x4f, 0x17, 0x09, 0x26, 0x05, 0x46, 0x0d, 0xce, 0x20, 0x38, 0xdf, 0xc9, 0xe5, 0xc2, 0x43, 0x39,
+	0x86, 0x1b, 0x0f, 0xe5, 0x18, 0x3e, 0x3c, 0x94, 0x63, 0xfc, 0xf1, 0x50, 0x8e, 0xb1, 0xe1, 0x91,
+	0x1c, 0xe3, 0x8a, 0x47, 0x72, 0x8c, 0x3b, 0x1e, 0xc9, 0x31, 0x1e, 0x78, 0x24, 0xc7, 0x78, 0xe2,
+	0x91, 0x1c, 0xe3, 0x85, 0x47, 0x72, 0x8c, 0x0f, 0x1e, 0xc9, 0x31, 0xbe, 0x78, 0x24, 0xc7, 0xf0,
+	0xe1, 0x91, 0x1c, 0xe3, 0x84, 0xc7, 0x72, 0x0c, 0x07, 0x1e, 0xcb, 0x31, 0x5e, 0x78, 0x2c, 0xc7,
+	0x70, 0xe3, 0xb1, 0x1c, 0x43, 0x12, 0x1b, 0xd8, 0xb1, 0xc6, 0x80, 0x00, 0x00, 0x00, 0xff, 0xff,
+	0xa1, 0x66, 0x6d, 0x04, 0x12, 0x01, 0x00, 0x00,
 }
 
 func (this *U) Equal(that interface{}) bool {
@@ -135,10 +125,7 @@ func (this *U) Equal(that interface{}) bool {
 	if !this.ID.Equal(that1.ID) {
 		return false
 	}
-	if this.Email != that1.Email {
-		return false
-	}
-	if !bytes.Equal(this.Password, that1.Password) {
+	if this.TwitchID != that1.TwitchID {
 		return false
 	}
 	return true
@@ -147,11 +134,10 @@ func (this *U) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 7)
+	s := make([]string, 0, 6)
 	s = append(s, "&user.U{")
 	s = append(s, "ID: "+fmt.Sprintf("%#v", this.ID)+",\n")
-	s = append(s, "Email: "+fmt.Sprintf("%#v", this.Email)+",\n")
-	s = append(s, "Password: "+fmt.Sprintf("%#v", this.Password)+",\n")
+	s = append(s, "TwitchID: "+fmt.Sprintf("%#v", this.TwitchID)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -183,17 +169,10 @@ func (m *U) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Password) > 0 {
-		i -= len(m.Password)
-		copy(dAtA[i:], m.Password)
-		i = encodeVarintUser(dAtA, i, uint64(len(m.Password)))
-		i--
-		dAtA[i] = 0x1a
-	}
-	if len(m.Email) > 0 {
-		i -= len(m.Email)
-		copy(dAtA[i:], m.Email)
-		i = encodeVarintUser(dAtA, i, uint64(len(m.Email)))
+	if len(m.TwitchID) > 0 {
+		i -= len(m.TwitchID)
+		copy(dAtA[i:], m.TwitchID)
+		i = encodeVarintUser(dAtA, i, uint64(len(m.TwitchID)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -225,12 +204,7 @@ func NewPopulatedU(r randyUser, easy bool) *U {
 	this := &U{}
 	v1 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
 	this.ID = *v1
-	this.Email = string(randStringUser(r))
-	v2 := r.Intn(100)
-	this.Password = make([]byte, v2)
-	for i := 0; i < v2; i++ {
-		this.Password[i] = byte(r.Intn(256))
-	}
+	this.TwitchID = string(randStringUser(r))
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -255,9 +229,9 @@ func randUTF8RuneUser(r randyUser) rune {
 	return rune(ru + 61)
 }
 func randStringUser(r randyUser) string {
-	v3 := r.Intn(100)
-	tmps := make([]rune, v3)
-	for i := 0; i < v3; i++ {
+	v2 := r.Intn(100)
+	tmps := make([]rune, v2)
+	for i := 0; i < v2; i++ {
 		tmps[i] = randUTF8RuneUser(r)
 	}
 	return string(tmps)
@@ -279,11 +253,11 @@ func randFieldUser(dAtA []byte, r randyUser, fieldNumber int, wire int) []byte {
 	switch wire {
 	case 0:
 		dAtA = encodeVarintPopulateUser(dAtA, uint64(key))
-		v4 := r.Int63()
+		v3 := r.Int63()
 		if r.Intn(2) == 0 {
-			v4 *= -1
+			v3 *= -1
 		}
-		dAtA = encodeVarintPopulateUser(dAtA, uint64(v4))
+		dAtA = encodeVarintPopulateUser(dAtA, uint64(v3))
 	case 1:
 		dAtA = encodeVarintPopulateUser(dAtA, uint64(key))
 		dAtA = append(dAtA, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
@@ -316,11 +290,7 @@ func (m *U) Size() (n int) {
 	_ = l
 	l = m.ID.Size()
 	n += 1 + l + sovUser(uint64(l))
-	l = len(m.Email)
-	if l > 0 {
-		n += 1 + l + sovUser(uint64(l))
-	}
-	l = len(m.Password)
+	l = len(m.TwitchID)
 	if l > 0 {
 		n += 1 + l + sovUser(uint64(l))
 	}
@@ -339,8 +309,7 @@ func (this *U) String() string {
 	}
 	s := strings.Join([]string{`&U{`,
 		`ID:` + fmt.Sprintf("%v", this.ID) + `,`,
-		`Email:` + fmt.Sprintf("%v", this.Email) + `,`,
-		`Password:` + fmt.Sprintf("%v", this.Password) + `,`,
+		`TwitchID:` + fmt.Sprintf("%v", this.TwitchID) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -417,7 +386,7 @@ func (m *U) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Email", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field TwitchID", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -445,41 +414,7 @@ func (m *U) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Email = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Password", wireType)
-			}
-			var byteLen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowUser
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				byteLen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if byteLen < 0 {
-				return ErrInvalidLengthUser
-			}
-			postIndex := iNdEx + byteLen
-			if postIndex < 0 {
-				return ErrInvalidLengthUser
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Password = append(m.Password[:0], dAtA[iNdEx:postIndex]...)
-			if m.Password == nil {
-				m.Password = []byte{}
-			}
+			m.TwitchID = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

@@ -19,6 +19,7 @@ export class Home extends Scene {
     create() {
         if (document.cookie.startsWith("oauth-session=")) {
             this.add.image(0, 0, 'home_background_01').setOrigin(0)
+            this.login()
         } else {
             this.add.image(0, 0, 'home_background_00').setOrigin(0)
             this.HTMLlogin = this.add.dom(60, 120).createFromCache('login').setOrigin(0);
@@ -28,6 +29,21 @@ export class Home extends Scene {
     ping() {
         const req = new google_protobuf_empty_pb.Empty();
         grpc.unary(API.API.Ping, {
+            request: req,
+            host: "https://localhost:8081",
+            onEnd: res => {
+                const { status, statusMessage, headers, message, trailers } = res;
+                if (status !== grpc.Code.OK || !message) {
+                    console.log("grpc error: ", status, statusMessage, headers, message, trailers)
+                    return
+                }
+                // Send a validate thing back
+            }
+        });
+    }    
+    login() {
+        const req = new google_protobuf_empty_pb.Empty();
+        grpc.unary(API.API.Login, {
             request: req,
             host: "https://localhost:8081",
             onEnd: res => {
