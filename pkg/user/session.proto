@@ -11,4 +11,5 @@ import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 message Session {
     bytes ID         = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    bytes UserID     = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
 }
