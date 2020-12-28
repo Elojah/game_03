@@ -10,10 +10,11 @@ option (gogoproto.goproto_registration) = true;
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
 
 service API {
     // Login
-    rpc Login(google.protobuf.Empty) returns (google.protobuf.Empty);
+    rpc Login(google.protobuf.StringValue) returns (google.protobuf.StringValue);
 
     // Ping
     rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);

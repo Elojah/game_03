@@ -9,6 +9,8 @@ import (
 type App interface {
 	Store
 	CacheSession
+
+	FetchWithUpsert(context.Context, string) (U, error)
 }
 
 type Filter struct {
