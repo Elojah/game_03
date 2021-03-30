@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 
 	gerrors "github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/user"
@@ -13,8 +12,6 @@ import (
 
 const sessionKey = "session_user:"
 
-const sessionTTL = 2 * time.Hour
-
 // UpsertSession implementation for session in redis.
 func (c *Cache) UpsertSession(ctx context.Context, ses user.Session) error {
 	raw, err := ses.Marshal()
@@ -22,7 +19,7 @@ func (c *Cache) UpsertSession(ctx context.Context, ses user.Session) error {
 		return err
 	}
 
-	if err := c.Set(ctx, sessionKey+ses.ID.String(), raw, sessionTTL).Err(); err != nil {
+	if err := c.Set(ctx, sessionKey+ses.ID.String(), raw, 0).Err(); err != nil {
 		return fmt.Errorf("upsert session %s: %w", ses.ID.String(), err)
 	}
 

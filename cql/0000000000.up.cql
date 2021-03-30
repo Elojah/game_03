@@ -1,11 +1,9 @@
 CREATE TABLE main.user (
     id              uuid PRIMARY KEY,
-    email           varchar,
-    password        varchar,
-    firebase_id     varchar
+    twitch_id       varchar
 );
 
-CREATE INDEX ON main.user(email);
+CREATE INDEX ON main.user(twitch_id);
 
 CREATE TABLE main.role (
     id              uuid PRIMARY KEY,

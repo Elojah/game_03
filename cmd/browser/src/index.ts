@@ -1,5 +1,5 @@
 import * as Phaser from "phaser";
-import {Home} from "@cmd/browser/src/scene/home";
+import {Login} from "@cmd/browser/src/scene/login";
 
 function main() {
 
@@ -17,13 +17,13 @@ function main() {
   };
 
   const g = new Phaser.Game(config)
-  g.scene.add('home', new Home({
-    key: 'home',
+  g.scene.add('login', new Login({
+    key: 'login',
     active: true,
     visible: true,
   }))
 
-  g.scene.start('home')
+  g.scene.start('login')
 };
 
 main();
