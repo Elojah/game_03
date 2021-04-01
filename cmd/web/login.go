@@ -10,6 +10,7 @@ import (
 func (h handler) login(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	_ = ctx
+
 	logger := log.With().Str("route", r.URL.EscapedPath()).Str("method", r.Method).Str("address", r.RemoteAddr).Logger()
 
 	id := ulid.NewID()
