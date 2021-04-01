@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 
+	"github.com/elojah/go-grpc"
 	"github.com/elojah/go-http"
 	"github.com/ilyakaznacheev/cleanenv"
 	"golang.org/x/oauth2"
@@ -15,8 +16,9 @@ type web struct {
 }
 
 type config struct {
-	HTTP http.Config `json:"http"`
-	Web  web         `json:"web"`
+	HTTP      http.Config       `json:"http"`
+	Web       web               `json:"web"`
+	APIClient grpc.ConfigClient `json:"api_client"`
 }
 
 // Populate populates config object reading file and env.
