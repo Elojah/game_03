@@ -1,9 +1,4 @@
 import {Scene} from "phaser";
-import {Home} from "@cmd/browser/src/scene/home";
-import {grpc} from "@improbable-eng/grpc-web";
-
-import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty_pb";
-import * as API from "@cmd/api/grpc/api_pb_service";
 
 export class Login extends Scene {
 
