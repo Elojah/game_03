@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/elojah/game_03/pkg/twitch"
+	"golang.org/x/oauth2"
 )
 
 var _ twitch.App = (*App)(nil)
@@ -11,21 +12,21 @@ var _ twitch.App = (*App)(nil)
 type App struct {
 	twitch.Client
 
-	clientID string
+	config oauth2.Config
 }
 
-func (a *App) Dial(ctx context.Context, cfg twitch.Config) error {
-	a.clientID = cfg.ClientID
+func (a *App) Dial(ctx context.Context, cfg oauth2.Config) error {
+	a.config = cfg
 
 	return nil
 }
 
 func (a *App) Close(ctx context.Context) error {
-	a.clientID = ""
+	a.config = oauth2.Config{}
 
 	return nil
 }
 
-func (a App) ClientID() string {
-	return a.clientID
+func (a App) OAuth() oauth2.Config {
+	return a.config
 }

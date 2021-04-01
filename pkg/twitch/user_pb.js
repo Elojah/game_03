@@ -70,7 +70,16 @@ proto.twitch.User.prototype.toObject = function(opt_includeInstance) {
  */
 proto.twitch.User.toObject = function(includeInstance, msg) {
   var f, obj = {
-    id: jspb.Message.getFieldWithDefault(msg, 1, "")
+    id: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    login: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    displayname: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    broadcastertype: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    description: jspb.Message.getFieldWithDefault(msg, 5, ""),
+    profileimageurl: jspb.Message.getFieldWithDefault(msg, 6, ""),
+    offlineimageurl: jspb.Message.getFieldWithDefault(msg, 7, ""),
+    viewcount: jspb.Message.getFieldWithDefault(msg, 8, 0),
+    email: jspb.Message.getFieldWithDefault(msg, 9, ""),
+    createdat: jspb.Message.getFieldWithDefault(msg, 10, "")
   };
 
   if (includeInstance) {
@@ -111,6 +120,42 @@ proto.twitch.User.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setId(value);
       break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setLogin(value);
+      break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setDisplayname(value);
+      break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setBroadcastertype(value);
+      break;
+    case 5:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setDescription(value);
+      break;
+    case 6:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setProfileimageurl(value);
+      break;
+    case 7:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setOfflineimageurl(value);
+      break;
+    case 8:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setViewcount(value);
+      break;
+    case 9:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setEmail(value);
+      break;
+    case 10:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setCreatedat(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -147,6 +192,69 @@ proto.twitch.User.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getLogin();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+  f = message.getDisplayname();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
+  f = message.getBroadcastertype();
+  if (f.length > 0) {
+    writer.writeString(
+      4,
+      f
+    );
+  }
+  f = message.getDescription();
+  if (f.length > 0) {
+    writer.writeString(
+      5,
+      f
+    );
+  }
+  f = message.getProfileimageurl();
+  if (f.length > 0) {
+    writer.writeString(
+      6,
+      f
+    );
+  }
+  f = message.getOfflineimageurl();
+  if (f.length > 0) {
+    writer.writeString(
+      7,
+      f
+    );
+  }
+  f = message.getViewcount();
+  if (f !== 0) {
+    writer.writeInt64(
+      8,
+      f
+    );
+  }
+  f = message.getEmail();
+  if (f.length > 0) {
+    writer.writeString(
+      9,
+      f
+    );
+  }
+  f = message.getCreatedat();
+  if (f.length > 0) {
+    writer.writeString(
+      10,
+      f
+    );
+  }
 };
 
 
@@ -165,6 +273,168 @@ proto.twitch.User.prototype.getId = function() {
  */
 proto.twitch.User.prototype.setId = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string Login = 2;
+ * @return {string}
+ */
+proto.twitch.User.prototype.getLogin = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.twitch.User} returns this
+ */
+proto.twitch.User.prototype.setLogin = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional string DisplayName = 3;
+ * @return {string}
+ */
+proto.twitch.User.prototype.getDisplayname = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.twitch.User} returns this
+ */
+proto.twitch.User.prototype.setDisplayname = function(value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+/**
+ * optional string BroadcasterType = 4;
+ * @return {string}
+ */
+proto.twitch.User.prototype.getBroadcastertype = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.twitch.User} returns this
+ */
+proto.twitch.User.prototype.setBroadcastertype = function(value) {
+  return jspb.Message.setProto3StringField(this, 4, value);
+};
+
+
+/**
+ * optional string Description = 5;
+ * @return {string}
+ */
+proto.twitch.User.prototype.getDescription = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.twitch.User} returns this
+ */
+proto.twitch.User.prototype.setDescription = function(value) {
+  return jspb.Message.setProto3StringField(this, 5, value);
+};
+
+
+/**
+ * optional string ProfileImageURL = 6;
+ * @return {string}
+ */
+proto.twitch.User.prototype.getProfileimageurl = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.twitch.User} returns this
+ */
+proto.twitch.User.prototype.setProfileimageurl = function(value) {
+  return jspb.Message.setProto3StringField(this, 6, value);
+};
+
+
+/**
+ * optional string OfflineImageURL = 7;
+ * @return {string}
+ */
+proto.twitch.User.prototype.getOfflineimageurl = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.twitch.User} returns this
+ */
+proto.twitch.User.prototype.setOfflineimageurl = function(value) {
+  return jspb.Message.setProto3StringField(this, 7, value);
+};
+
+
+/**
+ * optional int64 ViewCount = 8;
+ * @return {number}
+ */
+proto.twitch.User.prototype.getViewcount = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.twitch.User} returns this
+ */
+proto.twitch.User.prototype.setViewcount = function(value) {
+  return jspb.Message.setProto3IntField(this, 8, value);
+};
+
+
+/**
+ * optional string Email = 9;
+ * @return {string}
+ */
+proto.twitch.User.prototype.getEmail = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.twitch.User} returns this
+ */
+proto.twitch.User.prototype.setEmail = function(value) {
+  return jspb.Message.setProto3StringField(this, 9, value);
+};
+
+
+/**
+ * optional string CreatedAt = 10;
+ * @return {string}
+ */
+proto.twitch.User.prototype.getCreatedat = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 10, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.twitch.User} returns this
+ */
+proto.twitch.User.prototype.setCreatedat = function(value) {
+  return jspb.Message.setProto3StringField(this, 10, value);
 };
 
 

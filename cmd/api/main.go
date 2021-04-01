@@ -131,7 +131,7 @@ func run(prog string, filename string) {
 
 	// init handler
 	h := handler{
-		twitch: &twitchapp.App{},
+		twitch: twitchApp,
 	}
 
 	// init grpc api server
