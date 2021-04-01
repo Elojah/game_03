@@ -17,6 +17,6 @@ type Filter struct {
 }
 
 type Store interface {
-	Upsert(context.Context, U) error
+	Insert(context.Context, U) error
 	Fetch(context.Context, Filter) (U, error)
 }

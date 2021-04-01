@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"fmt"
 
+	"github.com/elojah/game_03/pkg/errors"
+	"github.com/elojah/game_03/pkg/twitch"
 	"github.com/elojah/game_03/pkg/ulid"
-	"github.com/elojah/game_03/pkg/user"
 	"github.com/gogo/protobuf/types"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc/codes"
@@ -14,27 +16,37 @@ import (
 func (h *handler) Login(ctx context.Context, req *types.StringValue) (*types.StringValue, error) {
 	logger := log.With().Str("method", "login").Logger()
 
-	// #Fetch twitch ID
-	twitchID := "todo"
+	if req == nil {
+		return &types.StringValue{}, errors.ErrNullRequest{}
+	}
 
-	// Fetch or create user
-	u, err := h.user.FetchWithUpsert(ctx, twitchID)
-	if err != nil {
+	// Fetch twitch user
+	if err := h.twitch.GetUsers(
+		ctx,
+		twitch.Auth{
+			Token:    req.Value,
+			ClientID: h.twitch.ClientID(),
+		},
+		twitch.UserFilter{},
+		func(u twitch.User) error {
+			fmt.Println(u)
+
+			return nil
+		},
+	); err != nil {
 		logger.Error().Err(err).Msg("failed to fetch user")
 
 		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
-	_ = u
-
-	// Create new session
+	// // Create new session
 	id := ulid.NewID()
 
-	if err := h.user.UpsertSession(ctx, user.Session{ID: id}); err != nil {
-		logger.Error().Err(err).Msg("failed to create new session")
+	// if err := h.user.UpsertSession(ctx, user.Session{ID: id}); err != nil {
+	// 	logger.Error().Err(err).Msg("failed to create new session")
 
-		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
-	}
+	// 	return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+	// }
 
 	logger.Info().Msg("success")
 

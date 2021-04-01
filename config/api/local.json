@@ -20,11 +20,13 @@
     },
     "redis": {
         "addr": "localhost:6379",
-        "password": "secret",
         "db": 0,
         "lock_expire_unit": 100
     },
     "firebase": {
         "credentials": "config/api/firebase.json"
+    },
+    "twitch": {
+        "id_client": "tkbw39u7oya9uj665uabeu3ei4sai5"
     }
 }

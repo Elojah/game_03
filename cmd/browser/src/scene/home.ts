@@ -2,6 +2,7 @@ import {Scene} from "phaser";
 import {grpc} from "@improbable-eng/grpc-web";
 
 import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty_pb";
+import * as google_protobuf_wrappers_pb from "google-protobuf/google/protobuf/wrappers_pb";
 import * as API from "@cmd/api/grpc/api_pb_service";
 
 export class Home extends Scene {
@@ -26,34 +27,37 @@ export class Home extends Scene {
 
             return
         }
+
         this.add.image(0, 0, 'home_background_01').setOrigin(0)
-        this.login()
+        this.login(sessionStorage.getItem('oauth-token'))
     }
     update() {}
     ping() {
         const req = new google_protobuf_empty_pb.Empty();
         grpc.unary(API.API.Ping, {
             request: req,
-            host: "https://localhost:8081",
+            host: 'https://localhost:8081',
             onEnd: res => {
                 const { status, statusMessage, headers, message, trailers } = res;
                 if (status !== grpc.Code.OK || !message) {
-                    console.log("grpc error: ", status, statusMessage, headers, message, trailers)
+                    console.log('grpc error: ', status, statusMessage, headers, message, trailers)
                     return
                 }
                 // Send a validate thing back
             }
         });
     }    
-    login() {
-        const req = new google_protobuf_empty_pb.Empty();
+    login(token: string | null) {
+        const req = new google_protobuf_wrappers_pb.StringValue();
+        req.setValue(token == null ? '' : token.trim())
+
         grpc.unary(API.API.Login, {
             request: req,
-            host: "https://localhost:8081",
+            host: 'https://localhost:8081',
             onEnd: res => {
                 const { status, statusMessage, headers, message, trailers } = res;
                 if (status !== grpc.Code.OK || !message) {
-                    console.log("grpc error: ", status, statusMessage, headers, message, trailers)
+                    console.log('grpc error: ', status, statusMessage, headers, message, trailers)
                     return
                 }
                 // Send a validate thing back

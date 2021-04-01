@@ -51,13 +51,12 @@ func (f filter) where() (string, []interface{}) {
 	b.WriteString(";")
 
 	return b.String(), args
-
 }
 
-func Insert(ctx context.Context, u user.U) error {
+func (s Store) Insert(ctx context.Context, u user.U) error {
 	return nil
 }
 
-func Fetch(ctx context.Context, f user.Filter) (user.U, error) {
+func (s Store) Fetch(ctx context.Context, f user.Filter) (user.U, error) {
 	return user.U{}, nil
 }

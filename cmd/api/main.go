@@ -3,12 +3,15 @@ package main
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
 	apigrpc "github.com/elojah/game_03/cmd/api/grpc"
+	twitchapp "github.com/elojah/game_03/pkg/twitch/app"
+	twitchhttp "github.com/elojah/game_03/pkg/twitch/http"
 	"github.com/elojah/go-firebase"
 	"github.com/elojah/go-grpcweb"
 	ghttp "github.com/elojah/go-http"
@@ -112,8 +115,24 @@ func run(prog string, filename string) {
 
 	cs = append(cs, &https)
 
+	// init domain
+	twitchApp := twitchapp.App{
+		Client: &twitchhttp.Client{
+			Client: http.DefaultClient,
+		},
+	}
+	if err := twitchApp.Dial(ctx, cfg.Twitch); err != nil {
+		log.Error().Err(err).Msg("failed to dial twitch client")
+
+		return
+	}
+
+	cs = append(cs, &twitchApp)
+
 	// init handler
-	h := handler{}
+	h := handler{
+		twitch: &twitchapp.App{},
+	}
 
 	// init grpc api server
 	grpcwapi := grpcweb.Service{}
