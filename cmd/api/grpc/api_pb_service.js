@@ -3,6 +3,7 @@
 
 var github_com_elojah_game_03_cmd_api_grpc_api_pb = require("../../../../../../github.com/elojah/game_03/cmd/api/grpc/api_pb");
 var google_protobuf_empty_pb = require("google-protobuf/google/protobuf/empty_pb");
+var google_protobuf_wrappers_pb = require("google-protobuf/google/protobuf/wrappers_pb");
 var grpc = require("@improbable-eng/grpc-web").grpc;
 
 var API = (function () {
@@ -16,8 +17,8 @@ API.Login = {
   service: API,
   requestStream: false,
   responseStream: false,
-  requestType: google_protobuf_empty_pb.Empty,
-  responseType: google_protobuf_empty_pb.Empty
+  requestType: google_protobuf_wrappers_pb.StringValue,
+  responseType: google_protobuf_wrappers_pb.StringValue
 };
 
 API.Ping = {
