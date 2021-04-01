@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
+	"github.com/gogo/protobuf/types"
 	"github.com/rs/zerolog/log"
 )
 
@@ -23,7 +25,7 @@ func (h handler) redirect(w http.ResponseWriter, r *http.Request) {
 	challenge := session.Flashes("oauth-state-callback")
 	state := r.FormValue("state")
 
-	if len(challenge) < 1 && state == "" {
+	if len(challenge) < 1 || state == "" {
 		http.Error(w, "missing state challenge", http.StatusBadRequest)
 
 		return
@@ -42,6 +44,16 @@ func (h handler) redirect(w http.ResponseWriter, r *http.Request) {
 
 	// add the oauth token to session
 	session.Values["oauth-token"] = token
+
+	at, err := h.APIClient.Login(ctx, &types.StringValue{Value: token.AccessToken})
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "failed to login", http.StatusInternalServerError)
+
+		return
+	}
+
+	fmt.Println(at)
 
 	logger.Info().Msg("success")
 
