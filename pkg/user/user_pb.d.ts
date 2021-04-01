@@ -10,13 +10,8 @@ export class U extends jspb.Message {
   getId_asB64(): string;
   setId(value: Uint8Array | string): void;
 
-  getEmail(): string;
-  setEmail(value: string): void;
-
-  getPassword(): Uint8Array | string;
-  getPassword_asU8(): Uint8Array;
-  getPassword_asB64(): string;
-  setPassword(value: Uint8Array | string): void;
+  getTwitchid(): string;
+  setTwitchid(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): U.AsObject;
@@ -31,8 +26,7 @@ export class U extends jspb.Message {
 export namespace U {
   export type AsObject = {
     id: Uint8Array | string,
-    email: string,
-    password: Uint8Array | string,
+    twitchid: string,
   }
 }
 

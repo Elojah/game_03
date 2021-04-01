@@ -3,6 +3,7 @@
 
 import * as github_com_elojah_game_03_cmd_api_grpc_api_pb from "../../../../../../github.com/elojah/game_03/cmd/api/grpc/api_pb";
 import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty_pb";
+import * as google_protobuf_wrappers_pb from "google-protobuf/google/protobuf/wrappers_pb";
 import {grpc} from "@improbable-eng/grpc-web";
 
 type APILogin = {
@@ -10,8 +11,8 @@ type APILogin = {
   readonly service: typeof API;
   readonly requestStream: false;
   readonly responseStream: false;
-  readonly requestType: typeof google_protobuf_empty_pb.Empty;
-  readonly responseType: typeof google_protobuf_empty_pb.Empty;
+  readonly requestType: typeof google_protobuf_wrappers_pb.StringValue;
+  readonly responseType: typeof google_protobuf_wrappers_pb.StringValue;
 };
 
 type APIPing = {
@@ -62,13 +63,13 @@ export class APIClient {
 
   constructor(serviceHost: string, options?: grpc.RpcOptions);
   login(
-    requestMessage: google_protobuf_empty_pb.Empty,
+    requestMessage: google_protobuf_wrappers_pb.StringValue,
     metadata: grpc.Metadata,
-    callback: (error: ServiceError|null, responseMessage: google_protobuf_empty_pb.Empty|null) => void
+    callback: (error: ServiceError|null, responseMessage: google_protobuf_wrappers_pb.StringValue|null) => void
   ): UnaryResponse;
   login(
-    requestMessage: google_protobuf_empty_pb.Empty,
-    callback: (error: ServiceError|null, responseMessage: google_protobuf_empty_pb.Empty|null) => void
+    requestMessage: google_protobuf_wrappers_pb.StringValue,
+    callback: (error: ServiceError|null, responseMessage: google_protobuf_wrappers_pb.StringValue|null) => void
   ): UnaryResponse;
   ping(
     requestMessage: google_protobuf_empty_pb.Empty,

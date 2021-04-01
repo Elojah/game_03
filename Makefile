@@ -72,10 +72,10 @@ browser:  ## Build browser content
 	$Q yes | cp -rf cmd/$(BROWSER)/dist/. bin/static/
 
 # Utils
-.PHONY: proto-go proto-swift
+.PHONY: proto-go proto-ts
 proto-go:    PB_LANG = GO
-proto-swift: PB_LANG = SWIFT
-proto-go proto-swift: ## Regenerate protobuf files
+proto-ts:    PB_LANG = TS
+proto-go proto-ts: ## Regenerate protobuf files
 	$(info $(M) running protobuf…) @
 	$(info $(M) generate utils…) @
 	$Q $(GEN_PB_$(PB_LANG)) github.com/gogo/protobuf/gogoproto/gogo.proto
