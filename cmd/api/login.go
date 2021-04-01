@@ -3,10 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/elojah/game_03/pkg/errors"
-	"github.com/elojah/game_03/pkg/twitch"
+	gtwitch "github.com/elojah/game_03/pkg/twitch"
 	"github.com/elojah/game_03/pkg/ulid"
 	"github.com/gogo/protobuf/types"
 	"github.com/rs/zerolog/log"
@@ -21,23 +20,15 @@ func (h *handler) Login(ctx context.Context, req *types.StringValue) (*types.Str
 		return &types.StringValue{}, status.New(codes.Internal, errors.ErrNullRequest{}.Error()).Err()
 	}
 
-	// Fetch twitch auth token
-	token, err := h.twitch.GetToken(ctx, strings.TrimPrefix(req.Value, "oauth-session="), h.twitch.OAuth())
-	if err != nil {
-		logger.Error().Err(err).Msg("failed to get token")
-
-		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
-	}
-
 	// Fetch twitch user
 	if err := h.twitch.GetUsers(
 		ctx,
-		twitch.Auth{
-			Token:    token.AccessToken,
+		gtwitch.Auth{
+			Token:    req.Value,
 			ClientID: h.twitch.OAuth().ClientID,
 		},
-		twitch.UserFilter{},
-		func(u twitch.User) error {
+		gtwitch.UserFilter{},
+		func(u gtwitch.User) error {
 			fmt.Println(u)
 
 			return nil

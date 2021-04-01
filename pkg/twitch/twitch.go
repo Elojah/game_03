@@ -12,9 +12,6 @@ type Auth struct {
 }
 
 type Client interface {
-	// Token
-	GetToken(context.Context, string, oauth2.Config) (Token, error)
-
 	// User
 	GetUsers(context.Context, Auth, UserFilter, func(User) error) error
 }

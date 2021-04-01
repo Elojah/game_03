@@ -28,7 +28,7 @@ export class Home extends Scene {
         }
 
         this.add.image(0, 0, 'home_background_01').setOrigin(0)
-        this.login(document.cookie)
+        this.login(sessionStorage.getItem('oauth-token'))
     }
     update() {}
     ping() {
@@ -47,6 +47,7 @@ export class Home extends Scene {
         });
     }    
     login(token: string | null) {
+        console.log('token:', token)
         const req = new google_protobuf_wrappers_pb.StringValue();
         req.setValue(token == null ? '' : token.trim())
 

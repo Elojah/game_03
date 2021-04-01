@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/gob"
 	"fmt"
 	"net/http"
 	"os"
@@ -13,6 +14,7 @@ import (
 	glog "github.com/elojah/go-log"
 	"github.com/hashicorp/go-multierror"
 	"github.com/rs/zerolog/log"
+	"golang.org/x/oauth2"
 	_ "google.golang.org/grpc/encoding/gzip"
 )
 
@@ -91,6 +93,8 @@ func run(prog string, filename string) {
 	https.Router.Path("/redirect").HandlerFunc(h.redirect)
 	// Serve static dir
 	https.Router.PathPrefix("/").Handler(http.FileServer(http.Dir(cfg.Web.Static)))
+
+	gob.Register(oauth2.Token{})
 
 	// serve http web
 	go func() {
