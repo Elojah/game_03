@@ -1,7 +1,8 @@
 {
     "http": {
         "hostname": "localhost",
-        "port": "8081"
+        "port": "8081",
+        "allowed_origins": ["http://localhost:*"]
     },
     "grpcweb": {
         "connection_timeout": 5,
@@ -27,6 +28,9 @@
         "credentials": "config/api/firebase.json"
     },
     "twitch": {
-        "id_client": "tkbw39u7oya9uj665uabeu3ei4sai5"
+        "ClientID": "tkbw39u7oya9uj665uabeu3ei4sai5",
+        "ClientSecret": "nbungya4pwsikxlwgwz8ocfqqyu3rx",
+        "Scopes": ["user:edit"],
+        "RedirectURL": "http://localhost:8080/redirect"
     }
 }

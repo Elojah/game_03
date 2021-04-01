@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/twitch"
@@ -17,15 +18,23 @@ func (h *handler) Login(ctx context.Context, req *types.StringValue) (*types.Str
 	logger := log.With().Str("method", "login").Logger()
 
 	if req == nil {
-		return &types.StringValue{}, errors.ErrNullRequest{}
+		return &types.StringValue{}, status.New(codes.Internal, errors.ErrNullRequest{}.Error()).Err()
+	}
+
+	// Fetch twitch auth token
+	token, err := h.twitch.GetToken(ctx, strings.TrimPrefix(req.Value, "oauth-session="), h.twitch.OAuth())
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to get token")
+
+		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
 	// Fetch twitch user
 	if err := h.twitch.GetUsers(
 		ctx,
 		twitch.Auth{
-			Token:    req.Value,
-			ClientID: h.twitch.ClientID(),
+			Token:    token.AccessToken,
+			ClientID: h.twitch.OAuth().ClientID,
 		},
 		twitch.UserFilter{},
 		func(u twitch.User) error {
@@ -34,12 +43,12 @@ func (h *handler) Login(ctx context.Context, req *types.StringValue) (*types.Str
 			return nil
 		},
 	); err != nil {
-		logger.Error().Err(err).Msg("failed to fetch user")
+		logger.Error().Err(err).Msg("failed to get users")
 
 		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
-	// // Create new session
+	// Create new session
 	id := ulid.NewID()
 
 	// if err := h.user.UpsertSession(ctx, user.Session{ID: id}); err != nil {

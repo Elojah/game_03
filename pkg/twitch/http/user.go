@@ -17,7 +17,7 @@ const (
 type auth twitch.Auth
 
 func (a auth) set(req *http.Request) {
-	req.Header.Set("Authorization", "Bearer "+a.Token)
+	req.Header.Set("Authorization", "OAuth "+a.Token)
 	req.Header.Set("Client-Id", a.ClientID)
 }
 
@@ -37,7 +37,7 @@ func (c Client) GetUsers(
 		return err
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, b.ResolveReference(r).String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, b.ResolveReference(r).String(), nil)
 	if err != nil {
 		return err
 	}

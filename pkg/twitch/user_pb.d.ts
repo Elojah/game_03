@@ -8,6 +8,33 @@ export class User extends jspb.Message {
   getId(): string;
   setId(value: string): void;
 
+  getLogin(): string;
+  setLogin(value: string): void;
+
+  getDisplayname(): string;
+  setDisplayname(value: string): void;
+
+  getBroadcastertype(): string;
+  setBroadcastertype(value: string): void;
+
+  getDescription(): string;
+  setDescription(value: string): void;
+
+  getProfileimageurl(): string;
+  setProfileimageurl(value: string): void;
+
+  getOfflineimageurl(): string;
+  setOfflineimageurl(value: string): void;
+
+  getViewcount(): number;
+  setViewcount(value: number): void;
+
+  getEmail(): string;
+  setEmail(value: string): void;
+
+  getCreatedat(): string;
+  setCreatedat(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): User.AsObject;
   static toObject(includeInstance: boolean, msg: User): User.AsObject;
@@ -21,6 +48,15 @@ export class User extends jspb.Message {
 export namespace User {
   export type AsObject = {
     id: string,
+    login: string,
+    displayname: string,
+    broadcastertype: string,
+    description: string,
+    profileimageurl: string,
+    offlineimageurl: string,
+    viewcount: number,
+    email: string,
+    createdat: string,
   }
 }
 

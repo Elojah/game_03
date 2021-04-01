@@ -14,13 +14,12 @@ export class Home extends Scene {
     }
     preload() {
         this.load.html('login', 'html/login.html')
-        this.load.image('home_background_00', 'img/home_background_00.png')
         this.load.image('home_background_01', 'img/home_background_01.png')
     }
     create() {
         if (!document.cookie.startsWith("oauth-session=")) {
             this.scene.transition({
-                target: "home",
+                target: "login",
                 duration: 1000,
                 remove: true,
             })            
@@ -29,14 +28,14 @@ export class Home extends Scene {
         }
 
         this.add.image(0, 0, 'home_background_01').setOrigin(0)
-        this.login(sessionStorage.getItem('oauth-token'))
+        this.login(document.cookie)
     }
     update() {}
     ping() {
         const req = new google_protobuf_empty_pb.Empty();
         grpc.unary(API.API.Ping, {
             request: req,
-            host: 'https://localhost:8081',
+            host: 'http://localhost:8081',
             onEnd: res => {
                 const { status, statusMessage, headers, message, trailers } = res;
                 if (status !== grpc.Code.OK || !message) {
@@ -53,7 +52,7 @@ export class Home extends Scene {
 
         grpc.unary(API.API.Login, {
             request: req,
-            host: 'https://localhost:8081',
+            host: 'http://localhost:8081',
             onEnd: res => {
                 const { status, statusMessage, headers, message, trailers } = res;
                 if (status !== grpc.Code.OK || !message) {

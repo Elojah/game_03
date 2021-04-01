@@ -31,34 +31,4 @@ export class Login extends Scene {
         this.HTMLlogin = this.add.dom(60, 120).createFromCache('login').setOrigin(0)
     }
     update() {}
-    ping() {
-        const req = new google_protobuf_empty_pb.Empty();
-        grpc.unary(API.API.Ping, {
-            request: req,
-            host: "https://localhost:8081",
-            onEnd: res => {
-                const { status, statusMessage, headers, message, trailers } = res;
-                if (status !== grpc.Code.OK || !message) {
-                    console.log("grpc error: ", status, statusMessage, headers, message, trailers)
-                    return
-                }
-                // Send a validate thing back
-            }
-        });
-    }    
-    login() {
-        const req = new google_protobuf_empty_pb.Empty();
-        grpc.unary(API.API.Login, {
-            request: req,
-            host: "https://localhost:8081",
-            onEnd: res => {
-                const { status, statusMessage, headers, message, trailers } = res;
-                if (status !== grpc.Code.OK || !message) {
-                    console.log("grpc error: ", status, statusMessage, headers, message, trailers)
-                    return
-                }
-                // Send a validate thing back
-            }
-        });
-    }    
 }
