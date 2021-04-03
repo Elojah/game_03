@@ -2,8 +2,9 @@ package main
 
 import (
 	"context"
+	"errors"
 
-	"github.com/elojah/game_03/pkg/errors"
+	gerrors "github.com/elojah/game_03/pkg/errors"
 	gtwitch "github.com/elojah/game_03/pkg/twitch"
 	"github.com/elojah/game_03/pkg/ulid"
 	"github.com/elojah/game_03/pkg/user"
@@ -17,7 +18,7 @@ func (h *handler) Login(ctx context.Context, req *types.StringValue) (*types.Str
 	logger := log.With().Str("method", "login").Logger()
 
 	if req == nil {
-		return &types.StringValue{}, status.New(codes.Internal, errors.ErrNullRequest{}.Error()).Err()
+		return &types.StringValue{}, status.New(codes.Internal, gerrors.ErrNullRequest{}.Error()).Err()
 	}
 
 	// Fetch twitch user
@@ -41,17 +42,32 @@ func (h *handler) Login(ctx context.Context, req *types.StringValue) (*types.Str
 		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
-	// Create new session
-	id := ulid.NewID()
-
-	_, err := h.user.Fetch(ctx, user.Filter{TwitchID: &tu.ID})
+	// #Check if user exist
+	u, err := h.user.Fetch(ctx, user.Filter{TwitchID: &tu.ID})
 	if err != nil {
-		logger.Error().Err(err).Msg("failed to fetch user")
+		if !errors.As(err, &gerrors.ErrNotFound{}) {
+			logger.Error().Err(err).Msg("failed to fetch user")
+
+			return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+		}
+	} else {
+		logger.Info().Msg("success")
+
+		return &types.StringValue{Value: u.ID.String()}, nil
+	}
+
+	// #Create user
+	u = user.U{
+		ID:       ulid.NewID(),
+		TwitchID: tu.ID,
+	}
+	if err := h.user.Insert(ctx, u); err != nil {
+		logger.Error().Err(err).Msg("failed to create user")
 
 		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
 	logger.Info().Msg("success")
 
-	return &types.StringValue{Value: id.String()}, nil
+	return &types.StringValue{Value: u.ID.String()}, nil
 }

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/gocql/gocql"
 	"github.com/oklog/ulid"
 )
 
@@ -14,6 +15,18 @@ type ID ulid.ULID
 // NewID returns a new random ID.
 func NewID() ID {
 	return ID(ulid.MustNew(ulid.Timestamp(time.Now()), rand.Reader))
+}
+
+// MarshalCQL override marshalling to fit CQL UUID.
+func (id ID) MarshalCQL(info gocql.TypeInfo) ([]byte, error) {
+	raw, err := gocql.UUIDFromBytes(id.Bytes())
+
+	return raw.Bytes(), err
+}
+
+// UnmarshalCQL override unmarshalling to fit CQL UUID.
+func (id *ID) UnmarshalCQL(info gocql.TypeInfo, data []byte) error {
+	return id.Unmarshal(data)
 }
 
 // NewIDs returns a new array of random IDs.
