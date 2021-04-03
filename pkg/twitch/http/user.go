@@ -11,13 +11,13 @@ import (
 )
 
 const (
-	twitchURL = "https://api.twitch.tv/helix"
+	twitchURL = "https://api.twitch.tv"
 )
 
 type auth twitch.Auth
 
 func (a auth) set(req *http.Request) {
-	req.Header.Set("Authorization", "OAuth "+a.Token)
+	req.Header.Set("Authorization", "Bearer "+a.Token)
 	req.Header.Set("Client-Id", a.ClientID)
 }
 
@@ -32,7 +32,7 @@ func (c Client) GetUsers(
 		return err
 	}
 
-	r, err := url.Parse("/users")
+	r, err := url.Parse("/helix/users")
 	if err != nil {
 		return err
 	}

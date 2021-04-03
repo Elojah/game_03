@@ -12,7 +12,6 @@ import (
 	apigrpc "github.com/elojah/game_03/cmd/api/grpc"
 	twitchapp "github.com/elojah/game_03/pkg/twitch/app"
 	twitchhttp "github.com/elojah/game_03/pkg/twitch/http"
-	"github.com/elojah/go-firebase"
 	"github.com/elojah/go-grpcweb"
 	ghttp "github.com/elojah/go-http"
 	glog "github.com/elojah/go-log"
@@ -93,16 +92,6 @@ func run(prog string, filename string) {
 	}
 
 	cs = append(cs, &rediss)
-
-	// init firebase storage
-	fbs := firebase.Service{}
-	if err := fbs.Dial(ctx, cfg.Firebase); err != nil {
-		log.Error().Err(err).Msg("failed to dial firebase")
-
-		return
-	}
-
-	cs = append(cs, &fbs)
 
 	// init http api server
 	https := ghttp.Service{}

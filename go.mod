@@ -3,7 +3,6 @@ module github.com/elojah/game_03
 go 1.15
 
 require (
-	github.com/elojah/go-firebase v0.0.0-20201121123814-e8558430c57f
 	github.com/elojah/go-grpc v0.0.0-20201121123916-be372e8b71f9
 	github.com/elojah/go-grpcweb v0.0.0-20201122135700-fcd712e39004
 	github.com/elojah/go-http v0.0.0-20210401202257-6d25088a2ea7
@@ -21,5 +20,7 @@ require (
 	github.com/rs/zerolog v1.20.0
 	github.com/scylladb/gocqlx v1.5.0
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
+	golang.org/x/sys v0.0.0-20201119102817-f84b799fce68 // indirect
+	google.golang.org/genproto v0.0.0-20200904004341-0bd0a958aa1d // indirect
 	google.golang.org/grpc v1.33.2
 )

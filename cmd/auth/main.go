@@ -106,7 +106,7 @@ func run(prog string, filename string) {
 	grpcauth := ggrpc.Service{}
 	grpcauth.Register = func() {
 		reflection.Register(grpcauth.Server)
-		authgrpc.RegisterAdminServer(grpcauth.Server, &h)
+		authgrpc.RegisterAuthServer(grpcauth.Server, &h)
 	}
 
 	if err := grpcauth.Dial(ctx, cfg.GRPC); err != nil {

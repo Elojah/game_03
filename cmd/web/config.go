@@ -16,9 +16,9 @@ type web struct {
 }
 
 type config struct {
-	HTTP      http.Config       `json:"http"`
-	Web       web               `json:"web"`
-	APIClient grpc.ConfigClient `json:"api_client"`
+	HTTP       http.Config       `json:"http"`
+	Web        web               `json:"web"`
+	AuthClient grpc.ConfigClient `json:"auth_client"`
 }
 
 // Populate populates config object reading file and env.
