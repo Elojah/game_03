@@ -22,6 +22,7 @@ M          = $(shell printf "\033[0;35m▶\033[0m")
 GO_PACKAGE        = github.com/elojah/game_03
 API               = api
 ADMIN             = admin
+AUTH              = auth
 WEB               = web
 BROWSER           = browser
 
@@ -32,7 +33,7 @@ GEN_PB_SERVICE_GO  = protoc -I=$(GOPATH)/src --gogoslick_out=plugins=grpc,Mgoogl
 GEN_PB_SERVICE_TS  = protoc -I=$(GOPATH)/src --plugin=protoc-gen-ts=$(PROTOC_GEN_TS) --js_out=import_style=commonjs,binary:$(GOPATH)/src --ts_out=service=grpc-web:$(GOPATH)/src
 
 .PHONY: all
-all: api admin web
+all: api admin auth web
 
 .PHONY: api
 api:  ## Build api binary
@@ -53,6 +54,16 @@ admin:  ## Build admin binary
 		-ldflags '-X main.version=$(VERSION)' \
 		-o ../../bin/$(PACKAGE)_$(ADMIN)_$(VERSION)
 	$Q cp bin/$(PACKAGE)_$(ADMIN)_$(VERSION) bin/$(PACKAGE)_$(ADMIN)
+
+.PHONY: auth
+auth:  ## Build auth binary
+	$(info $(M) building executable auth…) @
+	$Q cd cmd/$(AUTH) && $(GO) build \
+		-mod=readonly \
+		-tags release \
+		-ldflags '-X main.version=$(VERSION)' \
+		-o ../../bin/$(PACKAGE)_$(AUTH)_$(VERSION)
+	$Q cp bin/$(PACKAGE)_$(AUTH)_$(VERSION) bin/$(PACKAGE)_$(AUTH)
 
 .PHONY: web
 web: ## Build web binary
@@ -94,6 +105,7 @@ proto-go proto-ts: ## Regenerate protobuf files
 	$(info $(M) generate services…) @
 	$Q $(GEN_PB_SERVICE_$(PB_LANG)) $(GO_PACKAGE)/cmd/$(API)/grpc/$(API).proto
 	$Q $(GEN_PB_SERVICE_$(PB_LANG)) $(GO_PACKAGE)/cmd/$(ADMIN)/grpc/$(ADMIN).proto
+	$Q $(GEN_PB_SERVICE_$(PB_LANG)) $(GO_PACKAGE)/cmd/$(AUTH)/grpc/$(AUTH).proto
 
 # Vendor
 .PHONY: vendor
