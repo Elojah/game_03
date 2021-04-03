@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gogo/protobuf/types"
@@ -12,6 +11,7 @@ func (h handler) redirect(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	logger := log.With().Str("route", r.URL.EscapedPath()).Str("method", r.Method).Str("address", r.RemoteAddr).Logger()
 
+	// #Fetch session
 	session, err := h.CookieStore.Get(r, "oauth-session")
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to get oauth session")
@@ -20,6 +20,7 @@ func (h handler) redirect(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// #Check session
 	challenge := session.Flashes("oauth-state-callback")
 	state := r.FormValue("state")
 
@@ -33,6 +34,7 @@ func (h handler) redirect(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// #Fetch token
 	token, err := h.Config.Exchange(ctx, r.FormValue("code"))
 	if err != nil {
 		logger.Error().Err(err).Msg("invalid oauth state")
@@ -41,22 +43,30 @@ func (h handler) redirect(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// add the oauth token to session
-	session.Values["oauth-token"] = token
-
-	if err := session.Save(r, w); err != nil {
-		logger.Error().Err(err).Msg("failed to save session")
-	}
-
+	// #Fetch game token
 	at, err := h.AuthClient.Login(ctx, &types.StringValue{Value: token.AccessToken})
 	if err != nil {
-		fmt.Println(err)
 		http.Error(w, "failed to login", http.StatusInternalServerError)
 
 		return
 	}
 
-	fmt.Println(at)
+	// #Delete session
+	session.Options.MaxAge = -1
+
+	if err := session.Save(r, w); err != nil {
+		logger.Error().Err(err).Msg("failed to save session")
+	}
+
+	// #Save game token client-side
+	if at != nil {
+		http.SetCookie(w, &http.Cookie{
+			Name:     "auth-token",
+			Value:    at.Value,
+			SameSite: http.SameSiteStrictMode,
+			MaxAge:   3600, // nolint: gomnd
+		})
+	}
 
 	logger.Info().Msg("success")
 
