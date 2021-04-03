@@ -10,8 +10,6 @@ import (
 	"syscall"
 	"time"
 
-	apigrpc "github.com/elojah/game_03/cmd/api/grpc"
-	ggrpc "github.com/elojah/go-grpc"
 	ghttp "github.com/elojah/go-http"
 	glog "github.com/elojah/go-log"
 	"github.com/hashicorp/go-multierror"
@@ -82,18 +80,7 @@ func run(prog string, filename string) {
 
 	cs = append(cs, &https)
 
-	apiclient := ggrpc.Client{}
-	if err := apiclient.Dial(ctx, cfg.APIClient); err != nil {
-		log.Error().Err(err).Msg("failed to dial api")
-
-		return
-	}
-
-	cs = append(cs, &apiclient)
-
-	h := handler{
-		APIClient: apigrpc.NewAPIClient(apiclient.ClientConn),
-	}
+	h := handler{}
 
 	if err := h.Dial(ctx, cfg.Web); err != nil {
 		log.Error().Err(err).Msg("failed to dial web")
@@ -107,6 +94,7 @@ func run(prog string, filename string) {
 	// Serve static dir
 	https.Router.PathPrefix("/").Handler(http.FileServer(http.Dir(cfg.Web.Static)))
 
+	// Register for cookie session
 	gob.Register(oauth2.Token{})
 
 	// serve http web

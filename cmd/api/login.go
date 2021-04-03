@@ -20,6 +20,10 @@ func (h *handler) Login(ctx context.Context, req *types.StringValue) (*types.Str
 		return &types.StringValue{}, status.New(codes.Internal, errors.ErrNullRequest{}.Error()).Err()
 	}
 
+	fmt.Println(req.Value)
+
+	fmt.Println(ctx)
+
 	// Fetch twitch user
 	if err := h.twitch.GetUsers(
 		ctx,

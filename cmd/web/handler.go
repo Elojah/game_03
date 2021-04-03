@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 
-	"github.com/elojah/game_03/cmd/api/grpc"
 	"github.com/gorilla/sessions"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/twitch"
@@ -12,8 +11,6 @@ import (
 type handler struct {
 	oauth2.Config
 	*sessions.CookieStore
-
-	grpc.APIClient
 }
 
 func (h *handler) Dial(ctx context.Context, w web) error {
