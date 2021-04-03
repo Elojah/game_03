@@ -10,6 +10,7 @@ require (
 	github.com/elojah/go-redis v0.0.0-20201121123746-6614a554c9b4
 	github.com/elojah/go-scylla v0.0.0-20210403154215-8e1aca0226ec
 	github.com/go-redis/redis/v8 v8.4.0
+	github.com/gocql/gocql v0.0.0-20201024154641-5913df4d474e
 	github.com/gogo/protobuf v1.3.1
 	github.com/golang/protobuf v1.4.3
 	github.com/gorilla/sessions v1.2.1
