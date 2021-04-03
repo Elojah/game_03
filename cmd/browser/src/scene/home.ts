@@ -17,7 +17,7 @@ export class Home extends Scene {
         this.load.image('home_background_01', 'img/home_background_01.png')
     }
     create() {
-        if (!document.cookie.startsWith("oauth-session=")) {
+        if (!document.cookie.startsWith("auth-token=")) {
             this.scene.transition({
                 target: "login",
                 duration: 1000,
@@ -28,8 +28,8 @@ export class Home extends Scene {
         }
 
         this.add.image(0, 0, 'home_background_01').setOrigin(0)
-        console.log(sessionStorage.getItem('oauth-token'))
-        this.login(document.cookie)
+        this.registry.set('token', document.cookie.replace('auth-token=', ''))
+        document.cookie = ''
     }
     update() {}
     ping() {
@@ -47,21 +47,21 @@ export class Home extends Scene {
             }
         });
     }    
-    login(token: string | null) {
-        const req = new google_protobuf_wrappers_pb.StringValue();
-        req.setValue(token == null ? '' : token.trim())
+    // login(token: string | null) {
+    //     const req = new google_protobuf_wrappers_pb.StringValue();
+    //     req.setValue(token == null ? '' : token.trim())
 
-        grpc.unary(API.API.Login, {
-            request: req,
-            host: 'http://localhost:8081',
-            onEnd: res => {
-                const { status, statusMessage, headers, message, trailers } = res;
-                if (status !== grpc.Code.OK || !message) {
-                    console.log('grpc error: ', status, statusMessage, headers, message, trailers)
-                    return
-                }
-                // Send a validate thing back
-            }
-        });
-    }    
+    //     grpc.unary(API.API.Login, {
+    //         request: req,
+    //         host: 'http://localhost:8081',
+    //         onEnd: res => {
+    //             const { status, statusMessage, headers, message, trailers } = res;
+    //             if (status !== grpc.Code.OK || !message) {
+    //                 console.log('grpc error: ', status, statusMessage, headers, message, trailers)
+    //                 return
+    //             }
+    //             // Send a validate thing back
+    //         }
+    //     });
+    // }    
 }

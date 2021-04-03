@@ -12,7 +12,7 @@ export class Login extends Scene {
         this.load.image('home_background_00', 'img/home_background_00.png')
     }
     create() {
-        if (document.cookie.startsWith("oauth-session=")) {
+        if (document.cookie.startsWith("auth-token=")) {
             this.scene.transition({
                 target: "home",
                 duration: 1000,
