@@ -12,6 +12,8 @@ import (
 	authgrpc "github.com/elojah/game_03/cmd/auth/grpc"
 	twitchapp "github.com/elojah/game_03/pkg/twitch/app"
 	twitchhttp "github.com/elojah/game_03/pkg/twitch/http"
+	userapp "github.com/elojah/game_03/pkg/user/app"
+	userscylla "github.com/elojah/game_03/pkg/user/scylla"
 	ggrpc "github.com/elojah/go-grpc"
 	glog "github.com/elojah/go-log"
 	"github.com/elojah/go-scylla"
@@ -97,9 +99,14 @@ func run(prog string, filename string) {
 
 	cs = append(cs, &twitchApp)
 
+	userApp := userapp.A{
+		Store: &userscylla.Store{Service: &scyllas},
+	}
+
 	// init handler
 	h := handler{
 		twitch: twitchApp,
+		user:   userApp,
 	}
 
 	// init grpc api server
