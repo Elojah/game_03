@@ -2,61 +2,77 @@ package scylla
 
 import (
 	"context"
-	"strings"
+	"fmt"
 
 	"github.com/elojah/game_03/pkg/user"
+	gscylla "github.com/elojah/go-scylla"
+	"github.com/scylladb/gocqlx/v2/table"
 )
 
-type userScylla user.U
+var (
+	userByID = gscylla.NewTable(table.Metadata{
+		Name:    "user",
+		Columns: []string{"id", "twitch_id"},
+		PartKey: []string{"id"},
+	})
 
-func (u userScylla) cols() string {
-	return `
-	id,
-	twitch_id
-	`
-}
+	userByTwitchID = gscylla.NewTable(table.Metadata{
+		Name:    "user",
+		Columns: []string{"id", "twitch_id"},
+		PartKey: []string{"twitch_id"},
+	})
 
-func (u userScylla) args() []interface{} {
-	return []interface{}{
-		u.ID,
-		u.TwitchID,
-	}
-}
+	userByIDAndTwitchID = gscylla.NewTable(table.Metadata{
+		Name:    "user",
+		Columns: []string{"id", "twitch_id"},
+		PartKey: []string{"id", "twitch_id"},
+	})
+)
 
 type filter user.Filter
 
-func (f filter) where() (string, []interface{}) {
-	var clause []string
-
-	var args []interface{}
-
-	if f.ID != nil {
-		clause = append(clause, " id = ? ")
+func (f filter) Table() gscylla.Table {
+	if f.ID != nil && f.TwitchID == nil {
+		return userByID
+	} else if f.ID == nil && f.TwitchID != nil {
+		return userByTwitchID
 	}
 
-	if f.TwitchID != nil {
-		clause = append(clause, " twitch_id = ? ")
-	}
-
-	b := strings.Builder{}
-
-	b.WriteString(" WHERE ")
-
-	if len(clause) == 0 {
-		b.WriteString("false")
-	} else {
-		b.WriteString(strings.Join(clause, " AND "))
-	}
-
-	b.WriteString(";")
-
-	return b.String(), args
+	return userByIDAndTwitchID
 }
 
 func (s Store) Insert(ctx context.Context, u user.U) error {
+	st, ns := userByID.Ins()
+	q := s.ContextQuery(ctx, st, ns).BindStruct(u)
+
+	if err := q.ExecRelease(); err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func (s Store) Fetch(ctx context.Context, f user.Filter) (user.U, error) {
-	return user.U{}, nil
+	st, ns := filter(f).Table().Get()
+	q := s.ContextQuery(ctx, st, ns).BindStruct(f)
+
+	fmt.Println(q.Statement())
+
+	var u user.U
+	if err := q.GetRelease(&u); err != nil {
+		return user.U{}, err
+	}
+
+	return u, nil
+}
+
+func (s Store) Delete(ctx context.Context, f user.Filter) error {
+	st, ns := filter(f).Table().Get()
+	q := s.ContextQuery(ctx, st, ns).BindStruct(f)
+
+	if err := q.ExecRelease(); err != nil {
+		return err
+	}
+
+	return nil
 }

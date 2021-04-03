@@ -2,11 +2,11 @@ package main
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/elojah/game_03/pkg/errors"
 	gtwitch "github.com/elojah/game_03/pkg/twitch"
 	"github.com/elojah/game_03/pkg/ulid"
+	"github.com/elojah/game_03/pkg/user"
 	"github.com/gogo/protobuf/types"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc/codes"
@@ -21,6 +21,8 @@ func (h *handler) Login(ctx context.Context, req *types.StringValue) (*types.Str
 	}
 
 	// Fetch twitch user
+	var tu gtwitch.User
+
 	if err := h.twitch.GetUsers(
 		ctx,
 		gtwitch.Auth{
@@ -29,7 +31,7 @@ func (h *handler) Login(ctx context.Context, req *types.StringValue) (*types.Str
 		},
 		gtwitch.UserFilter{},
 		func(u gtwitch.User) error {
-			fmt.Println(u)
+			tu = u
 
 			return nil
 		},
@@ -42,11 +44,12 @@ func (h *handler) Login(ctx context.Context, req *types.StringValue) (*types.Str
 	// Create new session
 	id := ulid.NewID()
 
-	// if err := h.user.UpsertSession(ctx, user.Session{ID: id}); err != nil {
-	// 	logger.Error().Err(err).Msg("failed to create new session")
+	_, err := h.user.Fetch(ctx, user.Filter{TwitchID: &tu.ID})
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to fetch user")
 
-	// 	return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
-	// }
+		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+	}
 
 	logger.Info().Msg("success")
 

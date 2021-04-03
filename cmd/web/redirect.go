@@ -46,6 +46,7 @@ func (h handler) redirect(w http.ResponseWriter, r *http.Request) {
 	// #Fetch game token
 	at, err := h.AuthClient.Login(ctx, &types.StringValue{Value: token.AccessToken})
 	if err != nil {
+		logger.Error().Err(err).Msg("failed to login")
 		http.Error(w, "failed to login", http.StatusInternalServerError)
 
 		return
@@ -56,6 +57,9 @@ func (h handler) redirect(w http.ResponseWriter, r *http.Request) {
 
 	if err := session.Save(r, w); err != nil {
 		logger.Error().Err(err).Msg("failed to save session")
+		http.Error(w, "failed to save session", http.StatusInternalServerError)
+
+		return
 	}
 
 	// #Save game token client-side
