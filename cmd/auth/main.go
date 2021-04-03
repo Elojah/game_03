@@ -99,8 +99,10 @@ func run(prog string, filename string) {
 
 	cs = append(cs, &twitchApp)
 
+	userStore := &userscylla.Store{Service: &scyllas}
 	userApp := userapp.A{
-		Store: &userscylla.Store{Service: &scyllas},
+		Store:        userStore,
+		StoreSession: userStore,
 	}
 
 	// init handler

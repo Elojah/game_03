@@ -45,29 +45,36 @@ func (h *handler) Login(ctx context.Context, req *types.StringValue) (*types.Str
 	// #Check if user exist
 	u, err := h.user.Fetch(ctx, user.Filter{TwitchID: &tu.ID})
 	if err != nil {
-		if !errors.As(err, &gerrors.ErrNotFound{}) {
+		if errors.As(err, &gerrors.ErrNotFound{}) {
+			// #Create user
+			u = user.U{
+				ID:       ulid.NewID(),
+				TwitchID: tu.ID,
+			}
+			if err := h.user.Insert(ctx, u); err != nil {
+				logger.Error().Err(err).Msg("failed to create user")
+
+				return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+			}
+		} else {
 			logger.Error().Err(err).Msg("failed to fetch user")
 
 			return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
 		}
-	} else {
-		logger.Info().Msg("success")
-
-		return &types.StringValue{Value: u.ID.String()}, nil
 	}
 
-	// #Create user
-	u = user.U{
-		ID:       ulid.NewID(),
-		TwitchID: tu.ID,
+	// Create session
+	ses := user.Session{
+		ID:     ulid.NewID(),
+		UserID: u.ID,
 	}
-	if err := h.user.Insert(ctx, u); err != nil {
-		logger.Error().Err(err).Msg("failed to create user")
+	if err := h.user.InsertSession(ctx, ses); err != nil {
+		logger.Error().Err(err).Msg("failed to create session")
 
 		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
 	logger.Info().Msg("success")
 
-	return &types.StringValue{Value: u.ID.String()}, nil
+	return &types.StringValue{Value: ses.ID.String()}, nil
 }

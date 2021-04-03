@@ -8,7 +8,8 @@ import (
 
 type App interface {
 	Store
-	CacheSession
+	StoreSession
+	// CacheSession
 }
 
 type Filter struct {
