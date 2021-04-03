@@ -11,5 +11,11 @@
         "password": "",
         "keyspace": "main",
         "consistency": "QUORUM"
+    },
+    "twitch": {
+        "ClientID": "tkbw39u7oya9uj665uabeu3ei4sai5",
+        "ClientSecret": "nbungya4pwsikxlwgwz8ocfqqyu3rx",
+        "Scopes": ["user:edit"],
+        "RedirectURL": "http://localhost:8080/redirect"
     }
 }

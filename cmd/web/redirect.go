@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
+	"github.com/gogo/protobuf/types"
 	"github.com/rs/zerolog/log"
 )
 
@@ -45,6 +47,16 @@ func (h handler) redirect(w http.ResponseWriter, r *http.Request) {
 	if err := session.Save(r, w); err != nil {
 		logger.Error().Err(err).Msg("failed to save session")
 	}
+
+	at, err := h.AuthClient.Login(ctx, &types.StringValue{Value: token.AccessToken})
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "failed to login", http.StatusInternalServerError)
+
+		return
+	}
+
+	fmt.Println(at)
 
 	logger.Info().Msg("success")
 

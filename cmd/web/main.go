@@ -10,6 +10,8 @@ import (
 	"syscall"
 	"time"
 
+	authgrpc "github.com/elojah/game_03/cmd/auth/grpc"
+	ggrpc "github.com/elojah/go-grpc"
 	ghttp "github.com/elojah/go-http"
 	glog "github.com/elojah/go-log"
 	"github.com/hashicorp/go-multierror"
@@ -80,7 +82,18 @@ func run(prog string, filename string) {
 
 	cs = append(cs, &https)
 
-	h := handler{}
+	authclient := ggrpc.Client{}
+	if err := authclient.Dial(ctx, cfg.AuthClient); err != nil {
+		log.Error().Err(err).Msg("failed to dial auth")
+
+		return
+	}
+
+	cs = append(cs, &authclient)
+
+	h := handler{
+		AuthClient: authgrpc.NewAuthClient(authclient.ClientConn),
+	}
 
 	if err := h.Dial(ctx, cfg.Web); err != nil {
 		log.Error().Err(err).Msg("failed to dial web")
