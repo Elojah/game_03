@@ -1,7 +1,7 @@
 {
     "grpc": {
         "hostname": "localhost",
-        "port": "8083",
+        "port": "8082",
         "connection_timeout": 5,
         "num_stream_workers": 3,
         "max_recv_msg_size": 2147483647

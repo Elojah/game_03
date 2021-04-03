@@ -3,8 +3,7 @@ package main
 import (
 	"context"
 
-	"github.com/elojah/go-grpcweb"
-	"github.com/elojah/go-http"
+	"github.com/elojah/go-grpc"
 	"github.com/elojah/go-redis"
 	"github.com/elojah/go-scylla"
 	"github.com/ilyakaznacheev/cleanenv"
@@ -12,11 +11,10 @@ import (
 )
 
 type config struct {
-	HTTP    http.Config    `json:"http"`
-	GRPCWeb grpcweb.Config `json:"grpcweb"`
-	Scylla  scylla.Config  `json:"scylla"`
-	Redis   redis.Config   `json:"redis"`
-	Twitch  oauth2.Config  `json:"twitch"`
+	Scylla scylla.Config `json:"scylla"`
+	GRPC   grpc.Config   `json:"grpc"`
+	Redis  redis.Config  `json:"redis"`
+	Twitch oauth2.Config `json:"twitch"`
 }
 
 // Populate populates config object reading file and env.
