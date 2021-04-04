@@ -68,7 +68,6 @@ func (h handler) redirect(w http.ResponseWriter, r *http.Request) {
 			Name:     "auth-token",
 			Value:    at.Value,
 			SameSite: http.SameSiteStrictMode,
-			HttpOnly: true,
 			Secure:   true,
 			MaxAge:   3600, // nolint: gomnd
 		})
