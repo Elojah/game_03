@@ -14,7 +14,7 @@ import (
 
 var sessionByID = gscylla.NewTable(table.Metadata{
 	Name:    "session",
-	Columns: []string{"id", "user_id"},
+	Columns: []string{"id", "user_id", "twitch_token"},
 	PartKey: []string{"id"},
 })
 

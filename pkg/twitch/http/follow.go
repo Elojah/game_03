@@ -10,27 +10,30 @@ import (
 	"github.com/elojah/game_03/pkg/twitch"
 )
 
-type userFilter twitch.UserFilter
+type followFilter twitch.FollowFilter
 
-func (f userFilter) set(req *http.Request) {
-	// optional add user ids
-	for _, id := range f.IDs {
-		req.Header.Add("id", id)
+func (f followFilter) set(req *http.Request) {
+	if f.FromID != nil {
+		req.Header.Set("from_id", *f.FromID)
+	}
+
+	if f.ToID != nil {
+		req.Header.Set("to_id", *f.ToID)
 	}
 }
 
-func (c Client) GetUsers(
+func (c Client) GetFollows(
 	ctx context.Context,
 	a twitch.Auth,
-	f twitch.UserFilter,
-	callback func(twitch.User) error,
+	f twitch.FollowFilter,
+	callback func(twitch.Follow) error,
 ) error {
 	b, err := url.Parse(twitchURL)
 	if err != nil {
 		return err
 	}
 
-	r, err := url.Parse("/helix/users")
+	r, err := url.Parse("/helix/users/follows")
 	if err != nil {
 		return err
 	}
@@ -42,7 +45,7 @@ func (c Client) GetUsers(
 
 	auth(a).set(req)
 
-	userFilter(f).set(req)
+	followFilter(f).set(req)
 
 	resp, err := c.Do(req)
 	if err != nil {
@@ -56,15 +59,19 @@ func (c Client) GetUsers(
 	}
 
 	var result struct {
-		Data []twitch.User
+		Total      int
+		Data       []twitch.Follow
+		Pagination struct {
+			Cursor string
+		}
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		return err
 	}
 
-	for _, u := range result.Data {
-		if err := callback(u); err != nil {
+	for _, fo := range result.Data {
+		if err := callback(fo); err != nil {
 			return err
 		}
 	}
