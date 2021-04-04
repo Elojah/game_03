@@ -31,7 +31,7 @@ export class Home extends Scene {
 
         if (!this.registry.get('token')) {
             this.registry.set('token', document.cookie.replace('auth-token=', ''))
-            document.cookie += "auth-token=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+            document.cookie = "auth-token=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
         }
 
         this.add.image(0, 0, 'home_background_01').setOrigin(0)
