@@ -4,6 +4,7 @@ import {grpc} from "@improbable-eng/grpc-web";
 import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty_pb";
 import * as google_protobuf_wrappers_pb from "google-protobuf/google/protobuf/wrappers_pb";
 import * as API from "@cmd/api/grpc/api_pb_service";
+import { makeDefaultTransport } from "@improbable-eng/grpc-web/dist/typings/transports/Transport";
 
 export class Home extends Scene {
 
@@ -17,6 +18,7 @@ export class Home extends Scene {
         this.load.image('home_background_01', 'img/home_background_01.png')
     }
     create() {
+        console.log('home', document.cookie)
         if (!document.cookie.startsWith("auth-token=")) {
             this.scene.transition({
                 target: "login",
@@ -34,7 +36,11 @@ export class Home extends Scene {
     update() {}
     ping() {
         const req = new google_protobuf_empty_pb.Empty();
+        let md = new grpc.Metadata()
+        md.set('token', this.registry.get('token'))
+
         grpc.unary(API.API.Ping, {
+            metadata: md,
             request: req,
             host: 'http://localhost:8081',
             onEnd: res => {

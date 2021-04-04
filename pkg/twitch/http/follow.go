@@ -20,6 +20,14 @@ func (f followFilter) set(req *http.Request) {
 	if f.ToID != nil {
 		req.Header.Set("to_id", *f.ToID)
 	}
+
+	if f.After != nil {
+		req.Header.Set("after", *f.After)
+	}
+
+	if f.First != nil {
+		req.Header.Set("first", *f.First)
+	}
 }
 
 func (c Client) GetFollows(
@@ -27,20 +35,20 @@ func (c Client) GetFollows(
 	a twitch.Auth,
 	f twitch.FollowFilter,
 	callback func(twitch.Follow) error,
-) error {
+) (twitch.Cursor, error) {
 	b, err := url.Parse(twitchURL)
 	if err != nil {
-		return err
+		return twitch.Cursor{}, err
 	}
 
 	r, err := url.Parse("/helix/users/follows")
 	if err != nil {
-		return err
+		return twitch.Cursor{}, err
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, b.ResolveReference(r).String(), nil)
 	if err != nil {
-		return err
+		return twitch.Cursor{}, err
 	}
 
 	auth(a).set(req)
@@ -49,17 +57,17 @@ func (c Client) GetFollows(
 
 	resp, err := c.Do(req)
 	if err != nil {
-		return err
+		return twitch.Cursor{}, err
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode >= http.StatusBadRequest {
-		return errors.ErrInvalidStatus{Status: resp.Status}
+		return twitch.Cursor{}, errors.ErrInvalidStatus{Status: resp.Status}
 	}
 
 	var result struct {
-		Total      int
+		Total      uint
 		Data       []twitch.Follow
 		Pagination struct {
 			Cursor string
@@ -67,14 +75,17 @@ func (c Client) GetFollows(
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return err
+		return twitch.Cursor{}, err
 	}
 
 	for _, fo := range result.Data {
 		if err := callback(fo); err != nil {
-			return err
+			return twitch.Cursor{}, err
 		}
 	}
 
-	return nil
+	return twitch.Cursor{
+		Total:  result.Total,
+		Cursor: result.Pagination.Cursor,
+	}, nil
 }

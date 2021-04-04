@@ -11,9 +11,17 @@ type Auth struct {
 	ClientID string
 }
 
+type Cursor struct {
+	Total  uint
+	Cursor string
+}
+
 type Client interface {
 	// User
 	GetUsers(context.Context, Auth, UserFilter, func(User) error) error
+
+	// Follow
+	GetFollows(context.Context, Auth, FollowFilter, func(Follow) error) (Cursor, error)
 }
 
 type App interface {

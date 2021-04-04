@@ -11,7 +11,11 @@ import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 import "google/protobuf/empty.proto";
 
+import "github.com/elojah/game_03/pkg/twitch/dto/follow.proto";
+
 service API {
+    // Twitch
+    rpc ListFollow(dto.ListFollowReq) returns (dto.ListFollowResp);
 
     // Ping
     rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
