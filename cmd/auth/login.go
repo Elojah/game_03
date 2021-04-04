@@ -65,8 +65,9 @@ func (h *handler) Login(ctx context.Context, req *types.StringValue) (*types.Str
 
 	// Create session
 	ses := user.Session{
-		ID:     ulid.NewID(),
-		UserID: u.ID,
+		ID:          ulid.NewID(),
+		UserID:      u.ID,
+		TwitchToken: req.Value,
 	}
 	if err := h.user.InsertSession(ctx, ses); err != nil {
 		logger.Error().Err(err).Msg("failed to create session")
