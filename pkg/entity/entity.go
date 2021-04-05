@@ -15,3 +15,8 @@ type Store interface {
 	Fetch(context.Context, Filter) (E, error)
 	Delete(context.Context, Filter) error
 }
+
+type App interface {
+	Store
+	StorePC
+}

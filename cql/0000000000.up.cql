@@ -51,13 +51,13 @@ CREATE TABLE main.world (
     id              uuid PRIMARY KEY,
     height          bigint,
     width           bigint,
-    field           map<smallint, uuid>
+    tileset         map<smallint, uuid>
 );
 
 CREATE TABLE main.cell (
     world_id        uuid,
     x               bigint,
     y               bigint,
-    field           blob,
+    tilemap         blob,
     PRIMARY KEY(world_id, x, y)
 );

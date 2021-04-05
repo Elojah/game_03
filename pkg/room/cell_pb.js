@@ -73,7 +73,7 @@ proto.room.Cell.toObject = function(includeInstance, msg) {
     worldid: msg.getWorldid_asB64(),
     x: jspb.Message.getFieldWithDefault(msg, 2, 0),
     y: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    field: msg.getField_asB64()
+    tilemap: msg.getTilemap_asB64()
   };
 
   if (includeInstance) {
@@ -124,7 +124,7 @@ proto.room.Cell.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 4:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setField(value);
+      msg.setTilemap(value);
       break;
     default:
       reader.skipField();
@@ -176,7 +176,7 @@ proto.room.Cell.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getField_asU8();
+  f = message.getTilemap_asU8();
   if (f.length > 0) {
     writer.writeBytes(
       4,
@@ -265,35 +265,35 @@ proto.room.Cell.prototype.setY = function(value) {
 
 
 /**
- * optional bytes Field = 4;
+ * optional bytes Tilemap = 4;
  * @return {!(string|Uint8Array)}
  */
-proto.room.Cell.prototype.getField = function() {
+proto.room.Cell.prototype.getTilemap = function() {
   return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
 /**
- * optional bytes Field = 4;
- * This is a type-conversion wrapper around `getField()`
+ * optional bytes Tilemap = 4;
+ * This is a type-conversion wrapper around `getTilemap()`
  * @return {string}
  */
-proto.room.Cell.prototype.getField_asB64 = function() {
+proto.room.Cell.prototype.getTilemap_asB64 = function() {
   return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getField()));
+      this.getTilemap()));
 };
 
 
 /**
- * optional bytes Field = 4;
+ * optional bytes Tilemap = 4;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getField()`
+ * This is a type-conversion wrapper around `getTilemap()`
  * @return {!Uint8Array}
  */
-proto.room.Cell.prototype.getField_asU8 = function() {
+proto.room.Cell.prototype.getTilemap_asU8 = function() {
   return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getField()));
+      this.getTilemap()));
 };
 
 
@@ -301,7 +301,7 @@ proto.room.Cell.prototype.getField_asU8 = function() {
  * @param {!(string|Uint8Array)} value
  * @return {!proto.room.Cell} returns this
  */
-proto.room.Cell.prototype.setField = function(value) {
+proto.room.Cell.prototype.setTilemap = function(value) {
   return jspb.Message.setProto3BytesField(this, 4, value);
 };
 
