@@ -43,20 +43,21 @@ CREATE TABLE main.entity (
     pc_id           uuid,
     x               bigint,
     y               bigint,
-    rot             smallint, -- between 0 and 360
+    rot             smallint,
     radius          smallint
 );
 
 CREATE TABLE main.world (
+    id              uuid PRIMARY KEY,
     height          bigint,
     width           bigint,
     field           map<smallint, uuid>
-)
+);
 
 CREATE TABLE main.cell (
     world_id        uuid,
     x               bigint,
     y               bigint,
-    field           blob, -- map[x][y] of int32
+    field           blob,
     PRIMARY KEY(world_id, x, y)
-)
+);
