@@ -13,5 +13,5 @@ message World {
     bytes ID                   = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
     int64 Height               = 2;
     int64 Width                = 3;
-    map<int32, bytes> Field    = 4 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    map<int32, bytes> Tileset  = 4 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
 }

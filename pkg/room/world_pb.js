@@ -73,7 +73,7 @@ proto.room.World.toObject = function(includeInstance, msg) {
     id: msg.getId_asB64(),
     height: jspb.Message.getFieldWithDefault(msg, 2, 0),
     width: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    fieldMap: (f = msg.getFieldMap()) ? f.toObject(includeInstance, undefined) : []
+    tilesetMap: (f = msg.getTilesetMap()) ? f.toObject(includeInstance, undefined) : []
   };
 
   if (includeInstance) {
@@ -123,7 +123,7 @@ proto.room.World.deserializeBinaryFromReader = function(msg, reader) {
       msg.setWidth(value);
       break;
     case 4:
-      var value = msg.getFieldMap();
+      var value = msg.getTilesetMap();
       reader.readMessage(value, function(message, reader) {
         jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readInt32, jspb.BinaryReader.prototype.readBytes, null, 0, "");
          });
@@ -178,7 +178,7 @@ proto.room.World.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getFieldMap(true);
+  f = message.getTilesetMap(true);
   if (f && f.getLength() > 0) {
     f.serializeBinary(4, writer, jspb.BinaryWriter.prototype.writeInt32, jspb.BinaryWriter.prototype.writeBytes);
   }
@@ -264,12 +264,12 @@ proto.room.World.prototype.setWidth = function(value) {
 
 
 /**
- * map<int32, bytes> Field = 4;
+ * map<int32, bytes> Tileset = 4;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
  * @return {!jspb.Map<number,!(string|Uint8Array)>}
  */
-proto.room.World.prototype.getFieldMap = function(opt_noLazyCreate) {
+proto.room.World.prototype.getTilesetMap = function(opt_noLazyCreate) {
   return /** @type {!jspb.Map<number,!(string|Uint8Array)>} */ (
       jspb.Message.getMapField(this, 4, opt_noLazyCreate,
       null));
@@ -280,8 +280,8 @@ proto.room.World.prototype.getFieldMap = function(opt_noLazyCreate) {
  * Clears values from the map. The map will be non-null.
  * @return {!proto.room.World} returns this
  */
-proto.room.World.prototype.clearFieldMap = function() {
-  this.getFieldMap().clear();
+proto.room.World.prototype.clearTilesetMap = function() {
+  this.getTilesetMap().clear();
   return this;};
 
 

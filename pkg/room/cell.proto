@@ -13,5 +13,5 @@ message Cell {
     bytes WorldID              = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
     int64 X                    = 2;
     int64 Y                    = 3;
-    bytes Field                = 4;
+    bytes Tilemap              = 4;
 }
