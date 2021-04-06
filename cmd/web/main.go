@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/gob"
 	"fmt"
 	"net/http"
 	"os"
@@ -9,10 +10,13 @@ import (
 	"syscall"
 	"time"
 
+	authgrpc "github.com/elojah/game_03/cmd/auth/grpc"
+	ggrpc "github.com/elojah/go-grpc"
 	ghttp "github.com/elojah/go-http"
 	glog "github.com/elojah/go-log"
 	"github.com/hashicorp/go-multierror"
 	"github.com/rs/zerolog/log"
+	"golang.org/x/oauth2"
 	_ "google.golang.org/grpc/encoding/gzip"
 )
 
@@ -67,7 +71,7 @@ func run(prog string, filename string) {
 		return
 	}
 
-	// init ghttp web server
+	// init http web server
 	https := ghttp.Service{}
 
 	if err := https.Dial(ctx, cfg.HTTP); err != nil {
@@ -78,8 +82,33 @@ func run(prog string, filename string) {
 
 	cs = append(cs, &https)
 
+	authclient := ggrpc.Client{}
+	if err := authclient.Dial(ctx, cfg.AuthClient); err != nil {
+		log.Error().Err(err).Msg("failed to dial auth")
+
+		return
+	}
+
+	cs = append(cs, &authclient)
+
+	h := handler{
+		AuthClient: authgrpc.NewAuthClient(authclient.ClientConn),
+	}
+
+	if err := h.Dial(ctx, cfg.Web); err != nil {
+		log.Error().Err(err).Msg("failed to dial web")
+
+		return
+	}
+
+	// login twitch redirect
+	https.Router.Path("/login").HandlerFunc(h.login)
+	https.Router.Path("/redirect").HandlerFunc(h.redirect)
 	// Serve static dir
 	https.Router.PathPrefix("/").Handler(http.FileServer(http.Dir(cfg.Web.Static)))
+
+	// Register for cookie session
+	gob.Register(oauth2.Token{})
 
 	// serve http web
 	go func() {

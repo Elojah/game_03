@@ -15,6 +15,5 @@ FROM alpine
 WORKDIR /app
 COPY --from=builder /admin/bin/game_03_admin .
 COPY --from=builder /admin/config/admin/prod.json .
-COPY --from=builder /admin/config/admin/firebase.json .
 RUN chmod +x /app/game_03_admin
 ENTRYPOINT ["/app/game_03_admin", "/app/prod.json"]

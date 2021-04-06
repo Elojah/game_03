@@ -11,7 +11,5 @@ import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 message U {
     bytes ID         = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
-    string Email     = 2;
-    bytes Password   = 3;
-    bytes FirebaseID = 4 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    string TwitchID  = 2;
 }

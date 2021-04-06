@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/gocql/gocql"
 	"github.com/oklog/ulid"
 )
 
@@ -14,6 +15,18 @@ type ID ulid.ULID
 // NewID returns a new random ID.
 func NewID() ID {
 	return ID(ulid.MustNew(ulid.Timestamp(time.Now()), rand.Reader))
+}
+
+// MarshalCQL override marshalling to fit CQL UUID.
+func (id ID) MarshalCQL(info gocql.TypeInfo) ([]byte, error) {
+	raw, err := gocql.UUIDFromBytes(id.Bytes())
+
+	return raw.Bytes(), err
+}
+
+// UnmarshalCQL override unmarshalling to fit CQL UUID.
+func (id *ID) UnmarshalCQL(info gocql.TypeInfo, data []byte) error {
+	return id.Unmarshal(data)
 }
 
 // NewIDs returns a new array of random IDs.
@@ -41,6 +54,7 @@ func MustParse(s string) ID {
 // Parse alias ulid.Parse. Panics if s is invalid.
 func Parse(s string) (ID, error) {
 	id, err := ulid.Parse(s)
+
 	return ID(id), err
 }
 
@@ -77,6 +91,7 @@ func (id ID) Marshal() ([]byte, error) {
 // MarshalTo never returns any error.
 func (id ID) MarshalTo(data []byte) (n int, err error) {
 	copy(data[0:16], id[:])
+
 	return 16, nil //nolint: gomnd
 }
 
@@ -132,6 +147,7 @@ func (id ID) Equal(other ID) bool {
 // NewPopulatedID only required if populate option is set.
 func NewPopulatedID(r randyID) *ID {
 	id := ID(ulid.MustNew(uint64(r.Uint32()), rand.Reader))
+
 	return &id
 }
 

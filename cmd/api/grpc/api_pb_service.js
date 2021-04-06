@@ -3,6 +3,7 @@
 
 var github_com_elojah_game_03_cmd_api_grpc_api_pb = require("../../../../../../github.com/elojah/game_03/cmd/api/grpc/api_pb");
 var google_protobuf_empty_pb = require("google-protobuf/google/protobuf/empty_pb");
+var github_com_elojah_game_03_pkg_twitch_dto_follow_pb = require("../../../../../../github.com/elojah/game_03/pkg/twitch/dto/follow_pb");
 var grpc = require("@improbable-eng/grpc-web").grpc;
 
 var API = (function () {
@@ -10,6 +11,15 @@ var API = (function () {
   API.serviceName = "grpc.API";
   return API;
 }());
+
+API.ListFollow = {
+  methodName: "ListFollow",
+  service: API,
+  requestStream: false,
+  responseStream: false,
+  requestType: github_com_elojah_game_03_pkg_twitch_dto_follow_pb.ListFollowReq,
+  responseType: github_com_elojah_game_03_pkg_twitch_dto_follow_pb.ListFollowResp
+};
 
 API.Ping = {
   methodName: "Ping",
@@ -26,6 +36,37 @@ function APIClient(serviceHost, options) {
   this.serviceHost = serviceHost;
   this.options = options || {};
 }
+
+APIClient.prototype.listFollow = function listFollow(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(API.ListFollow, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
 
 APIClient.prototype.ping = function ping(requestMessage, metadata, callback) {
   if (arguments.length === 2) {

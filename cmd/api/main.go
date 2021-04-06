@@ -3,13 +3,17 @@ package main
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
 	apigrpc "github.com/elojah/game_03/cmd/api/grpc"
-	"github.com/elojah/go-firebase"
+	twitchapp "github.com/elojah/game_03/pkg/twitch/app"
+	twitchhttp "github.com/elojah/game_03/pkg/twitch/http"
+	userapp "github.com/elojah/game_03/pkg/user/app"
+	userscylla "github.com/elojah/game_03/pkg/user/scylla"
 	"github.com/elojah/go-grpcweb"
 	ghttp "github.com/elojah/go-http"
 	glog "github.com/elojah/go-log"
@@ -91,16 +95,6 @@ func run(prog string, filename string) {
 
 	cs = append(cs, &rediss)
 
-	// init firebase storage
-	fbs := firebase.Service{}
-	if err := fbs.Dial(ctx, cfg.Firebase); err != nil {
-		log.Error().Err(err).Msg("failed to dial firebase")
-
-		return
-	}
-
-	cs = append(cs, &fbs)
-
 	// init http api server
 	https := ghttp.Service{}
 
@@ -112,8 +106,31 @@ func run(prog string, filename string) {
 
 	cs = append(cs, &https)
 
+	// init domain
+	twitchApp := twitchapp.App{
+		Client: &twitchhttp.Client{
+			Client: http.DefaultClient,
+		},
+	}
+	if err := twitchApp.Dial(ctx, cfg.Twitch); err != nil {
+		log.Error().Err(err).Msg("failed to dial twitch client")
+
+		return
+	}
+
+	cs = append(cs, &twitchApp)
+
+	userStore := &userscylla.Store{Service: &scyllas}
+	userApp := userapp.App{
+		Store:        userStore,
+		StoreSession: userStore,
+	}
+
 	// init handler
-	h := handler{}
+	h := handler{
+		twitch: twitchApp,
+		user:   userApp,
+	}
 
 	// init grpc api server
 	grpcwapi := grpcweb.Service{}

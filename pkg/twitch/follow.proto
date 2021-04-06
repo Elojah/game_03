@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package twitch;
+
+option (gogoproto.testgen_all)  = true;
+option (gogoproto.benchgen_all) = true;
+option (gogoproto.populate_all) = true;
+option (gogoproto.goproto_registration) = true;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+message Follow {
+    string FromID     = 1;
+    string FromLogin  = 2;
+    string FromName   = 3;
+    string ToID       = 4;
+    string ToLogin    = 5;
+    string ToName     = 6;
+    string FollowedAt = 7;
+}
