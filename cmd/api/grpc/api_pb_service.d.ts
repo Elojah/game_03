@@ -3,7 +3,17 @@
 
 import * as github_com_elojah_game_03_cmd_api_grpc_api_pb from "../../../../../../github.com/elojah/game_03/cmd/api/grpc/api_pb";
 import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty_pb";
+import * as github_com_elojah_game_03_pkg_twitch_dto_follow_pb from "../../../../../../github.com/elojah/game_03/pkg/twitch/dto/follow_pb";
 import {grpc} from "@improbable-eng/grpc-web";
+
+type APIListFollow = {
+  readonly methodName: string;
+  readonly service: typeof API;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof github_com_elojah_game_03_pkg_twitch_dto_follow_pb.ListFollowReq;
+  readonly responseType: typeof github_com_elojah_game_03_pkg_twitch_dto_follow_pb.ListFollowResp;
+};
 
 type APIPing = {
   readonly methodName: string;
@@ -16,6 +26,7 @@ type APIPing = {
 
 export class API {
   static readonly serviceName: string;
+  static readonly ListFollow: APIListFollow;
   static readonly Ping: APIPing;
 }
 
@@ -51,6 +62,15 @@ export class APIClient {
   readonly serviceHost: string;
 
   constructor(serviceHost: string, options?: grpc.RpcOptions);
+  listFollow(
+    requestMessage: github_com_elojah_game_03_pkg_twitch_dto_follow_pb.ListFollowReq,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_twitch_dto_follow_pb.ListFollowResp|null) => void
+  ): UnaryResponse;
+  listFollow(
+    requestMessage: github_com_elojah_game_03_pkg_twitch_dto_follow_pb.ListFollowReq,
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_twitch_dto_follow_pb.ListFollowResp|null) => void
+  ): UnaryResponse;
   ping(
     requestMessage: google_protobuf_empty_pb.Empty,
     metadata: grpc.Metadata,

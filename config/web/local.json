@@ -1,9 +1,0 @@
-{
-    "http": {
-        "hostname": "localhost",
-        "port": "8080"
-    },
-    "web": {
-        "static": "bin/static"
-    }
-}
