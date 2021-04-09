@@ -13,10 +13,15 @@ import (
 type userFilter twitch.UserFilter
 
 func (f userFilter) set(req *http.Request) {
+	q := req.URL.Query()
+
 	// optional add user ids
 	for _, id := range f.IDs {
-		req.Header.Add("id", id)
+		q.Add("id", id)
 	}
+
+	req.URL.RawQuery = q.Encode()
+
 }
 
 func (c Client) GetUsers(

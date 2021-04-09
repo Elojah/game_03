@@ -52,6 +52,12 @@ func (h *handler) ListFollow(ctx context.Context, req *dto.ListFollowReq) (*dto.
 			return nil
 		},
 	)
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to fetch follows")
+
+		return &dto.ListFollowResp{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
 	result.Cursor = cursor.Cursor
 	result.Total = uint64(cursor.Total)
 

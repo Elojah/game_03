@@ -33,7 +33,6 @@ export class Home extends Scene {
 
         if (!this.registry.get('token')) {
             this.registry.set('token', document.cookie.replace('auth-token=', ''))
-            document.cookie = "auth-token=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
         }
 
         this.add.image(0, 0, 'home_background_01').setOrigin(0);
@@ -41,20 +40,24 @@ export class Home extends Scene {
     }
     update() {}
     displayFollow(){
-        const t = this.add.dom(60, 120).createFromCache('follow').setOrigin(0)
-        let lines = '';
         
         this.listFollow()
-        .then((follows: any)=> {
-            follows.getFollowsList().forEach((fol: Twitch.Follow)=>{
-                lines += this.add.dom(60, 120).createFromCache('follow_line').setText(fol.getToname())
+        .then((follows: TwitchDTO.ListFollowResp)=> {
+
+            const ol = this.cache.html.get('follow')
+            const li = this.cache.html.get('follow_line')
+            let lines = ''
+
+            follows.getFollowsList().forEach((fol: Twitch.Follow) => {
+                lines += li.replace('{{name}}', fol.getToname())
             })
+            
+            this.add.dom(60, 120).createFromHTML(ol.replace('{{lines}}', lines)).setOrigin(0)
         })
         .catch((err)=> {
             console.log(err)
         })
 
-        t.setHTML(lines)
     }
     ping() {
         const req = new google_protobuf_empty_pb.Empty();
@@ -79,7 +82,7 @@ export class Home extends Scene {
         let md = new grpc.Metadata()
         md.set('token', this.registry.get('token'))
 
-        const prom = new Promise<any>((resolve, reject) => {
+        const prom = new Promise<TwitchDTO.ListFollowResp>((resolve, reject) => {
             grpc.unary(API.API.ListFollow, {
                 metadata: md,
                 request: req,
@@ -92,7 +95,7 @@ export class Home extends Scene {
                         return
                     }
 
-                    resolve(message)
+                    resolve(message as TwitchDTO.ListFollowResp)
                 }
             });
         })
