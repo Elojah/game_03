@@ -13,21 +13,25 @@ import (
 type followFilter twitch.FollowFilter
 
 func (f followFilter) set(req *http.Request) {
+	q := req.URL.Query()
+
 	if f.FromID != nil {
-		req.Header.Set("from_id", *f.FromID)
+		q.Add("from_id", *f.FromID)
 	}
 
 	if f.ToID != nil {
-		req.Header.Set("to_id", *f.ToID)
+		q.Add("to_id", *f.ToID)
 	}
 
 	if f.After != nil {
-		req.Header.Set("after", *f.After)
+		q.Add("after", *f.After)
 	}
 
 	if f.First != nil {
-		req.Header.Set("first", *f.First)
+		q.Add("first", *f.First)
 	}
+
+	req.URL.RawQuery = q.Encode()
 }
 
 func (c Client) GetFollows(
