@@ -5,6 +5,7 @@ import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty
 import * as google_protobuf_wrappers_pb from "google-protobuf/google/protobuf/wrappers_pb";
 import * as API from "@cmd/api/grpc/api_pb_service";
 import * as TwitchDTO from "@pkg/twitch/dto/follow_pb";
+import * as Twitch from "@pkg/twitch/follow_pb";
 import { makeDefaultTransport } from "@improbable-eng/grpc-web/dist/typings/transports/Transport";
 
 export class Home extends Scene {
@@ -15,7 +16,8 @@ export class Home extends Scene {
         super(config);
     }
     preload() {
-        this.load.html('login', 'html/login.html')
+        this.load.html('follow', 'html/follow.html')
+        this.load.html('follow_line', 'html/follow_line.html')
         this.load.image('home_background_01', 'img/home_background_01.png')
     }
     create() {
@@ -34,10 +36,26 @@ export class Home extends Scene {
             document.cookie = "auth-token=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
         }
 
-        this.add.image(0, 0, 'home_background_01').setOrigin(0)
-        this.listFollow()
+        this.add.image(0, 0, 'home_background_01').setOrigin(0);
+        this.displayFollow();
     }
     update() {}
+    displayFollow(){
+        const t = this.add.dom(60, 120).createFromCache('follow').setOrigin(0)
+        let lines = '';
+        
+        this.listFollow()
+        .then((follows: any)=> {
+            follows.getFollowsList().forEach((fol: Twitch.Follow)=>{
+                lines += this.add.dom(60, 120).createFromCache('follow_line').setText(fol.getToname())
+            })
+        })
+        .catch((err)=> {
+            console.log(err)
+        })
+
+        t.setHTML(lines)
+    }
     ping() {
         const req = new google_protobuf_empty_pb.Empty();
         let md = new grpc.Metadata()
@@ -50,32 +68,35 @@ export class Home extends Scene {
             onEnd: res => {
                 const { status, statusMessage, headers, message, trailers } = res;
                 if (status !== grpc.Code.OK || !message) {
-                    console.log('grpc error: ', status, statusMessage, headers, message, trailers)
                     return
                 }
-                // Send a validate thing back
             }
         });
     }    
     listFollow() {
-        const req = new TwitchDTO.ListFollowReq();
+        let req = new TwitchDTO.ListFollowReq();
+        req.setFirst('20') // TODO: paginate correctly
         let md = new grpc.Metadata()
         md.set('token', this.registry.get('token'))
 
-        grpc.unary(API.API.ListFollow, {
-            metadata: md,
-            request: req,
-            host: 'http://localhost:8081',
-            onEnd: res => {
-                const { status, statusMessage, headers, message, trailers } = res;
-                if (status !== grpc.Code.OK || !message) {
-                    console.log('grpc error: ', status, statusMessage, headers, message, trailers)
-                    return
-                }
+        const prom = new Promise<any>((resolve, reject) => {
+            grpc.unary(API.API.ListFollow, {
+                metadata: md,
+                request: req,
+                host: 'http://localhost:8081',
+                onEnd: res => {
+                    const { status, statusMessage, headers, message, trailers } = res;
+                    if (status !== grpc.Code.OK || !message) {
+                        reject(res)
 
-                console.log('grpc ok: ', status, statusMessage, headers, message, trailers)
-                // Send a validate thing back
-            }
-        });
+                        return
+                    }
+
+                    resolve(message)
+                }
+            });
+        })
+        
+        return prom
     }    
 }
