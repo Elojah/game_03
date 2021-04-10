@@ -50,7 +50,7 @@ export class Home extends Scene {
 
             const lines = follows.getFollowsList().reduce((acc:string, fol: Twitch.Follow) => acc + li.replace('{{login}}', fol.getTologin()), '')
             
-            this.add.dom(60, 120).createFromHTML(ol.replace('{{lines}}', lines)).setOrigin(0)
+            this.add.dom(10, 10).createFromHTML(ol.replace('{{lines}}', lines)).setOrigin(0)
         })
         .catch((err)=> {
             console.log(err)

@@ -23,7 +23,7 @@ export class Login extends Scene {
         }
 
         this.add.image(0, 0, 'home_background_00').setOrigin(0)
-        this.HTMLlogin = this.add.dom(60, 120).createFromCache('login').setOrigin(0)
+        this.HTMLlogin = this.add.dom(10, 10).createFromCache('login').setOrigin(0)
     }
     update() {}
 }
