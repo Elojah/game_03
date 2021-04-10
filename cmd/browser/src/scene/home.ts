@@ -39,18 +39,16 @@ export class Home extends Scene {
         this.displayFollow();
     }
     update() {}
-    displayFollow(){
-        
+    displayFollow(){        
         this.listFollow()
         .then((follows: TwitchDTO.ListFollowResp)=> {
-
             const ol = this.cache.html.get('follow')
             const li = this.cache.html.get('follow_line')
-            let lines = ''
-
-            follows.getFollowsList().forEach((fol: Twitch.Follow) => {
-                lines += li.replace('{{name}}', fol.getToname())
+            follows.getFollowsList().forEach((val)=>{
+                console.log(val)
             })
+
+            const lines = follows.getFollowsList().reduce((acc:string, fol: Twitch.Follow) => acc + li.replace('{{login}}', fol.getTologin()), '')
             
             this.add.dom(60, 120).createFromHTML(ol.replace('{{lines}}', lines)).setOrigin(0)
         })
