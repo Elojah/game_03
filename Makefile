@@ -105,6 +105,7 @@ proto-go proto-ts: ## Regenerate protobuf files
 	$(info $(M) generate clients…) @
 	$(info $(M) generate dto…) @
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/twitch/dto/follow.proto
+	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/room/dto/room.proto
 	$(info $(M) generate services…) @
 	$Q $(GEN_PB_SERVICE_$(PB_LANG)) $(GO_PACKAGE)/cmd/$(API)/grpc/$(API).proto
 	$Q $(GEN_PB_SERVICE_$(PB_LANG)) $(GO_PACKAGE)/cmd/$(ADMIN)/grpc/$(ADMIN).proto
