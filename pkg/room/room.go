@@ -8,6 +8,7 @@ import (
 
 type Filter struct {
 	ID      *ulid.ID
+	IDs     []ulid.ID
 	OwnerID *ulid.ID
 }
 
