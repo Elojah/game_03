@@ -8,7 +8,7 @@ import (
 
 type Filter struct {
 	ID      *ulid.ID
-	IDs     []ulid.ID
+	IDs     []ulid.ID `db:"id"`
 	OwnerID *ulid.ID
 }
 

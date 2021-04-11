@@ -12,17 +12,17 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (h *handler) ListRoom(ctx context.Context, req *dto.ListRoomReq) (*dto.ListRoomResp, error) {
+func (h *handler) ListPC(ctx context.Context, req *dto.ListPCReq) (*dto.ListPCResp, error) {
 	logger := log.With().Str("method", "list_room").Logger()
 
 	if req == nil {
-		return &dto.ListRoomResp{}, status.New(codes.Internal, gerrors.ErrNullRequest{}.Error()).Err()
+		return &dto.ListPCResp{}, status.New(codes.Internal, gerrors.ErrNullRequest{}.Error()).Err()
 	}
 
 	// #Authenticate
 	ses, err := h.user.Auth(ctx)
 	if err != nil {
-		return &dto.ListRoomResp{}, status.New(codes.Unauthenticated, err.Error()).Err()
+		return &dto.ListPCResp{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	}
 
 	// #Fetch pcs
@@ -34,20 +34,20 @@ func (h *handler) ListRoom(ctx context.Context, req *dto.ListRoomReq) (*dto.List
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to fetch pcs")
 
-		return &dto.ListRoomResp{}, status.New(codes.Internal, err.Error()).Err()
+		return &dto.ListPCResp{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
 	// #Fetch rooms
 	rooms, err := h.room.FetchMany(ctx, room.Filter{
-		IDs: entity.PCs(pcs).RoomIDs(),
+		IDs: entity.PCs(pcs).PCIDs(),
 	})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to fetch rooms")
 
-		return &dto.ListRoomResp{}, status.New(codes.Internal, err.Error()).Err()
+		return &dto.ListPCResp{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
 	logger.Info().Msg("success")
 
-	return &dto.ListRoomResp{Rooms: rooms}, nil
+	return &dto.ListPCResp{PCs: rooms}, nil
 }
