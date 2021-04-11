@@ -42,11 +42,12 @@ export class Home extends Scene {
     displayFollow(){        
         this.listFollow()
         .then((follows: TwitchDTO.ListFollowResp)=> {
+            if (follows.getCursor() && ) {
+
+            }
+            
             const ol = this.cache.html.get('follow')
             const li = this.cache.html.get('follow_line')
-            follows.getFollowsList().forEach((val)=>{
-                console.log(val)
-            })
 
             const lines = follows.getFollowsList().reduce((acc:string, fol: Twitch.Follow) => acc + li.replace('{{login}}', fol.getTologin()), '')
             

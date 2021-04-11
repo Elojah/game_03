@@ -10,6 +10,10 @@ import (
 	"time"
 
 	apigrpc "github.com/elojah/game_03/cmd/api/grpc"
+	entityapp "github.com/elojah/game_03/pkg/entity/app"
+	entityscylla "github.com/elojah/game_03/pkg/entity/scylla"
+	roomapp "github.com/elojah/game_03/pkg/room/app"
+	roomscylla "github.com/elojah/game_03/pkg/room/scylla"
 	twitchapp "github.com/elojah/game_03/pkg/twitch/app"
 	twitchhttp "github.com/elojah/game_03/pkg/twitch/http"
 	userapp "github.com/elojah/game_03/pkg/user/app"
@@ -120,6 +124,19 @@ func run(prog string, filename string) {
 
 	cs = append(cs, &twitchApp)
 
+	entityStore := &entityscylla.Store{Service: &scyllas}
+	entityApp := entityapp.App{
+		Store:   entityStore,
+		StorePC: entityStore,
+	}
+
+	roomStore := &roomscylla.Store{Service: &scyllas}
+	roomApp := roomapp.App{
+		Store:      roomStore,
+		StoreWorld: roomStore,
+		StoreCell:  roomStore,
+	}
+
 	userStore := &userscylla.Store{Service: &scyllas}
 	userApp := userapp.App{
 		Store:        userStore,
@@ -128,6 +145,8 @@ func run(prog string, filename string) {
 
 	// init handler
 	h := handler{
+		entity: entityApp,
+		room:   roomApp,
 		twitch: twitchApp,
 		user:   userApp,
 	}

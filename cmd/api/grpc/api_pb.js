@@ -20,3 +20,5 @@ var google_protobuf_empty_pb = require('google-protobuf/google/protobuf/empty_pb
 goog.object.extend(proto, google_protobuf_empty_pb);
 var github_com_elojah_game_03_pkg_twitch_dto_follow_pb = require('../../../../../../github.com/elojah/game_03/pkg/twitch/dto/follow_pb.js');
 goog.object.extend(proto, github_com_elojah_game_03_pkg_twitch_dto_follow_pb);
+var github_com_elojah_game_03_pkg_room_dto_room_pb = require('../../../../../../github.com/elojah/game_03/pkg/room/dto/room_pb.js');
+goog.object.extend(proto, github_com_elojah_game_03_pkg_room_dto_room_pb);

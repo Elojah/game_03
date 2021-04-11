@@ -4,6 +4,7 @@
 import * as github_com_elojah_game_03_cmd_api_grpc_api_pb from "../../../../../../github.com/elojah/game_03/cmd/api/grpc/api_pb";
 import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty_pb";
 import * as github_com_elojah_game_03_pkg_twitch_dto_follow_pb from "../../../../../../github.com/elojah/game_03/pkg/twitch/dto/follow_pb";
+import * as github_com_elojah_game_03_pkg_room_dto_room_pb from "../../../../../../github.com/elojah/game_03/pkg/room/dto/room_pb";
 import {grpc} from "@improbable-eng/grpc-web";
 
 type APIListFollow = {
@@ -13,6 +14,15 @@ type APIListFollow = {
   readonly responseStream: false;
   readonly requestType: typeof github_com_elojah_game_03_pkg_twitch_dto_follow_pb.ListFollowReq;
   readonly responseType: typeof github_com_elojah_game_03_pkg_twitch_dto_follow_pb.ListFollowResp;
+};
+
+type APIListRoom = {
+  readonly methodName: string;
+  readonly service: typeof API;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof github_com_elojah_game_03_pkg_room_dto_room_pb.ListRoomReq;
+  readonly responseType: typeof github_com_elojah_game_03_pkg_room_dto_room_pb.ListRoomResp;
 };
 
 type APIPing = {
@@ -27,6 +37,7 @@ type APIPing = {
 export class API {
   static readonly serviceName: string;
   static readonly ListFollow: APIListFollow;
+  static readonly ListRoom: APIListRoom;
   static readonly Ping: APIPing;
 }
 
@@ -70,6 +81,15 @@ export class APIClient {
   listFollow(
     requestMessage: github_com_elojah_game_03_pkg_twitch_dto_follow_pb.ListFollowReq,
     callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_twitch_dto_follow_pb.ListFollowResp|null) => void
+  ): UnaryResponse;
+  listRoom(
+    requestMessage: github_com_elojah_game_03_pkg_room_dto_room_pb.ListRoomReq,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_room_dto_room_pb.ListRoomResp|null) => void
+  ): UnaryResponse;
+  listRoom(
+    requestMessage: github_com_elojah_game_03_pkg_room_dto_room_pb.ListRoomReq,
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_room_dto_room_pb.ListRoomResp|null) => void
   ): UnaryResponse;
   ping(
     requestMessage: google_protobuf_empty_pb.Empty,
