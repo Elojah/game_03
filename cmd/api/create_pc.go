@@ -26,9 +26,9 @@ func (h *handler) CreatePC(ctx context.Context, req *entity.PC) (*entity.PC, err
 
 	req.ID = ulid.NewID()
 
-	// #Insert room
-	if err := h.room.Insert(ctx, *req); err != nil {
-		logger.Error().Err(err).Msg("failed to create room")
+	// #Insert PC
+	if err := h.entity.InsertPC(ctx, *req); err != nil {
+		logger.Error().Err(err).Msg("failed to create pc")
 
 		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
 	}

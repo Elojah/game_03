@@ -3,17 +3,38 @@
 
 import * as github_com_elojah_game_03_cmd_api_grpc_api_pb from "../../../../../../github.com/elojah/game_03/cmd/api/grpc/api_pb";
 import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty_pb";
-import * as github_com_elojah_game_03_pkg_twitch_dto_follow_pb from "../../../../../../github.com/elojah/game_03/pkg/twitch/dto/follow_pb";
+import * as github_com_elojah_game_03_pkg_entity_pc_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/pc_pb";
+import * as github_com_elojah_game_03_pkg_entity_dto_pc_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/dto/pc_pb";
+import * as github_com_elojah_game_03_pkg_room_room_pb from "../../../../../../github.com/elojah/game_03/pkg/room/room_pb";
 import * as github_com_elojah_game_03_pkg_room_dto_room_pb from "../../../../../../github.com/elojah/game_03/pkg/room/dto/room_pb";
+import * as github_com_elojah_game_03_pkg_twitch_dto_follow_pb from "../../../../../../github.com/elojah/game_03/pkg/twitch/dto/follow_pb";
 import {grpc} from "@improbable-eng/grpc-web";
 
-type APIListFollow = {
+type APICreatePC = {
   readonly methodName: string;
   readonly service: typeof API;
   readonly requestStream: false;
   readonly responseStream: false;
-  readonly requestType: typeof github_com_elojah_game_03_pkg_twitch_dto_follow_pb.ListFollowReq;
-  readonly responseType: typeof github_com_elojah_game_03_pkg_twitch_dto_follow_pb.ListFollowResp;
+  readonly requestType: typeof github_com_elojah_game_03_pkg_entity_pc_pb.PC;
+  readonly responseType: typeof github_com_elojah_game_03_pkg_entity_pc_pb.PC;
+};
+
+type APIListPC = {
+  readonly methodName: string;
+  readonly service: typeof API;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof github_com_elojah_game_03_pkg_entity_dto_pc_pb.ListPCReq;
+  readonly responseType: typeof github_com_elojah_game_03_pkg_entity_dto_pc_pb.ListPCResp;
+};
+
+type APICreateRoom = {
+  readonly methodName: string;
+  readonly service: typeof API;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof github_com_elojah_game_03_pkg_room_room_pb.R;
+  readonly responseType: typeof github_com_elojah_game_03_pkg_room_room_pb.R;
 };
 
 type APIListRoom = {
@@ -23,6 +44,15 @@ type APIListRoom = {
   readonly responseStream: false;
   readonly requestType: typeof github_com_elojah_game_03_pkg_room_dto_room_pb.ListRoomReq;
   readonly responseType: typeof github_com_elojah_game_03_pkg_room_dto_room_pb.ListRoomResp;
+};
+
+type APIListFollow = {
+  readonly methodName: string;
+  readonly service: typeof API;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof github_com_elojah_game_03_pkg_twitch_dto_follow_pb.ListFollowReq;
+  readonly responseType: typeof github_com_elojah_game_03_pkg_twitch_dto_follow_pb.ListFollowResp;
 };
 
 type APIPing = {
@@ -36,8 +66,11 @@ type APIPing = {
 
 export class API {
   static readonly serviceName: string;
-  static readonly ListFollow: APIListFollow;
+  static readonly CreatePC: APICreatePC;
+  static readonly ListPC: APIListPC;
+  static readonly CreateRoom: APICreateRoom;
   static readonly ListRoom: APIListRoom;
+  static readonly ListFollow: APIListFollow;
   static readonly Ping: APIPing;
 }
 
@@ -73,14 +106,32 @@ export class APIClient {
   readonly serviceHost: string;
 
   constructor(serviceHost: string, options?: grpc.RpcOptions);
-  listFollow(
-    requestMessage: github_com_elojah_game_03_pkg_twitch_dto_follow_pb.ListFollowReq,
+  createPC(
+    requestMessage: github_com_elojah_game_03_pkg_entity_pc_pb.PC,
     metadata: grpc.Metadata,
-    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_twitch_dto_follow_pb.ListFollowResp|null) => void
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_entity_pc_pb.PC|null) => void
   ): UnaryResponse;
-  listFollow(
-    requestMessage: github_com_elojah_game_03_pkg_twitch_dto_follow_pb.ListFollowReq,
-    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_twitch_dto_follow_pb.ListFollowResp|null) => void
+  createPC(
+    requestMessage: github_com_elojah_game_03_pkg_entity_pc_pb.PC,
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_entity_pc_pb.PC|null) => void
+  ): UnaryResponse;
+  listPC(
+    requestMessage: github_com_elojah_game_03_pkg_entity_dto_pc_pb.ListPCReq,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_entity_dto_pc_pb.ListPCResp|null) => void
+  ): UnaryResponse;
+  listPC(
+    requestMessage: github_com_elojah_game_03_pkg_entity_dto_pc_pb.ListPCReq,
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_entity_dto_pc_pb.ListPCResp|null) => void
+  ): UnaryResponse;
+  createRoom(
+    requestMessage: github_com_elojah_game_03_pkg_room_room_pb.R,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_room_room_pb.R|null) => void
+  ): UnaryResponse;
+  createRoom(
+    requestMessage: github_com_elojah_game_03_pkg_room_room_pb.R,
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_room_room_pb.R|null) => void
   ): UnaryResponse;
   listRoom(
     requestMessage: github_com_elojah_game_03_pkg_room_dto_room_pb.ListRoomReq,
@@ -90,6 +141,15 @@ export class APIClient {
   listRoom(
     requestMessage: github_com_elojah_game_03_pkg_room_dto_room_pb.ListRoomReq,
     callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_room_dto_room_pb.ListRoomResp|null) => void
+  ): UnaryResponse;
+  listFollow(
+    requestMessage: github_com_elojah_game_03_pkg_twitch_dto_follow_pb.ListFollowReq,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_twitch_dto_follow_pb.ListFollowResp|null) => void
+  ): UnaryResponse;
+  listFollow(
+    requestMessage: github_com_elojah_game_03_pkg_twitch_dto_follow_pb.ListFollowReq,
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_twitch_dto_follow_pb.ListFollowResp|null) => void
   ): UnaryResponse;
   ping(
     requestMessage: google_protobuf_empty_pb.Empty,
