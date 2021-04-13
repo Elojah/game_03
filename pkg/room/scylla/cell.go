@@ -39,9 +39,15 @@ func (f filterCell) index() string {
 	return strings.Join(cols, "|")
 }
 
-func (s Store) InsertCell(ctx context.Context, c room.Cell) error {
+func (s Store) InsertCells(ctx context.Context, cs ...room.Cell) error {
+
 	st, ns := cellByID.Ins()
-	q := s.ContextQuery(ctx, st, ns).BindStruct(c)
+	b := s.Session.NewBatch(gocql.UnloggedBatch).WithContext(ctx)
+	b.Bind(st, func(q *gocql.QueryInfo) ([]interface{}, error) {
+		// q.
+	})
+
+	q := s.ContextQuery(ctx, st, ns).BindStruct(cs)
 
 	if err := q.ExecRelease(); err != nil {
 		return err

@@ -24,7 +24,24 @@ func (h *handler) CreateRoom(ctx context.Context, req *room.R) (*room.R, error) 
 		return &room.R{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	}
 
+	// #Create world
+	w := room.World{
+		ID:     ulid.NewID(),
+		Height: 420, // nolint: gomnd
+		Width:  420, // nolint: gomnd
+		Tileset: map[int32]ulid.ID{
+			0: ulid.MustParse("01F3538E0FEXZ563X1NG24SHFN"),
+		},
+	}
+	if err := h.room.InsertWorld(ctx, w); err != nil {
+		logger.Error().Err(err).Msg("failed to create world")
+
+		return &room.R{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
+	// #Set new room values
 	req.ID = ulid.NewID()
+	req.WorldID = w.ID
 
 	// #Insert room
 	if err := h.room.Insert(ctx, *req); err != nil {

@@ -4,9 +4,8 @@ import (
 	"context"
 
 	"github.com/elojah/game_03/pkg/entity"
+	"github.com/elojah/game_03/pkg/entity/dto"
 	gerrors "github.com/elojah/game_03/pkg/errors"
-	"github.com/elojah/game_03/pkg/room"
-	"github.com/elojah/game_03/pkg/room/dto"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -37,17 +36,7 @@ func (h *handler) ListPC(ctx context.Context, req *dto.ListPCReq) (*dto.ListPCRe
 		return &dto.ListPCResp{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
-	// #Fetch rooms
-	rooms, err := h.room.FetchMany(ctx, room.Filter{
-		IDs: entity.PCs(pcs).PCIDs(),
-	})
-	if err != nil {
-		logger.Error().Err(err).Msg("failed to fetch rooms")
-
-		return &dto.ListPCResp{}, status.New(codes.Internal, err.Error()).Err()
-	}
-
 	logger.Info().Msg("success")
 
-	return &dto.ListPCResp{PCs: rooms}, nil
+	return &dto.ListPCResp{PCs: pcs}, nil
 }
