@@ -8,7 +8,6 @@ import (
 	github_com_elojah_game_03_pkg_ulid "github.com/elojah/game_03/pkg/ulid"
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
-	github_com_gogo_protobuf_sortkeys "github.com/gogo/protobuf/sortkeys"
 	golang_proto "github.com/golang/protobuf/proto"
 	io "io"
 	math "math"
@@ -30,10 +29,11 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type World struct {
-	ID      github_com_elojah_game_03_pkg_ulid.ID           `protobuf:"bytes,1,opt,name=ID,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"ID"`
-	Height  int64                                           `protobuf:"varint,2,opt,name=Height,proto3" json:"Height,omitempty"`
-	Width   int64                                           `protobuf:"varint,3,opt,name=Width,proto3" json:"Width,omitempty"`
-	Tileset map[int32]github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,4,rep,name=Tileset,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"Tileset" protobuf_key:"varint,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	ID         github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,1,opt,name=ID,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"ID"`
+	Height     int64                                 `protobuf:"varint,2,opt,name=Height,proto3" json:"Height,omitempty"`
+	Width      int64                                 `protobuf:"varint,3,opt,name=Width,proto3" json:"Width,omitempty"`
+	CellHeight int64                                 `protobuf:"varint,4,opt,name=CellHeight,proto3" json:"CellHeight,omitempty"`
+	CellWidth  int64                                 `protobuf:"varint,5,opt,name=CellWidth,proto3" json:"CellWidth,omitempty"`
 }
 
 func (m *World) Reset()      { *m = World{} }
@@ -82,11 +82,23 @@ func (m *World) GetWidth() int64 {
 	return 0
 }
 
+func (m *World) GetCellHeight() int64 {
+	if m != nil {
+		return m.CellHeight
+	}
+	return 0
+}
+
+func (m *World) GetCellWidth() int64 {
+	if m != nil {
+		return m.CellWidth
+	}
+	return 0
+}
+
 func init() {
 	proto.RegisterType((*World)(nil), "room.World")
 	golang_proto.RegisterType((*World)(nil), "room.World")
-	proto.RegisterMapType((map[int32]github_com_elojah_game_03_pkg_ulid.ID)(nil), "room.World.TilesetEntry")
-	golang_proto.RegisterMapType((map[int32]github_com_elojah_game_03_pkg_ulid.ID)(nil), "room.World.TilesetEntry")
 }
 
 func init() {
@@ -97,28 +109,25 @@ func init() {
 }
 
 var fileDescriptor_f1adc624c6e704bc = []byte{
-	// 329 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xd2, 0x4b, 0xcf, 0x2c, 0xc9,
-	0x28, 0x4d, 0xd2, 0x4b, 0xce, 0xcf, 0xd5, 0x4f, 0xcd, 0xc9, 0xcf, 0x4a, 0xcc, 0xd0, 0x4f, 0x4f,
-	0xcc, 0x4d, 0x8d, 0x37, 0x30, 0xd6, 0x2f, 0xc8, 0x4e, 0xd7, 0x2f, 0xca, 0xcf, 0xcf, 0xd5, 0x2f,
-	0xcf, 0x2f, 0xca, 0x49, 0xd1, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x01, 0x89, 0x48, 0xe9,
-	0x22, 0xe9, 0x4a, 0xcf, 0x4f, 0xcf, 0xd7, 0x07, 0x4b, 0x26, 0x95, 0xa6, 0x81, 0x79, 0x60, 0x0e,
-	0x98, 0x05, 0xd1, 0xa4, 0x34, 0x99, 0x89, 0x8b, 0x35, 0x1c, 0x64, 0x88, 0x90, 0x2d, 0x17, 0x93,
-	0xa7, 0x8b, 0x04, 0xa3, 0x02, 0xa3, 0x06, 0x8f, 0x93, 0xee, 0x89, 0x7b, 0xf2, 0x0c, 0xb7, 0xee,
-	0xc9, 0xab, 0xe2, 0x77, 0x42, 0x69, 0x4e, 0x66, 0x8a, 0x9e, 0xa7, 0x4b, 0x10, 0x93, 0xa7, 0x8b,
-	0x90, 0x18, 0x17, 0x9b, 0x47, 0x6a, 0x66, 0x7a, 0x46, 0x89, 0x04, 0x93, 0x02, 0xa3, 0x06, 0x73,
-	0x10, 0x94, 0x27, 0x24, 0xc2, 0xc5, 0x1a, 0x9e, 0x99, 0x52, 0x92, 0x21, 0xc1, 0x0c, 0x16, 0x86,
-	0x70, 0x84, 0x12, 0xb9, 0xd8, 0x43, 0x32, 0x73, 0x52, 0x8b, 0x53, 0x4b, 0x24, 0x58, 0x14, 0x98,
-	0x35, 0xb8, 0x8d, 0x24, 0xf4, 0x40, 0xae, 0xd7, 0x03, 0x3b, 0x45, 0x0f, 0x2a, 0xe5, 0x9a, 0x57,
-	0x52, 0x54, 0x49, 0xaa, 0x5b, 0x60, 0xe6, 0x4a, 0x59, 0x71, 0xf1, 0x20, 0x9b, 0x23, 0x24, 0xc0,
-	0xc5, 0x9c, 0x9d, 0x5a, 0x09, 0xf6, 0x20, 0x6b, 0x10, 0x88, 0x09, 0x72, 0x5a, 0x59, 0x62, 0x4e,
-	0x69, 0x2a, 0xd8, 0xc5, 0x3c, 0x41, 0x10, 0x8e, 0x15, 0x93, 0x05, 0xa3, 0x93, 0xcb, 0x85, 0x87,
-	0x72, 0x0c, 0x37, 0x1e, 0xca, 0x31, 0x7c, 0x78, 0x28, 0xc7, 0xf8, 0xe3, 0xa1, 0x1c, 0x63, 0xc3,
-	0x23, 0x39, 0xc6, 0x15, 0x8f, 0xe4, 0x18, 0x77, 0x3c, 0x92, 0x63, 0x3c, 0xf0, 0x48, 0x8e, 0xf1,
-	0xc4, 0x23, 0x39, 0xc6, 0x0b, 0x8f, 0xe4, 0x18, 0x1f, 0x3c, 0x92, 0x63, 0x7c, 0xf1, 0x48, 0x8e,
-	0xe1, 0xc3, 0x23, 0x39, 0xc6, 0x09, 0x8f, 0xe5, 0x18, 0x0e, 0x3c, 0x96, 0x63, 0xbc, 0xf0, 0x58,
-	0x8e, 0xe1, 0xc6, 0x63, 0x39, 0x86, 0x24, 0x36, 0x70, 0x10, 0x1b, 0x03, 0x02, 0x00, 0x00, 0xff,
-	0xff, 0x07, 0xa9, 0x98, 0xc7, 0xc9, 0x01, 0x00, 0x00,
+	// 279 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x90, 0x31, 0x4b, 0xc3, 0x40,
+	0x1c, 0x47, 0xef, 0x9f, 0x36, 0x05, 0x0f, 0xa7, 0x43, 0x24, 0x88, 0xfc, 0x5b, 0x04, 0xa1, 0x4b,
+	0x73, 0x42, 0x67, 0x97, 0x9a, 0xc1, 0xac, 0x5d, 0x3a, 0x4a, 0x63, 0xe2, 0x25, 0x7a, 0xe1, 0x4a,
+	0x48, 0x70, 0xf5, 0x23, 0xf8, 0x31, 0x9c, 0x9d, 0x1c, 0x3b, 0x76, 0xcc, 0x58, 0x1c, 0x8a, 0xb9,
+	0x2c, 0x8e, 0x1d, 0x1d, 0x25, 0x97, 0x82, 0x99, 0xdc, 0xee, 0xbd, 0x1f, 0xef, 0x38, 0x8e, 0xba,
+	0x22, 0xc9, 0xe3, 0x22, 0x70, 0xef, 0x55, 0xca, 0x23, 0xa9, 0x1e, 0x97, 0x31, 0x17, 0xcb, 0x34,
+	0xba, 0xbb, 0x9a, 0xf2, 0xd5, 0x93, 0xe0, 0x99, 0x52, 0x29, 0x7f, 0x56, 0x99, 0x0c, 0xdd, 0x55,
+	0xa6, 0x72, 0xc5, 0xfa, 0x8d, 0x39, 0x9b, 0x74, 0x2a, 0xa1, 0x84, 0xe2, 0x66, 0x0c, 0x8a, 0x07,
+	0x43, 0x06, 0xcc, 0xa9, 0x8d, 0x2e, 0xde, 0x81, 0xda, 0x8b, 0xe6, 0x12, 0x76, 0x4d, 0x2d, 0xdf,
+	0x73, 0x60, 0x04, 0xe3, 0xe3, 0xd9, 0x64, 0xb3, 0x1b, 0x92, 0xcf, 0xdd, 0xf0, 0xf2, 0xff, 0x27,
+	0x14, 0x32, 0x09, 0x5d, 0xdf, 0x9b, 0x5b, 0xbe, 0xc7, 0x4e, 0xe9, 0xe0, 0x36, 0x4a, 0x44, 0x9c,
+	0x3b, 0xd6, 0x08, 0xc6, 0xbd, 0xf9, 0x81, 0xd8, 0x09, 0xb5, 0x17, 0x49, 0x98, 0xc7, 0x4e, 0xcf,
+	0xe8, 0x16, 0x18, 0x52, 0x7a, 0x13, 0x49, 0x79, 0x28, 0xfa, 0x66, 0xea, 0x18, 0x76, 0x4e, 0x8f,
+	0x1a, 0x6a, 0x4b, 0xdb, 0xcc, 0x7f, 0x62, 0xe6, 0x95, 0x15, 0x92, 0x6d, 0x85, 0x64, 0x5f, 0x21,
+	0xfc, 0x54, 0x08, 0x2f, 0x1a, 0xe1, 0x4d, 0x23, 0x7c, 0x68, 0x84, 0xb5, 0x46, 0xd8, 0x68, 0x84,
+	0x52, 0x23, 0x7c, 0x69, 0x84, 0x6f, 0x8d, 0x64, 0xaf, 0x11, 0x5e, 0x6b, 0x24, 0xeb, 0x1a, 0xa1,
+	0xac, 0x91, 0x6c, 0x6b, 0x24, 0xc1, 0xc0, 0xfc, 0xc0, 0xf4, 0x37, 0x00, 0x00, 0xff, 0xff, 0x50,
+	0xa8, 0xb3, 0x47, 0x68, 0x01, 0x00, 0x00,
 }
 
 func (this *World) Equal(that interface{}) bool {
@@ -149,13 +158,11 @@ func (this *World) Equal(that interface{}) bool {
 	if this.Width != that1.Width {
 		return false
 	}
-	if len(this.Tileset) != len(that1.Tileset) {
+	if this.CellHeight != that1.CellHeight {
 		return false
 	}
-	for i := range this.Tileset {
-		if !this.Tileset[i].Equal(that1.Tileset[i]) { //not nullable
-			return false
-		}
+	if this.CellWidth != that1.CellWidth {
+		return false
 	}
 	return true
 }
@@ -163,24 +170,13 @@ func (this *World) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 8)
+	s := make([]string, 0, 9)
 	s = append(s, "&room.World{")
 	s = append(s, "ID: "+fmt.Sprintf("%#v", this.ID)+",\n")
 	s = append(s, "Height: "+fmt.Sprintf("%#v", this.Height)+",\n")
 	s = append(s, "Width: "+fmt.Sprintf("%#v", this.Width)+",\n")
-	keysForTileset := make([]int32, 0, len(this.Tileset))
-	for k, _ := range this.Tileset {
-		keysForTileset = append(keysForTileset, k)
-	}
-	github_com_gogo_protobuf_sortkeys.Int32s(keysForTileset)
-	mapStringForTileset := "map[int32]github_com_elojah_game_03_pkg_ulid.ID{"
-	for _, k := range keysForTileset {
-		mapStringForTileset += fmt.Sprintf("%#v: %#v,", k, this.Tileset[k])
-	}
-	mapStringForTileset += "}"
-	if this.Tileset != nil {
-		s = append(s, "Tileset: "+mapStringForTileset+",\n")
-	}
+	s = append(s, "CellHeight: "+fmt.Sprintf("%#v", this.CellHeight)+",\n")
+	s = append(s, "CellWidth: "+fmt.Sprintf("%#v", this.CellWidth)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -212,27 +208,15 @@ func (m *World) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Tileset) > 0 {
-		for k := range m.Tileset {
-			v := m.Tileset[k]
-			baseI := i
-			{
-				size := v.Size()
-				i -= size
-				if _, err := v.MarshalTo(dAtA[i:]); err != nil {
-					return 0, err
-				}
-				i = encodeVarintWorld(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x12
-			i = encodeVarintWorld(dAtA, i, uint64(k))
-			i--
-			dAtA[i] = 0x8
-			i = encodeVarintWorld(dAtA, i, uint64(baseI-i))
-			i--
-			dAtA[i] = 0x22
-		}
+	if m.CellWidth != 0 {
+		i = encodeVarintWorld(dAtA, i, uint64(m.CellWidth))
+		i--
+		dAtA[i] = 0x28
+	}
+	if m.CellHeight != 0 {
+		i = encodeVarintWorld(dAtA, i, uint64(m.CellHeight))
+		i--
+		dAtA[i] = 0x20
 	}
 	if m.Width != 0 {
 		i = encodeVarintWorld(dAtA, i, uint64(m.Width))
@@ -280,12 +264,13 @@ func NewPopulatedWorld(r randyWorld, easy bool) *World {
 	if r.Intn(2) == 0 {
 		this.Width *= -1
 	}
-	if r.Intn(5) != 0 {
-		v2 := r.Intn(10)
-		this.Tileset = make(map[int32]github_com_elojah_game_03_pkg_ulid.ID)
-		for i := 0; i < v2; i++ {
-			this.Tileset[int32(r.Int31())] = (github_com_elojah_game_03_pkg_ulid.ID)(*github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r))
-		}
+	this.CellHeight = int64(r.Int63())
+	if r.Intn(2) == 0 {
+		this.CellHeight *= -1
+	}
+	this.CellWidth = int64(r.Int63())
+	if r.Intn(2) == 0 {
+		this.CellWidth *= -1
 	}
 	if !easy && r.Intn(10) != 0 {
 	}
@@ -311,9 +296,9 @@ func randUTF8RuneWorld(r randyWorld) rune {
 	return rune(ru + 61)
 }
 func randStringWorld(r randyWorld) string {
-	v3 := r.Intn(100)
-	tmps := make([]rune, v3)
-	for i := 0; i < v3; i++ {
+	v2 := r.Intn(100)
+	tmps := make([]rune, v2)
+	for i := 0; i < v2; i++ {
 		tmps[i] = randUTF8RuneWorld(r)
 	}
 	return string(tmps)
@@ -335,11 +320,11 @@ func randFieldWorld(dAtA []byte, r randyWorld, fieldNumber int, wire int) []byte
 	switch wire {
 	case 0:
 		dAtA = encodeVarintPopulateWorld(dAtA, uint64(key))
-		v4 := r.Int63()
+		v3 := r.Int63()
 		if r.Intn(2) == 0 {
-			v4 *= -1
+			v3 *= -1
 		}
-		dAtA = encodeVarintPopulateWorld(dAtA, uint64(v4))
+		dAtA = encodeVarintPopulateWorld(dAtA, uint64(v3))
 	case 1:
 		dAtA = encodeVarintPopulateWorld(dAtA, uint64(key))
 		dAtA = append(dAtA, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
@@ -378,16 +363,11 @@ func (m *World) Size() (n int) {
 	if m.Width != 0 {
 		n += 1 + sovWorld(uint64(m.Width))
 	}
-	if len(m.Tileset) > 0 {
-		for k, v := range m.Tileset {
-			_ = k
-			_ = v
-			l = 0
-			l = v.Size()
-			l += 1 + sovWorld(uint64(l))
-			mapEntrySize := 1 + sovWorld(uint64(k)) + l
-			n += mapEntrySize + 1 + sovWorld(uint64(mapEntrySize))
-		}
+	if m.CellHeight != 0 {
+		n += 1 + sovWorld(uint64(m.CellHeight))
+	}
+	if m.CellWidth != 0 {
+		n += 1 + sovWorld(uint64(m.CellWidth))
 	}
 	return n
 }
@@ -402,21 +382,12 @@ func (this *World) String() string {
 	if this == nil {
 		return "nil"
 	}
-	keysForTileset := make([]int32, 0, len(this.Tileset))
-	for k, _ := range this.Tileset {
-		keysForTileset = append(keysForTileset, k)
-	}
-	github_com_gogo_protobuf_sortkeys.Int32s(keysForTileset)
-	mapStringForTileset := "map[int32]github_com_elojah_game_03_pkg_ulid.ID{"
-	for _, k := range keysForTileset {
-		mapStringForTileset += fmt.Sprintf("%v: %v,", k, this.Tileset[k])
-	}
-	mapStringForTileset += "}"
 	s := strings.Join([]string{`&World{`,
 		`ID:` + fmt.Sprintf("%v", this.ID) + `,`,
 		`Height:` + fmt.Sprintf("%v", this.Height) + `,`,
 		`Width:` + fmt.Sprintf("%v", this.Width) + `,`,
-		`Tileset:` + mapStringForTileset + `,`,
+		`CellHeight:` + fmt.Sprintf("%v", this.CellHeight) + `,`,
+		`CellWidth:` + fmt.Sprintf("%v", this.CellWidth) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -530,10 +501,10 @@ func (m *World) Unmarshal(dAtA []byte) error {
 				}
 			}
 		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Tileset", wireType)
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CellHeight", wireType)
 			}
-			var msglen int
+			m.CellHeight = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowWorld
@@ -543,108 +514,30 @@ func (m *World) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= int(b&0x7F) << shift
+				m.CellHeight |= int64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if msglen < 0 {
-				return ErrInvalidLengthWorld
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CellWidth", wireType)
 			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthWorld
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.Tileset == nil {
-				m.Tileset = make(map[int32]github_com_elojah_game_03_pkg_ulid.ID)
-			}
-			var mapkey int32
-			var mapvalue1 github_com_elojah_game_03_pkg_ulid.ID
-			var mapvalue = &mapvalue1
-			for iNdEx < postIndex {
-				entryPreIndex := iNdEx
-				var wire uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowWorld
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					wire |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
+			m.CellWidth = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowWorld
 				}
-				fieldNum := int32(wire >> 3)
-				if fieldNum == 1 {
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowWorld
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						mapkey |= int32(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-				} else if fieldNum == 2 {
-					var mapbyteLen uint64
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowWorld
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						mapbyteLen |= uint64(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-					intMapbyteLen := int(mapbyteLen)
-					if intMapbyteLen < 0 {
-						return ErrInvalidLengthWorld
-					}
-					postbytesIndex := iNdEx + intMapbyteLen
-					if postbytesIndex < 0 {
-						return ErrInvalidLengthWorld
-					}
-					if postbytesIndex > l {
-						return io.ErrUnexpectedEOF
-					}
-					if err := mapvalue.Unmarshal(dAtA[iNdEx:postbytesIndex]); err != nil {
-						return err
-					}
-					iNdEx = postbytesIndex
-				} else {
-					iNdEx = entryPreIndex
-					skippy, err := skipWorld(dAtA[iNdEx:])
-					if err != nil {
-						return err
-					}
-					if skippy < 0 {
-						return ErrInvalidLengthWorld
-					}
-					if (iNdEx + skippy) > postIndex {
-						return io.ErrUnexpectedEOF
-					}
-					iNdEx += skippy
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.CellWidth |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
 				}
 			}
-			m.Tileset[mapkey] = ((github_com_elojah_game_03_pkg_ulid.ID)(*mapvalue))
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipWorld(dAtA[iNdEx:])

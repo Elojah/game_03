@@ -16,8 +16,12 @@ export class World extends jspb.Message {
   getWidth(): number;
   setWidth(value: number): void;
 
-  getTilesetMap(): jspb.Map<number, Uint8Array | string>;
-  clearTilesetMap(): void;
+  getCellheight(): number;
+  setCellheight(value: number): void;
+
+  getCellwidth(): number;
+  setCellwidth(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): World.AsObject;
   static toObject(includeInstance: boolean, msg: World): World.AsObject;
@@ -33,7 +37,8 @@ export namespace World {
     id: Uint8Array | string,
     height: number,
     width: number,
-    tilesetMap: Array<[number, Uint8Array | string]>,
+    cellheight: number,
+    cellwidth: number,
   }
 }
 

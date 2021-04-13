@@ -13,7 +13,7 @@ type FilterCell struct {
 }
 
 type StoreCell interface {
-	InsertCells(context.Context, ...Cell) error
+	InsertCell(context.Context, Cell) error
 	FetchCell(context.Context, FilterCell) (Cell, error)
 	DeleteCell(context.Context, FilterCell) error
 }
