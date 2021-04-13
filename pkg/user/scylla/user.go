@@ -85,6 +85,22 @@ func (s Store) Fetch(ctx context.Context, f user.Filter) (user.U, error) {
 	return u, nil
 }
 
+func (s Store) FetchMany(ctx context.Context, f user.Filter) ([]user.U, error) {
+	st, ns := filter(f).table().Get()
+	q := s.ContextQuery(ctx, st, ns).BindStruct(f)
+
+	var us []user.U
+	if err := q.SelectRelease(&us); err != nil {
+		if errors.Is(err, gocql.ErrNotFound) {
+			return nil, gerrors.ErrNotFound{Resource: "user", Index: filter(f).index()}
+		}
+
+		return nil, err
+	}
+
+	return us, nil
+}
+
 func (s Store) Delete(ctx context.Context, f user.Filter) error {
 	st, ns := filter(f).table().Del()
 	q := s.ContextQuery(ctx, st, ns).BindStruct(f)

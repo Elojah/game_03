@@ -9,9 +9,15 @@ option (gogoproto.goproto_registration) = true;
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "github.com/elojah/game_03/pkg/room/room.proto";
+import "github.com/elojah/game_03/pkg/user/user.proto";
+
+message Room {
+    room.R Room           = 1 [(gogoproto.nullable) = false];
+    user.U Owner          = 2 [(gogoproto.nullable) = false];
+}
 
 message ListRoomReq {}
 
 message ListRoomResp {
-    repeated room.R Rooms = 1 [(gogoproto.nullable) = false];
+    repeated Room Rooms  = 1 [(gogoproto.nullable) = false];
 }

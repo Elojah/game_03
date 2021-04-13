@@ -88,7 +88,7 @@ func (s Store) FetchManyPC(ctx context.Context, f entity.FilterPC) ([]entity.PC,
 	var pcs []entity.PC
 	if err := q.SelectRelease(&pcs); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
-			return nil, gerrors.ErrNotFound{Resource: "entity", Index: filterPC(f).index()}
+			return nil, gerrors.ErrNotFound{Resource: "pc", Index: filterPC(f).index()}
 		}
 
 		return nil, err

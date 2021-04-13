@@ -72,7 +72,8 @@ proto.room.R.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: msg.getId_asB64(),
     ownerid: msg.getOwnerid_asB64(),
-    worldid: msg.getWorldid_asB64()
+    worldid: msg.getWorldid_asB64(),
+    name: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -121,6 +122,10 @@ proto.room.R.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setWorldid(value);
       break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setName(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -168,6 +173,13 @@ proto.room.R.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeBytes(
       3,
+      f
+    );
+  }
+  f = message.getName();
+  if (f.length > 0) {
+    writer.writeString(
+      4,
       f
     );
   }
@@ -297,6 +309,24 @@ proto.room.R.prototype.getWorldid_asU8 = function() {
  */
 proto.room.R.prototype.setWorldid = function(value) {
   return jspb.Message.setProto3BytesField(this, 3, value);
+};
+
+
+/**
+ * optional string Name = 4;
+ * @return {string}
+ */
+proto.room.R.prototype.getName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.room.R} returns this
+ */
+proto.room.R.prototype.setName = function(value) {
+  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 

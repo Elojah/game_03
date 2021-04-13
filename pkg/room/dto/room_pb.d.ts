@@ -4,6 +4,35 @@
 import * as jspb from "google-protobuf";
 import * as github_com_gogo_protobuf_gogoproto_gogo_pb from "../../../../../../github.com/gogo/protobuf/gogoproto/gogo_pb";
 import * as github_com_elojah_game_03_pkg_room_room_pb from "../../../../../../github.com/elojah/game_03/pkg/room/room_pb";
+import * as github_com_elojah_game_03_pkg_user_user_pb from "../../../../../../github.com/elojah/game_03/pkg/user/user_pb";
+
+export class Room extends jspb.Message {
+  hasRoom(): boolean;
+  clearRoom(): void;
+  getRoom(): github_com_elojah_game_03_pkg_room_room_pb.R | undefined;
+  setRoom(value?: github_com_elojah_game_03_pkg_room_room_pb.R): void;
+
+  hasOwner(): boolean;
+  clearOwner(): void;
+  getOwner(): github_com_elojah_game_03_pkg_user_user_pb.U | undefined;
+  setOwner(value?: github_com_elojah_game_03_pkg_user_user_pb.U): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): Room.AsObject;
+  static toObject(includeInstance: boolean, msg: Room): Room.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: Room, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Room;
+  static deserializeBinaryFromReader(message: Room, reader: jspb.BinaryReader): Room;
+}
+
+export namespace Room {
+  export type AsObject = {
+    room?: github_com_elojah_game_03_pkg_room_room_pb.R.AsObject,
+    owner?: github_com_elojah_game_03_pkg_user_user_pb.U.AsObject,
+  }
+}
 
 export class ListRoomReq extends jspb.Message {
   serializeBinary(): Uint8Array;
@@ -23,9 +52,9 @@ export namespace ListRoomReq {
 
 export class ListRoomResp extends jspb.Message {
   clearRoomsList(): void;
-  getRoomsList(): Array<github_com_elojah_game_03_pkg_room_room_pb.R>;
-  setRoomsList(value: Array<github_com_elojah_game_03_pkg_room_room_pb.R>): void;
-  addRooms(value?: github_com_elojah_game_03_pkg_room_room_pb.R, index?: number): github_com_elojah_game_03_pkg_room_room_pb.R;
+  getRoomsList(): Array<Room>;
+  setRoomsList(value: Array<Room>): void;
+  addRooms(value?: Room, index?: number): Room;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ListRoomResp.AsObject;
@@ -39,7 +68,7 @@ export class ListRoomResp extends jspb.Message {
 
 export namespace ListRoomResp {
   export type AsObject = {
-    roomsList: Array<github_com_elojah_game_03_pkg_room_room_pb.R.AsObject>,
+    roomsList: Array<Room.AsObject>,
   }
 }
 

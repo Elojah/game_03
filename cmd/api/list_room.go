@@ -7,6 +7,8 @@ import (
 	gerrors "github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/room"
 	"github.com/elojah/game_03/pkg/room/dto"
+	"github.com/elojah/game_03/pkg/ulid"
+	"github.com/elojah/game_03/pkg/user"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -47,7 +49,40 @@ func (h *handler) ListRoom(ctx context.Context, req *dto.ListRoomReq) (*dto.List
 		return &dto.ListRoomResp{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
+	// #Populate rooms with owner
+	ownerIDs := make([]ulid.ID, 0, len(rooms))
+
+	for _, r := range rooms {
+		ownerIDs = append(ownerIDs, r.OwnerID)
+	}
+
+	owners, err := h.user.FetchMany(ctx, user.Filter{
+		IDs: ownerIDs,
+	})
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to fetch owners")
+
+		return &dto.ListRoomResp{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
+	ownersMap := make(map[ulid.ID]user.U, len(owners))
+	for _, o := range owners {
+		ownersMap[o.ID] = o
+	}
+
+	// #Populate response
+	result := dto.ListRoomResp{
+		Rooms: make([]dto.Room, 0, len(rooms)),
+	}
+
+	for _, r := range rooms {
+		result.Rooms = append(result.Rooms, dto.Room{
+			Room:  r,
+			Owner: ownersMap[r.OwnerID],
+		})
+	}
+
 	logger.Info().Msg("success")
 
-	return &dto.ListRoomResp{Rooms: rooms}, nil
+	return &result, nil
 }
