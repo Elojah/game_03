@@ -73,7 +73,7 @@ proto.room.Cell.toObject = function(includeInstance, msg) {
     worldid: msg.getWorldid_asB64(),
     x: jspb.Message.getFieldWithDefault(msg, 2, 0),
     y: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    tilemap: msg.getTilemap_asB64()
+    tilemapMap: (f = msg.getTilemapMap()) ? f.toObject(includeInstance, undefined) : []
   };
 
   if (includeInstance) {
@@ -123,8 +123,10 @@ proto.room.Cell.deserializeBinaryFromReader = function(msg, reader) {
       msg.setY(value);
       break;
     case 4:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setTilemap(value);
+      var value = msg.getTilemapMap();
+      reader.readMessage(value, function(message, reader) {
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readInt64, jspb.BinaryReader.prototype.readBytes, null, 0, "");
+         });
       break;
     default:
       reader.skipField();
@@ -176,12 +178,9 @@ proto.room.Cell.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getTilemap_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      4,
-      f
-    );
+  f = message.getTilemapMap(true);
+  if (f && f.getLength() > 0) {
+    f.serializeBinary(4, writer, jspb.BinaryWriter.prototype.writeInt64, jspb.BinaryWriter.prototype.writeBytes);
   }
 };
 
@@ -265,45 +264,25 @@ proto.room.Cell.prototype.setY = function(value) {
 
 
 /**
- * optional bytes Tilemap = 4;
- * @return {!(string|Uint8Array)}
+ * map<int64, bytes> Tilemap = 4;
+ * @param {boolean=} opt_noLazyCreate Do not create the map if
+ * empty, instead returning `undefined`
+ * @return {!jspb.Map<number,!(string|Uint8Array)>}
  */
-proto.room.Cell.prototype.getTilemap = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+proto.room.Cell.prototype.getTilemapMap = function(opt_noLazyCreate) {
+  return /** @type {!jspb.Map<number,!(string|Uint8Array)>} */ (
+      jspb.Message.getMapField(this, 4, opt_noLazyCreate,
+      null));
 };
 
 
 /**
- * optional bytes Tilemap = 4;
- * This is a type-conversion wrapper around `getTilemap()`
- * @return {string}
- */
-proto.room.Cell.prototype.getTilemap_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getTilemap()));
-};
-
-
-/**
- * optional bytes Tilemap = 4;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getTilemap()`
- * @return {!Uint8Array}
- */
-proto.room.Cell.prototype.getTilemap_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getTilemap()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
+ * Clears values from the map. The map will be non-null.
  * @return {!proto.room.Cell} returns this
  */
-proto.room.Cell.prototype.setTilemap = function(value) {
-  return jspb.Message.setProto3BytesField(this, 4, value);
-};
+proto.room.Cell.prototype.clearTilemapMap = function() {
+  this.getTilemapMap().clear();
+  return this;};
 
 
 goog.object.extend(exports, proto.room);

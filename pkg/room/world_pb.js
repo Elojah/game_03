@@ -73,7 +73,8 @@ proto.room.World.toObject = function(includeInstance, msg) {
     id: msg.getId_asB64(),
     height: jspb.Message.getFieldWithDefault(msg, 2, 0),
     width: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    tilesetMap: (f = msg.getTilesetMap()) ? f.toObject(includeInstance, undefined) : []
+    cellheight: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    cellwidth: jspb.Message.getFieldWithDefault(msg, 5, 0)
   };
 
   if (includeInstance) {
@@ -123,10 +124,12 @@ proto.room.World.deserializeBinaryFromReader = function(msg, reader) {
       msg.setWidth(value);
       break;
     case 4:
-      var value = msg.getTilesetMap();
-      reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readInt32, jspb.BinaryReader.prototype.readBytes, null, 0, "");
-         });
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setCellheight(value);
+      break;
+    case 5:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setCellwidth(value);
       break;
     default:
       reader.skipField();
@@ -178,9 +181,19 @@ proto.room.World.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getTilesetMap(true);
-  if (f && f.getLength() > 0) {
-    f.serializeBinary(4, writer, jspb.BinaryWriter.prototype.writeInt32, jspb.BinaryWriter.prototype.writeBytes);
+  f = message.getCellheight();
+  if (f !== 0) {
+    writer.writeInt64(
+      4,
+      f
+    );
+  }
+  f = message.getCellwidth();
+  if (f !== 0) {
+    writer.writeInt64(
+      5,
+      f
+    );
   }
 };
 
@@ -264,25 +277,39 @@ proto.room.World.prototype.setWidth = function(value) {
 
 
 /**
- * map<int32, bytes> Tileset = 4;
- * @param {boolean=} opt_noLazyCreate Do not create the map if
- * empty, instead returning `undefined`
- * @return {!jspb.Map<number,!(string|Uint8Array)>}
+ * optional int64 CellHeight = 4;
+ * @return {number}
  */
-proto.room.World.prototype.getTilesetMap = function(opt_noLazyCreate) {
-  return /** @type {!jspb.Map<number,!(string|Uint8Array)>} */ (
-      jspb.Message.getMapField(this, 4, opt_noLazyCreate,
-      null));
+proto.room.World.prototype.getCellheight = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
 
 /**
- * Clears values from the map. The map will be non-null.
+ * @param {number} value
  * @return {!proto.room.World} returns this
  */
-proto.room.World.prototype.clearTilesetMap = function() {
-  this.getTilesetMap().clear();
-  return this;};
+proto.room.World.prototype.setCellheight = function(value) {
+  return jspb.Message.setProto3IntField(this, 4, value);
+};
+
+
+/**
+ * optional int64 CellWidth = 5;
+ * @return {number}
+ */
+proto.room.World.prototype.getCellwidth = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.room.World} returns this
+ */
+proto.room.World.prototype.setCellwidth = function(value) {
+  return jspb.Message.setProto3IntField(this, 5, value);
+};
 
 
 goog.object.extend(exports, proto.room);

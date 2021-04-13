@@ -16,11 +16,8 @@ export class Cell extends jspb.Message {
   getY(): number;
   setY(value: number): void;
 
-  getTilemap(): Uint8Array | string;
-  getTilemap_asU8(): Uint8Array;
-  getTilemap_asB64(): string;
-  setTilemap(value: Uint8Array | string): void;
-
+  getTilemapMap(): jspb.Map<number, Uint8Array | string>;
+  clearTilemapMap(): void;
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Cell.AsObject;
   static toObject(includeInstance: boolean, msg: Cell): Cell.AsObject;
@@ -36,7 +33,7 @@ export namespace Cell {
     worldid: Uint8Array | string,
     x: number,
     y: number,
-    tilemap: Uint8Array | string,
+    tilemapMap: Array<[number, Uint8Array | string]>,
   }
 }
 
