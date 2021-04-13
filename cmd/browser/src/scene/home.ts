@@ -3,10 +3,14 @@ import {grpc} from "@improbable-eng/grpc-web";
 
 import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty_pb";
 import * as google_protobuf_wrappers_pb from "google-protobuf/google/protobuf/wrappers_pb";
+
 import * as API from "@cmd/api/grpc/api_pb_service";
+
 import * as TwitchDTO from "@pkg/twitch/dto/follow_pb";
 import * as Twitch from "@pkg/twitch/follow_pb";
-import { makeDefaultTransport } from "@improbable-eng/grpc-web/dist/typings/transports/Transport";
+
+import * as RoomDTO from "@pkg/room/dto/room_pb";
+import * as Room from "@pkg/room/room_pb";
 
 export class Home extends Scene {
 
@@ -18,6 +22,8 @@ export class Home extends Scene {
     preload() {
         this.load.html('follow', 'html/follow.html')
         this.load.html('follow_line', 'html/follow_line.html')
+        this.load.html('room', 'html/room.html')
+        this.load.html('room_line', 'html/room_line.html')
         this.load.image('home_background_01', 'img/home_background_01.png')
     }
     create() {
@@ -37,15 +43,12 @@ export class Home extends Scene {
 
         this.add.image(0, 0, 'home_background_01').setOrigin(0);
         this.displayFollow();
+        this.displayRoom();
     }
     update() {}
     displayFollow(){        
         this.listFollow()
-        .then((follows: TwitchDTO.ListFollowResp)=> {
-            if (follows.getCursor() && ) {
-
-            }
-            
+        .then((follows: TwitchDTO.ListFollowResp)=> {            
             const ol = this.cache.html.get('follow')
             const li = this.cache.html.get('follow_line')
 
@@ -56,7 +59,20 @@ export class Home extends Scene {
         .catch((err)=> {
             console.log(err)
         })
+    }
+    displayRoom(){        
+        this.listRoom()
+        .then((rooms: RoomDTO.ListRoomResp)=> {            
+            const ol = this.cache.html.get('room')
+            const li = this.cache.html.get('room_line')
 
+            const lines = rooms.getRoomsList().reduce((acc:string, r: RoomDTO.Room) => acc + li.replace('{{name}}', r.getRoom()!.getName()), '')
+            
+            this.add.dom(60, 10).createFromHTML(ol.replace('{{lines}}', lines)).setOrigin(0)
+        })
+        .catch((err)=> {
+            console.log(err)
+        })
     }
     ping() {
         const req = new google_protobuf_empty_pb.Empty();
@@ -101,4 +117,30 @@ export class Home extends Scene {
         
         return prom
     }    
+    listRoom() {
+        let req = new RoomDTO.ListRoomReq();
+        let md = new grpc.Metadata()
+        md.set('token', this.registry.get('token'))
+
+        const prom = new Promise<RoomDTO.ListRoomResp>((resolve, reject) => {
+            grpc.unary(API.API.ListRoom, {
+                metadata: md,
+                request: req,
+                host: 'http://localhost:8081',
+                onEnd: res => {
+                    const { status, statusMessage, headers, message, trailers } = res;
+                    if (status !== grpc.Code.OK || !message) {
+                        reject(res)
+
+                        return
+                    }
+
+                    resolve(message as RoomDTO.ListRoomResp)
+                }
+            });
+        })
+        
+        return prom
+    }    
+
 }

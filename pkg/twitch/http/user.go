@@ -21,7 +21,6 @@ func (f userFilter) set(req *http.Request) {
 	}
 
 	req.URL.RawQuery = q.Encode()
-
 }
 
 func (c Client) GetUsers(

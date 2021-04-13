@@ -20,6 +20,9 @@ export class R extends jspb.Message {
   getWorldid_asB64(): string;
   setWorldid(value: Uint8Array | string): void;
 
+  getName(): string;
+  setName(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): R.AsObject;
   static toObject(includeInstance: boolean, msg: R): R.AsObject;
@@ -35,6 +38,7 @@ export namespace R {
     id: Uint8Array | string,
     ownerid: Uint8Array | string,
     worldid: Uint8Array | string,
+    name: string,
   }
 }
 

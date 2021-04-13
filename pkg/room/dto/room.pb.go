@@ -6,6 +6,7 @@ package dto
 import (
 	fmt "fmt"
 	room "github.com/elojah/game_03/pkg/room"
+	user "github.com/elojah/game_03/pkg/user"
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
 	golang_proto "github.com/golang/protobuf/proto"
@@ -28,13 +29,64 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+type Room struct {
+	Room  room.R `protobuf:"bytes,1,opt,name=Room,proto3" json:"Room"`
+	Owner user.U `protobuf:"bytes,2,opt,name=Owner,proto3" json:"Owner"`
+}
+
+func (m *Room) Reset()      { *m = Room{} }
+func (*Room) ProtoMessage() {}
+func (*Room) Descriptor() ([]byte, []int) {
+	return fileDescriptor_eb76369b24ff759d, []int{0}
+}
+func (m *Room) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *Room) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_Room.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *Room) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Room.Merge(m, src)
+}
+func (m *Room) XXX_Size() int {
+	return m.Size()
+}
+func (m *Room) XXX_DiscardUnknown() {
+	xxx_messageInfo_Room.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Room proto.InternalMessageInfo
+
+func (m *Room) GetRoom() room.R {
+	if m != nil {
+		return m.Room
+	}
+	return room.R{}
+}
+
+func (m *Room) GetOwner() user.U {
+	if m != nil {
+		return m.Owner
+	}
+	return user.U{}
+}
+
 type ListRoomReq struct {
 }
 
 func (m *ListRoomReq) Reset()      { *m = ListRoomReq{} }
 func (*ListRoomReq) ProtoMessage() {}
 func (*ListRoomReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_eb76369b24ff759d, []int{0}
+	return fileDescriptor_eb76369b24ff759d, []int{1}
 }
 func (m *ListRoomReq) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -64,13 +116,13 @@ func (m *ListRoomReq) XXX_DiscardUnknown() {
 var xxx_messageInfo_ListRoomReq proto.InternalMessageInfo
 
 type ListRoomResp struct {
-	Rooms []room.R `protobuf:"bytes,1,rep,name=Rooms,proto3" json:"Rooms"`
+	Rooms []Room `protobuf:"bytes,1,rep,name=Rooms,proto3" json:"Rooms"`
 }
 
 func (m *ListRoomResp) Reset()      { *m = ListRoomResp{} }
 func (*ListRoomResp) ProtoMessage() {}
 func (*ListRoomResp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_eb76369b24ff759d, []int{1}
+	return fileDescriptor_eb76369b24ff759d, []int{2}
 }
 func (m *ListRoomResp) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -99,7 +151,7 @@ func (m *ListRoomResp) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_ListRoomResp proto.InternalMessageInfo
 
-func (m *ListRoomResp) GetRooms() []room.R {
+func (m *ListRoomResp) GetRooms() []Room {
 	if m != nil {
 		return m.Rooms
 	}
@@ -107,6 +159,8 @@ func (m *ListRoomResp) GetRooms() []room.R {
 }
 
 func init() {
+	proto.RegisterType((*Room)(nil), "dto.Room")
+	golang_proto.RegisterType((*Room)(nil), "dto.Room")
 	proto.RegisterType((*ListRoomReq)(nil), "dto.ListRoomReq")
 	golang_proto.RegisterType((*ListRoomReq)(nil), "dto.ListRoomReq")
 	proto.RegisterType((*ListRoomResp)(nil), "dto.ListRoomResp")
@@ -121,24 +175,55 @@ func init() {
 }
 
 var fileDescriptor_eb76369b24ff759d = []byte{
-	// 235 bytes of a gzipped FileDescriptorProto
+	// 292 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x32, 0x4c, 0xcf, 0x2c, 0xc9,
 	0x28, 0x4d, 0xd2, 0x4b, 0xce, 0xcf, 0xd5, 0x4f, 0xcd, 0xc9, 0xcf, 0x4a, 0xcc, 0xd0, 0x4f, 0x4f,
 	0xcc, 0x4d, 0x8d, 0x37, 0x30, 0xd6, 0x2f, 0xc8, 0x4e, 0xd7, 0x2f, 0xca, 0xcf, 0xcf, 0xd5, 0x4f,
 	0x29, 0xc9, 0x07, 0x33, 0xf4, 0x0a, 0x8a, 0xf2, 0x4b, 0xf2, 0x85, 0x98, 0x53, 0x4a, 0xf2, 0xa5,
 	0x74, 0x91, 0xf4, 0xa5, 0xe7, 0xa7, 0xe7, 0xeb, 0x83, 0xe5, 0x92, 0x4a, 0xd3, 0xc0, 0x3c, 0x30,
-	0x07, 0xcc, 0x82, 0xe8, 0x41, 0x51, 0x8e, 0xcb, 0x1a, 0x84, 0x15, 0x4a, 0xbc, 0x5c, 0xdc, 0x3e,
-	0x99, 0xc5, 0x25, 0x41, 0xf9, 0xf9, 0xb9, 0x41, 0xa9, 0x85, 0x4a, 0xc6, 0x5c, 0x3c, 0x08, 0x6e,
-	0x71, 0x81, 0x90, 0x32, 0x17, 0x2b, 0x88, 0x5d, 0x2c, 0xc1, 0xa8, 0xc0, 0xac, 0xc1, 0x6d, 0xc4,
-	0xae, 0x07, 0xd6, 0x1a, 0xe4, 0xc4, 0x72, 0xe2, 0x9e, 0x3c, 0x43, 0x10, 0x44, 0xce, 0xc9, 0xe5,
-	0xc2, 0x43, 0x39, 0x86, 0x1b, 0x0f, 0xe5, 0x18, 0x3e, 0x3c, 0x94, 0x63, 0xfc, 0xf1, 0x50, 0x8e,
-	0xb1, 0xe1, 0x91, 0x1c, 0xe3, 0x8a, 0x47, 0x72, 0x8c, 0x3b, 0x1e, 0xc9, 0x31, 0x1e, 0x78, 0x24,
-	0xc7, 0x78, 0xe2, 0x91, 0x1c, 0xe3, 0x85, 0x47, 0x72, 0x8c, 0x0f, 0x1e, 0xc9, 0x31, 0xbe, 0x78,
-	0x24, 0xc7, 0xf0, 0xe1, 0x91, 0x1c, 0xe3, 0x84, 0xc7, 0x72, 0x0c, 0x07, 0x1e, 0xcb, 0x31, 0x5e,
-	0x78, 0x2c, 0xc7, 0x70, 0xe3, 0xb1, 0x1c, 0x43, 0x12, 0x1b, 0xd8, 0x41, 0xc6, 0x80, 0x00, 0x00,
-	0x00, 0xff, 0xff, 0xb4, 0xda, 0xbd, 0xb7, 0x28, 0x01, 0x00, 0x00,
+	0x07, 0xcc, 0x82, 0xe8, 0x41, 0x51, 0x8e, 0xcb, 0x1a, 0x84, 0x15, 0x84, 0x94, 0x97, 0x16, 0xa7,
+	0x16, 0x81, 0x09, 0x88, 0x72, 0x25, 0x3f, 0x2e, 0x96, 0xa0, 0xfc, 0xfc, 0x5c, 0x21, 0x45, 0x08,
+	0x2d, 0xc1, 0xa8, 0xc0, 0xa8, 0xc1, 0x6d, 0xc4, 0xae, 0x07, 0x36, 0x31, 0xc8, 0x89, 0xe5, 0xc4,
+	0x3d, 0x79, 0x86, 0x20, 0x88, 0x12, 0x65, 0x2e, 0x56, 0xff, 0xf2, 0xbc, 0xd4, 0x22, 0x09, 0x26,
+	0xa8, 0x1a, 0xb0, 0x31, 0xa1, 0x50, 0x35, 0x10, 0x39, 0x25, 0x5e, 0x2e, 0x6e, 0x9f, 0xcc, 0xe2,
+	0x12, 0x90, 0x86, 0xa0, 0xd4, 0x42, 0x25, 0x53, 0x2e, 0x1e, 0x04, 0xb7, 0xb8, 0x40, 0x48, 0x95,
+	0x8b, 0x15, 0xc4, 0x2e, 0x96, 0x60, 0x54, 0x60, 0xd6, 0xe0, 0x36, 0xe2, 0xd4, 0x4b, 0x29, 0xc9,
+	0xd7, 0x03, 0x89, 0xc0, 0x4c, 0x01, 0xcb, 0x3a, 0xb9, 0x5c, 0x78, 0x28, 0xc7, 0x70, 0xe3, 0xa1,
+	0x1c, 0xc3, 0x87, 0x87, 0x72, 0x8c, 0x3f, 0x1e, 0xca, 0x31, 0x36, 0x3c, 0x92, 0x63, 0x5c, 0xf1,
+	0x48, 0x8e, 0x71, 0xc7, 0x23, 0x39, 0xc6, 0x03, 0x8f, 0xe4, 0x18, 0x4f, 0x3c, 0x92, 0x63, 0xbc,
+	0xf0, 0x48, 0x8e, 0xf1, 0xc1, 0x23, 0x39, 0xc6, 0x17, 0x8f, 0xe4, 0x18, 0x3e, 0x3c, 0x92, 0x63,
+	0x9c, 0xf0, 0x58, 0x8e, 0xe1, 0xc0, 0x63, 0x39, 0xc6, 0x0b, 0x8f, 0xe5, 0x18, 0x6e, 0x3c, 0x96,
+	0x63, 0x48, 0x62, 0x03, 0x7b, 0xd1, 0x18, 0x10, 0x00, 0x00, 0xff, 0xff, 0x91, 0x66, 0x69, 0x08,
+	0xa9, 0x01, 0x00, 0x00,
 }
 
+func (this *Room) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*Room)
+	if !ok {
+		that2, ok := that.(Room)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if !this.Room.Equal(&that1.Room) {
+		return false
+	}
+	if !this.Owner.Equal(&that1.Owner) {
+		return false
+	}
+	return true
+}
 func (this *ListRoomReq) Equal(that interface{}) bool {
 	if that == nil {
 		return this == nil
@@ -189,6 +274,17 @@ func (this *ListRoomResp) Equal(that interface{}) bool {
 	}
 	return true
 }
+func (this *Room) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 6)
+	s = append(s, "&dto.Room{")
+	s = append(s, "Room: "+strings.Replace(this.Room.GoString(), `&`, ``, 1)+",\n")
+	s = append(s, "Owner: "+strings.Replace(this.Owner.GoString(), `&`, ``, 1)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
 func (this *ListRoomReq) GoString() string {
 	if this == nil {
 		return "nil"
@@ -205,7 +301,7 @@ func (this *ListRoomResp) GoString() string {
 	s := make([]string, 0, 5)
 	s = append(s, "&dto.ListRoomResp{")
 	if this.Rooms != nil {
-		vs := make([]room.R, len(this.Rooms))
+		vs := make([]Room, len(this.Rooms))
 		for i := range vs {
 			vs[i] = this.Rooms[i]
 		}
@@ -222,6 +318,49 @@ func valueToGoStringRoom(v interface{}, typ string) string {
 	pv := reflect.Indirect(rv).Interface()
 	return fmt.Sprintf("func(v %v) *%v { return &v } ( %#v )", typ, typ, pv)
 }
+func (m *Room) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Room) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *Room) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size, err := m.Owner.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintRoom(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x12
+	{
+		size, err := m.Room.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintRoom(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
 func (m *ListRoomReq) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -293,6 +432,17 @@ func encodeVarintRoom(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
+func NewPopulatedRoom(r randyRoom, easy bool) *Room {
+	this := &Room{}
+	v1 := room.NewPopulatedR(r, easy)
+	this.Room = *v1
+	v2 := user.NewPopulatedU(r, easy)
+	this.Owner = *v2
+	if !easy && r.Intn(10) != 0 {
+	}
+	return this
+}
+
 func NewPopulatedListRoomReq(r randyRoom, easy bool) *ListRoomReq {
 	this := &ListRoomReq{}
 	if !easy && r.Intn(10) != 0 {
@@ -303,11 +453,11 @@ func NewPopulatedListRoomReq(r randyRoom, easy bool) *ListRoomReq {
 func NewPopulatedListRoomResp(r randyRoom, easy bool) *ListRoomResp {
 	this := &ListRoomResp{}
 	if r.Intn(5) != 0 {
-		v1 := r.Intn(5)
-		this.Rooms = make([]room.R, v1)
-		for i := 0; i < v1; i++ {
-			v2 := room.NewPopulatedR(r, easy)
-			this.Rooms[i] = *v2
+		v3 := r.Intn(5)
+		this.Rooms = make([]Room, v3)
+		for i := 0; i < v3; i++ {
+			v4 := NewPopulatedRoom(r, easy)
+			this.Rooms[i] = *v4
 		}
 	}
 	if !easy && r.Intn(10) != 0 {
@@ -334,9 +484,9 @@ func randUTF8RuneRoom(r randyRoom) rune {
 	return rune(ru + 61)
 }
 func randStringRoom(r randyRoom) string {
-	v3 := r.Intn(100)
-	tmps := make([]rune, v3)
-	for i := 0; i < v3; i++ {
+	v5 := r.Intn(100)
+	tmps := make([]rune, v5)
+	for i := 0; i < v5; i++ {
 		tmps[i] = randUTF8RuneRoom(r)
 	}
 	return string(tmps)
@@ -358,11 +508,11 @@ func randFieldRoom(dAtA []byte, r randyRoom, fieldNumber int, wire int) []byte {
 	switch wire {
 	case 0:
 		dAtA = encodeVarintPopulateRoom(dAtA, uint64(key))
-		v4 := r.Int63()
+		v6 := r.Int63()
 		if r.Intn(2) == 0 {
-			v4 *= -1
+			v6 *= -1
 		}
-		dAtA = encodeVarintPopulateRoom(dAtA, uint64(v4))
+		dAtA = encodeVarintPopulateRoom(dAtA, uint64(v6))
 	case 1:
 		dAtA = encodeVarintPopulateRoom(dAtA, uint64(key))
 		dAtA = append(dAtA, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
@@ -387,6 +537,19 @@ func encodeVarintPopulateRoom(dAtA []byte, v uint64) []byte {
 	dAtA = append(dAtA, uint8(v))
 	return dAtA
 }
+func (m *Room) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.Room.Size()
+	n += 1 + l + sovRoom(uint64(l))
+	l = m.Owner.Size()
+	n += 1 + l + sovRoom(uint64(l))
+	return n
+}
+
 func (m *ListRoomReq) Size() (n int) {
 	if m == nil {
 		return 0
@@ -417,6 +580,17 @@ func sovRoom(x uint64) (n int) {
 func sozRoom(x uint64) (n int) {
 	return sovRoom(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
+func (this *Room) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&Room{`,
+		`Room:` + strings.Replace(strings.Replace(fmt.Sprintf("%v", this.Room), "R", "room.R", 1), `&`, ``, 1) + `,`,
+		`Owner:` + strings.Replace(strings.Replace(fmt.Sprintf("%v", this.Owner), "U", "user.U", 1), `&`, ``, 1) + `,`,
+		`}`,
+	}, "")
+	return s
+}
 func (this *ListRoomReq) String() string {
 	if this == nil {
 		return "nil"
@@ -430,9 +604,9 @@ func (this *ListRoomResp) String() string {
 	if this == nil {
 		return "nil"
 	}
-	repeatedStringForRooms := "[]R{"
+	repeatedStringForRooms := "[]Room{"
 	for _, f := range this.Rooms {
-		repeatedStringForRooms += fmt.Sprintf("%v", f) + ","
+		repeatedStringForRooms += strings.Replace(strings.Replace(f.String(), "Room", "Room", 1), `&`, ``, 1) + ","
 	}
 	repeatedStringForRooms += "}"
 	s := strings.Join([]string{`&ListRoomResp{`,
@@ -448,6 +622,125 @@ func valueToStringRoom(v interface{}) string {
 	}
 	pv := reflect.Indirect(rv).Interface()
 	return fmt.Sprintf("*%v", pv)
+}
+func (m *Room) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowRoom
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Room: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Room: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Room", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRoom
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRoom
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthRoom
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Room.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRoom
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRoom
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthRoom
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Owner.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipRoom(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthRoom
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthRoom
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
 }
 func (m *ListRoomReq) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
@@ -560,7 +853,7 @@ func (m *ListRoomResp) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Rooms = append(m.Rooms, room.R{})
+			m.Rooms = append(m.Rooms, Room{})
 			if err := m.Rooms[len(m.Rooms)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
