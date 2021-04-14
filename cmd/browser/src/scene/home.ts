@@ -1,16 +1,16 @@
-import {Scene} from "phaser";
-import {grpc} from "@improbable-eng/grpc-web";
+import {Scene} from 'phaser';
+import {grpc} from '@improbable-eng/grpc-web';
 
-import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty_pb";
-import * as google_protobuf_wrappers_pb from "google-protobuf/google/protobuf/wrappers_pb";
+import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty_pb';
+import * as google_protobuf_wrappers_pb from 'google-protobuf/google/protobuf/wrappers_pb';
 
-import * as API from "@cmd/api/grpc/api_pb_service";
+import * as API from '@cmd/api/grpc/api_pb_service';
 
-import * as TwitchDTO from "@pkg/twitch/dto/follow_pb";
-import * as Twitch from "@pkg/twitch/follow_pb";
+import * as TwitchDTO from '@pkg/twitch/dto/follow_pb';
+import * as Twitch from '@pkg/twitch/follow_pb';
 
-import * as RoomDTO from "@pkg/room/dto/room_pb";
-import * as Room from "@pkg/room/room_pb";
+import * as RoomDTO from '@pkg/room/dto/room_pb';
+import * as Room from '@pkg/room/room_pb';
 
 export class Home extends Scene {
 
@@ -27,9 +27,9 @@ export class Home extends Scene {
         this.load.image('home_background_01', 'img/home_background_01.png')
     }
     create() {
-        if (!document.cookie.startsWith("auth-token=") && !this.registry.get('token')) {
+        if (!document.cookie.startsWith('auth-token=') && !this.registry.get('token')) {
             this.scene.transition({
-                target: "login",
+                target: 'login',
                 duration: 1000,
                 remove: true,
             })            
@@ -42,11 +42,16 @@ export class Home extends Scene {
         }
 
         this.add.image(0, 0, 'home_background_01').setOrigin(0);
+
+        this.cache.addCustom('home')
+
+        this.cache.custom['home'].add('follow', '')
+
         this.displayFollow();
         this.displayRoom();
     }
     update() {}
-    displayFollow(){        
+    displayFollow(){
         this.listFollow()
         .then((follows: TwitchDTO.ListFollowResp)=> {            
             const ol = this.cache.html.get('follow')
@@ -60,7 +65,7 @@ export class Home extends Scene {
             console.log(err)
         })
     }
-    displayRoom(){        
+    displayRoom(){
         this.listRoom()
         .then((rooms: RoomDTO.ListRoomResp)=> {            
             const ol = this.cache.html.get('room')
