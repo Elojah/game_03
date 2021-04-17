@@ -24,6 +24,7 @@ export class Home extends Scene {
         this.load.html('follow_line', 'html/follow_line.html')
         this.load.html('room', 'html/room.html')
         this.load.html('room_line', 'html/room_line.html')
+        this.load.html('load_more', 'html/load_more.html')
         this.load.image('home_background_01', 'img/home_background_01.png')
     }
     create() {
@@ -32,7 +33,7 @@ export class Home extends Scene {
                 target: 'login',
                 duration: 1000,
                 remove: true,
-            })            
+            })
 
             return
         }
@@ -45,40 +46,114 @@ export class Home extends Scene {
 
         this.cache.addCustom('home')
 
-        this.cache.custom['home'].add('follow', '')
-
-        this.displayFollow();
-        this.displayRoom();
+        this.initFollow()
+        this.loadFollow('', 20);
     }
     update() {}
-    displayFollow(){
-        this.listFollow()
-        .then((follows: TwitchDTO.ListFollowResp)=> {            
-            const ol = this.cache.html.get('follow')
-            const li = this.cache.html.get('follow_line')
 
-            const lines = follows.getFollowsList().reduce((acc:string, fol: Twitch.Follow) => acc + li.replace('{{login}}', fol.getTologin()), '')
-            
-            this.add.dom(10, 10).createFromHTML(ol.replace('{{lines}}', lines)).setOrigin(0)
+    // Follow list methods
+    initFollow() {
+        // init data
+        this.cache.custom['home'].add('follow', new TwitchDTO.ListFollowResp())
+
+        // init html follow list
+        const follow = this.add.dom(10, 15).createFromCache('follow').setOrigin(0)
+        this.cache.custom['home'].add('follow_html', follow)
+
+        // init html load more follow
+        const lm = this.add.dom(10, 5).createFromCache('load_more').setOrigin(0)
+        lm.setInteractive()
+        lm.addListener('click').on('click', () => {})
+        this.cache.custom['home'].add('load_more_follow_html', lm)
+    }
+    loadFollow(after: string, first: number){
+        this.listFollow(after, first)
+        .then((follows: TwitchDTO.ListFollowResp)=> {
+            // update data
+            const fol = this.cache.custom['home'].get('follow') as TwitchDTO.ListFollowResp
+            fol.setCursor(follows.getCursor())
+            fol.setTotal(follows.getTotal())
+            fol.setFollowsList(fol.getFollowsList().concat(follows.getFollowsList()))
+
+            this.displayFollow(fol)
         })
         .catch((err)=> {
             console.log(err)
         })
     }
-    displayRoom(){
+    displayFollow(follows: TwitchDTO.ListFollowResp){
+        // build new follow HTML
+        const ol = this.cache.html.get('follow')
+        const li = this.cache.html.get('follow_line')
+        const lines = follows.getFollowsList().reduce((acc:string, fol: Twitch.Follow) => acc + li.replace('{{login}}', fol.getTologin()), '')
+
+        // update load more button
+        const lm = this.cache.custom['home'].get('load_more_follow_html') as Phaser.GameObjects.DOMElement
+        lm.removeListener('click')
+        if (follows.getTotal() > follows.getFollowsList().length) {
+            lm.addListener('click').on('click', () => {
+                this.loadFollow(follows.getCursor(), 20)
+            })
+        }
+
+        // update follows list
+        const fHTML = this.cache.custom['home'].get('follow_html') as Phaser.GameObjects.DOMElement
+        fHTML.setHTML(ol.replace('{{lines}}', lines))
+    }
+
+
+    // Room list methods
+    initRoom() {
+        // init data
+        this.cache.custom['home'].add('room', new RoomDTO.ListRoomResp())
+
+        // init html room list
+        const room = this.add.dom(60, 15).createFromCache('room').setOrigin(0)
+        this.cache.custom['home'].add('room_html', room)
+
+        // init html load more room
+        const lm = this.add.dom(60, 5).createFromCache('load_more').setOrigin(0)
+        lm.setInteractive()
+        lm.addListener('click').on('click', () => {})
+        this.cache.custom['home'].add('load_more_room_html', lm)
+    }
+    loadRoom(after: string, first: number){
+        // this.listRoom(after, first)
         this.listRoom()
-        .then((rooms: RoomDTO.ListRoomResp)=> {            
-            const ol = this.cache.html.get('room')
-            const li = this.cache.html.get('room_line')
+        .then((rooms: RoomDTO.ListRoomResp)=> {
+            // update data
+            const ro = this.cache.custom['home'].get('room') as RoomDTO.ListRoomResp
+            // ro.setCursor(rooms.getCursor())
+            // ro.setTotal(rooms.getTotal())
+            ro.setRoomsList(ro.getRoomsList().concat(rooms.getRoomsList()))
 
-            const lines = rooms.getRoomsList().reduce((acc:string, r: RoomDTO.Room) => acc + li.replace('{{name}}', r.getRoom()!.getName()), '')
-            
-            this.add.dom(60, 10).createFromHTML(ol.replace('{{lines}}', lines)).setOrigin(0)
+            this.displayRoom(ro)
         })
         .catch((err)=> {
             console.log(err)
         })
     }
+    displayRoom(rooms: RoomDTO.ListRoomResp){
+        // build new room HTML
+        const ol = this.cache.html.get('room')
+        const li = this.cache.html.get('room_line')
+        const lines = rooms.getRoomsList().reduce((acc:string, ro: RoomDTO.Room) => acc + li.replace('{{name}}', ro.getRoom()!.getName()), '')
+
+        // update load more button
+        const lm = this.cache.custom['home'].get('load_more_room_html') as Phaser.GameObjects.DOMElement
+        lm.removeListener('click')
+        // if (rooms.getTotal() > rooms.getRoomsList().length) {
+        //     lm.addListener('click').on('click', () => {
+        //         this.loadRoom(rooms.getCursor(), 20)
+        //     })
+        // }
+
+        // update rooms list
+        const rHTML = this.cache.custom['home'].get('room_html') as Phaser.GameObjects.DOMElement
+        rHTML.setHTML(ol.replace('{{lines}}', lines))
+    }
+
+    // API call methods
     ping() {
         const req = new google_protobuf_empty_pb.Empty();
         let md = new grpc.Metadata()
@@ -95,10 +170,11 @@ export class Home extends Scene {
                 }
             }
         });
-    }    
-    listFollow() {
+    }
+    listFollow(after: string, first: number) {
         let req = new TwitchDTO.ListFollowReq();
-        req.setFirst('20') // TODO: paginate correctly
+        req.setFirst(first.toString())
+        req.setAfter(after)
         let md = new grpc.Metadata()
         md.set('token', this.registry.get('token'))
 
@@ -119,9 +195,9 @@ export class Home extends Scene {
                 }
             });
         })
-        
+
         return prom
-    }    
+    }
     listRoom() {
         let req = new RoomDTO.ListRoomReq();
         let md = new grpc.Metadata()
@@ -144,8 +220,8 @@ export class Home extends Scene {
                 }
             });
         })
-        
+
         return prom
-    }    
+    }
 
 }
