@@ -173,6 +173,7 @@ func run(prog string, filename string) {
 			log.Error().Err(err).Msg("failed to serve http")
 		}
 	}()
+
 	log.Info().Msg("api up")
 
 	// listen for signals

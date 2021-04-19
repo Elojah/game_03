@@ -11,8 +11,8 @@ import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "github.com/elojah/game_03/pkg/twitch/follow.proto";
 
 message ListFollowReq {
-    string After      = 3;
-    string First      = 4;
+    string After      = 1;
+    string First      = 2;
 }
 
 message ListFollowResp {

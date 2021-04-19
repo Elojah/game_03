@@ -12,12 +12,17 @@ import "github.com/elojah/game_03/pkg/room/room.proto";
 import "github.com/elojah/game_03/pkg/user/user.proto";
 
 message Room {
-    room.R Room           = 1 [(gogoproto.nullable) = false];
-    user.U Owner          = 2 [(gogoproto.nullable) = false];
+    room.R Room          = 1 [(gogoproto.nullable) = false];
+    user.U Owner         = 2 [(gogoproto.nullable) = false];
 }
 
-message ListRoomReq {}
+message ListRoomReq {
+    string After         = 1;
+    int64 First          = 2;
+}
 
 message ListRoomResp {
     repeated Room Rooms  = 1 [(gogoproto.nullable) = false];
+    uint64 Total         = 2;
+    string Cursor        = 3;
 }
