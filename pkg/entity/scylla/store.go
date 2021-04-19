@@ -10,5 +10,5 @@ var _ entity.Store = (*Store)(nil)
 var _ entity.StorePC = (*Store)(nil)
 
 type Store struct {
-	*scylla.Service
+	scylla.Service
 }

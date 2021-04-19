@@ -12,5 +12,5 @@ var _ room.StoreWorld = (*Store)(nil)
 var _ room.StoreCell = (*Store)(nil)
 
 type Store struct {
-	*scylla.Service
+	scylla.Service
 }

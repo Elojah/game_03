@@ -3,6 +3,7 @@ package scylla
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 
 	gerrors "github.com/elojah/game_03/pkg/errors"
@@ -29,18 +30,27 @@ var (
 type filter room.Filter
 
 func (f filter) table() gscylla.Table {
-	if f.ID != nil && f.OwnerID == nil {
+	if len(f.IDs) > 0 {
 		return roomByID
 	}
 
-	return roomByOwnerID
+	if f.OwnerID != nil {
+		return roomByOwnerID
+	}
+
+	return roomByID
 }
 
 func (f filter) index() string {
 	var cols []string
 
-	if f.ID != nil {
-		cols = append(cols, f.ID.String())
+	if f.IDs != nil {
+		ss := make([]string, 0, len(f.IDs))
+		for _, id := range f.IDs {
+			ss = append(ss, id.String())
+		}
+
+		cols = append(cols, strings.Join(ss, "|"))
 	}
 
 	if f.OwnerID != nil {
@@ -77,20 +87,27 @@ func (s Store) Fetch(ctx context.Context, f room.Filter) (room.R, error) {
 	return r, nil
 }
 
-func (s Store) FetchMany(ctx context.Context, f room.Filter) ([]room.R, error) {
+func (s Store) FetchMany(ctx context.Context, f room.Filter) ([]room.R, []byte, error) {
 	st, ns := filter(f).table().Get()
-	q := s.ContextQuery(ctx, st, ns).BindStruct(f)
+	q := s.ContextQuery(ctx, st, ns).
+		// PageSize(f.Size).
+		// PageState(f.State).
+		BindStruct(f)
+
+	cursor := q.Iter().PageState()
+
+	fmt.Println(q.String())
 
 	var rs []room.R
 	if err := q.SelectRelease(&rs); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
-			return nil, gerrors.ErrNotFound{Resource: "room", Index: filter(f).index()}
+			return nil, nil, gerrors.ErrNotFound{Resource: "room", Index: filter(f).index()}
 		}
 
-		return nil, err
+		return nil, nil, err
 	}
 
-	return rs, nil
+	return rs, cursor, nil
 }
 
 func (s Store) Delete(ctx context.Context, f room.Filter) error {

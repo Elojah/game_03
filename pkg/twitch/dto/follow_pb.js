@@ -94,8 +94,8 @@ proto.dto.ListFollowReq.prototype.toObject = function(opt_includeInstance) {
  */
 proto.dto.ListFollowReq.toObject = function(includeInstance, msg) {
   var f, obj = {
-    after: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    first: jspb.Message.getFieldWithDefault(msg, 4, "")
+    after: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    first: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -132,11 +132,11 @@ proto.dto.ListFollowReq.deserializeBinaryFromReader = function(msg, reader) {
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 3:
+    case 1:
       var value = /** @type {string} */ (reader.readString());
       msg.setAfter(value);
       break;
-    case 4:
+    case 2:
       var value = /** @type {string} */ (reader.readString());
       msg.setFirst(value);
       break;
@@ -172,14 +172,14 @@ proto.dto.ListFollowReq.serializeBinaryToWriter = function(message, writer) {
   f = message.getAfter();
   if (f.length > 0) {
     writer.writeString(
-      3,
+      1,
       f
     );
   }
   f = message.getFirst();
   if (f.length > 0) {
     writer.writeString(
-      4,
+      2,
       f
     );
   }
@@ -187,11 +187,11 @@ proto.dto.ListFollowReq.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional string After = 3;
+ * optional string After = 1;
  * @return {string}
  */
 proto.dto.ListFollowReq.prototype.getAfter = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
@@ -200,16 +200,16 @@ proto.dto.ListFollowReq.prototype.getAfter = function() {
  * @return {!proto.dto.ListFollowReq} returns this
  */
 proto.dto.ListFollowReq.prototype.setAfter = function(value) {
-  return jspb.Message.setProto3StringField(this, 3, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * optional string First = 4;
+ * optional string First = 2;
  * @return {string}
  */
 proto.dto.ListFollowReq.prototype.getFirst = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
@@ -218,7 +218,7 @@ proto.dto.ListFollowReq.prototype.getFirst = function() {
  * @return {!proto.dto.ListFollowReq} returns this
  */
 proto.dto.ListFollowReq.prototype.setFirst = function(value) {
-  return jspb.Message.setProto3StringField(this, 4, value);
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 

@@ -7,41 +7,36 @@ import (
 
 	gerrors "github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/user"
-	gscylla "github.com/elojah/go-scylla"
 	"github.com/gocql/gocql"
-	"github.com/scylladb/gocqlx/v2/table"
-)
-
-var (
-	userByID = gscylla.NewTable(table.Metadata{
-		Name:    "user",
-		Columns: []string{"id", "twitch_id"},
-		PartKey: []string{"id"},
-	})
-
-	userByTwitchID = gscylla.NewTable(table.Metadata{
-		Name:    "user",
-		Columns: []string{"id", "twitch_id"},
-		PartKey: []string{"twitch_id"},
-	})
-
-	userByIDAndTwitchID = gscylla.NewTable(table.Metadata{
-		Name:    "user",
-		Columns: []string{"id", "twitch_id"},
-		PartKey: []string{"id", "twitch_id"},
-	})
 )
 
 type filter user.Filter
 
-func (f filter) table() gscylla.Table {
-	if f.ID != nil && f.TwitchID == nil {
-		return userByID
-	} else if f.ID == nil && f.TwitchID != nil {
-		return userByTwitchID
+func (f filter) where() (string, []interface{}) {
+	var clause []string
+
+	var args []interface{}
+
+	if f.ID != nil {
+		clause = append(clause, `id = ?`)
+		args = append(args, *f.ID)
 	}
 
-	return userByIDAndTwitchID
+	if f.TwitchID != nil {
+		clause = append(clause, `twitch_id = ?`)
+		args = append(args, *f.TwitchID)
+	}
+
+	b := strings.Builder{}
+	b.WriteString(" WHERE ")
+
+	if len(clause) == 0 {
+		b.WriteString("false")
+	} else {
+		b.WriteString(strings.Join(clause, " AND "))
+	}
+
+	return b.String(), args
 }
 
 func (f filter) index() string {
@@ -49,6 +44,15 @@ func (f filter) index() string {
 
 	if f.ID != nil {
 		cols = append(cols, f.ID.String())
+	}
+
+	if f.IDs != nil {
+		ss := make([]string, 0, len(f.IDs))
+		for _, id := range f.IDs {
+			ss = append(ss, id.String())
+		}
+
+		cols = append(cols, strings.Join(ss, "|"))
 	}
 
 	if f.TwitchID != nil {
@@ -59,10 +63,15 @@ func (f filter) index() string {
 }
 
 func (s Store) Insert(ctx context.Context, u user.U) error {
-	st, ns := userByID.Ins()
-	q := s.ContextQuery(ctx, st, ns).BindStruct(u)
+	q := s.Session.Query(
+		`INSERT INTO main.user (id, twitch_id) VALUES (?, ?)`,
+		u.ID,
+		u.TwitchID,
+	).WithContext(ctx)
 
-	if err := q.ExecRelease(); err != nil {
+	defer q.Release()
+
+	if err := q.Exec(); err != nil {
 		return err
 	}
 
@@ -70,11 +79,16 @@ func (s Store) Insert(ctx context.Context, u user.U) error {
 }
 
 func (s Store) Fetch(ctx context.Context, f user.Filter) (user.U, error) {
-	st, ns := filter(f).table().Get()
-	q := s.ContextQuery(ctx, st, ns).BindStruct(f)
+	b := strings.Builder{}
+	b.WriteString(`SELECT id, twitch_id FROM main.user `)
+
+	clause, args := filter(f).where()
+	b.WriteString(clause)
+
+	q := s.Session.Query(b.String(), args...).WithContext(ctx)
 
 	var u user.U
-	if err := q.GetRelease(&u); err != nil {
+	if err := q.Scan(&u.ID, &u.TwitchID); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
 			return user.U{}, gerrors.ErrNotFound{Resource: "user", Index: filter(f).index()}
 		}
@@ -85,27 +99,56 @@ func (s Store) Fetch(ctx context.Context, f user.Filter) (user.U, error) {
 	return u, nil
 }
 
-func (s Store) FetchMany(ctx context.Context, f user.Filter) ([]user.U, error) {
-	st, ns := filter(f).table().Get()
-	q := s.ContextQuery(ctx, st, ns).BindStruct(f)
+func (s Store) FetchMany(ctx context.Context, f user.Filter) ([]user.U, []byte, error) {
+	b := strings.Builder{}
+	b.WriteString(`SELECT id, twitch_id FROM main.user `)
 
-	var us []user.U
-	if err := q.SelectRelease(&us); err != nil {
-		if errors.Is(err, gocql.ErrNotFound) {
-			return nil, gerrors.ErrNotFound{Resource: "user", Index: filter(f).index()}
+	clause, args := filter(f).where()
+	b.WriteString(clause)
+
+	iter := s.Session.Query(b.String(), args...).
+		WithContext(ctx).
+		PageState(f.State).
+		PageSize(f.Size).
+		Iter()
+
+	defer iter.Close()
+
+	state := iter.PageState()
+
+	scanner := iter.Scanner()
+
+	users := make([]user.U, f.Size)
+
+	var i int
+	for ; scanner.Next(); i++ {
+		if err := scanner.Scan(
+			&users[i].ID,
+			&users[i].TwitchID,
+		); err != nil {
+			return nil, nil, err
 		}
-
-		return nil, err
 	}
 
-	return us, nil
+	if err := scanner.Err(); err != nil {
+		return nil, nil, err
+	}
+
+	return users[:i], state, nil
 }
 
 func (s Store) Delete(ctx context.Context, f user.Filter) error {
-	st, ns := filter(f).table().Del()
-	q := s.ContextQuery(ctx, st, ns).BindStruct(f)
+	b := strings.Builder{}
+	b.WriteString(`DELETE FROM main.user `)
 
-	if err := q.ExecRelease(); err != nil {
+	clause, args := filter(f).where()
+	b.WriteString(clause)
+
+	q := s.Session.Query(b.String(), args...).WithContext(ctx)
+
+	defer q.Release()
+
+	if err := q.Exec(); err != nil {
 		return err
 	}
 

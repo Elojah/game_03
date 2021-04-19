@@ -48,6 +48,9 @@ export class Home extends Scene {
 
         this.initFollow()
         this.loadFollow('', 20);
+
+        this.initRoom()
+        this.loadRoom('', 1);
     }
     update() {}
 
@@ -108,11 +111,11 @@ export class Home extends Scene {
         this.cache.custom['home'].add('room', new RoomDTO.ListRoomResp())
 
         // init html room list
-        const room = this.add.dom(60, 15).createFromCache('room').setOrigin(0)
+        const room = this.add.dom(1000, 15).createFromCache('room').setOrigin(0)
         this.cache.custom['home'].add('room_html', room)
 
         // init html load more room
-        const lm = this.add.dom(60, 5).createFromCache('load_more').setOrigin(0)
+        const lm = this.add.dom(1000, 5).createFromCache('load_more').setOrigin(0)
         lm.setInteractive()
         lm.addListener('click').on('click', () => {})
         this.cache.custom['home'].add('load_more_room_html', lm)

@@ -8,5 +8,5 @@ import (
 var _ user.Store = (*Store)(nil)
 
 type Store struct {
-	*scylla.Service
+	scylla.Service
 }
