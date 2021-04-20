@@ -8,14 +8,18 @@ import (
 
 type FilterPC struct {
 	ID     *ulid.ID
+	IDs    []ulid.ID
 	UserID *ulid.ID
 	RoomID *ulid.ID
+
+	State []byte
+	Size  int
 }
 
 type StorePC interface {
 	InsertPC(context.Context, PC) error
 	FetchPC(context.Context, FilterPC) (PC, error)
-	FetchManyPC(context.Context, FilterPC) ([]PC, error)
+	FetchManyPC(context.Context, FilterPC) ([]PC, []byte, error)
 	DeletePC(context.Context, FilterPC) error
 }
 

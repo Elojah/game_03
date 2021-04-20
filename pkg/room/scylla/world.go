@@ -7,18 +7,32 @@ import (
 
 	gerrors "github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/room"
-	gscylla "github.com/elojah/go-scylla"
 	"github.com/gocql/gocql"
-	"github.com/scylladb/gocqlx/v2/table"
 )
 
-var worldByID = gscylla.NewTable(table.Metadata{
-	Name:    "world",
-	Columns: []string{"id", "height", "width", "tileset"},
-	PartKey: []string{"id"},
-})
-
 type filterWorld room.FilterWorld
+
+func (f filterWorld) where() (string, []interface{}) {
+	var clause []string
+
+	var args []interface{}
+
+	if f.ID != nil {
+		clause = append(clause, `id = ?`)
+		args = append(args, *f.ID)
+	}
+
+	b := strings.Builder{}
+	b.WriteString(" WHERE ")
+
+	if len(clause) == 0 {
+		b.WriteString("false")
+	} else {
+		b.WriteString(strings.Join(clause, " AND "))
+	}
+
+	return b.String(), args
+}
 
 func (f filterWorld) index() string {
 	var cols []string
@@ -31,10 +45,18 @@ func (f filterWorld) index() string {
 }
 
 func (s Store) InsertWorld(ctx context.Context, w room.World) error {
-	st, ns := worldByID.Ins()
-	q := s.ContextQuery(ctx, st, ns).BindStruct(w)
+	q := s.Session.Query(
+		`INSERT INTO main.world (id, height, width, cell_height, cell_width) VALUES (?, ?, ?, ?)`,
+		w.ID,
+		w.Height,
+		w.Width,
+		w.CellHeight,
+		w.CellWidth,
+	).WithContext(ctx)
 
-	if err := q.ExecRelease(); err != nil {
+	defer q.Release()
+
+	if err := q.Exec(); err != nil {
 		return err
 	}
 
@@ -42,11 +64,16 @@ func (s Store) InsertWorld(ctx context.Context, w room.World) error {
 }
 
 func (s Store) FetchWorld(ctx context.Context, f room.FilterWorld) (room.World, error) {
-	st, ns := worldByID.Get()
-	q := s.ContextQuery(ctx, st, ns).BindStruct(f)
+	b := strings.Builder{}
+	b.WriteString(`SELECT id, height, width, cell_height, cell_width FROM main.world `)
+
+	clause, args := filterWorld(f).where()
+	b.WriteString(clause)
+
+	q := s.Session.Query(b.String(), args...).WithContext(ctx)
 
 	var w room.World
-	if err := q.GetRelease(&w); err != nil {
+	if err := q.Scan(&w.ID, &w.Height, &w.Width, &w.CellHeight, &w.CellWidth); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
 			return room.World{}, gerrors.ErrNotFound{Resource: "world", Index: filterWorld(f).index()}
 		}
@@ -58,10 +85,17 @@ func (s Store) FetchWorld(ctx context.Context, f room.FilterWorld) (room.World, 
 }
 
 func (s Store) DeleteWorld(ctx context.Context, f room.FilterWorld) error {
-	st, ns := worldByID.Del()
-	q := s.ContextQuery(ctx, st, ns).BindStruct(f)
+	b := strings.Builder{}
+	b.WriteString(`DELETE FROM main.world `)
 
-	if err := q.ExecRelease(); err != nil {
+	clause, args := filterWorld(f).where()
+	b.WriteString(clause)
+
+	q := s.Session.Query(b.String(), args...).WithContext(ctx)
+
+	defer q.Release()
+
+	if err := q.Exec(); err != nil {
 		return err
 	}
 

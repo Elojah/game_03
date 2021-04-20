@@ -3,46 +3,58 @@ package scylla
 import (
 	"context"
 	"errors"
-	"fmt"
 	"strings"
 
 	gerrors "github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/room"
-	gscylla "github.com/elojah/go-scylla"
 	"github.com/gocql/gocql"
-	"github.com/scylladb/gocqlx/v2/table"
-)
-
-var (
-	roomByID = gscylla.NewTable(table.Metadata{
-		Name:    "room",
-		Columns: []string{"id", "owner_id", "world_id"},
-		PartKey: []string{"id"},
-	})
-
-	roomByOwnerID = gscylla.NewTable(table.Metadata{
-		Name:    "room",
-		Columns: []string{"id", "owner_id", "world_id"},
-		PartKey: []string{"owner_id"},
-	})
 )
 
 type filter room.Filter
 
-func (f filter) table() gscylla.Table {
+func (f filter) where() (string, []interface{}) {
+	var clause []string
+
+	var args []interface{}
+
+	if f.ID != nil {
+		clause = append(clause, `id = ?`)
+		args = append(args, *f.ID)
+	}
+
 	if len(f.IDs) > 0 {
-		return roomByID
+		clause = append(clause, `id IN (?)`)
+		args = append(args, f.IDs)
 	}
 
 	if f.OwnerID != nil {
-		return roomByOwnerID
+		clause = append(clause, `owner_id = ?`)
+		args = append(args, *f.OwnerID)
 	}
 
-	return roomByID
+	if len(f.OwnerIDs) > 0 {
+		clause = append(clause, `owner_id IN (?)`)
+		args = append(args, f.OwnerIDs)
+	}
+
+	b := strings.Builder{}
+	b.WriteString(" WHERE ")
+
+	if len(clause) == 0 {
+		b.WriteString("false")
+	} else {
+		b.WriteString(strings.Join(clause, " AND "))
+	}
+
+	return b.String(), args
 }
 
 func (f filter) index() string {
 	var cols []string
+
+	if f.ID != nil {
+		cols = append(cols, f.ID.String())
+	}
 
 	if f.IDs != nil {
 		ss := make([]string, 0, len(f.IDs))
@@ -57,14 +69,29 @@ func (f filter) index() string {
 		cols = append(cols, f.OwnerID.String())
 	}
 
+	if f.OwnerIDs != nil {
+		ss := make([]string, 0, len(f.OwnerIDs))
+		for _, id := range f.OwnerIDs {
+			ss = append(ss, id.String())
+		}
+
+		cols = append(cols, strings.Join(ss, "|"))
+	}
+
 	return strings.Join(cols, "|")
 }
 
-func (s Store) Insert(ctx context.Context, r room.R) error {
-	st, ns := roomByID.Ins()
-	q := s.ContextQuery(ctx, st, ns).BindStruct(r)
+func (s Store) Insert(ctx context.Context, e room.R) error {
+	q := s.Session.Query(
+		`INSERT INTO main.room (id, owner_id, world_id) VALUES (?, ?, ?)`,
+		e.ID,
+		e.OwnerID,
+		e.WorldID,
+	).WithContext(ctx)
 
-	if err := q.ExecRelease(); err != nil {
+	defer q.Release()
+
+	if err := q.Exec(); err != nil {
 		return err
 	}
 
@@ -72,11 +99,16 @@ func (s Store) Insert(ctx context.Context, r room.R) error {
 }
 
 func (s Store) Fetch(ctx context.Context, f room.Filter) (room.R, error) {
-	st, ns := filter(f).table().Get()
-	q := s.ContextQuery(ctx, st, ns).BindStruct(f)
+	b := strings.Builder{}
+	b.WriteString(`SELECT id, owner_id, world_id FROM main.room `)
 
-	var r room.R
-	if err := q.GetRelease(&r); err != nil {
+	clause, args := filter(f).where()
+	b.WriteString(clause)
+
+	q := s.Session.Query(b.String(), args...).WithContext(ctx)
+
+	var e room.R
+	if err := q.Scan(&e.ID, &e.OwnerID, &e.WorldID); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
 			return room.R{}, gerrors.ErrNotFound{Resource: "room", Index: filter(f).index()}
 		}
@@ -84,37 +116,61 @@ func (s Store) Fetch(ctx context.Context, f room.Filter) (room.R, error) {
 		return room.R{}, err
 	}
 
-	return r, nil
+	return e, nil
 }
 
 func (s Store) FetchMany(ctx context.Context, f room.Filter) ([]room.R, []byte, error) {
-	st, ns := filter(f).table().Get()
-	q := s.ContextQuery(ctx, st, ns).
-		// PageSize(f.Size).
-		// PageState(f.State).
-		BindStruct(f)
+	b := strings.Builder{}
+	b.WriteString(`SELECT id, owner_id, world_id FROM main.room `)
 
-	cursor := q.Iter().PageState()
+	clause, args := filter(f).where()
+	b.WriteString(clause)
 
-	fmt.Println(q.String())
+	iter := s.Session.Query(b.String(), args...).
+		WithContext(ctx).
+		PageState(f.State).
+		PageSize(f.Size).
+		Iter()
 
-	var rs []room.R
-	if err := q.SelectRelease(&rs); err != nil {
-		if errors.Is(err, gocql.ErrNotFound) {
-			return nil, nil, gerrors.ErrNotFound{Resource: "room", Index: filter(f).index()}
+	defer iter.Close()
+
+	state := iter.PageState()
+
+	scanner := iter.Scanner()
+
+	rooms := make([]room.R, f.Size)
+
+	var i int
+
+	for ; scanner.Next(); i++ {
+		if err := scanner.Scan(
+			&rooms[i].ID,
+			&rooms[i].OwnerID,
+			&rooms[i].WorldID,
+		); err != nil {
+			return nil, nil, err
 		}
+	}
 
+	if err := scanner.Err(); err != nil {
 		return nil, nil, err
 	}
 
-	return rs, cursor, nil
+	return rooms[:i], state, nil
 }
 
 func (s Store) Delete(ctx context.Context, f room.Filter) error {
-	st, ns := filter(f).table().Del()
-	q := s.ContextQuery(ctx, st, ns).BindStruct(f)
+	b := strings.Builder{}
+	b.WriteString(`DELETE FROM main.room `)
 
-	if err := q.ExecRelease(); err != nil {
+	clause, args := filter(f).where()
+	b.WriteString(clause)
+
+	q := s.Session.Query(b.String(), args...).WithContext(ctx)
+
+	defer q.Release()
+
+	if err := q.Exec(); err != nil {
 		return err
 	}
 

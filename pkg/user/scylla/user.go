@@ -22,6 +22,11 @@ func (f filter) where() (string, []interface{}) {
 		args = append(args, *f.ID)
 	}
 
+	if len(f.IDs) > 0 {
+		clause = append(clause, `id IN (?)`)
+		args = append(args, f.IDs)
+	}
+
 	if f.TwitchID != nil {
 		clause = append(clause, `twitch_id = ?`)
 		args = append(args, *f.TwitchID)
@@ -121,6 +126,7 @@ func (s Store) FetchMany(ctx context.Context, f user.Filter) ([]user.U, []byte, 
 	users := make([]user.U, f.Size)
 
 	var i int
+
 	for ; scanner.Next(); i++ {
 		if err := scanner.Scan(
 			&users[i].ID,

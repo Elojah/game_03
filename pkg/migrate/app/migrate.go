@@ -13,7 +13,7 @@ type App struct {
 }
 
 func (a *App) Up(ctx context.Context, dir string) error {
-	return migrate.Migrate(ctx, a.Session.Session, dir)
+	return migrate.Migrate(ctx, a.Session, dir)
 }
 
 func (a *App) Down(context.Context, string) error {
