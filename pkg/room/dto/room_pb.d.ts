@@ -35,11 +35,11 @@ export namespace Room {
 }
 
 export class ListRoomReq extends jspb.Message {
-  getAfter(): string;
-  setAfter(value: string): void;
+  getSize(): number;
+  setSize(value: number): void;
 
-  getFirst(): number;
-  setFirst(value: number): void;
+  getState(): string;
+  setState(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ListRoomReq.AsObject;
@@ -53,8 +53,8 @@ export class ListRoomReq extends jspb.Message {
 
 export namespace ListRoomReq {
   export type AsObject = {
-    after: string,
-    first: number,
+    size: number,
+    state: string,
   }
 }
 
@@ -64,11 +64,8 @@ export class ListRoomResp extends jspb.Message {
   setRoomsList(value: Array<Room>): void;
   addRooms(value?: Room, index?: number): Room;
 
-  getTotal(): number;
-  setTotal(value: number): void;
-
-  getCursor(): string;
-  setCursor(value: string): void;
+  getState(): string;
+  setState(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ListRoomResp.AsObject;
@@ -83,8 +80,7 @@ export class ListRoomResp extends jspb.Message {
 export namespace ListRoomResp {
   export type AsObject = {
     roomsList: Array<Room.AsObject>,
-    total: number,
-    cursor: string,
+    state: string,
   }
 }
 

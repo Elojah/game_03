@@ -52,13 +52,13 @@ CREATE TABLE main.world (
     height          bigint,
     width           bigint,
     cell_height     bigint,
-    cell_width      bigint,
+    cell_width      bigint
 );
 
 CREATE TABLE main.cell (
     world_id        uuid,
     x               bigint,
     y               bigint,
-    tilemap         map<bigint, uuid>
+    tilemap         map<bigint, uuid>,
     PRIMARY KEY(world_id, x, y)
 );

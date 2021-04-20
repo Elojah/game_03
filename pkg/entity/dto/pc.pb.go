@@ -29,6 +29,8 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type ListPCReq struct {
+	Size_ int64  `protobuf:"varint,1,opt,name=Size,proto3" json:"Size,omitempty"`
+	State string `protobuf:"bytes,2,opt,name=State,proto3" json:"State,omitempty"`
 }
 
 func (m *ListPCReq) Reset()      { *m = ListPCReq{} }
@@ -63,8 +65,23 @@ func (m *ListPCReq) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_ListPCReq proto.InternalMessageInfo
 
+func (m *ListPCReq) GetSize_() int64 {
+	if m != nil {
+		return m.Size_
+	}
+	return 0
+}
+
+func (m *ListPCReq) GetState() string {
+	if m != nil {
+		return m.State
+	}
+	return ""
+}
+
 type ListPCResp struct {
-	PCs []entity.PC `protobuf:"bytes,1,rep,name=PCs,proto3" json:"PCs"`
+	PCs   []entity.PC `protobuf:"bytes,1,rep,name=PCs,proto3" json:"PCs"`
+	State string      `protobuf:"bytes,2,opt,name=State,proto3" json:"State,omitempty"`
 }
 
 func (m *ListPCResp) Reset()      { *m = ListPCResp{} }
@@ -106,6 +123,13 @@ func (m *ListPCResp) GetPCs() []entity.PC {
 	return nil
 }
 
+func (m *ListPCResp) GetState() string {
+	if m != nil {
+		return m.State
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterType((*ListPCReq)(nil), "dto.ListPCReq")
 	golang_proto.RegisterType((*ListPCReq)(nil), "dto.ListPCReq")
@@ -121,22 +145,25 @@ func init() {
 }
 
 var fileDescriptor_b3acf6b9c23e297b = []byte{
-	// 238 bytes of a gzipped FileDescriptorProto
+	// 275 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x32, 0x4c, 0xcf, 0x2c, 0xc9,
 	0x28, 0x4d, 0xd2, 0x4b, 0xce, 0xcf, 0xd5, 0x4f, 0xcd, 0xc9, 0xcf, 0x4a, 0xcc, 0xd0, 0x4f, 0x4f,
 	0xcc, 0x4d, 0x8d, 0x37, 0x30, 0xd6, 0x2f, 0xc8, 0x4e, 0xd7, 0x4f, 0xcd, 0x2b, 0xc9, 0x2c, 0xa9,
 	0xd4, 0x4f, 0x29, 0xc9, 0xd7, 0x2f, 0x48, 0xd6, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x4e,
 	0x29, 0xc9, 0x97, 0xd2, 0x45, 0xd2, 0x97, 0x9e, 0x9f, 0x9e, 0xaf, 0x0f, 0x96, 0x4b, 0x2a, 0x4d,
-	0x03, 0xf3, 0xc0, 0x1c, 0x30, 0x0b, 0xa2, 0x07, 0x45, 0x39, 0x6e, 0x6b, 0x60, 0x56, 0x28, 0x71,
-	0x73, 0x71, 0xfa, 0x64, 0x16, 0x97, 0x04, 0x38, 0x07, 0xa5, 0x16, 0x2a, 0x19, 0x70, 0x71, 0xc1,
-	0x38, 0xc5, 0x05, 0x42, 0x4a, 0x5c, 0xcc, 0x01, 0xce, 0xc5, 0x12, 0x8c, 0x0a, 0xcc, 0x1a, 0xdc,
-	0x46, 0x5c, 0x7a, 0x10, 0x9d, 0x7a, 0x01, 0xce, 0x4e, 0x2c, 0x27, 0xee, 0xc9, 0x33, 0x04, 0x81,
-	0x24, 0x9d, 0x5c, 0x2e, 0x3c, 0x94, 0x63, 0xb8, 0xf1, 0x50, 0x8e, 0xe1, 0xc3, 0x43, 0x39, 0xc6,
-	0x1f, 0x0f, 0xe5, 0x18, 0x1b, 0x1e, 0xc9, 0x31, 0xae, 0x78, 0x24, 0xc7, 0xb8, 0xe3, 0x91, 0x1c,
-	0xe3, 0x81, 0x47, 0x72, 0x8c, 0x27, 0x1e, 0xc9, 0x31, 0x5e, 0x78, 0x24, 0xc7, 0xf8, 0xe0, 0x91,
-	0x1c, 0xe3, 0x8b, 0x47, 0x72, 0x0c, 0x1f, 0x1e, 0xc9, 0x31, 0x4e, 0x78, 0x2c, 0xc7, 0x70, 0xe0,
-	0xb1, 0x1c, 0xe3, 0x85, 0xc7, 0x72, 0x0c, 0x37, 0x1e, 0xcb, 0x31, 0x24, 0xb1, 0x81, 0xdd, 0x62,
-	0x0c, 0x08, 0x00, 0x00, 0xff, 0xff, 0xf5, 0x8c, 0x34, 0x77, 0x23, 0x01, 0x00, 0x00,
+	0x03, 0xf3, 0xc0, 0x1c, 0x30, 0x0b, 0xa2, 0x07, 0x45, 0x39, 0x6e, 0x6b, 0x60, 0x56, 0x28, 0x99,
+	0x72, 0x71, 0xfa, 0x64, 0x16, 0x97, 0x04, 0x38, 0x07, 0xa5, 0x16, 0x0a, 0x09, 0x71, 0xb1, 0x04,
+	0x67, 0x56, 0xa5, 0x4a, 0x30, 0x2a, 0x30, 0x6a, 0x30, 0x07, 0x81, 0xd9, 0x42, 0x22, 0x5c, 0xac,
+	0xc1, 0x25, 0x89, 0x25, 0xa9, 0x12, 0x4c, 0x0a, 0x8c, 0x1a, 0x9c, 0x41, 0x10, 0x8e, 0x92, 0x1b,
+	0x17, 0x17, 0x4c, 0x5b, 0x71, 0x81, 0x90, 0x12, 0x17, 0x73, 0x80, 0x73, 0xb1, 0x04, 0xa3, 0x02,
+	0xb3, 0x06, 0xb7, 0x11, 0x97, 0x1e, 0xc4, 0x0e, 0xbd, 0x00, 0x67, 0x27, 0x96, 0x13, 0xf7, 0xe4,
+	0x19, 0x82, 0x40, 0x92, 0xd8, 0xcd, 0x71, 0x72, 0xb9, 0xf0, 0x50, 0x8e, 0xe1, 0xc6, 0x43, 0x39,
+	0x86, 0x0f, 0x0f, 0xe5, 0x18, 0x7f, 0x3c, 0x94, 0x63, 0x6c, 0x78, 0x24, 0xc7, 0xb8, 0xe2, 0x91,
+	0x1c, 0xe3, 0x8e, 0x47, 0x72, 0x8c, 0x07, 0x1e, 0xc9, 0x31, 0x9e, 0x78, 0x24, 0xc7, 0x78, 0xe1,
+	0x91, 0x1c, 0xe3, 0x83, 0x47, 0x72, 0x8c, 0x2f, 0x1e, 0xc9, 0x31, 0x7c, 0x78, 0x24, 0xc7, 0x38,
+	0xe1, 0xb1, 0x1c, 0xc3, 0x81, 0xc7, 0x72, 0x8c, 0x17, 0x1e, 0xcb, 0x31, 0xdc, 0x78, 0x2c, 0xc7,
+	0x90, 0xc4, 0x06, 0xf6, 0x8b, 0x31, 0x20, 0x00, 0x00, 0xff, 0xff, 0x4b, 0xb1, 0x02, 0xd8, 0x63,
+	0x01, 0x00, 0x00,
 }
 
 func (this *ListPCReq) Equal(that interface{}) bool {
@@ -156,6 +183,12 @@ func (this *ListPCReq) Equal(that interface{}) bool {
 	if that1 == nil {
 		return this == nil
 	} else if this == nil {
+		return false
+	}
+	if this.Size_ != that1.Size_ {
+		return false
+	}
+	if this.State != that1.State {
 		return false
 	}
 	return true
@@ -187,14 +220,19 @@ func (this *ListPCResp) Equal(that interface{}) bool {
 			return false
 		}
 	}
+	if this.State != that1.State {
+		return false
+	}
 	return true
 }
 func (this *ListPCReq) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 4)
+	s := make([]string, 0, 6)
 	s = append(s, "&dto.ListPCReq{")
+	s = append(s, "Size_: "+fmt.Sprintf("%#v", this.Size_)+",\n")
+	s = append(s, "State: "+fmt.Sprintf("%#v", this.State)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -202,7 +240,7 @@ func (this *ListPCResp) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 5)
+	s := make([]string, 0, 6)
 	s = append(s, "&dto.ListPCResp{")
 	if this.PCs != nil {
 		vs := make([]entity.PC, len(this.PCs))
@@ -211,6 +249,7 @@ func (this *ListPCResp) GoString() string {
 		}
 		s = append(s, "PCs: "+fmt.Sprintf("%#v", vs)+",\n")
 	}
+	s = append(s, "State: "+fmt.Sprintf("%#v", this.State)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -242,6 +281,18 @@ func (m *ListPCReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.State) > 0 {
+		i -= len(m.State)
+		copy(dAtA[i:], m.State)
+		i = encodeVarintPc(dAtA, i, uint64(len(m.State)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.Size_ != 0 {
+		i = encodeVarintPc(dAtA, i, uint64(m.Size_))
+		i--
+		dAtA[i] = 0x8
+	}
 	return len(dAtA) - i, nil
 }
 
@@ -265,6 +316,13 @@ func (m *ListPCResp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.State) > 0 {
+		i -= len(m.State)
+		copy(dAtA[i:], m.State)
+		i = encodeVarintPc(dAtA, i, uint64(len(m.State)))
+		i--
+		dAtA[i] = 0x12
+	}
 	if len(m.PCs) > 0 {
 		for iNdEx := len(m.PCs) - 1; iNdEx >= 0; iNdEx-- {
 			{
@@ -295,6 +353,11 @@ func encodeVarintPc(dAtA []byte, offset int, v uint64) int {
 }
 func NewPopulatedListPCReq(r randyPc, easy bool) *ListPCReq {
 	this := &ListPCReq{}
+	this.Size_ = int64(r.Int63())
+	if r.Intn(2) == 0 {
+		this.Size_ *= -1
+	}
+	this.State = string(randStringPc(r))
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -310,6 +373,7 @@ func NewPopulatedListPCResp(r randyPc, easy bool) *ListPCResp {
 			this.PCs[i] = *v2
 		}
 	}
+	this.State = string(randStringPc(r))
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -393,6 +457,13 @@ func (m *ListPCReq) Size() (n int) {
 	}
 	var l int
 	_ = l
+	if m.Size_ != 0 {
+		n += 1 + sovPc(uint64(m.Size_))
+	}
+	l = len(m.State)
+	if l > 0 {
+		n += 1 + l + sovPc(uint64(l))
+	}
 	return n
 }
 
@@ -408,6 +479,10 @@ func (m *ListPCResp) Size() (n int) {
 			n += 1 + l + sovPc(uint64(l))
 		}
 	}
+	l = len(m.State)
+	if l > 0 {
+		n += 1 + l + sovPc(uint64(l))
+	}
 	return n
 }
 
@@ -422,6 +497,8 @@ func (this *ListPCReq) String() string {
 		return "nil"
 	}
 	s := strings.Join([]string{`&ListPCReq{`,
+		`Size_:` + fmt.Sprintf("%v", this.Size_) + `,`,
+		`State:` + fmt.Sprintf("%v", this.State) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -437,6 +514,7 @@ func (this *ListPCResp) String() string {
 	repeatedStringForPCs += "}"
 	s := strings.Join([]string{`&ListPCResp{`,
 		`PCs:` + repeatedStringForPCs + `,`,
+		`State:` + fmt.Sprintf("%v", this.State) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -478,6 +556,57 @@ func (m *ListPCReq) Unmarshal(dAtA []byte) error {
 			return fmt.Errorf("proto: ListPCReq: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Size_", wireType)
+			}
+			m.Size_ = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Size_ |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field State", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPc
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPc
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.State = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipPc(dAtA[iNdEx:])
@@ -564,6 +693,38 @@ func (m *ListPCResp) Unmarshal(dAtA []byte) error {
 			if err := m.PCs[len(m.PCs)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field State", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPc
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPc
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.State = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
