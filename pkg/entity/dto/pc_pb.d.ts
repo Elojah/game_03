@@ -6,6 +6,12 @@ import * as github_com_gogo_protobuf_gogoproto_gogo_pb from "../../../../../../g
 import * as github_com_elojah_game_03_pkg_entity_pc_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/pc_pb";
 
 export class ListPCReq extends jspb.Message {
+  getSize(): number;
+  setSize(value: number): void;
+
+  getState(): string;
+  setState(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ListPCReq.AsObject;
   static toObject(includeInstance: boolean, msg: ListPCReq): ListPCReq.AsObject;
@@ -18,6 +24,8 @@ export class ListPCReq extends jspb.Message {
 
 export namespace ListPCReq {
   export type AsObject = {
+    size: number,
+    state: string,
   }
 }
 
@@ -26,6 +34,9 @@ export class ListPCResp extends jspb.Message {
   getPcsList(): Array<github_com_elojah_game_03_pkg_entity_pc_pb.PC>;
   setPcsList(value: Array<github_com_elojah_game_03_pkg_entity_pc_pb.PC>): void;
   addPcs(value?: github_com_elojah_game_03_pkg_entity_pc_pb.PC, index?: number): github_com_elojah_game_03_pkg_entity_pc_pb.PC;
+
+  getState(): string;
+  setState(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ListPCResp.AsObject;
@@ -40,6 +51,7 @@ export class ListPCResp extends jspb.Message {
 export namespace ListPCResp {
   export type AsObject = {
     pcsList: Array<github_com_elojah_game_03_pkg_entity_pc_pb.PC.AsObject>,
+    state: string,
   }
 }
 

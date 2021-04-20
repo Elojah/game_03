@@ -320,8 +320,8 @@ proto.dto.ListRoomReq.prototype.toObject = function(opt_includeInstance) {
  */
 proto.dto.ListRoomReq.toObject = function(includeInstance, msg) {
   var f, obj = {
-    after: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    first: jspb.Message.getFieldWithDefault(msg, 2, 0)
+    size: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    state: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -359,12 +359,12 @@ proto.dto.ListRoomReq.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setAfter(value);
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setSize(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setFirst(value);
+      var value = /** @type {string} */ (reader.readString());
+      msg.setState(value);
       break;
     default:
       reader.skipField();
@@ -395,16 +395,16 @@ proto.dto.ListRoomReq.prototype.serializeBinary = function() {
  */
 proto.dto.ListRoomReq.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getAfter();
-  if (f.length > 0) {
-    writer.writeString(
+  f = message.getSize();
+  if (f !== 0) {
+    writer.writeInt64(
       1,
       f
     );
   }
-  f = message.getFirst();
-  if (f !== 0) {
-    writer.writeInt64(
+  f = message.getState();
+  if (f.length > 0) {
+    writer.writeString(
       2,
       f
     );
@@ -413,29 +413,11 @@ proto.dto.ListRoomReq.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional string After = 1;
- * @return {string}
- */
-proto.dto.ListRoomReq.prototype.getAfter = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.dto.ListRoomReq} returns this
- */
-proto.dto.ListRoomReq.prototype.setAfter = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional int64 First = 2;
+ * optional int64 Size = 1;
  * @return {number}
  */
-proto.dto.ListRoomReq.prototype.getFirst = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+proto.dto.ListRoomReq.prototype.getSize = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
@@ -443,8 +425,26 @@ proto.dto.ListRoomReq.prototype.getFirst = function() {
  * @param {number} value
  * @return {!proto.dto.ListRoomReq} returns this
  */
-proto.dto.ListRoomReq.prototype.setFirst = function(value) {
-  return jspb.Message.setProto3IntField(this, 2, value);
+proto.dto.ListRoomReq.prototype.setSize = function(value) {
+  return jspb.Message.setProto3IntField(this, 1, value);
+};
+
+
+/**
+ * optional string State = 2;
+ * @return {string}
+ */
+proto.dto.ListRoomReq.prototype.getState = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.dto.ListRoomReq} returns this
+ */
+proto.dto.ListRoomReq.prototype.setState = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -489,8 +489,7 @@ proto.dto.ListRoomResp.toObject = function(includeInstance, msg) {
   var f, obj = {
     roomsList: jspb.Message.toObjectList(msg.getRoomsList(),
     proto.dto.Room.toObject, includeInstance),
-    total: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    cursor: jspb.Message.getFieldWithDefault(msg, 3, "")
+    state: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -533,12 +532,8 @@ proto.dto.ListRoomResp.deserializeBinaryFromReader = function(msg, reader) {
       msg.addRooms(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readUint64());
-      msg.setTotal(value);
-      break;
-    case 3:
       var value = /** @type {string} */ (reader.readString());
-      msg.setCursor(value);
+      msg.setState(value);
       break;
     default:
       reader.skipField();
@@ -577,17 +572,10 @@ proto.dto.ListRoomResp.serializeBinaryToWriter = function(message, writer) {
       proto.dto.Room.serializeBinaryToWriter
     );
   }
-  f = message.getTotal();
-  if (f !== 0) {
-    writer.writeUint64(
-      2,
-      f
-    );
-  }
-  f = message.getCursor();
+  f = message.getState();
   if (f.length > 0) {
     writer.writeString(
-      3,
+      2,
       f
     );
   }
@@ -633,29 +621,11 @@ proto.dto.ListRoomResp.prototype.clearRoomsList = function() {
 
 
 /**
- * optional uint64 Total = 2;
- * @return {number}
- */
-proto.dto.ListRoomResp.prototype.getTotal = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.dto.ListRoomResp} returns this
- */
-proto.dto.ListRoomResp.prototype.setTotal = function(value) {
-  return jspb.Message.setProto3IntField(this, 2, value);
-};
-
-
-/**
- * optional string Cursor = 3;
+ * optional string State = 2;
  * @return {string}
  */
-proto.dto.ListRoomResp.prototype.getCursor = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+proto.dto.ListRoomResp.prototype.getState = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
@@ -663,8 +633,8 @@ proto.dto.ListRoomResp.prototype.getCursor = function() {
  * @param {string} value
  * @return {!proto.dto.ListRoomResp} returns this
  */
-proto.dto.ListRoomResp.prototype.setCursor = function(value) {
-  return jspb.Message.setProto3StringField(this, 3, value);
+proto.dto.ListRoomResp.prototype.setState = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 

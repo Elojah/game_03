@@ -32,6 +32,8 @@ func (h *handler) ListRoom(ctx context.Context, req *dto.ListRoomReq) (*dto.List
 	pcs, _, err := h.entity.FetchManyPC(ctx,
 		entity.FilterPC{
 			UserID: &ses.UserID,
+			Size:   int(req.Size_),
+			State:  []byte(req.State),
 		},
 	)
 	if err != nil {
@@ -47,10 +49,8 @@ func (h *handler) ListRoom(ctx context.Context, req *dto.ListRoomReq) (*dto.List
 	}
 
 	// #Fetch rooms
-	rooms, cursor, err := h.room.FetchMany(ctx, room.Filter{
-		IDs:   entity.PCs(pcs).RoomIDs(),
-		Size:  int(req.First),
-		State: []byte(req.After),
+	rooms, state, err := h.room.FetchMany(ctx, room.Filter{
+		IDs: entity.PCs(pcs).RoomIDs(),
 	})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to fetch rooms")
@@ -58,16 +58,16 @@ func (h *handler) ListRoom(ctx context.Context, req *dto.ListRoomReq) (*dto.List
 		return &dto.ListRoomResp{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
-	fmt.Println(rooms, cursor)
+	fmt.Println(rooms, state)
 	func() {
 		// #Fetch rooms
-		rooms, cursor, err := h.room.FetchMany(ctx, room.Filter{
+		rooms, state, err := h.room.FetchMany(ctx, room.Filter{
 			IDs:   entity.PCs(pcs).RoomIDs(),
 			Size:  1,
-			State: cursor,
+			State: state,
 		})
 
-		fmt.Println(rooms, cursor, err)
+		fmt.Println(rooms, state, err)
 	}()
 
 	// #Populate rooms with owner
@@ -78,7 +78,8 @@ func (h *handler) ListRoom(ctx context.Context, req *dto.ListRoomReq) (*dto.List
 	}
 
 	owners, _, err := h.user.FetchMany(ctx, user.Filter{
-		IDs: ownerIDs,
+		IDs:  ownerIDs,
+		Size: len(ownerIDs),
 	})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to fetch owners")
@@ -94,6 +95,7 @@ func (h *handler) ListRoom(ctx context.Context, req *dto.ListRoomReq) (*dto.List
 	// #Populate response
 	result := dto.ListRoomResp{
 		Rooms: make([]dto.Room, 0, len(rooms)),
+		State: string(state),
 	}
 
 	for _, r := range rooms {

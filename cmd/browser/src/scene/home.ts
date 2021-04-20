@@ -50,7 +50,7 @@ export class Home extends Scene {
         this.loadFollow('', 20);
 
         this.initRoom()
-        this.loadRoom('', 1);
+        this.loadRoom(1, '');
     }
     update() {}
 
@@ -75,7 +75,6 @@ export class Home extends Scene {
             // update data
             const fol = this.cache.custom['home'].get('follow') as TwitchDTO.ListFollowResp
             fol.setCursor(follows.getCursor())
-            fol.setTotal(follows.getTotal())
             fol.setFollowsList(fol.getFollowsList().concat(follows.getFollowsList()))
 
             this.displayFollow(fol)
@@ -93,7 +92,7 @@ export class Home extends Scene {
         // update load more button
         const lm = this.cache.custom['home'].get('load_more_follow_html') as Phaser.GameObjects.DOMElement
         lm.removeListener('click')
-        if (follows.getTotal() > follows.getFollowsList().length) {
+        if (follows.getCursor() != '') {
             lm.addListener('click').on('click', () => {
                 this.loadFollow(follows.getCursor(), 20)
             })
@@ -120,14 +119,12 @@ export class Home extends Scene {
         lm.addListener('click').on('click', () => {})
         this.cache.custom['home'].add('load_more_room_html', lm)
     }
-    loadRoom(after: string, first: number){
-        // this.listRoom(after, first)
-        this.listRoom()
+    loadRoom(size: number, state: string){
+        this.listRoom(size, state)
         .then((rooms: RoomDTO.ListRoomResp)=> {
             // update data
             const ro = this.cache.custom['home'].get('room') as RoomDTO.ListRoomResp
-            // ro.setCursor(rooms.getCursor())
-            // ro.setTotal(rooms.getTotal())
+            ro.setState(rooms.getState())
             ro.setRoomsList(ro.getRoomsList().concat(rooms.getRoomsList()))
 
             this.displayRoom(ro)
@@ -145,11 +142,11 @@ export class Home extends Scene {
         // update load more button
         const lm = this.cache.custom['home'].get('load_more_room_html') as Phaser.GameObjects.DOMElement
         lm.removeListener('click')
-        // if (rooms.getTotal() > rooms.getRoomsList().length) {
-        //     lm.addListener('click').on('click', () => {
-        //         this.loadRoom(rooms.getCursor(), 20)
-        //     })
-        // }
+        if (rooms.getState() != '') {
+            lm.addListener('click').on('click', () => {
+                this.loadRoom(1, rooms.getState())
+            })
+        }
 
         // update rooms list
         const rHTML = this.cache.custom['home'].get('room_html') as Phaser.GameObjects.DOMElement
@@ -201,8 +198,10 @@ export class Home extends Scene {
 
         return prom
     }
-    listRoom() {
+    listRoom(size: number, state: string) {
         let req = new RoomDTO.ListRoomReq();
+        req.setSize(size)
+        req.setState(state)
         let md = new grpc.Metadata()
         md.set('token', this.registry.get('token'))
 

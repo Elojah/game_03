@@ -17,12 +17,11 @@ message Room {
 }
 
 message ListRoomReq {
-    string After         = 1;
-    int64 First          = 2;
+    int64 Size           = 1;
+    string State         = 2;
 }
 
 message ListRoomResp {
     repeated Room Rooms  = 1 [(gogoproto.nullable) = false];
-    uint64 Total         = 2;
-    string Cursor        = 3;
+    string State         = 2;
 }

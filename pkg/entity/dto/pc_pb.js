@@ -94,7 +94,8 @@ proto.dto.ListPCReq.prototype.toObject = function(opt_includeInstance) {
  */
 proto.dto.ListPCReq.toObject = function(includeInstance, msg) {
   var f, obj = {
-
+    size: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    state: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -131,6 +132,14 @@ proto.dto.ListPCReq.deserializeBinaryFromReader = function(msg, reader) {
     }
     var field = reader.getFieldNumber();
     switch (field) {
+    case 1:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setSize(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setState(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -160,6 +169,56 @@ proto.dto.ListPCReq.prototype.serializeBinary = function() {
  */
 proto.dto.ListPCReq.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
+  f = message.getSize();
+  if (f !== 0) {
+    writer.writeInt64(
+      1,
+      f
+    );
+  }
+  f = message.getState();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional int64 Size = 1;
+ * @return {number}
+ */
+proto.dto.ListPCReq.prototype.getSize = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.dto.ListPCReq} returns this
+ */
+proto.dto.ListPCReq.prototype.setSize = function(value) {
+  return jspb.Message.setProto3IntField(this, 1, value);
+};
+
+
+/**
+ * optional string State = 2;
+ * @return {string}
+ */
+proto.dto.ListPCReq.prototype.getState = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.dto.ListPCReq} returns this
+ */
+proto.dto.ListPCReq.prototype.setState = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -203,7 +262,8 @@ proto.dto.ListPCResp.prototype.toObject = function(opt_includeInstance) {
 proto.dto.ListPCResp.toObject = function(includeInstance, msg) {
   var f, obj = {
     pcsList: jspb.Message.toObjectList(msg.getPcsList(),
-    github_com_elojah_game_03_pkg_entity_pc_pb.PC.toObject, includeInstance)
+    github_com_elojah_game_03_pkg_entity_pc_pb.PC.toObject, includeInstance),
+    state: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -245,6 +305,10 @@ proto.dto.ListPCResp.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value,github_com_elojah_game_03_pkg_entity_pc_pb.PC.deserializeBinaryFromReader);
       msg.addPcs(value);
       break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setState(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -280,6 +344,13 @@ proto.dto.ListPCResp.serializeBinaryToWriter = function(message, writer) {
       1,
       f,
       github_com_elojah_game_03_pkg_entity_pc_pb.PC.serializeBinaryToWriter
+    );
+  }
+  f = message.getState();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
     );
   }
 };
@@ -320,6 +391,24 @@ proto.dto.ListPCResp.prototype.addPcs = function(opt_value, opt_index) {
  */
 proto.dto.ListPCResp.prototype.clearPcsList = function() {
   return this.setPcsList([]);
+};
+
+
+/**
+ * optional string State = 2;
+ * @return {string}
+ */
+proto.dto.ListPCResp.prototype.getState = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.dto.ListPCResp} returns this
+ */
+proto.dto.ListPCResp.prototype.setState = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 

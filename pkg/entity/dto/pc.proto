@@ -10,8 +10,12 @@ option (gogoproto.goproto_registration) = true;
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "github.com/elojah/game_03/pkg/entity/pc.proto";
 
-message ListPCReq {}
+message ListPCReq {
+    int64 Size             = 1;
+    string State           = 2;
+}
 
 message ListPCResp {
     repeated entity.PC PCs = 1 [(gogoproto.nullable) = false];
+    string State           = 2;
 }

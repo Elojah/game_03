@@ -81,8 +81,8 @@ func (m *Room) GetOwner() user.U {
 }
 
 type ListRoomReq struct {
-	After string `protobuf:"bytes,1,opt,name=After,proto3" json:"After,omitempty"`
-	First int64  `protobuf:"varint,2,opt,name=First,proto3" json:"First,omitempty"`
+	Size_ int64  `protobuf:"varint,1,opt,name=Size,proto3" json:"Size,omitempty"`
+	State string `protobuf:"bytes,2,opt,name=State,proto3" json:"State,omitempty"`
 }
 
 func (m *ListRoomReq) Reset()      { *m = ListRoomReq{} }
@@ -117,24 +117,23 @@ func (m *ListRoomReq) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_ListRoomReq proto.InternalMessageInfo
 
-func (m *ListRoomReq) GetAfter() string {
+func (m *ListRoomReq) GetSize_() int64 {
 	if m != nil {
-		return m.After
-	}
-	return ""
-}
-
-func (m *ListRoomReq) GetFirst() int64 {
-	if m != nil {
-		return m.First
+		return m.Size_
 	}
 	return 0
 }
 
+func (m *ListRoomReq) GetState() string {
+	if m != nil {
+		return m.State
+	}
+	return ""
+}
+
 type ListRoomResp struct {
-	Rooms  []Room `protobuf:"bytes,1,rep,name=Rooms,proto3" json:"Rooms"`
-	Total  uint64 `protobuf:"varint,2,opt,name=Total,proto3" json:"Total,omitempty"`
-	Cursor string `protobuf:"bytes,3,opt,name=Cursor,proto3" json:"Cursor,omitempty"`
+	Rooms []Room `protobuf:"bytes,1,rep,name=Rooms,proto3" json:"Rooms"`
+	State string `protobuf:"bytes,2,opt,name=State,proto3" json:"State,omitempty"`
 }
 
 func (m *ListRoomResp) Reset()      { *m = ListRoomResp{} }
@@ -176,16 +175,9 @@ func (m *ListRoomResp) GetRooms() []Room {
 	return nil
 }
 
-func (m *ListRoomResp) GetTotal() uint64 {
+func (m *ListRoomResp) GetState() string {
 	if m != nil {
-		return m.Total
-	}
-	return 0
-}
-
-func (m *ListRoomResp) GetCursor() string {
-	if m != nil {
-		return m.Cursor
+		return m.State
 	}
 	return ""
 }
@@ -207,29 +199,28 @@ func init() {
 }
 
 var fileDescriptor_eb76369b24ff759d = []byte{
-	// 342 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x90, 0xbf, 0x4e, 0xf3, 0x40,
-	0x10, 0xc4, 0x7d, 0x9f, 0x93, 0x7c, 0xca, 0x85, 0xca, 0x42, 0xc8, 0xa2, 0x58, 0x42, 0x10, 0x52,
-	0x1a, 0x6c, 0x48, 0x2a, 0x4a, 0x02, 0xa2, 0x42, 0x20, 0x9d, 0xa0, 0x46, 0xf9, 0xe3, 0x38, 0x81,
-	0x98, 0x0d, 0xe7, 0xb3, 0x68, 0x79, 0x04, 0x1e, 0x83, 0x47, 0xa0, 0x4c, 0x99, 0x32, 0x65, 0x2a,
-	0x84, 0xcf, 0x0d, 0x65, 0x4a, 0x4a, 0xe4, 0xbd, 0xa0, 0x40, 0x81, 0x68, 0xec, 0x9d, 0xdd, 0x99,
-	0xdf, 0x48, 0xc7, 0x0f, 0xc2, 0xa1, 0x1a, 0x24, 0x1d, 0xaf, 0x8b, 0x91, 0x1f, 0x8c, 0xf0, 0xa6,
-	0x3d, 0xf0, 0xc3, 0x76, 0x14, 0x5c, 0xef, 0x37, 0xfd, 0xf1, 0x6d, 0xe8, 0x4b, 0xc4, 0xc8, 0xef,
-	0x29, 0xa4, 0xc1, 0x1b, 0x4b, 0x54, 0xe8, 0xd8, 0x3d, 0x85, 0x9b, 0x7b, 0xdf, 0x72, 0x21, 0x86,
-	0xe8, 0xd3, 0xad, 0x93, 0xf4, 0x49, 0x91, 0xa0, 0xc9, 0x64, 0x7e, 0xd8, 0x7f, 0xab, 0x59, 0x55,
-	0xfc, 0x65, 0x4f, 0xe2, 0x40, 0xd2, 0xc7, 0xd8, 0x6b, 0xe7, 0xbc, 0x20, 0x10, 0x23, 0x67, 0xdb,
-	0xfc, 0x5d, 0x56, 0x65, 0xf5, 0x4a, 0xe3, 0xbf, 0x47, 0x44, 0xd1, 0x2a, 0x4c, 0x5f, 0xb7, 0x2c,
-	0x61, 0x2c, 0x3b, 0xbc, 0x78, 0xf1, 0x70, 0x17, 0x48, 0xf7, 0xdf, 0xd2, 0x43, 0x98, 0xab, 0xa5,
-	0xc7, 0xdc, 0x6a, 0x87, 0xbc, 0x72, 0x36, 0x8c, 0x55, 0x1e, 0x10, 0xc1, 0xbd, 0xb3, 0xce, 0x8b,
-	0x47, 0x7d, 0x15, 0x48, 0xe2, 0x96, 0x85, 0x11, 0xf9, 0xf6, 0x74, 0x28, 0x63, 0x45, 0x24, 0x5b,
-	0x18, 0x51, 0xeb, 0xf2, 0xb5, 0x55, 0x34, 0x1e, 0x3b, 0xbb, 0xbc, 0x98, 0xcf, 0xb1, 0xcb, 0xaa,
-	0x76, 0xbd, 0xd2, 0x28, 0x7b, 0x3d, 0x85, 0x5e, 0xbe, 0xf9, 0x6a, 0xa4, 0x6b, 0x0e, 0xbb, 0x44,
-	0xd5, 0x1e, 0x11, 0xac, 0x20, 0x8c, 0x70, 0x36, 0x78, 0xe9, 0x38, 0x91, 0x31, 0x4a, 0xd7, 0xa6,
-	0xe6, 0xa5, 0x6a, 0x9d, 0xcc, 0x52, 0xb0, 0xe6, 0x29, 0x58, 0x8b, 0x14, 0xd8, 0x47, 0x0a, 0xec,
-	0x51, 0x03, 0x7b, 0xd6, 0xc0, 0x5e, 0x34, 0xb0, 0x89, 0x06, 0x36, 0xd5, 0xc0, 0x66, 0x1a, 0xd8,
-	0x9b, 0x06, 0xf6, 0xae, 0xc1, 0x5a, 0x68, 0x60, 0x4f, 0x19, 0x58, 0x93, 0x0c, 0xd8, 0x2c, 0x03,
-	0x6b, 0x9e, 0x81, 0xd5, 0x29, 0xd1, 0xe3, 0x35, 0x3f, 0x03, 0x00, 0x00, 0xff, 0xff, 0xf3, 0x51,
-	0x5a, 0x1c, 0x03, 0x02, 0x00, 0x00,
+	// 321 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x90, 0x31, 0x4f, 0x3a, 0x41,
+	0x10, 0xc5, 0x77, 0xfe, 0xc0, 0xdf, 0xb0, 0x58, 0x5d, 0x2c, 0x88, 0xc5, 0x88, 0x18, 0x13, 0x1a,
+	0xef, 0x14, 0x0a, 0x7b, 0x62, 0xa7, 0xd1, 0x64, 0x89, 0xb5, 0x01, 0x59, 0x0f, 0xd4, 0x73, 0xf0,
+	0x6e, 0x89, 0x89, 0x95, 0x1f, 0xc1, 0x8f, 0xe1, 0x47, 0xb0, 0xa4, 0xa4, 0xa4, 0xa4, 0x32, 0xde,
+	0x5e, 0x63, 0x49, 0x69, 0x69, 0x98, 0xc5, 0xa0, 0x89, 0xc6, 0x66, 0xf7, 0xcd, 0xce, 0xef, 0xbd,
+	0x97, 0xac, 0xdc, 0x0b, 0xfb, 0xa6, 0x37, 0xec, 0xf8, 0xe7, 0x14, 0x05, 0xfa, 0x9a, 0x2e, 0xdb,
+	0xbd, 0x20, 0x6c, 0x47, 0xfa, 0x6c, 0xb7, 0x11, 0x0c, 0xae, 0xc2, 0x20, 0x26, 0x8a, 0x82, 0xae,
+	0x21, 0x16, 0xfe, 0x20, 0x26, 0x43, 0x5e, 0xae, 0x6b, 0x68, 0x7d, 0xe7, 0x8b, 0x2f, 0xa4, 0x90,
+	0x02, 0xde, 0x75, 0x86, 0x17, 0x3c, 0xf1, 0xc0, 0xca, 0x79, 0xbe, 0xe1, 0xbf, 0xd5, 0x2c, 0x2b,
+	0xfe, 0xc2, 0x87, 0x89, 0x8e, 0xf9, 0x70, 0x78, 0xf5, 0x58, 0xe6, 0x15, 0x51, 0xe4, 0x6d, 0xba,
+	0xbb, 0x0c, 0x15, 0xa8, 0x95, 0xea, 0x2b, 0x3e, 0x27, 0xaa, 0x66, 0x7e, 0xfc, 0xb2, 0x21, 0x94,
+	0x43, 0xb6, 0x64, 0xe1, 0xe4, 0xee, 0x46, 0xc7, 0xe5, 0x7f, 0x0b, 0x86, 0x63, 0x4e, 0x17, 0x8c,
+	0xdb, 0x55, 0xf7, 0x65, 0xe9, 0xa8, 0x9f, 0x98, 0xb9, 0x41, 0xe9, 0x5b, 0xcf, 0x93, 0xf9, 0x56,
+	0xff, 0x5e, 0x73, 0x6c, 0x4e, 0xb1, 0xf6, 0xd6, 0x64, 0xa1, 0x65, 0xda, 0x46, 0x73, 0x4e, 0x51,
+	0xb9, 0xa1, 0x7a, 0x28, 0x57, 0x97, 0xc6, 0x64, 0xe0, 0x6d, 0xcb, 0xc2, 0x5c, 0x27, 0x65, 0xa8,
+	0xe4, 0x6a, 0xa5, 0x7a, 0xd1, 0xef, 0x1a, 0xf2, 0xe7, 0x2f, 0x9f, 0x7d, 0xbc, 0xfd, 0x39, 0xac,
+	0x79, 0x30, 0x49, 0x51, 0x4c, 0x53, 0x14, 0xb3, 0x14, 0xe1, 0x3d, 0x45, 0x78, 0xb0, 0x08, 0x4f,
+	0x16, 0xe1, 0xd9, 0x22, 0x8c, 0x2c, 0xc2, 0xd8, 0x22, 0x4c, 0x2c, 0xc2, 0xab, 0x45, 0x78, 0xb3,
+	0x28, 0x66, 0x16, 0xe1, 0x31, 0x43, 0x31, 0xca, 0x10, 0x26, 0x19, 0x8a, 0x69, 0x86, 0xa2, 0xf3,
+	0x9f, 0xbf, 0xa8, 0xf1, 0x11, 0x00, 0x00, 0xff, 0xff, 0x34, 0x05, 0xf4, 0xd6, 0xe9, 0x01, 0x00,
+	0x00,
 }
 
 func (this *Room) Equal(that interface{}) bool {
@@ -278,10 +269,10 @@ func (this *ListRoomReq) Equal(that interface{}) bool {
 	} else if this == nil {
 		return false
 	}
-	if this.After != that1.After {
+	if this.Size_ != that1.Size_ {
 		return false
 	}
-	if this.First != that1.First {
+	if this.State != that1.State {
 		return false
 	}
 	return true
@@ -313,10 +304,7 @@ func (this *ListRoomResp) Equal(that interface{}) bool {
 			return false
 		}
 	}
-	if this.Total != that1.Total {
-		return false
-	}
-	if this.Cursor != that1.Cursor {
+	if this.State != that1.State {
 		return false
 	}
 	return true
@@ -338,8 +326,8 @@ func (this *ListRoomReq) GoString() string {
 	}
 	s := make([]string, 0, 6)
 	s = append(s, "&dto.ListRoomReq{")
-	s = append(s, "After: "+fmt.Sprintf("%#v", this.After)+",\n")
-	s = append(s, "First: "+fmt.Sprintf("%#v", this.First)+",\n")
+	s = append(s, "Size_: "+fmt.Sprintf("%#v", this.Size_)+",\n")
+	s = append(s, "State: "+fmt.Sprintf("%#v", this.State)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -347,7 +335,7 @@ func (this *ListRoomResp) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 7)
+	s := make([]string, 0, 6)
 	s = append(s, "&dto.ListRoomResp{")
 	if this.Rooms != nil {
 		vs := make([]Room, len(this.Rooms))
@@ -356,8 +344,7 @@ func (this *ListRoomResp) GoString() string {
 		}
 		s = append(s, "Rooms: "+fmt.Sprintf("%#v", vs)+",\n")
 	}
-	s = append(s, "Total: "+fmt.Sprintf("%#v", this.Total)+",\n")
-	s = append(s, "Cursor: "+fmt.Sprintf("%#v", this.Cursor)+",\n")
+	s = append(s, "State: "+fmt.Sprintf("%#v", this.State)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -432,17 +419,17 @@ func (m *ListRoomReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.First != 0 {
-		i = encodeVarintRoom(dAtA, i, uint64(m.First))
+	if len(m.State) > 0 {
+		i -= len(m.State)
+		copy(dAtA[i:], m.State)
+		i = encodeVarintRoom(dAtA, i, uint64(len(m.State)))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x12
 	}
-	if len(m.After) > 0 {
-		i -= len(m.After)
-		copy(dAtA[i:], m.After)
-		i = encodeVarintRoom(dAtA, i, uint64(len(m.After)))
+	if m.Size_ != 0 {
+		i = encodeVarintRoom(dAtA, i, uint64(m.Size_))
 		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -467,17 +454,12 @@ func (m *ListRoomResp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Cursor) > 0 {
-		i -= len(m.Cursor)
-		copy(dAtA[i:], m.Cursor)
-		i = encodeVarintRoom(dAtA, i, uint64(len(m.Cursor)))
+	if len(m.State) > 0 {
+		i -= len(m.State)
+		copy(dAtA[i:], m.State)
+		i = encodeVarintRoom(dAtA, i, uint64(len(m.State)))
 		i--
-		dAtA[i] = 0x1a
-	}
-	if m.Total != 0 {
-		i = encodeVarintRoom(dAtA, i, uint64(m.Total))
-		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x12
 	}
 	if len(m.Rooms) > 0 {
 		for iNdEx := len(m.Rooms) - 1; iNdEx >= 0; iNdEx-- {
@@ -520,11 +502,11 @@ func NewPopulatedRoom(r randyRoom, easy bool) *Room {
 
 func NewPopulatedListRoomReq(r randyRoom, easy bool) *ListRoomReq {
 	this := &ListRoomReq{}
-	this.After = string(randStringRoom(r))
-	this.First = int64(r.Int63())
+	this.Size_ = int64(r.Int63())
 	if r.Intn(2) == 0 {
-		this.First *= -1
+		this.Size_ *= -1
 	}
+	this.State = string(randStringRoom(r))
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -540,8 +522,7 @@ func NewPopulatedListRoomResp(r randyRoom, easy bool) *ListRoomResp {
 			this.Rooms[i] = *v4
 		}
 	}
-	this.Total = uint64(uint64(r.Uint32()))
-	this.Cursor = string(randStringRoom(r))
+	this.State = string(randStringRoom(r))
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -638,12 +619,12 @@ func (m *ListRoomReq) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.After)
+	if m.Size_ != 0 {
+		n += 1 + sovRoom(uint64(m.Size_))
+	}
+	l = len(m.State)
 	if l > 0 {
 		n += 1 + l + sovRoom(uint64(l))
-	}
-	if m.First != 0 {
-		n += 1 + sovRoom(uint64(m.First))
 	}
 	return n
 }
@@ -660,10 +641,7 @@ func (m *ListRoomResp) Size() (n int) {
 			n += 1 + l + sovRoom(uint64(l))
 		}
 	}
-	if m.Total != 0 {
-		n += 1 + sovRoom(uint64(m.Total))
-	}
-	l = len(m.Cursor)
+	l = len(m.State)
 	if l > 0 {
 		n += 1 + l + sovRoom(uint64(l))
 	}
@@ -692,8 +670,8 @@ func (this *ListRoomReq) String() string {
 		return "nil"
 	}
 	s := strings.Join([]string{`&ListRoomReq{`,
-		`After:` + fmt.Sprintf("%v", this.After) + `,`,
-		`First:` + fmt.Sprintf("%v", this.First) + `,`,
+		`Size_:` + fmt.Sprintf("%v", this.Size_) + `,`,
+		`State:` + fmt.Sprintf("%v", this.State) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -709,8 +687,7 @@ func (this *ListRoomResp) String() string {
 	repeatedStringForRooms += "}"
 	s := strings.Join([]string{`&ListRoomResp{`,
 		`Rooms:` + repeatedStringForRooms + `,`,
-		`Total:` + fmt.Sprintf("%v", this.Total) + `,`,
-		`Cursor:` + fmt.Sprintf("%v", this.Cursor) + `,`,
+		`State:` + fmt.Sprintf("%v", this.State) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -872,8 +849,27 @@ func (m *ListRoomReq) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Size_", wireType)
+			}
+			m.Size_ = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRoom
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Size_ |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field After", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field State", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -901,27 +897,8 @@ func (m *ListRoomReq) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.After = string(dAtA[iNdEx:postIndex])
+			m.State = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field First", wireType)
-			}
-			m.First = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowRoom
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.First |= int64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRoom(dAtA[iNdEx:])
@@ -1010,27 +987,8 @@ func (m *ListRoomResp) Unmarshal(dAtA []byte) error {
 			}
 			iNdEx = postIndex
 		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Total", wireType)
-			}
-			m.Total = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowRoom
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Total |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Cursor", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field State", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1058,7 +1016,7 @@ func (m *ListRoomResp) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Cursor = string(dAtA[iNdEx:postIndex])
+			m.State = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
