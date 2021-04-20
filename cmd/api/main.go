@@ -124,20 +124,20 @@ func run(prog string, filename string) {
 
 	cs = append(cs, &twitchApp)
 
-	entityStore := &entityscylla.Store{Service: &scyllas}
+	entityStore := &entityscylla.Store{Service: scyllas}
 	entityApp := entityapp.App{
 		Store:   entityStore,
 		StorePC: entityStore,
 	}
 
-	roomStore := &roomscylla.Store{Service: &scyllas}
+	roomStore := &roomscylla.Store{Service: scyllas}
 	roomApp := roomapp.App{
 		Store:      roomStore,
 		StoreWorld: roomStore,
 		StoreCell:  roomStore,
 	}
 
-	userStore := &userscylla.Store{Service: &scyllas}
+	userStore := &userscylla.Store{Service: scyllas}
 	userApp := userapp.App{
 		Store:        userStore,
 		StoreSession: userStore,

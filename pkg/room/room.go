@@ -7,13 +7,13 @@ import (
 )
 
 type Filter struct {
-	// IDs      *ulid.IDs
-	IDs     []ulid.ID
-	OwnerID *ulid.ID
+	ID       *ulid.ID
+	IDs      []ulid.ID
+	OwnerID  *ulid.ID
+	OwnerIDs []ulid.ID
 
-	// Pagination
-	Size  int    `db:"-"`
-	State []byte `db:"-"`
+	State []byte
+	Size  int
 }
 
 type Store interface {

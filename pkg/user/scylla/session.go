@@ -7,18 +7,32 @@ import (
 
 	gerrors "github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/user"
-	gscylla "github.com/elojah/go-scylla"
 	"github.com/gocql/gocql"
-	"github.com/scylladb/gocqlx/v2/table"
 )
 
-var sessionByID = gscylla.NewTable(table.Metadata{
-	Name:    "session",
-	Columns: []string{"id", "user_id", "twitch_token"},
-	PartKey: []string{"id"},
-})
-
 type filterSession user.FilterSession
+
+func (f filterSession) where() (string, []interface{}) {
+	var clause []string
+
+	var args []interface{}
+
+	if f.ID != nil {
+		clause = append(clause, `id = ?`)
+		args = append(args, *f.ID)
+	}
+
+	b := strings.Builder{}
+	b.WriteString(" WHERE ")
+
+	if len(clause) == 0 {
+		b.WriteString("false")
+	} else {
+		b.WriteString(strings.Join(clause, " AND "))
+	}
+
+	return b.String(), args
+}
 
 func (f filterSession) index() string {
 	var cols []string
@@ -31,10 +45,16 @@ func (f filterSession) index() string {
 }
 
 func (s Store) InsertSession(ctx context.Context, ses user.Session) error {
-	st, ns := sessionByID.Ins()
-	q := s.ContextQuery(ctx, st, ns).BindStruct(ses)
+	q := s.Session.Query(
+		`INSERT INTO main.session (id, user_id, twitch_token) VALUES (?, ?, ?)`,
+		ses.ID,
+		ses.UserID,
+		ses.TwitchToken,
+	).WithContext(ctx)
 
-	if err := q.ExecRelease(); err != nil {
+	defer q.Release()
+
+	if err := q.Exec(); err != nil {
 		return err
 	}
 
@@ -42,11 +62,16 @@ func (s Store) InsertSession(ctx context.Context, ses user.Session) error {
 }
 
 func (s Store) FetchSession(ctx context.Context, f user.FilterSession) (user.Session, error) {
-	st, ns := sessionByID.Get()
-	q := s.ContextQuery(ctx, st, ns).BindStruct(f)
+	b := strings.Builder{}
+	b.WriteString(`SELECT id, user_id, twitch_token FROM main.session `)
+
+	clause, args := filterSession(f).where()
+	b.WriteString(clause)
+
+	q := s.Session.Query(b.String(), args...).WithContext(ctx)
 
 	var ses user.Session
-	if err := q.GetRelease(&ses); err != nil {
+	if err := q.Scan(&ses.ID, &ses.UserID, &ses.TwitchToken); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
 			return user.Session{}, gerrors.ErrNotFound{Resource: "session", Index: filterSession(f).index()}
 		}
@@ -58,10 +83,17 @@ func (s Store) FetchSession(ctx context.Context, f user.FilterSession) (user.Ses
 }
 
 func (s Store) DeleteSession(ctx context.Context, f user.FilterSession) error {
-	st, ns := sessionByID.Del()
-	q := s.ContextQuery(ctx, st, ns).BindStruct(f)
+	b := strings.Builder{}
+	b.WriteString(`DELETE FROM main.session `)
 
-	if err := q.ExecRelease(); err != nil {
+	clause, args := filterSession(f).where()
+	b.WriteString(clause)
+
+	q := s.Session.Query(b.String(), args...).WithContext(ctx)
+
+	defer q.Release()
+
+	if err := q.Exec(); err != nil {
 		return err
 	}
 

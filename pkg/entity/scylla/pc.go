@@ -5,14 +5,14 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/elojah/game_03/pkg/entity"
 	gerrors "github.com/elojah/game_03/pkg/errors"
-	"github.com/elojah/game_03/pkg/user"
 	"github.com/gocql/gocql"
 )
 
-type filter user.Filter
+type filterPC entity.FilterPC
 
-func (f filter) where() (string, []interface{}) {
+func (f filterPC) where() (string, []interface{}) {
 	var clause []string
 
 	var args []interface{}
@@ -22,9 +22,19 @@ func (f filter) where() (string, []interface{}) {
 		args = append(args, *f.ID)
 	}
 
-	if f.TwitchID != nil {
-		clause = append(clause, `twitch_id = ?`)
-		args = append(args, *f.TwitchID)
+	if len(f.IDs) > 0 {
+		clause = append(clause, `id IN (?)`)
+		args = append(args, f.IDs)
+	}
+
+	if f.UserID != nil {
+		clause = append(clause, `user_id = ?`)
+		args = append(args, *f.UserID)
+	}
+
+	if f.RoomID != nil {
+		clause = append(clause, `room_id = ?`)
+		args = append(args, *f.RoomID)
 	}
 
 	b := strings.Builder{}
@@ -39,7 +49,7 @@ func (f filter) where() (string, []interface{}) {
 	return b.String(), args
 }
 
-func (f filter) index() string {
+func (f filterPC) index() string {
 	var cols []string
 
 	if f.ID != nil {
@@ -55,18 +65,23 @@ func (f filter) index() string {
 		cols = append(cols, strings.Join(ss, "|"))
 	}
 
-	if f.TwitchID != nil {
-		cols = append(cols, *f.TwitchID)
+	if f.UserID != nil {
+		cols = append(cols, f.UserID.String())
+	}
+
+	if f.RoomID != nil {
+		cols = append(cols, f.RoomID.String())
 	}
 
 	return strings.Join(cols, "|")
 }
 
-func (s Store) Insert(ctx context.Context, u user.U) error {
+func (s Store) InsertPC(ctx context.Context, pc entity.PC) error {
 	q := s.Session.Query(
-		`INSERT INTO main.user (id, twitch_id) VALUES (?, ?)`,
-		u.ID,
-		u.TwitchID,
+		`INSERT INTO main.pc (id, user_id, room_id) VALUES (?, ?, ?)`,
+		pc.ID,
+		pc.UserID,
+		pc.RoomID,
 	).WithContext(ctx)
 
 	defer q.Release()
@@ -78,32 +93,32 @@ func (s Store) Insert(ctx context.Context, u user.U) error {
 	return nil
 }
 
-func (s Store) Fetch(ctx context.Context, f user.Filter) (user.U, error) {
+func (s Store) FetchPC(ctx context.Context, f entity.FilterPC) (entity.PC, error) {
 	b := strings.Builder{}
-	b.WriteString(`SELECT id, twitch_id FROM main.user `)
+	b.WriteString(`SELECT id, user_id, room_id FROM main.pc `)
 
-	clause, args := filter(f).where()
+	clause, args := filterPC(f).where()
 	b.WriteString(clause)
 
 	q := s.Session.Query(b.String(), args...).WithContext(ctx)
 
-	var u user.U
-	if err := q.Scan(&u.ID, &u.TwitchID); err != nil {
+	var pc entity.PC
+	if err := q.Scan(&pc.ID, &pc.UserID, &pc.RoomID); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
-			return user.U{}, gerrors.ErrNotFound{Resource: "user", Index: filter(f).index()}
+			return entity.PC{}, gerrors.ErrNotFound{Resource: "pc", Index: filterPC(f).index()}
 		}
 
-		return user.U{}, err
+		return entity.PC{}, err
 	}
 
-	return u, nil
+	return pc, nil
 }
 
-func (s Store) FetchMany(ctx context.Context, f user.Filter) ([]user.U, []byte, error) {
+func (s Store) FetchManyPC(ctx context.Context, f entity.FilterPC) ([]entity.PC, []byte, error) {
 	b := strings.Builder{}
-	b.WriteString(`SELECT id, twitch_id FROM main.user `)
+	b.WriteString(`SELECT id, user_id, room_id FROM main.pc `)
 
-	clause, args := filter(f).where()
+	clause, args := filterPC(f).where()
 	b.WriteString(clause)
 
 	iter := s.Session.Query(b.String(), args...).
@@ -118,13 +133,15 @@ func (s Store) FetchMany(ctx context.Context, f user.Filter) ([]user.U, []byte, 
 
 	scanner := iter.Scanner()
 
-	users := make([]user.U, f.Size)
+	pcs := make([]entity.PC, f.Size)
 
 	var i int
+
 	for ; scanner.Next(); i++ {
 		if err := scanner.Scan(
-			&users[i].ID,
-			&users[i].TwitchID,
+			&pcs[i].ID,
+			&pcs[i].UserID,
+			&pcs[i].RoomID,
 		); err != nil {
 			return nil, nil, err
 		}
@@ -134,14 +151,14 @@ func (s Store) FetchMany(ctx context.Context, f user.Filter) ([]user.U, []byte, 
 		return nil, nil, err
 	}
 
-	return users[:i], state, nil
+	return pcs[:i], state, nil
 }
 
-func (s Store) Delete(ctx context.Context, f user.Filter) error {
+func (s Store) DeletePC(ctx context.Context, f entity.FilterPC) error {
 	b := strings.Builder{}
-	b.WriteString(`DELETE FROM main.user `)
+	b.WriteString(`DELETE FROM main.pc `)
 
-	clause, args := filter(f).where()
+	clause, args := filterPC(f).where()
 	b.WriteString(clause)
 
 	q := s.Session.Query(b.String(), args...).WithContext(ctx)

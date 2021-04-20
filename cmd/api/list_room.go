@@ -29,7 +29,7 @@ func (h *handler) ListRoom(ctx context.Context, req *dto.ListRoomReq) (*dto.List
 	}
 
 	// #Fetch pcs
-	pcs, err := h.entity.FetchManyPC(ctx,
+	pcs, _, err := h.entity.FetchManyPC(ctx,
 		entity.FilterPC{
 			UserID: &ses.UserID,
 		},
@@ -77,7 +77,7 @@ func (h *handler) ListRoom(ctx context.Context, req *dto.ListRoomReq) (*dto.List
 		ownerIDs = append(ownerIDs, r.OwnerID)
 	}
 
-	owners, err := h.user.FetchMany(ctx, user.Filter{
+	owners, _, err := h.user.FetchMany(ctx, user.Filter{
 		IDs: ownerIDs,
 	})
 	if err != nil {

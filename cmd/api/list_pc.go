@@ -25,7 +25,7 @@ func (h *handler) ListPC(ctx context.Context, req *dto.ListPCReq) (*dto.ListPCRe
 	}
 
 	// #Fetch pcs
-	pcs, err := h.entity.FetchManyPC(ctx,
+	pcs, _, err := h.entity.FetchManyPC(ctx,
 		entity.FilterPC{
 			UserID: &ses.UserID,
 		},
