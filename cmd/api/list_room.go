@@ -28,11 +28,11 @@ func (h *handler) ListRoom(ctx context.Context, req *dto.ListRoomReq) (*dto.List
 	}
 
 	// #Fetch pcs
-	pcs, _, err := h.entity.FetchManyPC(ctx,
+	pcs, state, err := h.entity.FetchManyPC(ctx,
 		entity.FilterPC{
 			UserID: &ses.UserID,
 			Size:   int(req.Size_),
-			State:  []byte(req.State),
+			State:  req.State,
 		},
 	)
 	if err != nil {
@@ -48,7 +48,7 @@ func (h *handler) ListRoom(ctx context.Context, req *dto.ListRoomReq) (*dto.List
 	}
 
 	// #Fetch rooms
-	rooms, state, err := h.room.FetchMany(ctx, room.Filter{
+	rooms, _, err := h.room.FetchMany(ctx, room.Filter{
 		IDs:  entity.PCs(pcs).RoomIDs(),
 		Size: len(pcs),
 	})
@@ -83,7 +83,7 @@ func (h *handler) ListRoom(ctx context.Context, req *dto.ListRoomReq) (*dto.List
 	// #Populate response
 	result := dto.ListRoomResp{
 		Rooms: make([]dto.Room, 0, len(rooms)),
-		State: string(state),
+		State: state,
 	}
 
 	for _, r := range rooms {

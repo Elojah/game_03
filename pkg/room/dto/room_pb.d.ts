@@ -38,8 +38,10 @@ export class ListRoomReq extends jspb.Message {
   getSize(): number;
   setSize(value: number): void;
 
-  getState(): string;
-  setState(value: string): void;
+  getState(): Uint8Array | string;
+  getState_asU8(): Uint8Array;
+  getState_asB64(): string;
+  setState(value: Uint8Array | string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ListRoomReq.AsObject;
@@ -54,7 +56,7 @@ export class ListRoomReq extends jspb.Message {
 export namespace ListRoomReq {
   export type AsObject = {
     size: number,
-    state: string,
+    state: Uint8Array | string,
   }
 }
 
@@ -64,8 +66,10 @@ export class ListRoomResp extends jspb.Message {
   setRoomsList(value: Array<Room>): void;
   addRooms(value?: Room, index?: number): Room;
 
-  getState(): string;
-  setState(value: string): void;
+  getState(): Uint8Array | string;
+  getState_asU8(): Uint8Array;
+  getState_asB64(): string;
+  setState(value: Uint8Array | string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ListRoomResp.AsObject;
@@ -80,7 +84,7 @@ export class ListRoomResp extends jspb.Message {
 export namespace ListRoomResp {
   export type AsObject = {
     roomsList: Array<Room.AsObject>,
-    state: string,
+    state: Uint8Array | string,
   }
 }
 

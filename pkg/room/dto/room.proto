@@ -18,10 +18,10 @@ message Room {
 
 message ListRoomReq {
     int64 Size           = 1;
-    string State         = 2;
+    bytes State          = 2;
 }
 
 message ListRoomResp {
     repeated Room Rooms  = 1 [(gogoproto.nullable) = false];
-    string State         = 2;
+    bytes State          = 2;
 }
