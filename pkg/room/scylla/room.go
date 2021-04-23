@@ -23,7 +23,7 @@ func (f filter) where() (string, []interface{}) {
 	}
 
 	if len(f.IDs) > 0 {
-		clause = append(clause, `id IN (?)`)
+		clause = append(clause, `id IN ?`)
 		args = append(args, f.IDs)
 	}
 
@@ -33,7 +33,7 @@ func (f filter) where() (string, []interface{}) {
 	}
 
 	if len(f.OwnerIDs) > 0 {
-		clause = append(clause, `owner_id IN (?)`)
+		clause = append(clause, `owner_id IN ?`)
 		args = append(args, f.OwnerIDs)
 	}
 
@@ -81,12 +81,13 @@ func (f filter) index() string {
 	return strings.Join(cols, "|")
 }
 
-func (s Store) Insert(ctx context.Context, e room.R) error {
+func (s Store) Insert(ctx context.Context, r room.R) error {
 	q := s.Session.Query(
-		`INSERT INTO main.room (id, owner_id, world_id) VALUES (?, ?, ?)`,
-		e.ID,
-		e.OwnerID,
-		e.WorldID,
+		`INSERT INTO main.room (id, owner_id, world_id, name) VALUES (?, ?, ?, ?)`,
+		r.ID,
+		r.OwnerID,
+		r.WorldID,
+		r.Name,
 	).WithContext(ctx)
 
 	defer q.Release()
@@ -107,8 +108,8 @@ func (s Store) Fetch(ctx context.Context, f room.Filter) (room.R, error) {
 
 	q := s.Session.Query(b.String(), args...).WithContext(ctx)
 
-	var e room.R
-	if err := q.Scan(&e.ID, &e.OwnerID, &e.WorldID); err != nil {
+	var r room.R
+	if err := q.Scan(&r.ID, &r.OwnerID, &r.WorldID); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
 			return room.R{}, gerrors.ErrNotFound{Resource: "room", Index: filter(f).index()}
 		}
@@ -116,10 +117,14 @@ func (s Store) Fetch(ctx context.Context, f room.Filter) (room.R, error) {
 		return room.R{}, err
 	}
 
-	return e, nil
+	return r, nil
 }
 
 func (s Store) FetchMany(ctx context.Context, f room.Filter) ([]room.R, []byte, error) {
+	if f.Size == 0 {
+		return nil, nil, nil
+	}
+
 	b := strings.Builder{}
 	b.WriteString(`SELECT id, owner_id, world_id FROM main.room `)
 

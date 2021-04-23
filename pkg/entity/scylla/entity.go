@@ -24,7 +24,7 @@ func (f filter) where() (string, []interface{}) {
 	}
 
 	if len(f.IDs) > 0 {
-		clause = append(clause, `id IN (?)`)
+		clause = append(clause, `id IN ?`)
 		args = append(args, f.IDs)
 	}
 
@@ -128,6 +128,10 @@ func (s Store) Fetch(ctx context.Context, f entity.Filter) (entity.E, error) {
 }
 
 func (s Store) FetchMany(ctx context.Context, f entity.Filter) ([]entity.E, []byte, error) {
+	if f.Size == 0 {
+		return nil, nil, nil
+	}
+
 	b := strings.Builder{}
 	b.WriteString(`SELECT id, pc_id, x, y, rot, radius FROM main.entity `)
 

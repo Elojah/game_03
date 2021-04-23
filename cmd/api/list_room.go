@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/elojah/game_03/pkg/entity"
 	gerrors "github.com/elojah/game_03/pkg/errors"
@@ -50,25 +49,14 @@ func (h *handler) ListRoom(ctx context.Context, req *dto.ListRoomReq) (*dto.List
 
 	// #Fetch rooms
 	rooms, state, err := h.room.FetchMany(ctx, room.Filter{
-		IDs: entity.PCs(pcs).RoomIDs(),
+		IDs:  entity.PCs(pcs).RoomIDs(),
+		Size: len(pcs),
 	})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to fetch rooms")
 
 		return &dto.ListRoomResp{}, status.New(codes.Internal, err.Error()).Err()
 	}
-
-	fmt.Println(rooms, state)
-	func() {
-		// #Fetch rooms
-		rooms, state, err := h.room.FetchMany(ctx, room.Filter{
-			IDs:   entity.PCs(pcs).RoomIDs(),
-			Size:  1,
-			State: state,
-		})
-
-		fmt.Println(rooms, state, err)
-	}()
 
 	// #Populate rooms with owner
 	ownerIDs := make([]ulid.ID, 0, len(rooms))

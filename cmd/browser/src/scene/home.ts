@@ -25,6 +25,7 @@ export class Home extends Scene {
         this.load.html('room', 'html/room.html')
         this.load.html('room_line', 'html/room_line.html')
         this.load.html('load_more', 'html/load_more.html')
+        this.load.html('create_room', 'html/create_room.html')
         this.load.image('home_background_01', 'img/home_background_01.png')
     }
     create() {
@@ -69,9 +70,9 @@ export class Home extends Scene {
         lm.addListener('click').on('click', () => {})
         this.cache.custom['home'].add('load_more_follow_html', lm)
     }
-    loadFollow(after: string, first: number){
+    loadFollow(after: string, first: number) {
         this.listFollow(after, first)
-        .then((follows: TwitchDTO.ListFollowResp)=> {
+        .then((follows: TwitchDTO.ListFollowResp) => {
             // update data
             const fol = this.cache.custom['home'].get('follow') as TwitchDTO.ListFollowResp
             fol.setCursor(follows.getCursor())
@@ -79,11 +80,11 @@ export class Home extends Scene {
 
             this.displayFollow(fol)
         })
-        .catch((err)=> {
+        .catch((err) => {
             console.log(err)
         })
     }
-    displayFollow(follows: TwitchDTO.ListFollowResp){
+    displayFollow(follows: TwitchDTO.ListFollowResp) {
         // build new follow HTML
         const ol = this.cache.html.get('follow')
         const li = this.cache.html.get('follow_line')
@@ -118,10 +119,24 @@ export class Home extends Scene {
         lm.setInteractive()
         lm.addListener('click').on('click', () => {})
         this.cache.custom['home'].add('load_more_room_html', lm)
+
+        // init html create room
+        const cm = this.add.dom(1100, 5).createFromCache('create_room').setOrigin(0)
+        cm.setInteractive()
+        cm.addListener('click').on('click', () => {
+            this.createRoom('my room')
+            .then(() => {
+                this.loadRoom(1, '')
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+        })
+        this.cache.custom['home'].add('create_room_html', cm)
     }
-    loadRoom(size: number, state: string){
+    loadRoom(size: number, state: string) {
         this.listRoom(size, state)
-        .then((rooms: RoomDTO.ListRoomResp)=> {
+        .then((rooms: RoomDTO.ListRoomResp) => {
             // update data
             const ro = this.cache.custom['home'].get('room') as RoomDTO.ListRoomResp
             ro.setState(rooms.getState())
@@ -129,11 +144,11 @@ export class Home extends Scene {
 
             this.displayRoom(ro)
         })
-        .catch((err)=> {
+        .catch((err) => {
             console.log(err)
         })
     }
-    displayRoom(rooms: RoomDTO.ListRoomResp){
+    displayRoom(rooms: RoomDTO.ListRoomResp) {
         // build new room HTML
         const ol = this.cache.html.get('room')
         const li = this.cache.html.get('room_line')
@@ -171,6 +186,8 @@ export class Home extends Scene {
             }
         });
     }
+
+    // API Follow
     listFollow(after: string, first: number) {
         let req = new TwitchDTO.ListFollowReq();
         req.setFirst(first.toString())
@@ -198,6 +215,8 @@ export class Home extends Scene {
 
         return prom
     }
+
+    // API Room
     listRoom(size: number, state: string) {
         let req = new RoomDTO.ListRoomReq();
         req.setSize(size)
@@ -225,5 +244,30 @@ export class Home extends Scene {
 
         return prom
     }
+    createRoom(name: string) {
+        let req = new Room.R();
+        req.setName(name)
+        let md = new grpc.Metadata()
+        md.set('token', this.registry.get('token'))
 
+        const prom = new Promise<Room.R>((resolve, reject) => {
+            grpc.unary(API.API.CreateRoom, {
+                metadata: md,
+                request: req,
+                host: 'http://localhost:8081',
+                onEnd: res => {
+                    const { status, statusMessage, headers, message, trailers } = res;
+                    if (status !== grpc.Code.OK || !message) {
+                        reject(res)
+
+                        return
+                    }
+
+                    resolve(message as Room.R)
+                }
+            });
+        })
+
+        return prom
+    }
 }
