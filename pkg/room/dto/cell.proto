@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package dto;
+
+option (gogoproto.testgen_all)  = true;
+option (gogoproto.benchgen_all) = true;
+option (gogoproto.populate_all) = true;
+option (gogoproto.goproto_registration) = true;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "github.com/elojah/game_03/pkg/entity/entity.proto";
+import "github.com/elojah/game_03/pkg/room/cell.proto";
+
+message Entity {
+    entity.E Entity          = 1;
+    // Add graphical informations
+    // Add animation informations
+}
+
+message Cell {
+    room.Cell Cell           = 1;
+    repeated Entity Entities = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    int64 TS                 = 3;
+}
