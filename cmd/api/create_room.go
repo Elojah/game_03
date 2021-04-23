@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 
+	"github.com/elojah/game_03/pkg/entity"
 	gerrors "github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/room"
 	"github.com/elojah/game_03/pkg/ulid"
@@ -30,7 +31,7 @@ func (h *handler) CreateRoom(ctx context.Context, req *room.R) (*room.R, error) 
 	}
 
 	// #Authenticate
-	_, err := h.user.Auth(ctx)
+	ses, err := h.user.Auth(ctx)
 	if err != nil {
 		return &room.R{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	}
@@ -65,6 +66,7 @@ func (h *handler) CreateRoom(ctx context.Context, req *room.R) (*room.R, error) 
 		return result
 	}()
 
+	// TODO: add goroutine pool
 	for i := int64(0); i < height/cellHeight; i++ {
 		for j := int64(0); j < width/cellWidth; j++ {
 			if err := h.room.InsertCell(ctx, room.Cell{
@@ -83,10 +85,22 @@ func (h *handler) CreateRoom(ctx context.Context, req *room.R) (*room.R, error) 
 	// #Set new room values
 	req.ID = ulid.NewID()
 	req.WorldID = w.ID
+	req.OwnerID = ses.UserID
 
 	// #Insert room
 	if err := h.room.Insert(ctx, *req); err != nil {
 		logger.Error().Err(err).Msg("failed to create room")
+
+		return &room.R{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
+	// #Insert owner PC
+	if err := h.entity.InsertPC(ctx, entity.PC{
+		ID:     ulid.NewID(),
+		UserID: ses.UserID,
+		RoomID: req.ID,
+	}); err != nil {
+		logger.Error().Err(err).Msg("failed to create pc")
 
 		return &room.R{}, status.New(codes.Internal, err.Error()).Err()
 	}

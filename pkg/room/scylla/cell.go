@@ -97,6 +97,10 @@ func (s Store) FetchCell(ctx context.Context, f room.FilterCell) (room.Cell, err
 }
 
 func (s Store) FetchManyCell(ctx context.Context, f room.FilterCell) ([]room.Cell, []byte, error) {
+	if f.Size == 0 {
+		return nil, nil, nil
+	}
+
 	b := strings.Builder{}
 	b.WriteString(`SELECT world_id, x, y, tilemap FROM main.cell `)
 

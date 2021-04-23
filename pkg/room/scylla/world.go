@@ -46,7 +46,7 @@ func (f filterWorld) index() string {
 
 func (s Store) InsertWorld(ctx context.Context, w room.World) error {
 	q := s.Session.Query(
-		`INSERT INTO main.world (id, height, width, cell_height, cell_width) VALUES (?, ?, ?, ?)`,
+		`INSERT INTO main.world (id, height, width, cell_height, cell_width) VALUES (?, ?, ?, ?, ?)`,
 		w.ID,
 		w.Height,
 		w.Width,

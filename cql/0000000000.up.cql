@@ -24,7 +24,8 @@ CREATE INDEX ON main.session(user_id);
 CREATE TABLE main.room (
     id              uuid PRIMARY KEY,
     owner_id        uuid,
-    world_id        uuid
+    world_id        uuid,
+    name            varchar
 );
 
 CREATE INDEX ON main.room(owner_id);
