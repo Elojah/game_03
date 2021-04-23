@@ -6,6 +6,7 @@ import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty
 import * as github_com_elojah_game_03_pkg_entity_pc_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/pc_pb";
 import * as github_com_elojah_game_03_pkg_entity_dto_pc_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/dto/pc_pb";
 import * as github_com_elojah_game_03_pkg_room_room_pb from "../../../../../../github.com/elojah/game_03/pkg/room/room_pb";
+import * as github_com_elojah_game_03_pkg_room_dto_cell_pb from "../../../../../../github.com/elojah/game_03/pkg/room/dto/cell_pb";
 import * as github_com_elojah_game_03_pkg_room_dto_room_pb from "../../../../../../github.com/elojah/game_03/pkg/room/dto/room_pb";
 import * as github_com_elojah_game_03_pkg_twitch_dto_follow_pb from "../../../../../../github.com/elojah/game_03/pkg/twitch/dto/follow_pb";
 import {grpc} from "@improbable-eng/grpc-web";
@@ -26,6 +27,15 @@ type APIListPC = {
   readonly responseStream: false;
   readonly requestType: typeof github_com_elojah_game_03_pkg_entity_dto_pc_pb.ListPCReq;
   readonly responseType: typeof github_com_elojah_game_03_pkg_entity_dto_pc_pb.ListPCResp;
+};
+
+type APIConnectPC = {
+  readonly methodName: string;
+  readonly service: typeof API;
+  readonly requestStream: false;
+  readonly responseStream: true;
+  readonly requestType: typeof github_com_elojah_game_03_pkg_entity_pc_pb.PC;
+  readonly responseType: typeof github_com_elojah_game_03_pkg_room_dto_cell_pb.Cell;
 };
 
 type APICreateRoom = {
@@ -68,6 +78,7 @@ export class API {
   static readonly serviceName: string;
   static readonly CreatePC: APICreatePC;
   static readonly ListPC: APIListPC;
+  static readonly ConnectPC: APIConnectPC;
   static readonly CreateRoom: APICreateRoom;
   static readonly ListRoom: APIListRoom;
   static readonly ListFollow: APIListFollow;
@@ -124,6 +135,7 @@ export class APIClient {
     requestMessage: github_com_elojah_game_03_pkg_entity_dto_pc_pb.ListPCReq,
     callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_entity_dto_pc_pb.ListPCResp|null) => void
   ): UnaryResponse;
+  connectPC(requestMessage: github_com_elojah_game_03_pkg_entity_pc_pb.PC, metadata?: grpc.Metadata): ResponseStream<github_com_elojah_game_03_pkg_room_dto_cell_pb.Cell>;
   createRoom(
     requestMessage: github_com_elojah_game_03_pkg_room_room_pb.R,
     metadata: grpc.Metadata,

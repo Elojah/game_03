@@ -14,6 +14,7 @@ import "google/protobuf/empty.proto";
 import "github.com/elojah/game_03/pkg/entity/pc.proto";
 import "github.com/elojah/game_03/pkg/entity/dto/pc.proto";
 import "github.com/elojah/game_03/pkg/room/room.proto";
+import "github.com/elojah/game_03/pkg/room/dto/cell.proto";
 import "github.com/elojah/game_03/pkg/room/dto/room.proto";
 import "github.com/elojah/game_03/pkg/twitch/dto/follow.proto";
 
@@ -21,6 +22,8 @@ service API {
     // PC
     rpc CreatePC(entity.PC) returns (entity.PC);
     rpc ListPC(dto.ListPCReq) returns (dto.ListPCResp);
+
+    rpc ConnectPC(entity.PC) returns (stream dto.Cell);
 
     // Room
     rpc CreateRoom(room.R) returns (room.R);
