@@ -12,10 +12,10 @@ import "github.com/elojah/game_03/pkg/entity/pc.proto";
 
 message ListPCReq {
     int64 Size             = 1;
-    string State           = 2;
+    bytes State            = 2;
 }
 
 message ListPCResp {
     repeated entity.PC PCs = 1 [(gogoproto.nullable) = false];
-    string State           = 2;
+    bytes          State   = 2;
 }

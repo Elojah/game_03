@@ -321,7 +321,7 @@ proto.dto.ListRoomReq.prototype.toObject = function(opt_includeInstance) {
 proto.dto.ListRoomReq.toObject = function(includeInstance, msg) {
   var f, obj = {
     size: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    state: jspb.Message.getFieldWithDefault(msg, 2, "")
+    state: msg.getState_asB64()
   };
 
   if (includeInstance) {
@@ -363,7 +363,7 @@ proto.dto.ListRoomReq.deserializeBinaryFromReader = function(msg, reader) {
       msg.setSize(value);
       break;
     case 2:
-      var value = /** @type {string} */ (reader.readString());
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setState(value);
       break;
     default:
@@ -402,9 +402,9 @@ proto.dto.ListRoomReq.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getState();
+  f = message.getState_asU8();
   if (f.length > 0) {
-    writer.writeString(
+    writer.writeBytes(
       2,
       f
     );
@@ -431,20 +431,44 @@ proto.dto.ListRoomReq.prototype.setSize = function(value) {
 
 
 /**
- * optional string State = 2;
- * @return {string}
+ * optional bytes State = 2;
+ * @return {!(string|Uint8Array)}
  */
 proto.dto.ListRoomReq.prototype.getState = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
- * @param {string} value
+ * optional bytes State = 2;
+ * This is a type-conversion wrapper around `getState()`
+ * @return {string}
+ */
+proto.dto.ListRoomReq.prototype.getState_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getState()));
+};
+
+
+/**
+ * optional bytes State = 2;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getState()`
+ * @return {!Uint8Array}
+ */
+proto.dto.ListRoomReq.prototype.getState_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getState()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
  * @return {!proto.dto.ListRoomReq} returns this
  */
 proto.dto.ListRoomReq.prototype.setState = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
+  return jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 
@@ -489,7 +513,7 @@ proto.dto.ListRoomResp.toObject = function(includeInstance, msg) {
   var f, obj = {
     roomsList: jspb.Message.toObjectList(msg.getRoomsList(),
     proto.dto.Room.toObject, includeInstance),
-    state: jspb.Message.getFieldWithDefault(msg, 2, "")
+    state: msg.getState_asB64()
   };
 
   if (includeInstance) {
@@ -532,7 +556,7 @@ proto.dto.ListRoomResp.deserializeBinaryFromReader = function(msg, reader) {
       msg.addRooms(value);
       break;
     case 2:
-      var value = /** @type {string} */ (reader.readString());
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setState(value);
       break;
     default:
@@ -572,9 +596,9 @@ proto.dto.ListRoomResp.serializeBinaryToWriter = function(message, writer) {
       proto.dto.Room.serializeBinaryToWriter
     );
   }
-  f = message.getState();
+  f = message.getState_asU8();
   if (f.length > 0) {
-    writer.writeString(
+    writer.writeBytes(
       2,
       f
     );
@@ -621,20 +645,44 @@ proto.dto.ListRoomResp.prototype.clearRoomsList = function() {
 
 
 /**
- * optional string State = 2;
- * @return {string}
+ * optional bytes State = 2;
+ * @return {!(string|Uint8Array)}
  */
 proto.dto.ListRoomResp.prototype.getState = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
- * @param {string} value
+ * optional bytes State = 2;
+ * This is a type-conversion wrapper around `getState()`
+ * @return {string}
+ */
+proto.dto.ListRoomResp.prototype.getState_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getState()));
+};
+
+
+/**
+ * optional bytes State = 2;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getState()`
+ * @return {!Uint8Array}
+ */
+proto.dto.ListRoomResp.prototype.getState_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getState()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
  * @return {!proto.dto.ListRoomResp} returns this
  */
 proto.dto.ListRoomResp.prototype.setState = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
+  return jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 

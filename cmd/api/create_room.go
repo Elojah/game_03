@@ -15,8 +15,8 @@ import (
 // TMP DATA FOR DEV WIP
 
 const (
-	height, width         = 420, 420
-	cellHeight, cellWidth = 10, 10
+	height, width         = 1000, 1000
+	cellHeight, cellWidth = 200, 200
 )
 
 var tileID = ulid.MustParse("01F3538E0FEXZ563X1NG24SHFN")

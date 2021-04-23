@@ -9,8 +9,10 @@ export class ListPCReq extends jspb.Message {
   getSize(): number;
   setSize(value: number): void;
 
-  getState(): string;
-  setState(value: string): void;
+  getState(): Uint8Array | string;
+  getState_asU8(): Uint8Array;
+  getState_asB64(): string;
+  setState(value: Uint8Array | string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ListPCReq.AsObject;
@@ -25,7 +27,7 @@ export class ListPCReq extends jspb.Message {
 export namespace ListPCReq {
   export type AsObject = {
     size: number,
-    state: string,
+    state: Uint8Array | string,
   }
 }
 
@@ -35,8 +37,10 @@ export class ListPCResp extends jspb.Message {
   setPcsList(value: Array<github_com_elojah_game_03_pkg_entity_pc_pb.PC>): void;
   addPcs(value?: github_com_elojah_game_03_pkg_entity_pc_pb.PC, index?: number): github_com_elojah_game_03_pkg_entity_pc_pb.PC;
 
-  getState(): string;
-  setState(value: string): void;
+  getState(): Uint8Array | string;
+  getState_asU8(): Uint8Array;
+  getState_asB64(): string;
+  setState(value: Uint8Array | string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ListPCResp.AsObject;
@@ -51,7 +55,7 @@ export class ListPCResp extends jspb.Message {
 export namespace ListPCResp {
   export type AsObject = {
     pcsList: Array<github_com_elojah_game_03_pkg_entity_pc_pb.PC.AsObject>,
-    state: string,
+    state: Uint8Array | string,
   }
 }
 

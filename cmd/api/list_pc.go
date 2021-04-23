@@ -29,7 +29,7 @@ func (h *handler) ListPC(ctx context.Context, req *dto.ListPCReq) (*dto.ListPCRe
 		entity.FilterPC{
 			UserID: &ses.UserID,
 			Size:   int(req.Size_),
-			State:  []byte(req.State),
+			State:  req.State,
 		},
 	)
 	if err != nil {
@@ -40,5 +40,5 @@ func (h *handler) ListPC(ctx context.Context, req *dto.ListPCReq) (*dto.ListPCRe
 
 	logger.Info().Msg("success")
 
-	return &dto.ListPCResp{PCs: pcs, State: string(state)}, nil
+	return &dto.ListPCResp{PCs: pcs, State: state}, nil
 }

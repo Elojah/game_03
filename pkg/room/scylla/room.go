@@ -101,7 +101,7 @@ func (s Store) Insert(ctx context.Context, r room.R) error {
 
 func (s Store) Fetch(ctx context.Context, f room.Filter) (room.R, error) {
 	b := strings.Builder{}
-	b.WriteString(`SELECT id, owner_id, world_id FROM main.room `)
+	b.WriteString(`SELECT id, owner_id, world_id, name FROM main.room `)
 
 	clause, args := filter(f).where()
 	b.WriteString(clause)
@@ -109,7 +109,7 @@ func (s Store) Fetch(ctx context.Context, f room.Filter) (room.R, error) {
 	q := s.Session.Query(b.String(), args...).WithContext(ctx)
 
 	var r room.R
-	if err := q.Scan(&r.ID, &r.OwnerID, &r.WorldID); err != nil {
+	if err := q.Scan(&r.ID, &r.OwnerID, &r.WorldID, &r.Name); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
 			return room.R{}, gerrors.ErrNotFound{Resource: "room", Index: filter(f).index()}
 		}
@@ -126,7 +126,7 @@ func (s Store) FetchMany(ctx context.Context, f room.Filter) ([]room.R, []byte, 
 	}
 
 	b := strings.Builder{}
-	b.WriteString(`SELECT id, owner_id, world_id FROM main.room `)
+	b.WriteString(`SELECT id, owner_id, world_id, name FROM main.room `)
 
 	clause, args := filter(f).where()
 	b.WriteString(clause)
@@ -152,6 +152,7 @@ func (s Store) FetchMany(ctx context.Context, f room.Filter) ([]room.R, []byte, 
 			&rooms[i].ID,
 			&rooms[i].OwnerID,
 			&rooms[i].WorldID,
+			&rooms[i].Name,
 		); err != nil {
 			return nil, nil, err
 		}

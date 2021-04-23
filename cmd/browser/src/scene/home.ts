@@ -51,7 +51,7 @@ export class Home extends Scene {
         this.loadFollow('', 20);
 
         this.initRoom()
-        this.loadRoom(1, '');
+        this.loadRoom(20, new Uint8Array);
     }
     update() {}
 
@@ -92,7 +92,7 @@ export class Home extends Scene {
 
         // update load more button
         const lm = this.cache.custom['home'].get('load_more_follow_html') as Phaser.GameObjects.DOMElement
-        lm.removeListener('click')
+        lm.removeAllListeners()
         if (follows.getCursor() != '') {
             lm.addListener('click').on('click', () => {
                 this.loadFollow(follows.getCursor(), 20)
@@ -123,18 +123,10 @@ export class Home extends Scene {
         // init html create room
         const cm = this.add.dom(1100, 5).createFromCache('create_room').setOrigin(0)
         cm.setInteractive()
-        cm.addListener('click').on('click', () => {
-            this.createRoom('my room')
-            .then(() => {
-                this.loadRoom(1, '')
-            })
-            .catch((err) => {
-                console.log(err)
-            })
-        })
+        cm.addListener('click').on('click', () => {})
         this.cache.custom['home'].add('create_room_html', cm)
     }
-    loadRoom(size: number, state: string) {
+    loadRoom(size: number, state: Uint8Array) {
         this.listRoom(size, state)
         .then((rooms: RoomDTO.ListRoomResp) => {
             // update data
@@ -156,10 +148,10 @@ export class Home extends Scene {
 
         // update load more button
         const lm = this.cache.custom['home'].get('load_more_room_html') as Phaser.GameObjects.DOMElement
-        lm.removeListener('click')
+        lm.removeAllListeners()
         if (rooms.getState() != '') {
             lm.addListener('click').on('click', () => {
-                this.loadRoom(1, rooms.getState())
+                this.loadRoom(20, rooms.getState() as Uint8Array)
             })
         }
 
@@ -217,7 +209,7 @@ export class Home extends Scene {
     }
 
     // API Room
-    listRoom(size: number, state: string) {
+    listRoom(size: number, state: Uint8Array) {
         let req = new RoomDTO.ListRoomReq();
         req.setSize(size)
         req.setState(state)
