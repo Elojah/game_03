@@ -15,3 +15,7 @@ type StoreWorld interface {
 	FetchWorld(context.Context, FilterWorld) (World, error)
 	DeleteWorld(context.Context, FilterWorld) error
 }
+
+func (w World) Cell(x int64, y int64) (int64, int64) {
+	return w.Width / w.CellWidth, w.Height / w.CellHeight
+}

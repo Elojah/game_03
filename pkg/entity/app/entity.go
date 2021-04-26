@@ -7,4 +7,5 @@ var _ entity.App = (*App)(nil)
 type App struct {
 	entity.Store
 	entity.StorePC
+	entity.CachePCConnect
 }

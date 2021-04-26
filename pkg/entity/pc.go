@@ -23,6 +23,16 @@ type StorePC interface {
 	DeletePC(context.Context, FilterPC) error
 }
 
+type FilterPCConnect struct {
+	ID *ulid.ID
+}
+
+type CachePCConnect interface {
+	UpsertPCConnect(context.Context, PCConnect) error
+	FetchPCConnect(context.Context, FilterPCConnect) (PCConnect, error)
+	DeletePCConnect(context.Context, FilterPCConnect) error
+}
+
 type PCs []PC
 
 func (pcs PCs) RoomIDs() []ulid.ID {
