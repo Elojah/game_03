@@ -3,8 +3,6 @@ package scylla
 import (
 	"context"
 	"errors"
-	"fmt"
-	"strconv"
 	"strings"
 
 	gerrors "github.com/elojah/game_03/pkg/errors"
@@ -19,15 +17,14 @@ func (f filterCell) where() (string, []interface{}) {
 
 	var args []interface{}
 
-	if len(f.Keys) > 0 {
-		keys := make([]string, len(f.Keys))
-		for i, k := range f.Keys {
-			keys[i] = `(?, ?, ?)`
+	if f.ID != nil {
+		clause = append(clause, `id = ?`)
+		args = append(args, *f.ID)
+	}
 
-			args = append(args, k.WorldID, k.X, k.Y)
-		}
-
-		clause = append(clause, fmt.Sprintf("(world_id, x, y) IN (%s)", strings.Join(keys, ",")))
+	if len(f.IDs) > 0 {
+		clause = append(clause, `id IN ?`)
+		args = append(args, f.IDs)
 	}
 
 	b := strings.Builder{}
@@ -45,10 +42,14 @@ func (f filterCell) where() (string, []interface{}) {
 func (f filterCell) index() string {
 	var cols []string
 
-	if f.Keys != nil {
-		ss := make([]string, 0, len(f.Keys))
-		for _, k := range f.Keys {
-			ss = append(ss, k.WorldID.String(), strconv.FormatInt(k.X, 10), strconv.FormatInt(k.Y, 10))
+	if f.ID != nil {
+		cols = append(cols, f.ID.String())
+	}
+
+	if f.IDs != nil {
+		ss := make([]string, 0, len(f.IDs))
+		for _, id := range f.IDs {
+			ss = append(ss, id.String())
 		}
 
 		cols = append(cols, strings.Join(ss, "|"))
@@ -59,10 +60,9 @@ func (f filterCell) index() string {
 
 func (s Store) InsertCell(ctx context.Context, c room.Cell) error {
 	q := s.Session.Query(
-		`INSERT INTO main.cell (world_id, x, y, tilemap) VALUES (?, ?, ?, ?)`,
-		c.WorldID,
-		c.X,
-		c.Y,
+		`INSERT INTO main.cell (id, contiguous, tilemap) VALUES (?, ?, ?)`,
+		c.ID,
+		c.Contiguous,
 		c.Tilemap,
 	).WithContext(ctx)
 
@@ -77,7 +77,7 @@ func (s Store) InsertCell(ctx context.Context, c room.Cell) error {
 
 func (s Store) FetchCell(ctx context.Context, f room.FilterCell) (room.Cell, error) {
 	b := strings.Builder{}
-	b.WriteString(`SELECT world_id, x, y, tilemap FROM main.cell `)
+	b.WriteString(`SELECT id, contiguous, tilemap FROM main.cell `)
 
 	clause, args := filterCell(f).where()
 	b.WriteString(clause)
@@ -85,7 +85,7 @@ func (s Store) FetchCell(ctx context.Context, f room.FilterCell) (room.Cell, err
 	q := s.Session.Query(b.String(), args...).WithContext(ctx)
 
 	var c room.Cell
-	if err := q.Scan(&c.WorldID, &c.X, &c.Y, &c.Tilemap); err != nil {
+	if err := q.Scan(&c.ID, &c.Contiguous, &c.Tilemap); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
 			return room.Cell{}, gerrors.ErrNotFound{Resource: "cell", Index: filterCell(f).index()}
 		}
@@ -102,7 +102,7 @@ func (s Store) FetchManyCell(ctx context.Context, f room.FilterCell) ([]room.Cel
 	}
 
 	b := strings.Builder{}
-	b.WriteString(`SELECT world_id, x, y, tilemap FROM main.cell `)
+	b.WriteString(`SELECT id, contiguous, tilemap FROM main.cell `)
 
 	clause, args := filterCell(f).where()
 	b.WriteString(clause)
@@ -125,9 +125,8 @@ func (s Store) FetchManyCell(ctx context.Context, f room.FilterCell) ([]room.Cel
 
 	for ; scanner.Next(); i++ {
 		if err := scanner.Scan(
-			&cells[i].WorldID,
-			&cells[i].X,
-			&cells[i].Y,
+			&cells[i].ID,
+			&cells[i].Contiguous,
 			&cells[i].Tilemap,
 		); err != nil {
 			return nil, nil, err

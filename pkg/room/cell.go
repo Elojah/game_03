@@ -14,7 +14,7 @@ type FilterWorldCell struct {
 
 type FilterCell struct {
 	ID  *ulid.ID
-	IDs *ulid.ID
+	IDs []ulid.ID
 
 	State []byte
 	Size  int
@@ -30,6 +30,5 @@ type StoreCell interface {
 type StoreWorldCell interface {
 	InsertWorldCell(context.Context, WorldCell) error
 	FetchWorldCell(context.Context, FilterWorldCell) (WorldCell, error)
-	FetchManyWorldCell(context.Context, FilterWorldCell) ([]WorldCell, []byte, error)
 	DeleteWorldCell(context.Context, FilterWorldCell) error
 }

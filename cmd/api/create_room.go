@@ -43,9 +43,6 @@ func (h *handler) CreateRoom(ctx context.Context, req *room.R) (*room.R, error) 
 		Width:      width,
 		CellHeight: cellHeight,
 		CellWidth:  cellWidth,
-		// Tileset: map[int32]ulid.ID{
-		// 	0: tileID,
-		// },
 	}
 	if err := h.room.InsertWorld(ctx, w); err != nil {
 		logger.Error().Err(err).Msg("failed to create world")
@@ -66,21 +63,23 @@ func (h *handler) CreateRoom(ctx context.Context, req *room.R) (*room.R, error) 
 		return result
 	}()
 
-	// TODO: add goroutine pool
-	for i := int64(0); i < height/cellHeight; i++ {
-		for j := int64(0); j < width/cellWidth; j++ {
-			if err := h.room.InsertCell(ctx, room.Cell{
-				WorldID: w.ID,
-				X:       i,
-				Y:       j,
-				Tilemap: tm,
-			}); err != nil {
-				logger.Error().Err(err).Msg("failed to create cell")
+	// cells :=
 
-				return &room.R{}, status.New(codes.Internal, err.Error()).Err()
-			}
-		}
-	}
+	// // TODO: add goroutine pool
+	// for i := int64(0); i < height/cellHeight; i++ {
+	// 	for j := int64(0); j < width/cellWidth; j++ {
+	// 		if err := h.room.InsertCell(ctx, room.Cell{
+	// 			WorldID: w.ID,
+	// 			X:       i,
+	// 			Y:       j,
+	// 			Tilemap: tm,
+	// 		}); err != nil {
+	// 			logger.Error().Err(err).Msg("failed to create cell")
+
+	// 			return &room.R{}, status.New(codes.Internal, err.Error()).Err()
+	// 		}
+	// 	}
+	// }
 
 	// #Set new room values
 	req.ID = ulid.NewID()
