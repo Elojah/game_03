@@ -16,6 +16,11 @@ type StoreWorld interface {
 	DeleteWorld(context.Context, FilterWorld) error
 }
 
-func (w World) Cell(x int64, y int64) (int64, int64) {
-	return w.Width / w.CellWidth, w.Height / w.CellHeight
+func (w World) NewCells() []Cell {
+	nh := w.Height / w.CellHeight
+	nw := w.Width / w.CellWidth
+
+	cells := make([]Cell, nh*nw)
+	// for
+	return cells
 }

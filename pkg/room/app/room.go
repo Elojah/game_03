@@ -8,6 +8,7 @@ var _ room.App = (*App)(nil)
 
 type App struct {
 	room.Store
-	room.StoreWorld
 	room.StoreCell
+	room.StoreWorld
+	room.StoreWorldCell
 }
