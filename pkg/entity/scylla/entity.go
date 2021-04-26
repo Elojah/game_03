@@ -3,7 +3,6 @@ package scylla
 import (
 	"context"
 	"errors"
-	"strconv"
 	"strings"
 
 	"github.com/elojah/game_03/pkg/entity"
@@ -28,19 +27,9 @@ func (f filter) where() (string, []interface{}) {
 		args = append(args, f.IDs)
 	}
 
-	if f.PCID != nil {
-		clause = append(clause, `pc_id = ?`)
-		args = append(args, *f.PCID)
-	}
-
-	if f.X != nil {
-		clause = append(clause, `x = ?`)
-		args = append(args, *f.X)
-	}
-
-	if f.Y != nil {
-		clause = append(clause, `y = ?`)
-		args = append(args, *f.Y)
+	if f.CellID != nil {
+		clause = append(clause, `cell_id = ?`)
+		args = append(args, *f.CellID)
 	}
 
 	b := strings.Builder{}
@@ -71,16 +60,8 @@ func (f filter) index() string {
 		cols = append(cols, strings.Join(ss, "|"))
 	}
 
-	if f.PCID != nil {
-		cols = append(cols, f.PCID.String())
-	}
-
-	if f.X != nil {
-		cols = append(cols, strconv.FormatInt(*f.X, 10))
-	}
-
-	if f.Y != nil {
-		cols = append(cols, strconv.FormatInt(*f.Y, 10))
+	if f.CellID != nil {
+		cols = append(cols, f.CellID.String())
 	}
 
 	return strings.Join(cols, "|")
@@ -88,13 +69,14 @@ func (f filter) index() string {
 
 func (s Store) Insert(ctx context.Context, e entity.E) error {
 	q := s.Session.Query(
-		`INSERT INTO main.entity (id, pc_id, x, y, rot, radius) VALUES (?, ?, ?, ?, ?, ?)`,
+		`INSERT INTO main.entity (id, cell_id, x, y, rot, radius, at) VALUES (?, ?, ?, ?, ?, ?, ?)`,
 		e.ID,
-		e.PCID,
+		e.CellID,
 		e.X,
 		e.Y,
 		e.Rot,
 		e.Radius,
+		e.At,
 	).WithContext(ctx)
 
 	defer q.Release()
@@ -108,7 +90,7 @@ func (s Store) Insert(ctx context.Context, e entity.E) error {
 
 func (s Store) Fetch(ctx context.Context, f entity.Filter) (entity.E, error) {
 	b := strings.Builder{}
-	b.WriteString(`SELECT id, pc_id, x, y, rot, radius FROM main.entity `)
+	b.WriteString(`SELECT id, cell_id, x, y, rot, radius, at FROM main.entity `)
 
 	clause, args := filter(f).where()
 	b.WriteString(clause)
@@ -116,7 +98,7 @@ func (s Store) Fetch(ctx context.Context, f entity.Filter) (entity.E, error) {
 	q := s.Session.Query(b.String(), args...).WithContext(ctx)
 
 	var e entity.E
-	if err := q.Scan(&e.ID, &e.PCID, &e.X, &e.Y, &e.Rot, &e.Radius); err != nil {
+	if err := q.Scan(&e.ID, &e.CellID, &e.X, &e.Y, &e.Rot, &e.Radius, &e.At); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
 			return entity.E{}, gerrors.ErrNotFound{Resource: "entity", Index: filter(f).index()}
 		}
@@ -133,7 +115,7 @@ func (s Store) FetchMany(ctx context.Context, f entity.Filter) ([]entity.E, []by
 	}
 
 	b := strings.Builder{}
-	b.WriteString(`SELECT id, pc_id, x, y, rot, radius FROM main.entity `)
+	b.WriteString(`SELECT id, cell_id, x, y, rot, radius FROM main.entity `)
 
 	clause, args := filter(f).where()
 	b.WriteString(clause)
@@ -157,11 +139,12 @@ func (s Store) FetchMany(ctx context.Context, f entity.Filter) ([]entity.E, []by
 	for ; scanner.Next(); i++ {
 		if err := scanner.Scan(
 			&es[i].ID,
-			&es[i].PCID,
+			&es[i].CellID,
 			&es[i].X,
 			&es[i].Y,
 			&es[i].Rot,
 			&es[i].Radius,
+			&es[i].At,
 		); err != nil {
 			return nil, nil, err
 		}

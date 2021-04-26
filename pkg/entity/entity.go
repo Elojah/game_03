@@ -7,12 +7,10 @@ import (
 )
 
 type Filter struct {
-	ID   *ulid.ID
-	IDs  []ulid.ID
-	PCID *ulid.ID
+	ID  *ulid.ID
+	IDs []ulid.ID
 
-	X *int64
-	Y *int64
+	CellID *ulid.ID
 
 	State []byte
 	Size  int
@@ -28,4 +26,5 @@ type Store interface {
 type App interface {
 	Store
 	StorePC
+	CachePCConnect
 }

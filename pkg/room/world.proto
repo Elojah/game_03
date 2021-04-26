@@ -15,5 +15,4 @@ message World {
     int64 Width                = 3;
     int64 CellHeight           = 4;
     int64 CellWidth            = 5;
-    // map<int32, bytes> Tileset  = 6 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
 }

@@ -33,33 +33,43 @@ CREATE INDEX ON main.room(owner_id);
 CREATE TABLE main.pc (
     id              uuid PRIMARY KEY,
     user_id         uuid,
-    room_id         uuid
+    world_id        uuid,
+    entity_id       uuid
 );
 
 CREATE INDEX ON main.pc(user_id);
-CREATE INDEX ON main.pc(room_id);
+CREATE INDEX ON main.pc(world_id);
 
 CREATE TABLE main.entity (
     id              uuid PRIMARY KEY,
-    pc_id           uuid,
+    cell_id         uuid,
     x               bigint,
     y               bigint,
     rot             smallint,
-    radius          smallint
+    radius          smallint,
+    at              bigint,
 );
+
+CREATE INDEX ON main.entity(cell_id);
 
 CREATE TABLE main.world (
     id              uuid PRIMARY KEY,
-    height          bigint,
     width           bigint,
-    cell_height     bigint,
-    cell_width      bigint
+    height          bigint,
+    cell_width      bigint,
+    cell_height     bigint
+);
+
+CREATE TABLE main.world_cell (
+    world_id        uuid,
+    cell_id         uuid,
+    x               bigint,
+    y               bigint,
+    PRIMARY KEY(world_id, x, y)
 );
 
 CREATE TABLE main.cell (
-    world_id        uuid,
-    x               bigint,
-    y               bigint,
-    tilemap         map<bigint, uuid>,
-    PRIMARY KEY(world_id, x, y)
+    id              uuid PRIMARY KEY,
+    contiguous      map<tinyint, uuid>,
+    tilemap         map<bigint, uuid>
 );

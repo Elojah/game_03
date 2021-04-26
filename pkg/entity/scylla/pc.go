@@ -78,10 +78,11 @@ func (f filterPC) index() string {
 
 func (s Store) InsertPC(ctx context.Context, pc entity.PC) error {
 	q := s.Session.Query(
-		`INSERT INTO main.pc (id, user_id, room_id) VALUES (?, ?, ?)`,
+		`INSERT INTO main.pc (id, user_id, room_id, entity_id) VALUES (?, ?, ?)`,
 		pc.ID,
 		pc.UserID,
 		pc.RoomID,
+		pc.EntityID,
 	).WithContext(ctx)
 
 	defer q.Release()
@@ -95,7 +96,7 @@ func (s Store) InsertPC(ctx context.Context, pc entity.PC) error {
 
 func (s Store) FetchPC(ctx context.Context, f entity.FilterPC) (entity.PC, error) {
 	b := strings.Builder{}
-	b.WriteString(`SELECT id, user_id, room_id FROM main.pc `)
+	b.WriteString(`SELECT id, user_id, room_id, entity_id FROM main.pc `)
 
 	clause, args := filterPC(f).where()
 	b.WriteString(clause)
@@ -103,7 +104,7 @@ func (s Store) FetchPC(ctx context.Context, f entity.FilterPC) (entity.PC, error
 	q := s.Session.Query(b.String(), args...).WithContext(ctx)
 
 	var pc entity.PC
-	if err := q.Scan(&pc.ID, &pc.UserID, &pc.RoomID); err != nil {
+	if err := q.Scan(&pc.ID, &pc.UserID, &pc.RoomID, &pc.EntityID); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
 			return entity.PC{}, gerrors.ErrNotFound{Resource: "pc", Index: filterPC(f).index()}
 		}
@@ -120,7 +121,7 @@ func (s Store) FetchManyPC(ctx context.Context, f entity.FilterPC) ([]entity.PC,
 	}
 
 	b := strings.Builder{}
-	b.WriteString(`SELECT id, user_id, room_id FROM main.pc `)
+	b.WriteString(`SELECT id, user_id, room_id, entity_id FROM main.pc `)
 
 	clause, args := filterPC(f).where()
 	b.WriteString(clause)
@@ -146,6 +147,7 @@ func (s Store) FetchManyPC(ctx context.Context, f entity.FilterPC) ([]entity.PC,
 			&pcs[i].ID,
 			&pcs[i].UserID,
 			&pcs[i].RoomID,
+			&pcs[i].EntityID,
 		); err != nil {
 			return nil, nil, err
 		}
