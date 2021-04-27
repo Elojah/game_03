@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"time"
 
 	"github.com/elojah/game_03/pkg/entity"
 	gerrors "github.com/elojah/game_03/pkg/errors"
@@ -18,8 +19,6 @@ const (
 	height, width         = 1000, 1000
 	cellHeight, cellWidth = 200, 200
 )
-
-var tileID = ulid.MustParse("01F3538E0FEXZ563X1NG24SHFN")
 
 // !TMP DATA FOR DEV WIP
 
@@ -51,35 +50,18 @@ func (h *handler) CreateRoom(ctx context.Context, req *room.R) (*room.R, error) 
 	}
 
 	// #Create world cells
-	tm := func() map[int64]ulid.ID {
-		result := make(map[int64]ulid.ID, cellHeight*cellWidth)
+	cells := w.NewCells()
 
-		for i := int64(0); i < cellHeight; i++ {
-			for j := int64(0); j < cellWidth; j++ {
-				result[(i*cellWidth)+j] = tileID
+	// TODO: add goroutine pool
+	for _, cl := range cells {
+		for _, c := range cl {
+			if err := h.room.InsertCell(ctx, c); err != nil {
+				logger.Error().Err(err).Msg("failed to create cell")
+
+				return &room.R{}, status.New(codes.Internal, err.Error()).Err()
 			}
 		}
-
-		return result
-	}()
-
-	// cells :=
-
-	// // TODO: add goroutine pool
-	// for i := int64(0); i < height/cellHeight; i++ {
-	// 	for j := int64(0); j < width/cellWidth; j++ {
-	// 		if err := h.room.InsertCell(ctx, room.Cell{
-	// 			WorldID: w.ID,
-	// 			X:       i,
-	// 			Y:       j,
-	// 			Tilemap: tm,
-	// 		}); err != nil {
-	// 			logger.Error().Err(err).Msg("failed to create cell")
-
-	// 			return &room.R{}, status.New(codes.Internal, err.Error()).Err()
-	// 		}
-	// 	}
-	// }
+	}
 
 	// #Set new room values
 	req.ID = ulid.NewID()
@@ -93,11 +75,24 @@ func (h *handler) CreateRoom(ctx context.Context, req *room.R) (*room.R, error) 
 		return &room.R{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
+	// #Insert entity backup
+	// TODO: define spawns for entity
+	bu := entity.Backup{
+		ID: ulid.NewID(),
+		At: time.Now().UnixNano(),
+	}
+	if err := h.entity.InsertBackup(ctx, bu); err != nil {
+		logger.Error().Err(err).Msg("failed to create entity")
+
+		return &room.R{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
 	// #Insert owner PC
 	if err := h.entity.InsertPC(ctx, entity.PC{
-		ID:     ulid.NewID(),
-		UserID: ses.UserID,
-		RoomID: req.ID,
+		ID:       ulid.NewID(),
+		EntityID: bu.ID,
+		UserID:   ses.UserID,
+		RoomID:   req.ID,
 	}); err != nil {
 		logger.Error().Err(err).Msg("failed to create pc")
 

@@ -71,11 +71,12 @@ proto.entity.E.prototype.toObject = function(opt_includeInstance) {
 proto.entity.E.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: msg.getId_asB64(),
-    pcid: msg.getPcid_asB64(),
+    cellid: msg.getCellid_asB64(),
     x: jspb.Message.getFieldWithDefault(msg, 3, 0),
     y: jspb.Message.getFieldWithDefault(msg, 4, 0),
     rot: jspb.Message.getFieldWithDefault(msg, 5, 0),
-    radius: jspb.Message.getFieldWithDefault(msg, 6, 0)
+    radius: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    at: jspb.Message.getFieldWithDefault(msg, 7, 0)
   };
 
   if (includeInstance) {
@@ -118,7 +119,7 @@ proto.entity.E.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 2:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setPcid(value);
+      msg.setCellid(value);
       break;
     case 3:
       var value = /** @type {number} */ (reader.readInt64());
@@ -135,6 +136,10 @@ proto.entity.E.deserializeBinaryFromReader = function(msg, reader) {
     case 6:
       var value = /** @type {number} */ (reader.readInt32());
       msg.setRadius(value);
+      break;
+    case 7:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setAt(value);
       break;
     default:
       reader.skipField();
@@ -172,7 +177,7 @@ proto.entity.E.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getPcid_asU8();
+  f = message.getCellid_asU8();
   if (f.length > 0) {
     writer.writeBytes(
       2,
@@ -204,6 +209,13 @@ proto.entity.E.serializeBinaryToWriter = function(message, writer) {
   if (f !== 0) {
     writer.writeInt32(
       6,
+      f
+    );
+  }
+  f = message.getAt();
+  if (f !== 0) {
+    writer.writeInt64(
+      7,
       f
     );
   }
@@ -253,35 +265,35 @@ proto.entity.E.prototype.setId = function(value) {
 
 
 /**
- * optional bytes PCID = 2;
+ * optional bytes CellID = 2;
  * @return {!(string|Uint8Array)}
  */
-proto.entity.E.prototype.getPcid = function() {
+proto.entity.E.prototype.getCellid = function() {
   return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
- * optional bytes PCID = 2;
- * This is a type-conversion wrapper around `getPcid()`
+ * optional bytes CellID = 2;
+ * This is a type-conversion wrapper around `getCellid()`
  * @return {string}
  */
-proto.entity.E.prototype.getPcid_asB64 = function() {
+proto.entity.E.prototype.getCellid_asB64 = function() {
   return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getPcid()));
+      this.getCellid()));
 };
 
 
 /**
- * optional bytes PCID = 2;
+ * optional bytes CellID = 2;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getPcid()`
+ * This is a type-conversion wrapper around `getCellid()`
  * @return {!Uint8Array}
  */
-proto.entity.E.prototype.getPcid_asU8 = function() {
+proto.entity.E.prototype.getCellid_asU8 = function() {
   return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getPcid()));
+      this.getCellid()));
 };
 
 
@@ -289,7 +301,7 @@ proto.entity.E.prototype.getPcid_asU8 = function() {
  * @param {!(string|Uint8Array)} value
  * @return {!proto.entity.E} returns this
  */
-proto.entity.E.prototype.setPcid = function(value) {
+proto.entity.E.prototype.setCellid = function(value) {
   return jspb.Message.setProto3BytesField(this, 2, value);
 };
 
@@ -363,6 +375,24 @@ proto.entity.E.prototype.getRadius = function() {
  */
 proto.entity.E.prototype.setRadius = function(value) {
   return jspb.Message.setProto3IntField(this, 6, value);
+};
+
+
+/**
+ * optional int64 At = 7;
+ * @return {number}
+ */
+proto.entity.E.prototype.getAt = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.entity.E} returns this
+ */
+proto.entity.E.prototype.setAt = function(value) {
+  return jspb.Message.setProto3IntField(this, 7, value);
 };
 
 

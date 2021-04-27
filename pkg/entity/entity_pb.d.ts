@@ -10,10 +10,10 @@ export class E extends jspb.Message {
   getId_asB64(): string;
   setId(value: Uint8Array | string): void;
 
-  getPcid(): Uint8Array | string;
-  getPcid_asU8(): Uint8Array;
-  getPcid_asB64(): string;
-  setPcid(value: Uint8Array | string): void;
+  getCellid(): Uint8Array | string;
+  getCellid_asU8(): Uint8Array;
+  getCellid_asB64(): string;
+  setCellid(value: Uint8Array | string): void;
 
   getX(): number;
   setX(value: number): void;
@@ -26,6 +26,9 @@ export class E extends jspb.Message {
 
   getRadius(): number;
   setRadius(value: number): void;
+
+  getAt(): number;
+  setAt(value: number): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): E.AsObject;
@@ -40,11 +43,12 @@ export class E extends jspb.Message {
 export namespace E {
   export type AsObject = {
     id: Uint8Array | string,
-    pcid: Uint8Array | string,
+    cellid: Uint8Array | string,
     x: number,
     y: number,
     rot: number,
     radius: number,
+    at: number,
   }
 }
 
