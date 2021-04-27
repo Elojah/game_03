@@ -7,7 +7,6 @@ import (
 	"github.com/elojah/game_03/cmd/api/grpc"
 	"github.com/elojah/game_03/pkg/entity"
 	gerrors "github.com/elojah/game_03/pkg/errors"
-	"github.com/elojah/game_03/pkg/room"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -52,28 +51,8 @@ func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) err
 		return status.New(codes.Internal, err.Error()).Err()
 	}
 
-	// #Fetch Room
-	r, err := h.room.Fetch(ctx, room.Filter{
-		ID: &pc.RoomID,
-	})
-	if err != nil {
-		logger.Error().Err(err).Msg("failed to fetch room")
-
-		return status.New(codes.Internal, err.Error()).Err()
-	}
-
-	// #Fetch world
-	w, err := h.room.FetchWorld(ctx, room.FilterWorld{
-		ID: &r.WorldID,
-	})
-	if err != nil {
-		logger.Error().Err(err).Msg("failed to fetch world")
-
-		return status.New(codes.Internal, err.Error()).Err()
-	}
-
-	// #Fetch entity from PC
-	e, err := h.entity.Fetch(ctx, entity.Filter{
+	// #Fetch entity backup from PC
+	e, err := h.entity.FetchBackup(ctx, entity.FilterBackup{
 		ID: &pc.EntityID,
 	})
 	if err != nil {
@@ -82,29 +61,9 @@ func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) err
 		return status.New(codes.Internal, err.Error()).Err()
 	}
 
-	// #Fetch cell from position
-	x, y := w.Cell(e.X, e.Y)
-	c, err := h.room.FetchCell(ctx, room.FilterCell{
-		Keys: []room.KeyCell{{
-			WorldID: w.ID,
-			X:       x,
-			Y:       y,
-		}},
-	})
-	if err != nil {
-		logger.Error().Err(err).Msg("failed to create entity")
-
-		return status.New(codes.Internal, err.Error()).Err()
-	}
-
-	if err := h.entity.Insert(ctx, entity.E{
-		ID:     e.ID,
-		CellID: c.ID,
-		X:      e.X,
-		Y:      e.Y,
-		Rot:    e.Rot,
-		Radius: e.Radius,
-	}); err != nil {
+	// Insert real entity
+	e.At = time.Now().UnixNano()
+	if err := h.entity.Insert(ctx, e); err != nil {
 		logger.Error().Err(err).Msg("failed to create entity")
 
 		return status.New(codes.Internal, err.Error()).Err()

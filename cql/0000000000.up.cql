@@ -47,10 +47,21 @@ CREATE TABLE main.entity (
     y               bigint,
     rot             smallint,
     radius          smallint,
-    at              bigint,
+    at              bigint
 );
 
 CREATE INDEX ON main.entity(cell_id);
+
+-- must replicate main.entity fields
+CREATE TABLE main.entity_backup (
+    id              uuid PRIMARY KEY,
+    cell_id         uuid,
+    x               bigint,
+    y               bigint,
+    rot             smallint,
+    radius          smallint,
+    at              bigint
+);
 
 CREATE TABLE main.world (
     id              uuid PRIMARY KEY,
