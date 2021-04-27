@@ -20,7 +20,7 @@ import "github.com/elojah/game_03/pkg/twitch/dto/follow.proto";
 
 service API {
     // PC
-    rpc CreatePC(entity.PC) returns (entity.PC);
+    rpc CreatePC(dto.CreatePCReq) returns (entity.PC);
     rpc ListPC(dto.ListPCReq) returns (dto.ListPCResp);
 
     rpc ConnectPC(entity.PC) returns (stream dto.Cell);

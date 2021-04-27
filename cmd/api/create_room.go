@@ -2,9 +2,7 @@ package main
 
 import (
 	"context"
-	"time"
 
-	"github.com/elojah/game_03/pkg/entity"
 	gerrors "github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/room"
 	"github.com/elojah/game_03/pkg/ulid"
@@ -75,26 +73,13 @@ func (h *handler) CreateRoom(ctx context.Context, req *room.R) (*room.R, error) 
 		return &room.R{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
-	// #Insert entity backup
-	// TODO: define spawns for entity
-	bu := entity.Backup{
-		ID: ulid.NewID(),
-		At: time.Now().UnixNano(),
-	}
-	if err := h.entity.InsertBackup(ctx, bu); err != nil {
-		logger.Error().Err(err).Msg("failed to create entity")
-
-		return &room.R{}, status.New(codes.Internal, err.Error()).Err()
-	}
-
-	// #Insert owner PC
-	if err := h.entity.InsertPC(ctx, entity.PC{
-		ID:       ulid.NewID(),
-		EntityID: bu.ID,
-		UserID:   ses.UserID,
-		RoomID:   req.ID,
+	// #Insert room user
+	if err := h.room.InsertUser(ctx, room.User{
+		UserID: ses.UserID,
+		RoomID: req.ID,
+		Role:   int32(room.Owner),
 	}); err != nil {
-		logger.Error().Err(err).Msg("failed to create pc")
+		logger.Error().Err(err).Msg("failed to create room")
 
 		return &room.R{}, status.New(codes.Internal, err.Error()).Err()
 	}

@@ -9,6 +9,7 @@ var _ room.App = (*App)(nil)
 type App struct {
 	room.Store
 	room.StoreCell
+	room.StoreUser
 	room.StoreWorld
 	room.StoreWorldCell
 }

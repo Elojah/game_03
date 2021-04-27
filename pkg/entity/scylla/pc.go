@@ -32,9 +32,9 @@ func (f filterPC) where() (string, []interface{}) {
 		args = append(args, *f.UserID)
 	}
 
-	if f.RoomID != nil {
-		clause = append(clause, `room_id = ?`)
-		args = append(args, *f.RoomID)
+	if f.WorldID != nil {
+		clause = append(clause, `world_id = ?`)
+		args = append(args, *f.WorldID)
 	}
 
 	b := strings.Builder{}
@@ -69,8 +69,8 @@ func (f filterPC) index() string {
 		cols = append(cols, f.UserID.String())
 	}
 
-	if f.RoomID != nil {
-		cols = append(cols, f.RoomID.String())
+	if f.WorldID != nil {
+		cols = append(cols, f.WorldID.String())
 	}
 
 	return strings.Join(cols, "|")
@@ -81,7 +81,7 @@ func (s Store) InsertPC(ctx context.Context, pc entity.PC) error {
 		`INSERT INTO main.pc (id, user_id, room_id, entity_id) VALUES (?, ?, ?)`,
 		pc.ID,
 		pc.UserID,
-		pc.RoomID,
+		pc.WorldID,
 		pc.EntityID,
 	).WithContext(ctx)
 
@@ -104,7 +104,7 @@ func (s Store) FetchPC(ctx context.Context, f entity.FilterPC) (entity.PC, error
 	q := s.Session.Query(b.String(), args...).WithContext(ctx)
 
 	var pc entity.PC
-	if err := q.Scan(&pc.ID, &pc.UserID, &pc.RoomID, &pc.EntityID); err != nil {
+	if err := q.Scan(&pc.ID, &pc.UserID, &pc.WorldID, &pc.EntityID); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
 			return entity.PC{}, gerrors.ErrNotFound{Resource: "pc", Index: filterPC(f).index()}
 		}
@@ -146,7 +146,7 @@ func (s Store) FetchManyPC(ctx context.Context, f entity.FilterPC) ([]entity.PC,
 		if err := scanner.Scan(
 			&pcs[i].ID,
 			&pcs[i].UserID,
-			&pcs[i].RoomID,
+			&pcs[i].WorldID,
 			&pcs[i].EntityID,
 		); err != nil {
 			return nil, nil, err

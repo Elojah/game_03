@@ -26,6 +26,7 @@ type Store interface {
 type App interface {
 	Store
 	StoreCell
+	StoreUser
 	StoreWorld
 	StoreWorldCell
 }

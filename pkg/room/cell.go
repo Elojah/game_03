@@ -9,7 +9,8 @@ import (
 type Orientation int32
 
 const (
-	Up Orientation = iota
+	UnknownOrientation Orientation = iota
+	Up
 	UpRight
 	Right
 	DownRight

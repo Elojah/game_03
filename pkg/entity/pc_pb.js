@@ -94,7 +94,7 @@ proto.entity.PC.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: msg.getId_asB64(),
     userid: msg.getUserid_asB64(),
-    roomid: msg.getRoomid_asB64(),
+    worldid: msg.getWorldid_asB64(),
     entityid: msg.getEntityid_asB64()
   };
 
@@ -142,7 +142,7 @@ proto.entity.PC.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 3:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setRoomid(value);
+      msg.setWorldid(value);
       break;
     case 4:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
@@ -191,7 +191,7 @@ proto.entity.PC.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getRoomid_asU8();
+  f = message.getWorldid_asU8();
   if (f.length > 0) {
     writer.writeBytes(
       3,
@@ -293,35 +293,35 @@ proto.entity.PC.prototype.setUserid = function(value) {
 
 
 /**
- * optional bytes RoomID = 3;
+ * optional bytes WorldID = 3;
  * @return {!(string|Uint8Array)}
  */
-proto.entity.PC.prototype.getRoomid = function() {
+proto.entity.PC.prototype.getWorldid = function() {
   return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /**
- * optional bytes RoomID = 3;
- * This is a type-conversion wrapper around `getRoomid()`
+ * optional bytes WorldID = 3;
+ * This is a type-conversion wrapper around `getWorldid()`
  * @return {string}
  */
-proto.entity.PC.prototype.getRoomid_asB64 = function() {
+proto.entity.PC.prototype.getWorldid_asB64 = function() {
   return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getRoomid()));
+      this.getWorldid()));
 };
 
 
 /**
- * optional bytes RoomID = 3;
+ * optional bytes WorldID = 3;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getRoomid()`
+ * This is a type-conversion wrapper around `getWorldid()`
  * @return {!Uint8Array}
  */
-proto.entity.PC.prototype.getRoomid_asU8 = function() {
+proto.entity.PC.prototype.getWorldid_asU8 = function() {
   return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getRoomid()));
+      this.getWorldid()));
 };
 
 
@@ -329,7 +329,7 @@ proto.entity.PC.prototype.getRoomid_asU8 = function() {
  * @param {!(string|Uint8Array)} value
  * @return {!proto.entity.PC} returns this
  */
-proto.entity.PC.prototype.setRoomid = function(value) {
+proto.entity.PC.prototype.setWorldid = function(value) {
   return jspb.Message.setProto3BytesField(this, 3, value);
 };
 

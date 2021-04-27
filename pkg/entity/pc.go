@@ -7,10 +7,10 @@ import (
 )
 
 type FilterPC struct {
-	ID     *ulid.ID
-	IDs    []ulid.ID
-	UserID *ulid.ID
-	RoomID *ulid.ID
+	ID      *ulid.ID
+	IDs     []ulid.ID
+	UserID  *ulid.ID
+	WorldID *ulid.ID
 
 	State []byte
 	Size  int
@@ -31,16 +31,4 @@ type CachePCConnect interface {
 	UpsertPCConnect(context.Context, PCConnect) error
 	FetchPCConnect(context.Context, FilterPCConnect) (PCConnect, error)
 	DeletePCConnect(context.Context, FilterPCConnect) error
-}
-
-type PCs []PC
-
-func (pcs PCs) RoomIDs() []ulid.ID {
-	result := make([]ulid.ID, 0, len(pcs))
-
-	for _, pc := range pcs {
-		result = append(result, pc.RoomID)
-	}
-
-	return result
 }
