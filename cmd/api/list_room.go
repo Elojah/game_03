@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 
-	"github.com/elojah/game_03/pkg/entity"
 	gerrors "github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/room"
 	"github.com/elojah/game_03/pkg/room/dto"
@@ -28,20 +27,20 @@ func (h *handler) ListRoom(ctx context.Context, req *dto.ListRoomReq) (*dto.List
 	}
 
 	// #Fetch pcs
-	pcs, state, err := h.entity.FetchManyPC(ctx,
-		entity.FilterPC{
+	rus, state, err := h.room.FetchManyUser(ctx,
+		room.FilterUser{
 			UserID: &ses.UserID,
 			Size:   int(req.Size_),
 			State:  req.State,
 		},
 	)
 	if err != nil {
-		logger.Error().Err(err).Msg("failed to fetch pcs")
+		logger.Error().Err(err).Msg("failed to fetch room user")
 
 		return &dto.ListRoomResp{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
-	if len(pcs) == 0 {
+	if len(rus) == 0 {
 		logger.Info().Msg("success")
 
 		return &dto.ListRoomResp{}, nil
@@ -49,8 +48,8 @@ func (h *handler) ListRoom(ctx context.Context, req *dto.ListRoomReq) (*dto.List
 
 	// #Fetch rooms
 	rooms, _, err := h.room.FetchMany(ctx, room.Filter{
-		IDs:  entity.PCs(pcs).RoomIDs(),
-		Size: len(pcs),
+		IDs:  room.Users(rus).RoomIDs(),
+		Size: len(rus),
 	})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to fetch rooms")

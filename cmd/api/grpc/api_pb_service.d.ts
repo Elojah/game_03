@@ -16,7 +16,7 @@ type APICreatePC = {
   readonly service: typeof API;
   readonly requestStream: false;
   readonly responseStream: false;
-  readonly requestType: typeof github_com_elojah_game_03_pkg_entity_pc_pb.PC;
+  readonly requestType: typeof github_com_elojah_game_03_pkg_entity_dto_pc_pb.CreatePCReq;
   readonly responseType: typeof github_com_elojah_game_03_pkg_entity_pc_pb.PC;
 };
 
@@ -118,12 +118,12 @@ export class APIClient {
 
   constructor(serviceHost: string, options?: grpc.RpcOptions);
   createPC(
-    requestMessage: github_com_elojah_game_03_pkg_entity_pc_pb.PC,
+    requestMessage: github_com_elojah_game_03_pkg_entity_dto_pc_pb.CreatePCReq,
     metadata: grpc.Metadata,
     callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_entity_pc_pb.PC|null) => void
   ): UnaryResponse;
   createPC(
-    requestMessage: github_com_elojah_game_03_pkg_entity_pc_pb.PC,
+    requestMessage: github_com_elojah_game_03_pkg_entity_dto_pc_pb.CreatePCReq,
     callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_entity_pc_pb.PC|null) => void
   ): UnaryResponse;
   listPC(

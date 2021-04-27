@@ -15,10 +15,10 @@ export class PC extends jspb.Message {
   getUserid_asB64(): string;
   setUserid(value: Uint8Array | string): void;
 
-  getRoomid(): Uint8Array | string;
-  getRoomid_asU8(): Uint8Array;
-  getRoomid_asB64(): string;
-  setRoomid(value: Uint8Array | string): void;
+  getWorldid(): Uint8Array | string;
+  getWorldid_asU8(): Uint8Array;
+  getWorldid_asB64(): string;
+  setWorldid(value: Uint8Array | string): void;
 
   getEntityid(): Uint8Array | string;
   getEntityid_asU8(): Uint8Array;
@@ -39,7 +39,7 @@ export namespace PC {
   export type AsObject = {
     id: Uint8Array | string,
     userid: Uint8Array | string,
-    roomid: Uint8Array | string,
+    worldid: Uint8Array | string,
     entityid: Uint8Array | string,
   }
 }

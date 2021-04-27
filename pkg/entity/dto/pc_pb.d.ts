@@ -5,7 +5,34 @@ import * as jspb from "google-protobuf";
 import * as github_com_gogo_protobuf_gogoproto_gogo_pb from "../../../../../../github.com/gogo/protobuf/gogoproto/gogo_pb";
 import * as github_com_elojah_game_03_pkg_entity_pc_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/pc_pb";
 
+export class CreatePCReq extends jspb.Message {
+  getRoomid(): Uint8Array | string;
+  getRoomid_asU8(): Uint8Array;
+  getRoomid_asB64(): string;
+  setRoomid(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): CreatePCReq.AsObject;
+  static toObject(includeInstance: boolean, msg: CreatePCReq): CreatePCReq.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: CreatePCReq, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CreatePCReq;
+  static deserializeBinaryFromReader(message: CreatePCReq, reader: jspb.BinaryReader): CreatePCReq;
+}
+
+export namespace CreatePCReq {
+  export type AsObject = {
+    roomid: Uint8Array | string,
+  }
+}
+
 export class ListPCReq extends jspb.Message {
+  getRoomid(): Uint8Array | string;
+  getRoomid_asU8(): Uint8Array;
+  getRoomid_asB64(): string;
+  setRoomid(value: Uint8Array | string): void;
+
   getSize(): number;
   setSize(value: number): void;
 
@@ -26,6 +53,7 @@ export class ListPCReq extends jspb.Message {
 
 export namespace ListPCReq {
   export type AsObject = {
+    roomid: Uint8Array | string,
     size: number,
     state: Uint8Array | string,
   }

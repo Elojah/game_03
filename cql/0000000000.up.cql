@@ -30,6 +30,15 @@ CREATE TABLE main.room (
 
 CREATE INDEX ON main.room(owner_id);
 
+CREATE TABLE main.room_user (
+    user_id        uuid PRIMARY KEY,
+    room_id        uuid,
+    world_id       uuid,
+    role           tinyint
+);
+
+CREATE INDEX ON main.room(room_id);
+
 CREATE TABLE main.pc (
     id              uuid PRIMARY KEY,
     user_id         uuid,

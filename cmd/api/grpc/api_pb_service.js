@@ -22,7 +22,7 @@ API.CreatePC = {
   service: API,
   requestStream: false,
   responseStream: false,
-  requestType: github_com_elojah_game_03_pkg_entity_pc_pb.PC,
+  requestType: github_com_elojah_game_03_pkg_entity_dto_pc_pb.CreatePCReq,
   responseType: github_com_elojah_game_03_pkg_entity_pc_pb.PC
 };
 

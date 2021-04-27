@@ -10,9 +10,14 @@ option (gogoproto.goproto_registration) = true;
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "github.com/elojah/game_03/pkg/entity/pc.proto";
 
+message CreatePCReq {
+    bytes RoomID           = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+}
+
 message ListPCReq {
-    int64 Size             = 1;
-    bytes State            = 2;
+    bytes RoomID           = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    int64 Size             = 2;
+    bytes State            = 3;
 }
 
 message ListPCResp {
