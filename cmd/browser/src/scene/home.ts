@@ -60,111 +60,88 @@ export class Home extends Scene {
 
     // Follow list methods
     initFollow() {
-        // init data
-        this.cache.custom['home'].add('follow', new TwitchDTO.ListFollowResp())
-
         // init html follow list
-        const follow = this.add.dom(10, 15).createFromCache('follow').setOrigin(0)
-        this.cache.custom['home'].add('follow_html', follow)
-
-        // init html load more follow
-        const lm = this.add.dom(10, 5).createFromCache('load_more').setOrigin(0)
-        lm.setInteractive()
-        lm.addListener('click').on('click', () => {})
-        this.cache.custom['home'].add('load_more_follow_html', lm)
+        const follow = this.add.dom(10, 10).createFromCache('follow').setOrigin(0)
+        follow.setInteractive()
     }
     loadFollow(after: string, first: number) {
         this.listFollow(after, first)
         .then((follows: TwitchDTO.ListFollowResp) => {
-            // update data
-            const fol = this.cache.custom['home'].get('follow') as TwitchDTO.ListFollowResp
-            fol.setCursor(follows.getCursor())
-            fol.setFollowsList(fol.getFollowsList().concat(follows.getFollowsList()))
+            // update cursor
+            const flm = document.getElementById('follow-load-more')
 
-            this.displayFollow(fol)
+            // remove previous event listener
+            const prevLoadMore = this.cache.custom['home'].get('load_more_func')
+            if (prevLoadMore) {
+                flm?.removeEventListener('click', prevLoadMore)
+            }
+
+            // add new event listener
+            const loadMore = () => {
+                if (follows.getCursor()){
+                    this.loadFollow(follows.getCursor(), 20)
+                } else {
+                    console.log('no more loading')
+                }
+            }
+            flm?.addEventListener('click', loadMore)
+            this.cache.custom['home'].add('load_more_func', loadMore)
+
+            // update html
+            const followList = document.getElementById('follow-list')
+            const line = this.cache.html.get('follow_line') as string
+            follows.getFollowsList().map((fol) => {
+                const li = document.createElement('li')
+                li.innerHTML = line.replace('{{login}}', fol.getTologin()).replace('{{id}}', fol.getToid())
+                followList?.appendChild(li)
+            })
         })
         .catch((err) => {
             console.log(err)
         })
     }
-    displayFollow(follows: TwitchDTO.ListFollowResp) {
-        // build new follow HTML
-        const ol = this.cache.html.get('follow')
-        const li = this.cache.html.get('follow_line')
-        const lines = follows.getFollowsList().reduce((acc:string, fol: Twitch.Follow) => acc + li.replace('{{login}}', fol.getTologin()).replace('{{id}}', fol.getToid()), '')
-
-        // update load more button
-        const lm = this.cache.custom['home'].get('load_more_follow_html') as Phaser.GameObjects.DOMElement
-        lm.removeAllListeners()
-        if (follows.getCursor() != '') {
-            lm.addListener('click').on('click', () => {
-                this.loadFollow(follows.getCursor(), 20)
-            })
-        }
-
-        // update follows list
-        // document.getElementById('follow-list')?.appendChild()
-        const fHTML = this.cache.custom['home'].get('follow_html') as Phaser.GameObjects.DOMElement
-        fHTML.setHTML(ol.replace('{{lines}}', lines))
-    }
-
 
     // Room list methods
     initRoom() {
-        // init data
-        this.cache.custom['home'].add('room', new RoomDTO.ListRoomResp())
-
         // init html room list
-        const room = this.add.dom(1000, 15).createFromCache('room').setOrigin(0)
-        this.cache.custom['home'].add('room_html', room)
-
-        // console.log(room.node.childNodes.)
-        // room.node.appendChild(document.createElement('div'))
-
-        // init html load more room
-        const lm = this.add.dom(1000, 5).createFromCache('load_more').setOrigin(0)
-        lm.setInteractive()
-        lm.addListener('click').on('click', () => {})
-        this.cache.custom['home'].add('load_more_room_html', lm)
-
-        // init html create room
-        const cm = this.add.dom(1100, 5).createFromCache('create_room').setOrigin(0)
-        cm.setInteractive()
-        cm.addListener('click').on('click', () => {})
-        this.cache.custom['home'].add('create_room_html', cm)
+        const room = this.add.dom(1010, 10).createFromCache('room').setOrigin(0)
+        room.setInteractive()
     }
     loadRoom(size: number, state: Uint8Array) {
         this.listRoom(size, state)
         .then((rooms: RoomDTO.ListRoomResp) => {
-            // update data
-            const ro = this.cache.custom['home'].get('room') as RoomDTO.ListRoomResp
-            ro.setState(rooms.getState())
-            ro.setRoomsList(ro.getRoomsList().concat(rooms.getRoomsList()))
+            // update cursor
+            const flm = document.getElementById('room-load-more')
 
-            this.displayRoom(ro)
+            // remove previous event listener
+            const prevLoadMore = this.cache.custom['home'].get('load_more_func')
+            if (prevLoadMore) {
+                flm?.removeEventListener('click', prevLoadMore)
+            }
+
+            // add new event listener
+            const loadMore = () => {
+                if (rooms.getState()){
+                    this.loadRoom(20, rooms.getState() as Uint8Array)
+                } else {
+                    console.log('no more loading')
+                }
+            }
+            flm?.addEventListener('click', loadMore)
+            this.cache.custom['home'].add('load_more_func', loadMore)
+
+            // update html
+            const roomList = document.getElementById('room-list')
+            const line = this.cache.html.get('room_line') as string
+            rooms.getRoomsList().map((ro) => {
+                const li = document.createElement('li')
+                li.innerHTML = line.replace('{{name}}', ro.getRoom()?.getName() as string).replace('{{id}}', ro.getRoom()?.getId() as string)
+                roomList?.appendChild(li)
+            })
         })
         .catch((err) => {
             console.log(err)
         })
-    }
-    displayRoom(rooms: RoomDTO.ListRoomResp) {
-        // build new room HTML
-        const ol = this.cache.html.get('room')
-        const li = this.cache.html.get('room_line')
-        const lines = rooms.getRoomsList().reduce((acc:string, ro: RoomDTO.Room) => acc + li.replace('{{name}}', ro.getRoom()!.getName()), '')
-
-        // update load more button
-        const lm = this.cache.custom['home'].get('load_more_room_html') as Phaser.GameObjects.DOMElement
-        lm.removeAllListeners()
-        if (rooms.getState() != '') {
-            lm.addListener('click').on('click', () => {
-                this.loadRoom(20, rooms.getState() as Uint8Array)
-            })
-        }
-
-        // update rooms list
-        const rHTML = this.cache.custom['home'].get('room_html') as Phaser.GameObjects.DOMElement
-        rHTML.setHTML(ol.replace('{{lines}}', lines))
     }
 
     // PC list methods
@@ -173,7 +150,7 @@ export class Home extends Scene {
         this.cache.custom['home'].add('room', new PCDTO.ListPCResp())
 
         // init html pc list
-        const pc = this.add.dom(2000, 15).createFromCache('pc').setOrigin(0)
+        const pc = this.add.dom(2000, 10).createFromCache('pc').setOrigin(0)
         this.cache.custom['home'].add('pc_html', pc)
 
         // init html load more pc
