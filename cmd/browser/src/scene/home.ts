@@ -91,7 +91,7 @@ export class Home extends Scene {
         // build new follow HTML
         const ol = this.cache.html.get('follow')
         const li = this.cache.html.get('follow_line')
-        const lines = follows.getFollowsList().reduce((acc:string, fol: Twitch.Follow) => acc + li.replace('{{login}}', fol.getTologin()), '')
+        const lines = follows.getFollowsList().reduce((acc:string, fol: Twitch.Follow) => acc + li.replace('{{login}}', fol.getTologin()).replace('{{id}}', fol.getToid()), '')
 
         // update load more button
         const lm = this.cache.custom['home'].get('load_more_follow_html') as Phaser.GameObjects.DOMElement
@@ -103,6 +103,7 @@ export class Home extends Scene {
         }
 
         // update follows list
+        // document.getElementById('follow-list')?.appendChild()
         const fHTML = this.cache.custom['home'].get('follow_html') as Phaser.GameObjects.DOMElement
         fHTML.setHTML(ol.replace('{{lines}}', lines))
     }
@@ -116,6 +117,9 @@ export class Home extends Scene {
         // init html room list
         const room = this.add.dom(1000, 15).createFromCache('room').setOrigin(0)
         this.cache.custom['home'].add('room_html', room)
+
+        // console.log(room.node.childNodes.)
+        // room.node.appendChild(document.createElement('div'))
 
         // init html load more room
         const lm = this.add.dom(1000, 5).createFromCache('load_more').setOrigin(0)
