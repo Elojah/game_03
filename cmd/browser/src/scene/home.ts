@@ -27,8 +27,8 @@ export class Home extends Scene {
         this.load.html('follow_line', 'html/follow_line.html')
         this.load.html('room', 'html/room.html')
         this.load.html('room_line', 'html/room_line.html')
-        this.load.html('load_more', 'html/load_more.html')
-        this.load.html('create_room', 'html/create_room.html')
+        this.load.html('pc', 'html/pc.html')
+        this.load.html('pc_line', 'html/pc_line.html')
         this.load.image('home_background_01', 'img/home_background_01.png')
     }
     create() {
@@ -106,17 +106,32 @@ export class Home extends Scene {
         // init html room list
         const room = this.add.dom(1010, 10).createFromCache('room').setOrigin(0)
         room.setInteractive()
+
+        // init html create room button
+        const rc = document.getElementById('room-create')
+        rc?.addEventListener('click', () => {
+            this.createRoom(document.getElementById('room-create-name')?.textContent as string)
+            .then((ro: Room.R) => {
+                console.log('successfully created room', ro)
+
+                // reset room list
+                this.loadRoom(20, new Uint8Array)
+            })
+            .catch((err) => {
+                console.log('failed to create room')
+            })
+        })
     }
     loadRoom(size: number, state: Uint8Array) {
         this.listRoom(size, state)
         .then((rooms: RoomDTO.ListRoomResp) => {
             // update cursor
-            const flm = document.getElementById('room-load-more')
+            const rlm = document.getElementById('room-load-more')
 
             // remove previous event listener
             const prevLoadMore = this.cache.custom['home'].get('load_more_func')
             if (prevLoadMore) {
-                flm?.removeEventListener('click', prevLoadMore)
+                rlm?.removeEventListener('click', prevLoadMore)
             }
 
             // add new event listener
@@ -127,7 +142,7 @@ export class Home extends Scene {
                     console.log('no more loading')
                 }
             }
-            flm?.addEventListener('click', loadMore)
+            rlm?.addEventListener('click', loadMore)
             this.cache.custom['home'].add('load_more_func', loadMore)
 
             // update html
@@ -136,6 +151,9 @@ export class Home extends Scene {
             rooms.getRoomsList().map((ro) => {
                 const li = document.createElement('li')
                 li.innerHTML = line.replace('{{name}}', ro.getRoom()?.getName() as string).replace('{{id}}', ro.getRoom()?.getId() as string)
+                li.addEventListener('click', () => {
+                    this.loadPC(ro.getRoom()?.getId() as Uint8Array, 20, new Uint8Array)
+                })
                 roomList?.appendChild(li)
             })
         })
@@ -144,59 +162,48 @@ export class Home extends Scene {
         })
     }
 
+
     // PC list methods
     initPC() {
-        // init data
-        this.cache.custom['home'].add('room', new PCDTO.ListPCResp())
-
         // init html pc list
-        const pc = this.add.dom(2000, 10).createFromCache('pc').setOrigin(0)
-        this.cache.custom['home'].add('pc_html', pc)
-
-        // init html load more pc
-        const lm = this.add.dom(2000, 5).createFromCache('load_more').setOrigin(0)
-        lm.setInteractive()
-        lm.addListener('click').on('click', () => {})
-        this.cache.custom['home'].add('load_more_pc_html', lm)
-
-        // init html create pc
-        const cm = this.add.dom(2100, 5).createFromCache('create_pc').setOrigin(0)
-        cm.setInteractive()
-        cm.addListener('click').on('click', () => {})
-        this.cache.custom['home'].add('create_pc_html', cm)
+        const pc = this.add.dom(2010, 10).createFromCache('pc').setOrigin(0)
+        pc.setInteractive()
     }
-    loadPC(roomID: Uint8Array, size: number, state: Uint8Array) {
+    loadPC(roomID: Uint8Array,size: number, state: Uint8Array) {
         this.listPC(roomID, size, state)
         .then((pcs: PCDTO.ListPCResp) => {
-            // update data
-            const pc = this.cache.custom['home'].get('pc') as PCDTO.ListPCResp
-            pc.setState(pcs.getState())
-            pc.setPcsList(pc.getPcsList().concat(pcs.getPcsList()))
+            // update cursor
+            const flm = document.getElementById('pc-load-more')
 
-            this.displayPC(pc)
+            // remove previous event listener
+            const prevLoadMore = this.cache.custom['home'].get('load_more_func')
+            if (prevLoadMore) {
+                flm?.removeEventListener('click', prevLoadMore)
+            }
+
+            // add new event listener
+            const loadMore = () => {
+                if (pcs.getState()){
+                    this.loadPC(roomID, 20, pcs.getState() as Uint8Array)
+                } else {
+                    console.log('no more loading')
+                }
+            }
+            flm?.addEventListener('click', loadMore)
+            this.cache.custom['home'].add('load_more_func', loadMore)
+
+            // update html
+            const pcList = document.getElementById('pc-list')
+            const line = this.cache.html.get('pc_line') as string
+            pcs.getPcsList().map((pc) => {
+                const li = document.createElement('li')
+                li.innerHTML = line.replace('{{name}}', pc.getId() as string).replace('{{id}}', pc.getId() as string)
+                pcList?.appendChild(li)
+            })
         })
         .catch((err) => {
             console.log(err)
         })
-    }
-    displayPC(pcs: PCDTO.ListPCResp) {
-        // build new pc HTML
-        const ol = this.cache.html.get('pc')
-        const li = this.cache.html.get('pc_line')
-        const lines = pcs.getPcsList().reduce((acc:string, pc: PC.PC) => acc + li.replace('{{name}}', pc.getId().toString()), '')
-
-        // update load more button
-        const lm = this.cache.custom['home'].get('load_more_pc_html') as Phaser.GameObjects.DOMElement
-        lm.removeAllListeners()
-        if (pcs.getState() != '') {
-            lm.addListener('click').on('click', () => {
-                this.loadPC(this.cache.custom['home'].get('room_id') as Uint8Array, 20, pcs.getState() as Uint8Array)
-            })
-        }
-
-        // update pcs list
-        const rHTML = this.cache.custom['home'].get('pc_html') as Phaser.GameObjects.DOMElement
-        rHTML.setHTML(ol.replace('{{lines}}', lines))
     }
 
 
