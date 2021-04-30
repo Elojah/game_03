@@ -1,6 +1,5 @@
-import * as Phaser from "phaser";
-import {Login} from "@cmd/browser/src/scene/login";
 import {Home} from "@cmd/browser/src/scene/home";
+import {Login} from "@cmd/browser/src/scene/login";
 
 function main() {
 

@@ -37,7 +37,7 @@ CREATE TABLE main.room_user (
     role           tinyint
 );
 
-CREATE INDEX ON main.room(room_id);
+CREATE INDEX ON main.room_user(room_id);
 
 CREATE TABLE main.pc (
     id              uuid PRIMARY KEY,
