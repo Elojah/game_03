@@ -74,7 +74,7 @@ func (m *Entity) GetEntity() *entity.E {
 }
 
 type Cell struct {
-	Cell     *room.Cell                              `protobuf:"bytes,1,opt,name=Cell,proto3" json:"Cell,omitempty"`
+	ID       github_com_elojah_game_03_pkg_ulid.ID   `protobuf:"bytes,1,opt,name=ID,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"ID"`
 	Entities []github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,2,rep,name=Entities,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"Entities"`
 	TS       int64                                   `protobuf:"varint,3,opt,name=TS,proto3" json:"TS,omitempty"`
 }
@@ -111,13 +111,6 @@ func (m *Cell) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Cell proto.InternalMessageInfo
 
-func (m *Cell) GetCell() *room.Cell {
-	if m != nil {
-		return m.Cell
-	}
-	return nil
-}
-
 func (m *Cell) GetTS() int64 {
 	if m != nil {
 		return m.TS
@@ -125,11 +118,94 @@ func (m *Cell) GetTS() int64 {
 	return 0
 }
 
+type ListCellReq struct {
+	IDs []github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,1,rep,name=IDs,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"IDs"`
+}
+
+func (m *ListCellReq) Reset()      { *m = ListCellReq{} }
+func (*ListCellReq) ProtoMessage() {}
+func (*ListCellReq) Descriptor() ([]byte, []int) {
+	return fileDescriptor_538b037165b7b867, []int{2}
+}
+func (m *ListCellReq) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *ListCellReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_ListCellReq.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *ListCellReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListCellReq.Merge(m, src)
+}
+func (m *ListCellReq) XXX_Size() int {
+	return m.Size()
+}
+func (m *ListCellReq) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListCellReq.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListCellReq proto.InternalMessageInfo
+
+type ListCellResp struct {
+	Cells []room.Cell `protobuf:"bytes,1,rep,name=Cells,proto3" json:"Cells"`
+}
+
+func (m *ListCellResp) Reset()      { *m = ListCellResp{} }
+func (*ListCellResp) ProtoMessage() {}
+func (*ListCellResp) Descriptor() ([]byte, []int) {
+	return fileDescriptor_538b037165b7b867, []int{3}
+}
+func (m *ListCellResp) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *ListCellResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_ListCellResp.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *ListCellResp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListCellResp.Merge(m, src)
+}
+func (m *ListCellResp) XXX_Size() int {
+	return m.Size()
+}
+func (m *ListCellResp) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListCellResp.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListCellResp proto.InternalMessageInfo
+
+func (m *ListCellResp) GetCells() []room.Cell {
+	if m != nil {
+		return m.Cells
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*Entity)(nil), "dto.Entity")
 	golang_proto.RegisterType((*Entity)(nil), "dto.Entity")
 	proto.RegisterType((*Cell)(nil), "dto.Cell")
 	golang_proto.RegisterType((*Cell)(nil), "dto.Cell")
+	proto.RegisterType((*ListCellReq)(nil), "dto.ListCellReq")
+	golang_proto.RegisterType((*ListCellReq)(nil), "dto.ListCellReq")
+	proto.RegisterType((*ListCellResp)(nil), "dto.ListCellResp")
+	golang_proto.RegisterType((*ListCellResp)(nil), "dto.ListCellResp")
 }
 
 func init() {
@@ -140,27 +216,31 @@ func init() {
 }
 
 var fileDescriptor_538b037165b7b867 = []byte{
-	// 312 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x90, 0x3f, 0x4f, 0x02, 0x31,
-	0x18, 0xc6, 0xfb, 0x72, 0x86, 0x68, 0x49, 0x1c, 0x6e, 0x22, 0x0c, 0x2f, 0x48, 0x62, 0x42, 0x62,
-	0x68, 0x15, 0xbe, 0x01, 0xc2, 0xe0, 0x7a, 0x10, 0x57, 0x03, 0x5c, 0x3d, 0x4e, 0x8b, 0x25, 0xd8,
-	0x1b, 0xdc, 0xfc, 0x04, 0xc6, 0x8f, 0xe1, 0x47, 0x70, 0x64, 0x64, 0xbc, 0x91, 0x38, 0x10, 0xaf,
-	0xb7, 0x38, 0x32, 0x3a, 0x1a, 0x7a, 0xe7, 0x9f, 0x49, 0x9d, 0xde, 0xf7, 0xe9, 0xd3, 0xdf, 0xd3,
-	0x27, 0xa5, 0x27, 0x41, 0xa8, 0x27, 0xd1, 0x88, 0x8d, 0xd5, 0x94, 0x0b, 0xa9, 0xae, 0x86, 0x13,
-	0x1e, 0x0c, 0xa7, 0xe2, 0xe2, 0xb8, 0xcd, 0x67, 0xd7, 0x01, 0x9f, 0x2b, 0x35, 0xe5, 0xbe, 0x56,
-	0x7c, 0x2c, 0xa4, 0x64, 0xb3, 0xb9, 0xd2, 0xca, 0x75, 0x7c, 0xad, 0x2a, 0xcd, 0x1f, 0x5c, 0xa0,
-	0x02, 0xc5, 0xad, 0x37, 0x8a, 0x2e, 0xad, 0xb2, 0xc2, 0x6e, 0x19, 0x53, 0xf9, 0xe3, 0x19, 0x71,
-	0xa3, 0x43, 0x7d, 0x97, 0x8f, 0x1c, 0x69, 0xfe, 0xa3, 0xd9, 0x77, 0xab, 0xfa, 0x11, 0x2d, 0xf6,
-	0x2c, 0xee, 0x1e, 0x7c, 0x6e, 0x65, 0xa8, 0x41, 0xa3, 0xd4, 0xda, 0x63, 0x79, 0x6e, 0xcf, 0xcb,
-	0x8d, 0xfa, 0x03, 0xd0, 0x9d, 0x53, 0x21, 0xa5, 0x8b, 0xd9, 0xcc, 0x6f, 0x52, 0xb6, 0x4d, 0x65,
-	0xdb, 0x13, 0x2f, 0xf3, 0xcf, 0xe9, 0xae, 0x45, 0x42, 0x71, 0x5b, 0x2e, 0xd4, 0x9c, 0x46, 0xa9,
-	0x55, 0x62, 0xbe, 0x56, 0x2c, 0xcb, 0xe9, 0x34, 0x97, 0xeb, 0x2a, 0x79, 0x59, 0x57, 0x0f, 0x7f,
-	0xef, 0x1a, 0xc9, 0xd0, 0x67, 0x67, 0x5d, 0xef, 0x2b, 0xcb, 0xdd, 0xa7, 0x85, 0x41, 0xbf, 0xec,
-	0xd4, 0xa0, 0xe1, 0x78, 0x85, 0x41, 0xbf, 0xd3, 0x8d, 0x13, 0x24, 0xab, 0x04, 0xc9, 0x26, 0x41,
-	0x78, 0x4f, 0x10, 0xee, 0x0d, 0xc2, 0x93, 0x41, 0x78, 0x36, 0x08, 0x0b, 0x83, 0xb0, 0x34, 0x08,
-	0xb1, 0x41, 0x78, 0x35, 0x08, 0x6f, 0x06, 0xc9, 0xc6, 0x20, 0x3c, 0xa6, 0x48, 0x16, 0x29, 0x42,
-	0x9c, 0x22, 0x59, 0xa5, 0x48, 0x46, 0x45, 0xfb, 0x15, 0xed, 0x8f, 0x00, 0x00, 0x00, 0xff, 0xff,
-	0x55, 0xbc, 0x2d, 0x2c, 0xd5, 0x01, 0x00, 0x00,
+	// 373 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x32, 0x4c, 0xcf, 0x2c, 0xc9,
+	0x28, 0x4d, 0xd2, 0x4b, 0xce, 0xcf, 0xd5, 0x4f, 0xcd, 0xc9, 0xcf, 0x4a, 0xcc, 0xd0, 0x4f, 0x4f,
+	0xcc, 0x4d, 0x8d, 0x37, 0x30, 0xd6, 0x2f, 0xc8, 0x4e, 0xd7, 0x2f, 0xca, 0xcf, 0xcf, 0xd5, 0x4f,
+	0x29, 0xc9, 0xd7, 0x4f, 0x4e, 0xcd, 0xc9, 0xd1, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x4e,
+	0x29, 0xc9, 0x97, 0xd2, 0x45, 0xd2, 0x97, 0x9e, 0x9f, 0x9e, 0xaf, 0x0f, 0x96, 0x4b, 0x2a, 0x4d,
+	0x03, 0xf3, 0xc0, 0x1c, 0x30, 0x0b, 0xa2, 0x47, 0x8a, 0x80, 0x35, 0xa9, 0x79, 0x25, 0x99, 0x25,
+	0x95, 0x50, 0x0a, 0xaa, 0x45, 0x97, 0x08, 0x97, 0x21, 0x5c, 0xa5, 0xa4, 0xcd, 0xc5, 0xe6, 0x0a,
+	0xd6, 0x2e, 0xa4, 0x08, 0x63, 0x49, 0x30, 0x2a, 0x30, 0x6a, 0x70, 0x1b, 0x71, 0xea, 0x41, 0xcd,
+	0x75, 0x0d, 0x82, 0x4a, 0x28, 0xad, 0x65, 0xe4, 0x62, 0x71, 0x4e, 0xcd, 0xc9, 0x11, 0xb2, 0xe5,
+	0x62, 0xf2, 0x74, 0x01, 0xab, 0xe3, 0x71, 0xd2, 0x3d, 0x71, 0x4f, 0x9e, 0xe1, 0xd6, 0x3d, 0x79,
+	0x55, 0xfc, 0x16, 0x97, 0xe6, 0x64, 0xa6, 0xe8, 0x79, 0xba, 0x04, 0x31, 0x79, 0xba, 0x08, 0x85,
+	0x71, 0x71, 0x80, 0x4d, 0xcc, 0x4c, 0x2d, 0x96, 0x60, 0x52, 0x60, 0xd6, 0xe0, 0x36, 0xe2, 0xd6,
+	0x4b, 0x29, 0xc9, 0xd7, 0x83, 0x58, 0x43, 0xaa, 0x89, 0x70, 0xb3, 0x84, 0xf8, 0xb8, 0x98, 0x42,
+	0x82, 0x25, 0x98, 0x15, 0x18, 0x35, 0x98, 0x83, 0x98, 0x42, 0x82, 0x95, 0xfc, 0xb8, 0xb8, 0x7d,
+	0x32, 0x8b, 0x4b, 0x40, 0x4e, 0x0e, 0x4a, 0x2d, 0x14, 0xb2, 0xe7, 0x62, 0xf6, 0x74, 0x29, 0x96,
+	0x60, 0x54, 0x60, 0x26, 0xdd, 0xd9, 0x20, 0x9d, 0x4a, 0x66, 0x5c, 0x3c, 0x08, 0xf3, 0x8a, 0x0b,
+	0x84, 0xd4, 0xb8, 0x58, 0x41, 0x6c, 0x88, 0x91, 0xdc, 0x46, 0x5c, 0x7a, 0xa0, 0xd0, 0xd5, 0x03,
+	0x09, 0x39, 0xb1, 0x80, 0x8c, 0x0f, 0x82, 0x48, 0x3b, 0xb9, 0x5c, 0x78, 0x28, 0xc7, 0x70, 0xe3,
+	0xa1, 0x1c, 0xc3, 0x87, 0x87, 0x72, 0x8c, 0x3f, 0x1e, 0xca, 0x31, 0x36, 0x3c, 0x92, 0x63, 0x5c,
+	0xf1, 0x48, 0x8e, 0x71, 0xc7, 0x23, 0x39, 0xc6, 0x03, 0x8f, 0xe4, 0x18, 0x4f, 0x3c, 0x92, 0x63,
+	0xbc, 0xf0, 0x48, 0x8e, 0xf1, 0xc1, 0x23, 0x39, 0xc6, 0x17, 0x8f, 0xe4, 0x18, 0x3e, 0x3c, 0x92,
+	0x63, 0x9c, 0xf0, 0x58, 0x8e, 0xe1, 0xc0, 0x63, 0x39, 0xc6, 0x0b, 0x8f, 0xe5, 0x18, 0x6e, 0x3c,
+	0x96, 0x63, 0x48, 0x62, 0x03, 0xc7, 0x98, 0x31, 0x20, 0x00, 0x00, 0xff, 0xff, 0x74, 0x09, 0x48,
+	0x10, 0x7c, 0x02, 0x00, 0x00,
 }
 
 func (this *Entity) Equal(that interface{}) bool {
@@ -206,7 +286,7 @@ func (this *Cell) Equal(that interface{}) bool {
 	} else if this == nil {
 		return false
 	}
-	if !this.Cell.Equal(that1.Cell) {
+	if !this.ID.Equal(that1.ID) {
 		return false
 	}
 	if len(this.Entities) != len(that1.Entities) {
@@ -219,6 +299,64 @@ func (this *Cell) Equal(that interface{}) bool {
 	}
 	if this.TS != that1.TS {
 		return false
+	}
+	return true
+}
+func (this *ListCellReq) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*ListCellReq)
+	if !ok {
+		that2, ok := that.(ListCellReq)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if len(this.IDs) != len(that1.IDs) {
+		return false
+	}
+	for i := range this.IDs {
+		if !this.IDs[i].Equal(that1.IDs[i]) {
+			return false
+		}
+	}
+	return true
+}
+func (this *ListCellResp) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*ListCellResp)
+	if !ok {
+		that2, ok := that.(ListCellResp)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if len(this.Cells) != len(that1.Cells) {
+		return false
+	}
+	for i := range this.Cells {
+		if !this.Cells[i].Equal(&that1.Cells[i]) {
+			return false
+		}
 	}
 	return true
 }
@@ -240,11 +378,35 @@ func (this *Cell) GoString() string {
 	}
 	s := make([]string, 0, 7)
 	s = append(s, "&dto.Cell{")
-	if this.Cell != nil {
-		s = append(s, "Cell: "+fmt.Sprintf("%#v", this.Cell)+",\n")
-	}
+	s = append(s, "ID: "+fmt.Sprintf("%#v", this.ID)+",\n")
 	s = append(s, "Entities: "+fmt.Sprintf("%#v", this.Entities)+",\n")
 	s = append(s, "TS: "+fmt.Sprintf("%#v", this.TS)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *ListCellReq) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 5)
+	s = append(s, "&dto.ListCellReq{")
+	s = append(s, "IDs: "+fmt.Sprintf("%#v", this.IDs)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *ListCellResp) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 5)
+	s = append(s, "&dto.ListCellResp{")
+	if this.Cells != nil {
+		vs := make([]room.Cell, len(this.Cells))
+		for i := range vs {
+			vs[i] = this.Cells[i]
+		}
+		s = append(s, "Cells: "+fmt.Sprintf("%#v", vs)+",\n")
+	}
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -330,17 +492,89 @@ func (m *Cell) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			dAtA[i] = 0x12
 		}
 	}
-	if m.Cell != nil {
-		{
-			size, err := m.Cell.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintCell(dAtA, i, uint64(size))
+	{
+		size := m.ID.Size()
+		i -= size
+		if _, err := m.ID.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
 		}
-		i--
-		dAtA[i] = 0xa
+		i = encodeVarintCell(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
+func (m *ListCellReq) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *ListCellReq) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *ListCellReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.IDs) > 0 {
+		for iNdEx := len(m.IDs) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size := m.IDs[iNdEx].Size()
+				i -= size
+				if _, err := m.IDs[iNdEx].MarshalTo(dAtA[i:]); err != nil {
+					return 0, err
+				}
+				i = encodeVarintCell(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *ListCellResp) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *ListCellResp) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *ListCellResp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Cells) > 0 {
+		for iNdEx := len(m.Cells) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Cells[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintCell(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
 	}
 	return len(dAtA) - i, nil
 }
@@ -368,20 +602,47 @@ func NewPopulatedEntity(r randyCell, easy bool) *Entity {
 
 func NewPopulatedCell(r randyCell, easy bool) *Cell {
 	this := &Cell{}
+	v1 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
+	this.ID = *v1
 	if r.Intn(5) != 0 {
-		this.Cell = room.NewPopulatedCell(r, easy)
-	}
-	if r.Intn(5) != 0 {
-		v1 := r.Intn(10)
-		this.Entities = make([]github_com_elojah_game_03_pkg_ulid.ID, v1)
-		for i := 0; i < v1; i++ {
-			v2 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
-			this.Entities[i] = *v2
+		v2 := r.Intn(10)
+		this.Entities = make([]github_com_elojah_game_03_pkg_ulid.ID, v2)
+		for i := 0; i < v2; i++ {
+			v3 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
+			this.Entities[i] = *v3
 		}
 	}
 	this.TS = int64(r.Int63())
 	if r.Intn(2) == 0 {
 		this.TS *= -1
+	}
+	if !easy && r.Intn(10) != 0 {
+	}
+	return this
+}
+
+func NewPopulatedListCellReq(r randyCell, easy bool) *ListCellReq {
+	this := &ListCellReq{}
+	v4 := r.Intn(10)
+	this.IDs = make([]github_com_elojah_game_03_pkg_ulid.ID, v4)
+	for i := 0; i < v4; i++ {
+		v5 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
+		this.IDs[i] = *v5
+	}
+	if !easy && r.Intn(10) != 0 {
+	}
+	return this
+}
+
+func NewPopulatedListCellResp(r randyCell, easy bool) *ListCellResp {
+	this := &ListCellResp{}
+	if r.Intn(5) != 0 {
+		v6 := r.Intn(5)
+		this.Cells = make([]room.Cell, v6)
+		for i := 0; i < v6; i++ {
+			v7 := room.NewPopulatedCell(r, easy)
+			this.Cells[i] = *v7
+		}
 	}
 	if !easy && r.Intn(10) != 0 {
 	}
@@ -407,9 +668,9 @@ func randUTF8RuneCell(r randyCell) rune {
 	return rune(ru + 61)
 }
 func randStringCell(r randyCell) string {
-	v3 := r.Intn(100)
-	tmps := make([]rune, v3)
-	for i := 0; i < v3; i++ {
+	v8 := r.Intn(100)
+	tmps := make([]rune, v8)
+	for i := 0; i < v8; i++ {
 		tmps[i] = randUTF8RuneCell(r)
 	}
 	return string(tmps)
@@ -431,11 +692,11 @@ func randFieldCell(dAtA []byte, r randyCell, fieldNumber int, wire int) []byte {
 	switch wire {
 	case 0:
 		dAtA = encodeVarintPopulateCell(dAtA, uint64(key))
-		v4 := r.Int63()
+		v9 := r.Int63()
 		if r.Intn(2) == 0 {
-			v4 *= -1
+			v9 *= -1
 		}
-		dAtA = encodeVarintPopulateCell(dAtA, uint64(v4))
+		dAtA = encodeVarintPopulateCell(dAtA, uint64(v9))
 	case 1:
 		dAtA = encodeVarintPopulateCell(dAtA, uint64(key))
 		dAtA = append(dAtA, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
@@ -479,10 +740,8 @@ func (m *Cell) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.Cell != nil {
-		l = m.Cell.Size()
-		n += 1 + l + sovCell(uint64(l))
-	}
+	l = m.ID.Size()
+	n += 1 + l + sovCell(uint64(l))
 	if len(m.Entities) > 0 {
 		for _, e := range m.Entities {
 			l = e.Size()
@@ -491,6 +750,36 @@ func (m *Cell) Size() (n int) {
 	}
 	if m.TS != 0 {
 		n += 1 + sovCell(uint64(m.TS))
+	}
+	return n
+}
+
+func (m *ListCellReq) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.IDs) > 0 {
+		for _, e := range m.IDs {
+			l = e.Size()
+			n += 1 + l + sovCell(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *ListCellResp) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Cells) > 0 {
+		for _, e := range m.Cells {
+			l = e.Size()
+			n += 1 + l + sovCell(uint64(l))
+		}
 	}
 	return n
 }
@@ -516,9 +805,34 @@ func (this *Cell) String() string {
 		return "nil"
 	}
 	s := strings.Join([]string{`&Cell{`,
-		`Cell:` + strings.Replace(fmt.Sprintf("%v", this.Cell), "Cell", "room.Cell", 1) + `,`,
+		`ID:` + fmt.Sprintf("%v", this.ID) + `,`,
 		`Entities:` + fmt.Sprintf("%v", this.Entities) + `,`,
 		`TS:` + fmt.Sprintf("%v", this.TS) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *ListCellReq) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&ListCellReq{`,
+		`IDs:` + fmt.Sprintf("%v", this.IDs) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *ListCellResp) String() string {
+	if this == nil {
+		return "nil"
+	}
+	repeatedStringForCells := "[]Cell{"
+	for _, f := range this.Cells {
+		repeatedStringForCells += fmt.Sprintf("%v", f) + ","
+	}
+	repeatedStringForCells += "}"
+	s := strings.Join([]string{`&ListCellResp{`,
+		`Cells:` + repeatedStringForCells + `,`,
 		`}`,
 	}, "")
 	return s
@@ -651,9 +965,9 @@ func (m *Cell) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Cell", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
 			}
-			var msglen int
+			var byteLen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowCell
@@ -663,25 +977,22 @@ func (m *Cell) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= int(b&0x7F) << shift
+				byteLen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if msglen < 0 {
+			if byteLen < 0 {
 				return ErrInvalidLengthCell
 			}
-			postIndex := iNdEx + msglen
+			postIndex := iNdEx + byteLen
 			if postIndex < 0 {
 				return ErrInvalidLengthCell
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.Cell == nil {
-				m.Cell = &room.Cell{}
-			}
-			if err := m.Cell.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.ID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -738,6 +1049,181 @@ func (m *Cell) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipCell(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthCell
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthCell
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ListCellReq) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowCell
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ListCellReq: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ListCellReq: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field IDs", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCell
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthCell
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthCell
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			var v github_com_elojah_game_03_pkg_ulid.ID
+			m.IDs = append(m.IDs, v)
+			if err := m.IDs[len(m.IDs)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipCell(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthCell
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthCell
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ListCellResp) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowCell
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ListCellResp: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ListCellResp: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Cells", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCell
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthCell
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthCell
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Cells = append(m.Cells, room.Cell{})
+			if err := m.Cells[len(m.Cells)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipCell(dAtA[iNdEx:])

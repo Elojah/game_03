@@ -418,5 +418,4 @@ export class Home extends Scene {
 
         return prom
     }
-
 }
