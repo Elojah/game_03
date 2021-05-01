@@ -5,6 +5,7 @@ import * as API from '@cmd/api/grpc/api_pb_service';
 
 import * as PC from '@pkg/entity/pc_pb';
 
+import * as Cell from '@pkg/room/cell_pb';
 import * as CellDTO from '@pkg/room/dto/cell_pb';
 
 export class Game extends Scene {
@@ -18,24 +19,57 @@ export class Game extends Scene {
         this.PC =  pc;
     }
     preload() {
+        this.cache.addCustom('cell')
+
+        // call current pc cell
+        this.listCell([this.PC.getId() as Uint8Array])
+        .then((cells: CellDTO.ListCellResp) => {
+            // load current pc cell
+            if (cells.getCellsList().length != 1) {
+                throw new Error('failed to load cell')
+            }
+
+            const c = cells.getCellsList()[0]
+            this.cache.custom['cell'].add(c.getId() as string, c)
+
+            return c
+        })
+        .then((cell: Cell.Cell) => {
+            // call contiguous pc cells
+            const ids = cell.getContiguousMap() as Array<[number, Uint8Array]>
+
+            return this.listCell(ids.map((val) => {return val[1]}))
+        })
+        .then((cells: CellDTO.ListCellResp) => {
+            // load contiguous pc cells
+            cells.getCellsList().map((c: Cell.Cell) => {
+                this.cache.custom['cell'].add(c.getId() as string, c)
+            })
+        })
+        .then(() => {
+
+        })
+        .catch((err) => {
+            console.log(err)
+        })
 
     }
     create() {}
     update() {}
 
     // API PC
-    connectPC(PCID: Uint8Array) {
+    connectPC(callback: (message: CellDTO.Cell) => void) {
         let req = this.PC;
         let md = new grpc.Metadata()
         md.set('token', this.registry.get('token'))
 
-        const prom = new Promise<CellDTO.Cell>((resolve, reject) => {
+        const prom = new Promise<string>((resolve, reject) => {
             grpc.invoke(API.API.ConnectPC, {
                 metadata: md,
                 request: req,
                 host: 'http://localhost:8081',
                 onMessage: (message: CellDTO.Cell) => {
-                    resolve(message)
+                    callback(message)
                 },
                 onEnd: (code: grpc.Code, message: string | undefined, trailers: grpc.Metadata)  => {
                     if (code !== grpc.Code.OK || !message) {
@@ -44,7 +78,7 @@ export class Game extends Scene {
                         return
                     }
 
-                    console.log('stream ended:', code, message)
+                    resolve(message)
                 }
             });
         })
