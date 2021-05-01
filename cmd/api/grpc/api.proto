@@ -29,6 +29,9 @@ service API {
     rpc CreateRoom(room.R) returns (room.R);
     rpc ListRoom(dto.ListRoomReq) returns (dto.ListRoomResp);
 
+    // Cell
+    rpc ListCell(dto.ListCellReq) returns (dto.ListCellResp);
+
     // Twitch
     rpc ListFollow(dto.ListFollowReq) returns (dto.ListFollowResp);
 

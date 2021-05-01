@@ -12,6 +12,10 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+const (
+	refreshRate = 100 * time.Millisecond
+)
+
 func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) error {
 	ctx := stream.Context()
 	logger := log.With().Str("method", "create_pc").Logger()
@@ -79,7 +83,18 @@ func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) err
 		return status.New(codes.Internal, err.Error()).Err()
 	}
 
-	logger.Info().Msg("success")
+	logger.Info().Msg("connected")
 
-	return nil
+	t := time.NewTicker(refreshRate)
+
+	for {
+		select {
+		case _ = <-ctx.Done():
+			logger.Info().Msg("done")
+
+			return ctx.Err()
+		case _ = <-t.C:
+			// fetch regions + fetch entities and send back into stream
+		}
+	}
 }

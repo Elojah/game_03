@@ -18,7 +18,16 @@ message Entity {
 }
 
 message Cell {
-    room.Cell Cell           = 1;
+    bytes ID                 = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
     repeated Entity Entities = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
     int64 TS                 = 3;
+}
+
+
+message ListCellReq {
+    repeated bytes IDs       = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+}
+
+message ListCellResp {
+    repeated room.Cell Cells = 1 [(gogoproto.nullable) = false];
 }
