@@ -23,19 +23,19 @@ export class Game extends Scene {
     create() {}
     update() {}
 
-    // API calls
+    // API PC
     connectPC(PCID: Uint8Array) {
         let req = this.PC;
         let md = new grpc.Metadata()
         md.set('token', this.registry.get('token'))
 
-        const prom = new Promise<PC.PC>((resolve, reject) => {
+        const prom = new Promise<CellDTO.Cell>((resolve, reject) => {
             grpc.invoke(API.API.ConnectPC, {
                 metadata: md,
                 request: req,
                 host: 'http://localhost:8081',
                 onMessage: (message: CellDTO.Cell) => {
-
+                    resolve(message)
                 },
                 onEnd: (code: grpc.Code, message: string | undefined, trailers: grpc.Metadata)  => {
                     if (code !== grpc.Code.OK || !message) {
@@ -52,4 +52,31 @@ export class Game extends Scene {
         return prom
     }
 
+    // API Cell
+    listCell(IDs: Uint8Array[]) {
+        let req = new CellDTO.ListCellReq();
+        req.setIdsList(IDs)
+        let md = new grpc.Metadata()
+        md.set('token', this.registry.get('token'))
+
+        const prom = new Promise<CellDTO.ListCellResp>((resolve, reject) => {
+            grpc.unary(API.API.ListCell, {
+                metadata: md,
+                request: req,
+                host: 'http://localhost:8081',
+                onEnd: res => {
+                    const { status, statusMessage, headers, message, trailers } = res;
+                    if (status !== grpc.Code.OK || !message) {
+                        reject(res)
+
+                        return
+                    }
+
+                    resolve(message as CellDTO.ListCellResp)
+                }
+            });
+        })
+
+        return prom
+    }
 }
