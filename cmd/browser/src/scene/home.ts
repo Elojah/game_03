@@ -111,7 +111,7 @@ export class Home extends Scene {
         // init html create room button
         const rc = document.getElementById('room-create')
         rc?.addEventListener('click', () => {
-            this.createRoom(document.getElementById('room-create-name')?.textContent as string)
+            this.createRoom((document.getElementById('room-create-name') as HTMLInputElement).value)
             .then((ro: Room.R) => {
                 console.log('successfully created room', ro)
 
@@ -242,6 +242,15 @@ export class Home extends Scene {
                 const tmp = document.createElement('template')
                 tmp.innerHTML = line.replace('{{name}}', pc.getId() as string).replace('{{id}}', pc.getId() as string)
                 const li = tmp.content.firstChild as Node
+                li.addEventListener('click', () => {
+                    this.scene.transition({
+                        target: "game",
+                        duration: 1000,
+                        remove: true,
+                        data: pc,
+                    })
+                })
+
                 pcList?.appendChild(li)
             })
         })
