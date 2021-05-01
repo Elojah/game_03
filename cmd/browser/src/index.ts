@@ -1,5 +1,6 @@
 import {Home} from "@cmd/browser/src/scene/home";
 import {Login} from "@cmd/browser/src/scene/login";
+import {Game} from "@cmd/browser/src/scene/game";
 
 function main() {
 
@@ -26,6 +27,12 @@ function main() {
 
   g.scene.add('home', new Home({
     key: 'home',
+    active: false,
+    visible: false,
+  }))
+
+  g.scene.add('game', new Game({
+    key: 'game',
     active: false,
     visible: false,
   }))
