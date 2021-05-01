@@ -243,6 +243,7 @@ export class Home extends Scene {
                 tmp.innerHTML = line.replace('{{name}}', pc.getId() as string).replace('{{id}}', pc.getId() as string)
                 const li = tmp.content.firstChild as Node
                 li.addEventListener('click', () => {
+                    this.cache.destroy()
                     this.scene.transition({
                         target: "game",
                         duration: 1000,
