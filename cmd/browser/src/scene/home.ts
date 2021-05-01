@@ -2,12 +2,10 @@ import {Scene} from 'phaser';
 import {grpc} from '@improbable-eng/grpc-web';
 
 import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty_pb';
-import * as google_protobuf_wrappers_pb from 'google-protobuf/google/protobuf/wrappers_pb';
 
 import * as API from '@cmd/api/grpc/api_pb_service';
 
 import * as TwitchDTO from '@pkg/twitch/dto/follow_pb';
-import * as Twitch from '@pkg/twitch/follow_pb';
 
 import * as RoomDTO from '@pkg/room/dto/room_pb';
 import * as Room from '@pkg/room/room_pb';
@@ -55,6 +53,8 @@ export class Home extends Scene {
 
         this.initRoom()
         this.loadRoom(20, new Uint8Array);
+
+        this.initPC()
     }
     update() {}
 
@@ -91,8 +91,9 @@ export class Home extends Scene {
             const followList = document.getElementById('follow-list')
             const line = this.cache.html.get('follow_line') as string
             follows.getFollowsList().map((fol) => {
-                const li = document.createElement('li')
-                li.innerHTML = line.replace('{{login}}', fol.getTologin()).replace('{{id}}', fol.getToid())
+                const tmp = document.createElement('template')
+                tmp.innerHTML = line.replace('{{login}}', fol.getTologin()).replace('{{id}}', fol.getToid())
+                const li = tmp.content.firstChild as Node
                 followList?.appendChild(li)
             })
         })
@@ -104,7 +105,7 @@ export class Home extends Scene {
     // Room list methods
     initRoom() {
         // init html room list
-        const room = this.add.dom(1010, 10).createFromCache('room').setOrigin(0)
+        const room = this.add.dom(500, 10).createFromCache('room').setOrigin(0)
         room.setInteractive()
 
         // init html create room button
@@ -115,6 +116,10 @@ export class Home extends Scene {
                 console.log('successfully created room', ro)
 
                 // reset room list
+                const roomList = document.getElementById('room-list')
+                if (roomList) {
+                    roomList.innerHTML = ''
+                }
                 this.loadRoom(20, new Uint8Array)
             })
             .catch((err) => {
@@ -129,7 +134,7 @@ export class Home extends Scene {
             const rlm = document.getElementById('room-load-more')
 
             // remove previous event listener
-            const prevLoadMore = this.cache.custom['home'].get('load_more_func')
+            const prevLoadMore = this.cache.custom['home'].get('room_load_more_func')
             if (prevLoadMore) {
                 rlm?.removeEventListener('click', prevLoadMore)
             }
@@ -143,15 +148,22 @@ export class Home extends Scene {
                 }
             }
             rlm?.addEventListener('click', loadMore)
-            this.cache.custom['home'].add('load_more_func', loadMore)
+            this.cache.custom['home'].add('room_load_more_func', loadMore)
 
             // update html
             const roomList = document.getElementById('room-list')
             const line = this.cache.html.get('room_line') as string
             rooms.getRoomsList().map((ro) => {
-                const li = document.createElement('li')
-                li.innerHTML = line.replace('{{name}}', ro.getRoom()?.getName() as string).replace('{{id}}', ro.getRoom()?.getId() as string)
-                li.addEventListener('click', () => {
+                const tmp = document.createElement('template')
+                tmp.innerHTML = line.replace('{{name}}', ro.getRoom()?.getName() as string).replace('{{id}}', ro.getRoom()?.getId() as string)
+
+                const li = tmp.content.firstChild as Node
+                li.addEventListener('click', () => {                    // reset pc list
+                    const pcList = document.getElementById('pc-list')
+                    if (pcList) {
+                        pcList.innerHTML = ''
+                    }
+
                     this.loadPC(ro.getRoom()?.getId() as Uint8Array, 20, new Uint8Array)
                 })
                 roomList?.appendChild(li)
@@ -166,19 +178,50 @@ export class Home extends Scene {
     // PC list methods
     initPC() {
         // init html pc list
-        const pc = this.add.dom(2010, 10).createFromCache('pc').setOrigin(0)
+        const pc = this.add.dom(1000, 10).createFromCache('pc').setOrigin(0)
         pc.setInteractive()
     }
     loadPC(roomID: Uint8Array,size: number, state: Uint8Array) {
         this.listPC(roomID, size, state)
         .then((pcs: PCDTO.ListPCResp) => {
-            // update cursor
-            const flm = document.getElementById('pc-load-more')
+
+            // update create pc
+            const pcc = document.getElementById('pc-create')
 
             // remove previous event listener
-            const prevLoadMore = this.cache.custom['home'].get('load_more_func')
+            const prevCreate = this.cache.custom['home'].get('pc_create_func')
+            if (prevCreate) {
+                pcc?.removeEventListener('click', prevCreate)
+            }
+
+            // add new event listener
+            const createPC = () => {
+                this.createPC(roomID)
+                .then((pc: PC.PC) => {
+                    console.log('successfully created pc', pc)
+
+                    // reset pc list
+                    const pcList = document.getElementById('pc-list')
+                    if (pcList) {
+                        pcList.innerHTML = ''
+                    }
+                    this.loadPC(roomID, 20, new Uint8Array)
+                })
+                .catch((err) => {
+                    console.log('failed to create pc')
+                })
+            }
+            pcc?.addEventListener('click', createPC)
+            this.cache.custom['home'].add('pc_create_func', createPC)
+
+
+            // update cursor
+            const pclm = document.getElementById('pc-load-more')
+
+            // remove previous event listener
+            const prevLoadMore = this.cache.custom['home'].get('pc_load_more_func')
             if (prevLoadMore) {
-                flm?.removeEventListener('click', prevLoadMore)
+                pclm?.removeEventListener('click', prevLoadMore)
             }
 
             // add new event listener
@@ -189,15 +232,16 @@ export class Home extends Scene {
                     console.log('no more loading')
                 }
             }
-            flm?.addEventListener('click', loadMore)
-            this.cache.custom['home'].add('load_more_func', loadMore)
+            pclm?.addEventListener('click', loadMore)
+            this.cache.custom['home'].add('pc_load_more_func', loadMore)
 
             // update html
             const pcList = document.getElementById('pc-list')
             const line = this.cache.html.get('pc_line') as string
             pcs.getPcsList().map((pc) => {
-                const li = document.createElement('li')
-                li.innerHTML = line.replace('{{name}}', pc.getId() as string).replace('{{id}}', pc.getId() as string)
+                const tmp = document.createElement('template')
+                tmp.innerHTML = line.replace('{{name}}', pc.getId() as string).replace('{{id}}', pc.getId() as string)
+                const li = tmp.content.firstChild as Node
                 pcList?.appendChild(li)
             })
         })
