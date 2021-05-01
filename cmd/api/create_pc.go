@@ -50,7 +50,7 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 	})
 	if err != nil {
 		if errors.As(err, &gerrors.ErrNotFound{}) {
-			logger.Error().Err(err).Msg("missing room user")
+			logger.Error().Err(err).Msg("missing room")
 
 			return &entity.PC{}, status.New(codes.FailedPrecondition, err.Error()).Err()
 		}

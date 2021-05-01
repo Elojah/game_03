@@ -78,7 +78,7 @@ func (f filterPC) index() string {
 
 func (s Store) InsertPC(ctx context.Context, pc entity.PC) error {
 	q := s.Session.Query(
-		`INSERT INTO main.pc (id, user_id, room_id, entity_id) VALUES (?, ?, ?)`,
+		`INSERT INTO main.pc (id, user_id, world_id, entity_id) VALUES (?, ?, ?, ?)`,
 		pc.ID,
 		pc.UserID,
 		pc.WorldID,
@@ -96,7 +96,7 @@ func (s Store) InsertPC(ctx context.Context, pc entity.PC) error {
 
 func (s Store) FetchPC(ctx context.Context, f entity.FilterPC) (entity.PC, error) {
 	b := strings.Builder{}
-	b.WriteString(`SELECT id, user_id, room_id, entity_id FROM main.pc `)
+	b.WriteString(`SELECT id, user_id, world_id, entity_id FROM main.pc `)
 
 	clause, args := filterPC(f).where()
 	b.WriteString(clause)
@@ -121,7 +121,7 @@ func (s Store) FetchManyPC(ctx context.Context, f entity.FilterPC) ([]entity.PC,
 	}
 
 	b := strings.Builder{}
-	b.WriteString(`SELECT id, user_id, room_id, entity_id FROM main.pc `)
+	b.WriteString(`SELECT id, user_id, world_id, entity_id FROM main.pc `)
 
 	clause, args := filterPC(f).where()
 	b.WriteString(clause)

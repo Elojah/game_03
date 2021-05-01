@@ -31,10 +31,10 @@ CREATE TABLE main.room (
 CREATE INDEX ON main.room(owner_id);
 
 CREATE TABLE main.room_user (
-    user_id        uuid PRIMARY KEY,
+    user_id        uuid,
     room_id        uuid,
-    world_id       uuid,
-    role           tinyint
+    role           tinyint,
+    PRIMARY KEY(user_id, room_id)
 );
 
 CREATE INDEX ON main.room_user(room_id);
