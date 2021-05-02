@@ -18,6 +18,11 @@ func (h *handler) ListCell(ctx context.Context, req *dto.ListCellReq) (*dto.List
 		return &dto.ListCellResp{}, status.New(codes.Internal, gerrors.ErrNullRequest{}.Error()).Err()
 	}
 
+	// #Check request
+	if err := req.Check(); err != nil {
+		return &dto.ListCellResp{}, status.New(codes.InvalidArgument, gerrors.ErrNullRequest{}.Error()).Err()
+	}
+
 	// #Authenticate
 	_, err := h.user.Auth(ctx)
 	if err != nil {

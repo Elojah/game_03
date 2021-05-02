@@ -51,11 +51,13 @@ CREATE INDEX ON main.pc(world_id);
 
 CREATE TABLE main.entity (
     id              uuid PRIMARY KEY,
+    user_id         uuid,
     cell_id         uuid,
     x               bigint,
     y               bigint,
     rot             smallint,
     radius          smallint,
+    tileset         uuid,
     at              bigint
 );
 
@@ -90,6 +92,5 @@ CREATE TABLE main.world_cell (
 
 CREATE TABLE main.cell (
     id              uuid PRIMARY KEY,
-    contiguous      map<tinyint, uuid>,
-    tilemap         map<bigint, uuid>
+    contiguous      map<tinyint, uuid>
 );

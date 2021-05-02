@@ -94,7 +94,7 @@ func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) err
 
 			return ctx.Err()
 		case _ = <-t.C:
-			// fetch regions + fetch entities and send back into stream
+			// TODO: fetch regions + fetch entities and send back into stream
 		}
 	}
 }

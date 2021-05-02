@@ -12,6 +12,7 @@ import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "google/protobuf/empty.proto";
 
 import "github.com/elojah/game_03/pkg/entity/pc.proto";
+import "github.com/elojah/game_03/pkg/entity/dto/entity.proto";
 import "github.com/elojah/game_03/pkg/entity/dto/pc.proto";
 import "github.com/elojah/game_03/pkg/room/room.proto";
 import "github.com/elojah/game_03/pkg/room/dto/cell.proto";
@@ -19,6 +20,9 @@ import "github.com/elojah/game_03/pkg/room/dto/room.proto";
 import "github.com/elojah/game_03/pkg/twitch/dto/follow.proto";
 
 service API {
+    // Entity
+    rpc ListEntity(dto.ListEntityReq) returns (dto.ListEntityResp);
+
     // PC
     rpc CreatePC(dto.CreatePCReq) returns (entity.PC);
     rpc ListPC(dto.ListPCReq) returns (dto.ListPCResp);

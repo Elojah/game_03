@@ -69,13 +69,15 @@ func (f filter) index() string {
 
 func (s Store) Insert(ctx context.Context, e entity.E) error {
 	q := s.Session.Query(
-		`INSERT INTO main.entity (id, cell_id, x, y, rot, radius, at) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+		`INSERT INTO main.entity (id, user_id, cell_id, x, y, rot, radius, tileset, at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 		e.ID,
+		e.UserID,
 		e.CellID,
 		e.X,
 		e.Y,
 		e.Rot,
 		e.Radius,
+		e.Tileset,
 		e.At,
 	).WithContext(ctx)
 
@@ -90,7 +92,7 @@ func (s Store) Insert(ctx context.Context, e entity.E) error {
 
 func (s Store) Fetch(ctx context.Context, f entity.Filter) (entity.E, error) {
 	b := strings.Builder{}
-	b.WriteString(`SELECT id, cell_id, x, y, rot, radius, at FROM main.entity `)
+	b.WriteString(`SELECT id, user_id, cell_id, x, y, rot, radius, tileset, at FROM main.entity `)
 
 	clause, args := filter(f).where()
 	b.WriteString(clause)
@@ -98,7 +100,7 @@ func (s Store) Fetch(ctx context.Context, f entity.Filter) (entity.E, error) {
 	q := s.Session.Query(b.String(), args...).WithContext(ctx)
 
 	var e entity.E
-	if err := q.Scan(&e.ID, &e.CellID, &e.X, &e.Y, &e.Rot, &e.Radius, &e.At); err != nil {
+	if err := q.Scan(&e.ID, &e.UserID, &e.CellID, &e.X, &e.Y, &e.Rot, &e.Radius, &e.Tileset, &e.At); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
 			return entity.E{}, gerrors.ErrNotFound{Resource: "entity", Index: filter(f).index()}
 		}
@@ -115,7 +117,7 @@ func (s Store) FetchMany(ctx context.Context, f entity.Filter) ([]entity.E, []by
 	}
 
 	b := strings.Builder{}
-	b.WriteString(`SELECT id, cell_id, x, y, rot, radius FROM main.entity `)
+	b.WriteString(`SELECT id, user_id, cell_id, x, y, rot, radius , tileset, at FROM main.entity `)
 
 	clause, args := filter(f).where()
 	b.WriteString(clause)
@@ -139,11 +141,13 @@ func (s Store) FetchMany(ctx context.Context, f entity.Filter) ([]entity.E, []by
 	for ; scanner.Next(); i++ {
 		if err := scanner.Scan(
 			&es[i].ID,
+			&es[i].UserID,
 			&es[i].CellID,
 			&es[i].X,
 			&es[i].Y,
 			&es[i].Rot,
 			&es[i].Radius,
+			&es[i].Tileset,
 			&es[i].At,
 		); err != nil {
 			return nil, nil, err
