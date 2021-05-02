@@ -57,6 +57,7 @@ CREATE TABLE main.entity (
     y               bigint,
     rot             smallint,
     radius          smallint,
+    tilemap         uuid,
     tileset         uuid,
     at              bigint
 );
@@ -92,5 +93,7 @@ CREATE TABLE main.world_cell (
 
 CREATE TABLE main.cell (
     id              uuid PRIMARY KEY,
-    contiguous      map<tinyint, uuid>
+    contiguous      map<tinyint, uuid>,
+    tilemap         uuid,
+    tileset         uuid
 );

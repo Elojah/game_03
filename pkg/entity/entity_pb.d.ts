@@ -32,6 +32,11 @@ export class E extends jspb.Message {
   getRadius(): number;
   setRadius(value: number): void;
 
+  getTilemap(): Uint8Array | string;
+  getTilemap_asU8(): Uint8Array;
+  getTilemap_asB64(): string;
+  setTilemap(value: Uint8Array | string): void;
+
   getTileset(): Uint8Array | string;
   getTileset_asU8(): Uint8Array;
   getTileset_asB64(): string;
@@ -59,6 +64,7 @@ export namespace E {
     y: number,
     rot: number,
     radius: number,
+    tilemap: Uint8Array | string,
     tileset: Uint8Array | string,
     at: number,
   }
