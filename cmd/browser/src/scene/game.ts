@@ -11,11 +11,28 @@ import * as PC from '@pkg/entity/pc_pb';
 import * as Cell from '@pkg/room/cell_pb';
 import * as CellDTO from '@pkg/room/dto/cell_pb';
 
+enum Orientation {
+    None = 0,
+    Up,
+    UpRight,
+    Right,
+    DownRight,
+    Down,
+    DownLeft,
+    Left,
+    UpLeft,
+}
+
+type CellMap = {
+    [key in Orientation] : Cell.Cell;
+}
 
 export class Game extends Scene {
 
+
     PC: PC.PC;
     Entity: Entity.E;
+    Cell: CellMap;
 
     constructor(config: string | Phaser.Types.Scenes.SettingsConfig) {
         super(config);
@@ -36,10 +53,11 @@ export class Game extends Scene {
             }
 
             const c = cells.getCellsList()[0]
-            this.cache.custom['cell'].add(c.getId_asB64(), c)
+            this.Cell[0] = c
+            // this.cache.custom['cell'].add(c.getId_asB64(), c)
 
-            this.load.image(c.getId_asB64(), 'img/' + c.getId_asB64() +'.png')
-            this.load.tilemapTiledJSON(c.getId_asB64(), 'json/' + c.getId_asB64() +'.json')
+            this.load.image(c.getTilemap_asB64(), 'img/' + c.getTilemap_asB64() +'.png')
+            this.load.tilemapTiledJSON(c.getTileset_asB64(), 'json/' + c.getTileset_asB64() +'.json')
 
             return c
         })
@@ -51,11 +69,28 @@ export class Game extends Scene {
         })
         .then((cells: CellDTO.ListCellResp) => {
             // load contiguous pc cells
-            cells.getCellsList().map((c: Cell.Cell) => {
-                this.cache.custom['cell'].add(c.getId_asB64(), c)
+            const contig = this.Cell[0].getContiguousMap() as Array<[number, Uint8Array]>
+            const getOrientation = (c: Cell.Cell) => {
+                const o = contig.find((val) => { val[1] == c.getId_asU8() })
+                if (o) {
+                    return o[0]
+                }
 
-                this.load.image(c.getId_asB64(), 'img/' + c.getId_asB64() +'.png')
-                this.load.tilemapTiledJSON(c.getId_asB64(), 'json/' + c.getId_asB64() +'.json')
+                return null
+            }
+
+            cells.getCellsList().map((c: Cell.Cell) => {
+                // Pre-assign contiguous cells
+                contig.map((val) => {
+                    this.Cell[val[0] as Orientation] = new Cell.Cell()
+                    this.Cell[val[0] as Orientation].setId(val[1])
+                })
+
+                this.Cell[val[0] as Orientation].setId(val[1])
+                // this.cache.custom['cell'].add(c.getId_asB64(), c)
+
+                this.load.image(c.getTilemap_asB64(), 'img/' + c.getTilemap_asB64() +'.png')
+                this.load.tilemapTiledJSON(c.getTileset_asB64(), 'json/' + c.getTileset_asB64() +'.json')
             })
         })
         .then(() => {
@@ -72,8 +107,8 @@ export class Game extends Scene {
             this.cache.custom['entity'].add(e.getId_asB64(), e)
             this.Entity = e
 
-            this.load.image(e.getId_asB64(), 'img/' + e.getId_asB64() +'.png')
-            this.load.tilemapTiledJSON(e.getId_asB64(), 'json/' + e.getId_asB64() +'.json')
+            this.load.image(e.getTilemap_asB64(), 'img/' + e.getTilemap_asB64() +'.png')
+            this.load.tilemapTiledJSON(e.getTileset_asB64(), 'json/' + e.getTileset_asB64() +'.json')
         })
         .catch((err) => {
             console.log(err)
@@ -92,8 +127,10 @@ export class Game extends Scene {
         })
 
         // Add entity tile
-        const e = this.make.tilemap({ key: this.Entity.getId_asB64() })
-        e.addTilesetImage('entity', this.Entity.getId_asB64())
+        map.addTilesetImage(this.Entity.getId_asB64(), this.Entity.getId_asB64())
+
+        // Create layer in right order
+        map.createLayer(this.Entity.getCellid_asB64(), this.Entity.getCellid_asB64())
 
     }
     update() {}

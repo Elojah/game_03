@@ -19,7 +19,8 @@ message E {
     int32 Rot        = 6;
     int32 Radius     = 7;
 
-    bytes Tileset    = 8 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    bytes Tilemap    = 8 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    bytes Tileset    = 9 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
 
-    int64 At         = 9;
+    int64 At         = 10;
 }
