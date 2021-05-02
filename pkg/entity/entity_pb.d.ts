@@ -10,6 +10,11 @@ export class E extends jspb.Message {
   getId_asB64(): string;
   setId(value: Uint8Array | string): void;
 
+  getUserid(): Uint8Array | string;
+  getUserid_asU8(): Uint8Array;
+  getUserid_asB64(): string;
+  setUserid(value: Uint8Array | string): void;
+
   getCellid(): Uint8Array | string;
   getCellid_asU8(): Uint8Array;
   getCellid_asB64(): string;
@@ -27,6 +32,11 @@ export class E extends jspb.Message {
   getRadius(): number;
   setRadius(value: number): void;
 
+  getTileset(): Uint8Array | string;
+  getTileset_asU8(): Uint8Array;
+  getTileset_asB64(): string;
+  setTileset(value: Uint8Array | string): void;
+
   getAt(): number;
   setAt(value: number): void;
 
@@ -43,11 +53,13 @@ export class E extends jspb.Message {
 export namespace E {
   export type AsObject = {
     id: Uint8Array | string,
+    userid: Uint8Array | string,
     cellid: Uint8Array | string,
     x: number,
     y: number,
     rot: number,
     radius: number,
+    tileset: Uint8Array | string,
     at: number,
   }
 }

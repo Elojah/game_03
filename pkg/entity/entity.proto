@@ -11,14 +11,15 @@ import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 message E {
     bytes ID         = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
-    bytes CellID     = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    bytes UserID     = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    bytes CellID     = 3 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
 
-    int64 X          = 3;
-    int64 Y          = 4;
-    int32 Rot        = 5;
-    int32 Radius     = 6;
+    int64 X          = 4;
+    int64 Y          = 5;
+    int32 Rot        = 6;
+    int32 Radius     = 7;
 
-    bytes Tileset    = 7 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    bytes Tileset    = 8 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
 
-    int64 At         = 8;
+    int64 At         = 9;
 }

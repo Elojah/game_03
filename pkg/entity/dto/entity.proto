@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package dto;
+
+option (gogoproto.testgen_all)  = true;
+option (gogoproto.benchgen_all) = true;
+option (gogoproto.populate_all) = true;
+option (gogoproto.goproto_registration) = true;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "github.com/elojah/game_03/pkg/entity/entity.proto";
+
+message ListEntityReq {
+    repeated bytes IDs         = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+}
+
+message ListEntityResp {
+    repeated entity.E Entities = 1 [(gogoproto.nullable) = false];
+}

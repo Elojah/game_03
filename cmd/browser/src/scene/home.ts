@@ -142,7 +142,7 @@ export class Home extends Scene {
             // add new event listener
             const loadMore = () => {
                 if (rooms.getState()){
-                    this.loadRoom(20, rooms.getState() as Uint8Array)
+                    this.loadRoom(20, rooms.getState_asU8())
                 } else {
                     console.log('no more loading')
                 }
@@ -155,7 +155,7 @@ export class Home extends Scene {
             const line = this.cache.html.get('room_line') as string
             rooms.getRoomsList().map((ro) => {
                 const tmp = document.createElement('template')
-                tmp.innerHTML = line.replace('{{name}}', ro.getRoom()?.getName() as string).replace('{{id}}', ro.getRoom()?.getId() as string)
+                tmp.innerHTML = line.replace('{{name}}', ro.getRoom()?.getName() as string).replace('{{id}}', ro.getRoom()?.getId_asB64() as string)
 
                 const li = tmp.content.firstChild as Node
                 li.addEventListener('click', () => {                    // reset pc list
@@ -164,7 +164,7 @@ export class Home extends Scene {
                         pcList.innerHTML = ''
                     }
 
-                    this.loadPC(ro.getRoom()?.getId() as Uint8Array, 20, new Uint8Array)
+                    this.loadPC(ro.getRoom()?.getId_asU8() as Uint8Array, 20, new Uint8Array)
                 })
                 roomList?.appendChild(li)
             })
@@ -227,7 +227,7 @@ export class Home extends Scene {
             // add new event listener
             const loadMore = () => {
                 if (pcs.getState()){
-                    this.loadPC(roomID, 20, pcs.getState() as Uint8Array)
+                    this.loadPC(roomID, 20, pcs.getState_asU8())
                 } else {
                     console.log('no more loading')
                 }
@@ -240,7 +240,7 @@ export class Home extends Scene {
             const line = this.cache.html.get('pc_line') as string
             pcs.getPcsList().map((pc) => {
                 const tmp = document.createElement('template')
-                tmp.innerHTML = line.replace('{{name}}', pc.getId() as string).replace('{{id}}', pc.getId() as string)
+                tmp.innerHTML = line.replace('{{name}}', pc.getId_asB64()).replace('{{id}}', pc.getId_asB64())
                 const li = tmp.content.firstChild as Node
                 li.addEventListener('click', () => {
                     this.cache.destroy()

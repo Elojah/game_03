@@ -48,8 +48,6 @@ export class Cell extends jspb.Message {
 
   getContiguousMap(): jspb.Map<number, Uint8Array | string>;
   clearContiguousMap(): void;
-  getTilemapMap(): jspb.Map<number, Uint8Array | string>;
-  clearTilemapMap(): void;
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Cell.AsObject;
   static toObject(includeInstance: boolean, msg: Cell): Cell.AsObject;
@@ -64,7 +62,6 @@ export namespace Cell {
   export type AsObject = {
     id: Uint8Array | string,
     contiguousMap: Array<[number, Uint8Array | string]>,
-    tilemapMap: Array<[number, Uint8Array | string]>,
   }
 }
 

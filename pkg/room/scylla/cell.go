@@ -60,10 +60,9 @@ func (f filterCell) index() string {
 
 func (s Store) InsertCell(ctx context.Context, c room.Cell) error {
 	q := s.Session.Query(
-		`INSERT INTO main.cell (id, contiguous, tilemap) VALUES (?, ?, ?)`,
+		`INSERT INTO main.cell (id, contiguous) VALUES (?, ?)`,
 		c.ID,
 		c.Contiguous,
-		c.Tilemap,
 	).WithContext(ctx)
 
 	defer q.Release()
@@ -77,7 +76,7 @@ func (s Store) InsertCell(ctx context.Context, c room.Cell) error {
 
 func (s Store) FetchCell(ctx context.Context, f room.FilterCell) (room.Cell, error) {
 	b := strings.Builder{}
-	b.WriteString(`SELECT id, contiguous, tilemap FROM main.cell `)
+	b.WriteString(`SELECT id, contiguous FROM main.cell `)
 
 	clause, args := filterCell(f).where()
 	b.WriteString(clause)
@@ -85,7 +84,7 @@ func (s Store) FetchCell(ctx context.Context, f room.FilterCell) (room.Cell, err
 	q := s.Session.Query(b.String(), args...).WithContext(ctx)
 
 	var c room.Cell
-	if err := q.Scan(&c.ID, &c.Contiguous, &c.Tilemap); err != nil {
+	if err := q.Scan(&c.ID, &c.Contiguous); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
 			return room.Cell{}, gerrors.ErrNotFound{Resource: "cell", Index: filterCell(f).index()}
 		}
@@ -102,7 +101,7 @@ func (s Store) FetchManyCell(ctx context.Context, f room.FilterCell) ([]room.Cel
 	}
 
 	b := strings.Builder{}
-	b.WriteString(`SELECT id, contiguous, tilemap FROM main.cell `)
+	b.WriteString(`SELECT id, contiguous FROM main.cell `)
 
 	clause, args := filterCell(f).where()
 	b.WriteString(clause)
@@ -127,7 +126,6 @@ func (s Store) FetchManyCell(ctx context.Context, f room.FilterCell) ([]room.Cel
 		if err := scanner.Scan(
 			&cells[i].ID,
 			&cells[i].Contiguous,
-			&cells[i].Tilemap,
 		); err != nil {
 			return nil, nil, err
 		}

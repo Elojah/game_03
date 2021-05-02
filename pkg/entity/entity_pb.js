@@ -71,12 +71,14 @@ proto.entity.E.prototype.toObject = function(opt_includeInstance) {
 proto.entity.E.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: msg.getId_asB64(),
+    userid: msg.getUserid_asB64(),
     cellid: msg.getCellid_asB64(),
-    x: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    y: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    rot: jspb.Message.getFieldWithDefault(msg, 5, 0),
-    radius: jspb.Message.getFieldWithDefault(msg, 6, 0),
-    at: jspb.Message.getFieldWithDefault(msg, 7, 0)
+    x: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    y: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    rot: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    radius: jspb.Message.getFieldWithDefault(msg, 7, 0),
+    tileset: msg.getTileset_asB64(),
+    at: jspb.Message.getFieldWithDefault(msg, 9, 0)
   };
 
   if (includeInstance) {
@@ -119,25 +121,33 @@ proto.entity.E.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 2:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setCellid(value);
+      msg.setUserid(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setX(value);
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setCellid(value);
       break;
     case 4:
       var value = /** @type {number} */ (reader.readInt64());
-      msg.setY(value);
+      msg.setX(value);
       break;
     case 5:
-      var value = /** @type {number} */ (reader.readInt32());
-      msg.setRot(value);
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setY(value);
       break;
     case 6:
       var value = /** @type {number} */ (reader.readInt32());
-      msg.setRadius(value);
+      msg.setRot(value);
       break;
     case 7:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setRadius(value);
+      break;
+    case 8:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setTileset(value);
+      break;
+    case 9:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setAt(value);
       break;
@@ -177,45 +187,59 @@ proto.entity.E.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getCellid_asU8();
+  f = message.getUserid_asU8();
   if (f.length > 0) {
     writer.writeBytes(
       2,
       f
     );
   }
-  f = message.getX();
-  if (f !== 0) {
-    writer.writeInt64(
+  f = message.getCellid_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
       3,
       f
     );
   }
-  f = message.getY();
+  f = message.getX();
   if (f !== 0) {
     writer.writeInt64(
       4,
       f
     );
   }
-  f = message.getRot();
+  f = message.getY();
   if (f !== 0) {
-    writer.writeInt32(
+    writer.writeInt64(
       5,
       f
     );
   }
-  f = message.getRadius();
+  f = message.getRot();
   if (f !== 0) {
     writer.writeInt32(
       6,
       f
     );
   }
+  f = message.getRadius();
+  if (f !== 0) {
+    writer.writeInt32(
+      7,
+      f
+    );
+  }
+  f = message.getTileset_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      8,
+      f
+    );
+  }
   f = message.getAt();
   if (f !== 0) {
     writer.writeInt64(
-      7,
+      9,
       f
     );
   }
@@ -265,16 +289,58 @@ proto.entity.E.prototype.setId = function(value) {
 
 
 /**
- * optional bytes CellID = 2;
+ * optional bytes UserID = 2;
  * @return {!(string|Uint8Array)}
  */
-proto.entity.E.prototype.getCellid = function() {
+proto.entity.E.prototype.getUserid = function() {
   return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
- * optional bytes CellID = 2;
+ * optional bytes UserID = 2;
+ * This is a type-conversion wrapper around `getUserid()`
+ * @return {string}
+ */
+proto.entity.E.prototype.getUserid_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getUserid()));
+};
+
+
+/**
+ * optional bytes UserID = 2;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getUserid()`
+ * @return {!Uint8Array}
+ */
+proto.entity.E.prototype.getUserid_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getUserid()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.entity.E} returns this
+ */
+proto.entity.E.prototype.setUserid = function(value) {
+  return jspb.Message.setProto3BytesField(this, 2, value);
+};
+
+
+/**
+ * optional bytes CellID = 3;
+ * @return {!(string|Uint8Array)}
+ */
+proto.entity.E.prototype.getCellid = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/**
+ * optional bytes CellID = 3;
  * This is a type-conversion wrapper around `getCellid()`
  * @return {string}
  */
@@ -285,7 +351,7 @@ proto.entity.E.prototype.getCellid_asB64 = function() {
 
 
 /**
- * optional bytes CellID = 2;
+ * optional bytes CellID = 3;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getCellid()`
@@ -302,33 +368,15 @@ proto.entity.E.prototype.getCellid_asU8 = function() {
  * @return {!proto.entity.E} returns this
  */
 proto.entity.E.prototype.setCellid = function(value) {
-  return jspb.Message.setProto3BytesField(this, 2, value);
+  return jspb.Message.setProto3BytesField(this, 3, value);
 };
 
 
 /**
- * optional int64 X = 3;
+ * optional int64 X = 4;
  * @return {number}
  */
 proto.entity.E.prototype.getX = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.entity.E} returns this
- */
-proto.entity.E.prototype.setX = function(value) {
-  return jspb.Message.setProto3IntField(this, 3, value);
-};
-
-
-/**
- * optional int64 Y = 4;
- * @return {number}
- */
-proto.entity.E.prototype.getY = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
@@ -337,16 +385,16 @@ proto.entity.E.prototype.getY = function() {
  * @param {number} value
  * @return {!proto.entity.E} returns this
  */
-proto.entity.E.prototype.setY = function(value) {
+proto.entity.E.prototype.setX = function(value) {
   return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
 /**
- * optional int32 Rot = 5;
+ * optional int64 Y = 5;
  * @return {number}
  */
-proto.entity.E.prototype.getRot = function() {
+proto.entity.E.prototype.getY = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 
@@ -355,16 +403,16 @@ proto.entity.E.prototype.getRot = function() {
  * @param {number} value
  * @return {!proto.entity.E} returns this
  */
-proto.entity.E.prototype.setRot = function(value) {
+proto.entity.E.prototype.setY = function(value) {
   return jspb.Message.setProto3IntField(this, 5, value);
 };
 
 
 /**
- * optional int32 Radius = 6;
+ * optional int32 Rot = 6;
  * @return {number}
  */
-proto.entity.E.prototype.getRadius = function() {
+proto.entity.E.prototype.getRot = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
 };
 
@@ -373,16 +421,16 @@ proto.entity.E.prototype.getRadius = function() {
  * @param {number} value
  * @return {!proto.entity.E} returns this
  */
-proto.entity.E.prototype.setRadius = function(value) {
+proto.entity.E.prototype.setRot = function(value) {
   return jspb.Message.setProto3IntField(this, 6, value);
 };
 
 
 /**
- * optional int64 At = 7;
+ * optional int32 Radius = 7;
  * @return {number}
  */
-proto.entity.E.prototype.getAt = function() {
+proto.entity.E.prototype.getRadius = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
 };
 
@@ -391,8 +439,68 @@ proto.entity.E.prototype.getAt = function() {
  * @param {number} value
  * @return {!proto.entity.E} returns this
  */
-proto.entity.E.prototype.setAt = function(value) {
+proto.entity.E.prototype.setRadius = function(value) {
   return jspb.Message.setProto3IntField(this, 7, value);
+};
+
+
+/**
+ * optional bytes Tileset = 8;
+ * @return {!(string|Uint8Array)}
+ */
+proto.entity.E.prototype.getTileset = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
+};
+
+
+/**
+ * optional bytes Tileset = 8;
+ * This is a type-conversion wrapper around `getTileset()`
+ * @return {string}
+ */
+proto.entity.E.prototype.getTileset_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getTileset()));
+};
+
+
+/**
+ * optional bytes Tileset = 8;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getTileset()`
+ * @return {!Uint8Array}
+ */
+proto.entity.E.prototype.getTileset_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getTileset()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.entity.E} returns this
+ */
+proto.entity.E.prototype.setTileset = function(value) {
+  return jspb.Message.setProto3BytesField(this, 8, value);
+};
+
+
+/**
+ * optional int64 At = 9;
+ * @return {number}
+ */
+proto.entity.E.prototype.getAt = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 9, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.entity.E} returns this
+ */
+proto.entity.E.prototype.setAt = function(value) {
+  return jspb.Message.setProto3IntField(this, 9, value);
 };
 
 

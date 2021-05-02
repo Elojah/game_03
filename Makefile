@@ -105,6 +105,7 @@ proto-go proto-ts: ## Regenerate protobuf files
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/user/session.proto
 	$(info $(M) generate clients…) @
 	$(info $(M) generate dto…) @
+	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/entity/dto/entity.proto
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/entity/dto/pc.proto
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/room/dto/cell.proto
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/room/dto/room.proto

@@ -361,8 +361,7 @@ proto.room.Cell.prototype.toObject = function(opt_includeInstance) {
 proto.room.Cell.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: msg.getId_asB64(),
-    contiguousMap: (f = msg.getContiguousMap()) ? f.toObject(includeInstance, undefined) : [],
-    tilemapMap: (f = msg.getTilemapMap()) ? f.toObject(includeInstance, undefined) : []
+    contiguousMap: (f = msg.getContiguousMap()) ? f.toObject(includeInstance, undefined) : []
   };
 
   if (includeInstance) {
@@ -409,12 +408,6 @@ proto.room.Cell.deserializeBinaryFromReader = function(msg, reader) {
         jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readInt32, jspb.BinaryReader.prototype.readBytes, null, 0, "");
          });
       break;
-    case 3:
-      var value = msg.getTilemapMap();
-      reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readInt64, jspb.BinaryReader.prototype.readBytes, null, 0, "");
-         });
-      break;
     default:
       reader.skipField();
       break;
@@ -454,10 +447,6 @@ proto.room.Cell.serializeBinaryToWriter = function(message, writer) {
   f = message.getContiguousMap(true);
   if (f && f.getLength() > 0) {
     f.serializeBinary(2, writer, jspb.BinaryWriter.prototype.writeInt32, jspb.BinaryWriter.prototype.writeBytes);
-  }
-  f = message.getTilemapMap(true);
-  if (f && f.getLength() > 0) {
-    f.serializeBinary(3, writer, jspb.BinaryWriter.prototype.writeInt64, jspb.BinaryWriter.prototype.writeBytes);
   }
 };
 
@@ -523,28 +512,6 @@ proto.room.Cell.prototype.getContiguousMap = function(opt_noLazyCreate) {
  */
 proto.room.Cell.prototype.clearContiguousMap = function() {
   this.getContiguousMap().clear();
-  return this;};
-
-
-/**
- * map<int64, bytes> Tilemap = 3;
- * @param {boolean=} opt_noLazyCreate Do not create the map if
- * empty, instead returning `undefined`
- * @return {!jspb.Map<number,!(string|Uint8Array)>}
- */
-proto.room.Cell.prototype.getTilemapMap = function(opt_noLazyCreate) {
-  return /** @type {!jspb.Map<number,!(string|Uint8Array)>} */ (
-      jspb.Message.getMapField(this, 3, opt_noLazyCreate,
-      null));
-};
-
-
-/**
- * Clears values from the map. The map will be non-null.
- * @return {!proto.room.Cell} returns this
- */
-proto.room.Cell.prototype.clearTilemapMap = function() {
-  this.getTilemapMap().clear();
   return this;};
 
 
