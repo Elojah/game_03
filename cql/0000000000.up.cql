@@ -40,15 +40,14 @@ CREATE TABLE main.room_user (
 CREATE INDEX ON main.room_user(room_id);
 
 CREATE TABLE main.pc (
-    id              uuid PRIMARY KEY,
+    id              uuid,
     user_id         uuid,
     world_id        uuid,
-    entity_id       uuid
+    entity_id       uuid,
+    PRIMARY KEY(user_id, world_id)
 );
 
-CREATE INDEX ON main.pc(user_id);
-CREATE INDEX ON main.pc(world_id);
-
+-- must replicate main.entity_backup fields
 CREATE TABLE main.entity (
     id              uuid PRIMARY KEY,
     user_id         uuid,
@@ -67,11 +66,14 @@ CREATE INDEX ON main.entity(cell_id);
 -- must replicate main.entity fields
 CREATE TABLE main.entity_backup (
     id              uuid PRIMARY KEY,
+    user_id         uuid,
     cell_id         uuid,
     x               bigint,
     y               bigint,
     rot             smallint,
     radius          smallint,
+    tilemap         uuid,
+    tileset         uuid,
     at              bigint
 );
 
