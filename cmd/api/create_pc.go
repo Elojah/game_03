@@ -60,11 +60,36 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
+	// #Fetch 0,0 cell
+	c, err := h.room.FetchWorldCell(ctx, room.FilterWorldCell{
+		WorldID: ro.WorldID,
+		X:       0,
+		Y:       0,
+	})
+	if err != nil {
+		if errors.As(err, &gerrors.ErrNotFound{}) {
+			logger.Error().Err(err).Msg("missing cell")
+
+			return &entity.PC{}, status.New(codes.FailedPrecondition, err.Error()).Err()
+		}
+
+		logger.Error().Err(err).Msg("failed to fetch world cell")
+
+		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
 	// #Insert entity backup
-	// TODO: define spawns for entity
 	bu := entity.Backup{
-		ID: ulid.NewID(),
-		At: time.Now().UnixNano(),
+		ID:      ulid.NewID(),
+		UserID:  ses.UserID,
+		CellID:  c.CellID,
+		X:       0,
+		Y:       0,
+		Rot:     0,
+		Radius:  10, // nolint: gomnd
+		Tilemap: ulid.NewID(),
+		Tileset: ulid.NewID(),
+		At:      time.Now().UnixNano(),
 	}
 	if err := h.entity.InsertBackup(ctx, bu); err != nil {
 		logger.Error().Err(err).Msg("failed to create entity")

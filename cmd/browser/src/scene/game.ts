@@ -1,12 +1,15 @@
 import {Scene} from "phaser";
 import {grpc} from '@improbable-eng/grpc-web';
 
+import * as jspb from "google-protobuf";
+
 import * as API from '@cmd/api/grpc/api_pb_service';
 
 import * as Entity from '@pkg/entity/entity_pb';
 import * as EntityDTO from '@pkg/entity/dto/entity_pb';
 
 import * as PC from '@pkg/entity/pc_pb';
+import * as PCDTO from '@pkg/entity/dto/pc_pb';
 
 import * as Cell from '@pkg/room/cell_pb';
 import * as CellDTO from '@pkg/room/dto/cell_pb';
@@ -23,29 +26,31 @@ enum Orientation {
     UpLeft,
 }
 
-type CellMap = {
-    [key in Orientation] : Cell.Cell;
-}
-
 export class Game extends Scene {
 
 
     PC: PC.PC;
     Entity: Entity.E;
-    Cell: CellMap;
+    Cell: jspb.Map<Orientation, Cell.Cell>
 
     constructor(config: string | Phaser.Types.Scenes.SettingsConfig) {
         super(config);
     }
-    init (pc: PC.PC) {
-        this.PC =  pc;
+    init (pc: PCDTO.PC) {
+        this.PC =  pc.getPc() as PC.PC;
+        this.Entity =  pc.getEntity() as Entity.E;
+        this.Cell = new jspb.Map<Orientation, Cell.Cell>([])
     }
     preload() {
-        this.cache.addCustom('entity')
-        this.cache.addCustom('cell')
+
+        // load pc entity
+        const tm = this.Entity.getTilemap_asB64()
+        const ts = this.Entity.getTileset_asB64()
+        this.load.image(tm, 'img/' + tm +'.png')
+        this.load.tilemapTiledJSON(ts, 'json/' + ts +'.json')
 
         // call current pc cell
-        this.listCell([this.PC.getId_asU8()])
+        this.listCell([this.Entity.getCellid_asU8()])
         .then((cells: CellDTO.ListCellResp) => {
             // load current pc cell
             if (cells.getCellsList().length != 1) {
@@ -53,62 +58,50 @@ export class Game extends Scene {
             }
 
             const c = cells.getCellsList()[0]
-            this.Cell[0] = c
-            // this.cache.custom['cell'].add(c.getId_asB64(), c)
+            this.Cell.set(Orientation.None, c)
 
-            this.load.image(c.getTilemap_asB64(), 'img/' + c.getTilemap_asB64() +'.png')
-            this.load.tilemapTiledJSON(c.getTileset_asB64(), 'json/' + c.getTileset_asB64() +'.json')
+            const tm = c.getTilemap_asB64()
+            const ts = c.getTileset_asB64()
+            this.load.image(tm, 'img/' + tm +'.png')
+            this.load.tilemapTiledJSON(ts, 'json/' + ts +'.json')
 
             return c
         })
         .then((c: Cell.Cell) => {
             // call contiguous pc cells
-            const contig = c.getContiguousMap() as Array<[number, Uint8Array]>
+            const contig = c.getContiguousMap() as jspb.Map<number, Uint8Array>
 
-            return this.listCell(contig.map((val) => {return val[1]}))
+            var cellIDs : Uint8Array[] = []
+            contig.forEach((entry, key) => {
+                cellIDs.push(entry)
+            })
+
+            return this.listCell(cellIDs)
         })
         .then((cells: CellDTO.ListCellResp) => {
             // load contiguous pc cells
-            const contig = this.Cell[0].getContiguousMap() as Array<[number, Uint8Array]>
-            const getOrientation = (c: Cell.Cell) => {
-                const o = contig.find((val) => { val[1] == c.getId_asU8() })
-                if (o) {
-                    return o[0]
-                }
+            const contig = this.Cell.get(Orientation.None)?.getContiguousMap() as jspb.Map<number, Uint8Array>
 
-                return null
-            }
+            // create reverted map to ease access
+            const revertContig = new jspb.Map<Uint8Array, number>([])
+            contig.forEach((entry, key) => {
+                revertContig.set(entry, key)
+            })
 
             cells.getCellsList().map((c: Cell.Cell) => {
                 // Pre-assign contiguous cells
-                contig.map((val) => {
-                    this.Cell[val[0] as Orientation] = new Cell.Cell()
-                    this.Cell[val[0] as Orientation].setId(val[1])
-                })
+                const o = revertContig.get(c.getId_asU8())
+                if (!o) {
+                    return
+                }
 
-                this.Cell[val[0] as Orientation].setId(val[1])
-                // this.cache.custom['cell'].add(c.getId_asB64(), c)
+                this.Cell.set(o, c)
 
-                this.load.image(c.getTilemap_asB64(), 'img/' + c.getTilemap_asB64() +'.png')
-                this.load.tilemapTiledJSON(c.getTileset_asB64(), 'json/' + c.getTileset_asB64() +'.json')
+                const tm = c.getTilemap_asB64()
+                const ts = c.getTileset_asB64()
+                this.load.image(tm, 'img/' + tm +'.png')
+                this.load.tilemapTiledJSON(ts, 'json/' + ts +'.json')
             })
-        })
-        .then(() => {
-            return this.listEntity([this.PC.getEntityid_asU8()])
-        })
-        .then((entities: EntityDTO.ListEntityResp) => {
-            // load current entity tileset
-            if (entities.getEntitiesList().length != 1) {
-                throw new Error('failed to load entity')
-            }
-
-            const e = entities.getEntitiesList()[0]
-
-            this.cache.custom['entity'].add(e.getId_asB64(), e)
-            this.Entity = e
-
-            this.load.image(e.getTilemap_asB64(), 'img/' + e.getTilemap_asB64() +'.png')
-            this.load.tilemapTiledJSON(e.getTileset_asB64(), 'json/' + e.getTileset_asB64() +'.json')
         })
         .catch((err) => {
             console.log(err)
@@ -117,9 +110,11 @@ export class Game extends Scene {
     }
     create() {
         // Add cell tiles as map
-        const map = this.make.tilemap({ key: this.Entity.getCellid_asB64() })
-        map.addTilesetImage(this.Entity.getCellid_asB64(), this.Entity.getCellid_asB64())
-        const c = this.cache.custom['cell'].get(this.Entity.getCellid_asB64()) as Cell.Cell
+        const cellID = this.Entity.getCellid_asB64()
+        const map = this.make.tilemap({ key: cellID })
+        map.addTilesetImage(cellID, cellID)
+        const c = this.cache.custom['cell'].get(cellID) as Cell.Cell
+
         // add contiguous
         const contig = c.getContiguousMap() as Array<[number, Uint8Array]>
         contig.map((val) => {
@@ -127,10 +122,11 @@ export class Game extends Scene {
         })
 
         // Add entity tile
-        map.addTilesetImage(this.Entity.getId_asB64(), this.Entity.getId_asB64())
+        const entityID = this.Entity.getId_asB64()
+        map.addTilesetImage(entityID, entityID)
 
         // Create layer in right order
-        map.createLayer(this.Entity.getCellid_asB64(), this.Entity.getCellid_asB64())
+        map.createLayer(cellID, cellID)
 
     }
     update() {}

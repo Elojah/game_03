@@ -104,7 +104,11 @@ func (s Store) Fetch(ctx context.Context, f entity.Filter) (entity.E, error) {
 	q := s.Session.Query(b.String(), args...).WithContext(ctx)
 
 	var e entity.E
-	if err := q.Scan(&e.ID, &e.UserID, &e.CellID, &e.X, &e.Y, &e.Rot, &e.Radius, &e.Tilemap, &e.Tileset, &e.At); err != nil {
+	if err := q.Scan(
+		&e.ID, &e.UserID, &e.CellID,
+		&e.X, &e.Y, &e.Rot, &e.Radius,
+		&e.Tilemap, &e.Tileset, &e.At,
+	); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
 			return entity.E{}, gerrors.ErrNotFound{Resource: "entity", Index: filter(f).index()}
 		}

@@ -51,8 +51,9 @@ func (f filterWorldCell) index() string {
 
 func (s Store) InsertWorldCell(ctx context.Context, c room.WorldCell) error {
 	q := s.Session.Query(
-		`INSERT INTO main.world_cell (world_id, x, y) VALUES (?, ?, ?)`,
+		`INSERT INTO main.world_cell (world_id, cell_id, x, y) VALUES (?, ?, ?, ?)`,
 		c.WorldID,
+		c.CellID,
 		c.X,
 		c.Y,
 	).WithContext(ctx)
@@ -68,7 +69,7 @@ func (s Store) InsertWorldCell(ctx context.Context, c room.WorldCell) error {
 
 func (s Store) FetchWorldCell(ctx context.Context, f room.FilterWorldCell) (room.WorldCell, error) {
 	b := strings.Builder{}
-	b.WriteString(`SELECT world_id, x, y FROM main.world_cell `)
+	b.WriteString(`SELECT world_id, cell_id, x, y FROM main.world_cell `)
 
 	clause, args := filterWorldCell(f).where()
 	b.WriteString(clause)
@@ -76,7 +77,7 @@ func (s Store) FetchWorldCell(ctx context.Context, f room.FilterWorldCell) (room
 	q := s.Session.Query(b.String(), args...).WithContext(ctx)
 
 	var c room.WorldCell
-	if err := q.Scan(&c.WorldID, &c.X, &c.Y); err != nil {
+	if err := q.Scan(&c.WorldID, &c.CellID, &c.X, &c.Y); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
 			return room.WorldCell{}, gerrors.ErrNotFound{Resource: "world_cell", Index: filterWorldCell(f).index()}
 		}

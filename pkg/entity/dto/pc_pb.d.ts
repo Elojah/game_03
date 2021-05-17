@@ -4,6 +4,35 @@
 import * as jspb from "google-protobuf";
 import * as github_com_gogo_protobuf_gogoproto_gogo_pb from "../../../../../../github.com/gogo/protobuf/gogoproto/gogo_pb";
 import * as github_com_elojah_game_03_pkg_entity_pc_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/pc_pb";
+import * as github_com_elojah_game_03_pkg_entity_entity_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/entity_pb";
+
+export class PC extends jspb.Message {
+  hasPc(): boolean;
+  clearPc(): void;
+  getPc(): github_com_elojah_game_03_pkg_entity_pc_pb.PC | undefined;
+  setPc(value?: github_com_elojah_game_03_pkg_entity_pc_pb.PC): void;
+
+  hasEntity(): boolean;
+  clearEntity(): void;
+  getEntity(): github_com_elojah_game_03_pkg_entity_entity_pb.E | undefined;
+  setEntity(value?: github_com_elojah_game_03_pkg_entity_entity_pb.E): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PC.AsObject;
+  static toObject(includeInstance: boolean, msg: PC): PC.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PC, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PC;
+  static deserializeBinaryFromReader(message: PC, reader: jspb.BinaryReader): PC;
+}
+
+export namespace PC {
+  export type AsObject = {
+    pc?: github_com_elojah_game_03_pkg_entity_pc_pb.PC.AsObject,
+    entity?: github_com_elojah_game_03_pkg_entity_entity_pb.E.AsObject,
+  }
+}
 
 export class CreatePCReq extends jspb.Message {
   getRoomid(): Uint8Array | string;
@@ -61,9 +90,9 @@ export namespace ListPCReq {
 
 export class ListPCResp extends jspb.Message {
   clearPcsList(): void;
-  getPcsList(): Array<github_com_elojah_game_03_pkg_entity_pc_pb.PC>;
-  setPcsList(value: Array<github_com_elojah_game_03_pkg_entity_pc_pb.PC>): void;
-  addPcs(value?: github_com_elojah_game_03_pkg_entity_pc_pb.PC, index?: number): github_com_elojah_game_03_pkg_entity_pc_pb.PC;
+  getPcsList(): Array<PC>;
+  setPcsList(value: Array<PC>): void;
+  addPcs(value?: PC, index?: number): PC;
 
   getState(): Uint8Array | string;
   getState_asU8(): Uint8Array;
@@ -82,7 +111,7 @@ export class ListPCResp extends jspb.Message {
 
 export namespace ListPCResp {
   export type AsObject = {
-    pcsList: Array<github_com_elojah_game_03_pkg_entity_pc_pb.PC.AsObject>,
+    pcsList: Array<PC.AsObject>,
     state: Uint8Array | string,
   }
 }
