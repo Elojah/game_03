@@ -69,13 +69,22 @@ func (f filterBackup) index() string {
 
 func (s Store) InsertBackup(ctx context.Context, bu entity.Backup) error {
 	q := s.Session.Query(
-		`INSERT INTO main.entity_backup (id, cell_id, x, y, rot, radius, at) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+		`INSERT INTO main.entity_backup (
+			id, user_id, cell_id,
+			x, y, rot, radius,
+			tilemap, tileset, at
+			) VALUES (
+				?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+		)`,
 		bu.ID,
+		bu.UserID,
 		bu.CellID,
 		bu.X,
 		bu.Y,
 		bu.Rot,
 		bu.Radius,
+		bu.Tilemap,
+		bu.Tileset,
 		bu.At,
 	).WithContext(ctx)
 
@@ -90,7 +99,7 @@ func (s Store) InsertBackup(ctx context.Context, bu entity.Backup) error {
 
 func (s Store) FetchBackup(ctx context.Context, f entity.FilterBackup) (entity.Backup, error) {
 	b := strings.Builder{}
-	b.WriteString(`SELECT id, cell_id, x, y, rot, radius, at FROM main.entity_backup `)
+	b.WriteString(`SELECT id, user_id, cell_id, x, y, rot, radius, tilemap, tileset, at FROM main.entity_backup `)
 
 	clause, args := filterBackup(f).where()
 	b.WriteString(clause)
@@ -98,7 +107,11 @@ func (s Store) FetchBackup(ctx context.Context, f entity.FilterBackup) (entity.B
 	q := s.Session.Query(b.String(), args...).WithContext(ctx)
 
 	var bu entity.Backup
-	if err := q.Scan(&bu.ID, &bu.CellID, &bu.X, &bu.Y, &bu.Rot, &bu.Radius, &bu.At); err != nil {
+	if err := q.Scan(
+		&bu.ID, &bu.UserID, &bu.CellID,
+		&bu.X, &bu.Y, &bu.Rot, &bu.Radius,
+		&bu.Tilemap, &bu.Tileset, &bu.At,
+	); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
 			return entity.Backup{}, gerrors.ErrNotFound{Resource: "entity_backup", Index: filterBackup(f).index()}
 		}
@@ -115,7 +128,7 @@ func (s Store) FetchManyBackup(ctx context.Context, f entity.FilterBackup) ([]en
 	}
 
 	b := strings.Builder{}
-	b.WriteString(`SELECT id, cell_id, x, y, rot, radius FROM main.entity_backup `)
+	b.WriteString(`SELECT id, user_id, cell_id, x, y, rot, radius, tilemap, tileset, at FROM main.entity_backup `)
 
 	clause, args := filterBackup(f).where()
 	b.WriteString(clause)
@@ -139,11 +152,14 @@ func (s Store) FetchManyBackup(ctx context.Context, f entity.FilterBackup) ([]en
 	for ; scanner.Next(); i++ {
 		if err := scanner.Scan(
 			&bus[i].ID,
+			&bus[i].UserID,
 			&bus[i].CellID,
 			&bus[i].X,
 			&bus[i].Y,
 			&bus[i].Rot,
 			&bus[i].Radius,
+			&bus[i].Tilemap,
+			&bus[i].Tileset,
 			&bus[i].At,
 		); err != nil {
 			return nil, nil, err

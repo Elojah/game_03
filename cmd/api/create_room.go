@@ -18,6 +18,11 @@ const (
 	cellHeight, cellWidth = 200, 200
 )
 
+var (
+	defaultTilemap = ulid.MustParse("01F5X76JW6W6PS824SFXC9REE5")
+	defaultTileset = ulid.MustParse("01F5X76JW6W6PS824SFXC9REE5")
+)
+
 // !TMP DATA FOR DEV WIP
 
 func (h *handler) CreateRoom(ctx context.Context, req *room.R) (*room.R, error) {
@@ -51,10 +56,24 @@ func (h *handler) CreateRoom(ctx context.Context, req *room.R) (*room.R, error) 
 	cells := w.NewCells()
 
 	// TODO: add goroutine pool
-	for _, cl := range cells {
-		for _, c := range cl {
+	for i, cl := range cells {
+		for j, c := range cl {
+			c.Tilemap = defaultTilemap
+			c.Tileset = defaultTileset
+
 			if err := h.room.InsertCell(ctx, c); err != nil {
 				logger.Error().Err(err).Msg("failed to create cell")
+
+				return &room.R{}, status.New(codes.Internal, err.Error()).Err()
+			}
+
+			if err := h.room.InsertWorldCell(ctx, room.WorldCell{
+				WorldID: w.ID,
+				CellID:  c.ID,
+				X:       int64(i),
+				Y:       int64(j),
+			}); err != nil {
+				logger.Error().Err(err).Msg("failed to create world cell")
 
 				return &room.R{}, status.New(codes.Internal, err.Error()).Err()
 			}

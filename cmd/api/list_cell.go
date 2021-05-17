@@ -29,7 +29,7 @@ func (h *handler) ListCell(ctx context.Context, req *dto.ListCellReq) (*dto.List
 		return &dto.ListCellResp{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	}
 
-	// #Fetch pcs
+	// #Fetch cells
 	cells, _, err := h.room.FetchManyCell(ctx,
 		room.FilterCell{
 			IDs:  req.IDs,

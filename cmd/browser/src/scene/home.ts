@@ -240,7 +240,8 @@ export class Home extends Scene {
             const line = this.cache.html.get('pc_line') as string
             pcs.getPcsList().map((pc) => {
                 const tmp = document.createElement('template')
-                tmp.innerHTML = line.replace('{{name}}', pc.getId_asB64()).replace('{{id}}', pc.getId_asB64())
+                const id = pc.getPc()?.getId_asB64() as string
+                tmp.innerHTML = line.replace('{{name}}', id).replace('{{id}}', id)
                 const li = tmp.content.firstChild as Node
                 li.addEventListener('click', () => {
                     this.cache.destroy()
@@ -386,6 +387,8 @@ export class Home extends Scene {
                         return
                     }
 
+                    console.log(message)
+                    console.log(message as PCDTO.ListPCResp)
                     resolve(message as PCDTO.ListPCResp)
                 }
             });
