@@ -387,8 +387,6 @@ export class Home extends Scene {
                         return
                     }
 
-                    console.log(message)
-                    console.log(message as PCDTO.ListPCResp)
                     resolve(message as PCDTO.ListPCResp)
                 }
             });
