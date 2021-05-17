@@ -44,7 +44,7 @@ CREATE TABLE main.pc (
     user_id         uuid,
     world_id        uuid,
     entity_id       uuid,
-    PRIMARY KEY(user_id, world_id)
+    PRIMARY KEY(user_id, world_id, id)
 );
 
 -- must replicate main.entity_backup fields
