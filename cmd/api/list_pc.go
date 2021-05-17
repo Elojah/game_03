@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/elojah/game_03/pkg/entity"
 	"github.com/elojah/game_03/pkg/entity/dto"
@@ -61,8 +60,6 @@ func (h *handler) ListPC(ctx context.Context, req *dto.ListPCReq) (*dto.ListPCRe
 	}
 
 	logger.Info().Msg("success")
-
-	fmt.Println(pcs)
 
 	return &dto.ListPCResp{PCs: pcs, State: state}, nil
 }
