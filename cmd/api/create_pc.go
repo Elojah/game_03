@@ -87,8 +87,8 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 		Y:       0,
 		Rot:     0,
 		Radius:  10, // nolint: gomnd
-		Tilemap: ulid.NewID(),
-		Tileset: ulid.NewID(),
+		Tilemap: defaultTilemap,
+		Tileset: defaultTileset,
 		At:      time.Now().UnixNano(),
 	}
 	if err := h.entity.InsertBackup(ctx, bu); err != nil {
