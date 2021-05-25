@@ -3,6 +3,8 @@ import {grpc} from '@improbable-eng/grpc-web';
 
 import * as jspb from "google-protobuf";
 
+import {ulid} from '../lib/ulid'
+
 import * as API from '@cmd/api/grpc/api_pb_service';
 
 import * as Entity from '@pkg/entity/entity_pb';
@@ -44,8 +46,8 @@ export class Game extends Scene {
     preload() {
 
         // load pc entity
-        const tm = this.Entity.getTilemap_asB64()
-        const ts = this.Entity.getTileset_asB64()
+        const tm = ulid(this.Entity.getTilemap_asU8())
+        const ts = ulid(this.Entity.getTileset_asU8())
         this.load.image(tm, 'img/' + tm +'.png')
         this.load.tilemapTiledJSON(ts, 'json/' + ts +'.json')
 
@@ -60,8 +62,8 @@ export class Game extends Scene {
             const c = cells.getCellsList()[0]
             this.Cell.set(Orientation.None, c)
 
-            const tm = c.getTilemap_asB64()
-            const ts = c.getTileset_asB64()
+            const tm = ulid(c.getTilemap_asU8())
+            const ts = ulid(c.getTileset_asU8())
             this.load.image(tm, 'img/' + tm +'.png')
             this.load.tilemapTiledJSON(ts, 'json/' + ts +'.json')
 
@@ -72,7 +74,7 @@ export class Game extends Scene {
             const contig = c.getContiguousMap() as jspb.Map<number, Uint8Array>
 
             var cellIDs : Uint8Array[] = []
-            contig.forEach((entry, key) => {
+            contig.forEach((entry) => {
                 cellIDs.push(entry)
             })
 
@@ -97,8 +99,8 @@ export class Game extends Scene {
 
                 this.Cell.set(o, c)
 
-                const tm = c.getTilemap_asB64()
-                const ts = c.getTileset_asB64()
+                const tm = ulid(c.getTilemap_asU8())
+                const ts = ulid(c.getTileset_asU8())
                 this.load.image(tm, 'img/' + tm +'.png')
                 this.load.tilemapTiledJSON(ts, 'json/' + ts +'.json')
             })
@@ -109,25 +111,20 @@ export class Game extends Scene {
 
     }
     create() {
-        // Add cell tiles as map
-        const cellID = this.Entity.getCellid_asB64()
-        const map = this.make.tilemap({ key: cellID })
-        map.addTilesetImage(cellID, cellID)
-        const c = this.cache.custom['cell'].get(cellID) as Cell.Cell
-
-        // add contiguous
-        const contig = c.getContiguousMap() as Array<[number, Uint8Array]>
-        contig.map((val) => {
-            map.addTilesetImage(val[1].toString(), val[1].toString())
+        // Create tilemap for all cells
+        this.Cell.forEach((entry:Cell.Cell) => {
+            const ts = ulid(entry.getTileset_asU8())
+            const map = this.make.tilemap({ key: ts })
+            map.addTilesetImage(ts, ts)
         })
 
         // Add entity tile
-        const entityID = this.Entity.getId_asB64()
-        map.addTilesetImage(entityID, entityID)
+        const entityID = ulid(this.Entity.getId_asU8())
+        const entityMap = this.make.tilemap({ key: entityID })
+        entityMap.addTilesetImage(entityID, entityID)
 
         // Create layer in right order
-        map.createLayer(cellID, cellID)
-
+        // map.createLayer(cellID, cellID)
     }
     update() {}
 

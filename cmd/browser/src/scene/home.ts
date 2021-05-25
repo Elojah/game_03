@@ -3,6 +3,8 @@ import {grpc} from '@improbable-eng/grpc-web';
 
 import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty_pb';
 
+import {ulid} from '../lib/ulid'
+
 import * as API from '@cmd/api/grpc/api_pb_service';
 
 import * as TwitchDTO from '@pkg/twitch/dto/follow_pb';
@@ -240,11 +242,13 @@ export class Home extends Scene {
             const line = this.cache.html.get('pc_line') as string
             pcs.getPcsList().map((pc) => {
                 const tmp = document.createElement('template')
-                const id = pc.getPc()?.getId_asB64() as string
+                const id = ulid(pc.getPc()?.getId_asU8() as Uint8Array)
+
                 tmp.innerHTML = line.replace('{{name}}', id).replace('{{id}}', id)
                 const li = tmp.content.firstChild as Node
                 li.addEventListener('click', () => {
-                    this.cache.destroy()
+                    this.cache.custom['home'].destroy()
+                    this.cache.html.destroy()
                     this.scene.transition({
                         target: "game",
                         duration: 1000,

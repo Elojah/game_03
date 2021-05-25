@@ -8,6 +8,7 @@ function main() {
     title: 'GAME_03',
     type: Phaser.AUTO,
     parent: 'main',
+    pixelArt: true,
     scale: {
       width: window.innerWidth,
       height: window.innerHeight
