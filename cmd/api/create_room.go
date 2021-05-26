@@ -19,8 +19,8 @@ const (
 )
 
 var (
-	defaultTilemap = ulid.MustParse("01F5X76JW6W6PS824SFXC9REE5")
-	defaultTileset = ulid.MustParse("01F5X76JW6W6PS824SFXC9REE5")
+	defaultTilemap = ulid.MustParse("01F5X76JW6W6PS824SFXC9RZZ9")
+	defaultTileset = ulid.MustParse("01F5X76JW6W6PS824SFXC9RAA0")
 )
 
 // !TMP DATA FOR DEV WIP
