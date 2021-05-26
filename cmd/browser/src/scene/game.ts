@@ -113,15 +113,18 @@ export class Game extends Scene {
     create() {
         // Create tilemap for all cells
         this.Cell.forEach((entry:Cell.Cell) => {
+            const tm = ulid(entry.getTilemap_asU8())
             const ts = ulid(entry.getTileset_asU8())
-            const map = this.make.tilemap({ key: ts })
-            map.addTilesetImage(ts, ts)
+            const map = this.make.tilemap({ key: tm })
+            map.addTilesetImage(ts, tm)
         })
 
         // Add entity tile
-        const entityID = ulid(this.Entity.getId_asU8())
-        const entityMap = this.make.tilemap({ key: entityID })
-        entityMap.addTilesetImage(entityID, entityID)
+        const eid = ulid(this.Entity.getId_asU8())
+        const etm = ulid(this.Entity.getTilemap_asU8())
+        const ets = ulid(this.Entity.getTileset_asU8())
+        const entityMap = this.make.tilemap({ key: eid })
+        entityMap.addTilesetImage(ets, etm)
 
         // Create layer in right order
         // map.createLayer(cellID, cellID)
