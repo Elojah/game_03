@@ -46,10 +46,10 @@ export class Game extends Scene {
     preload() {
 
         // load pc entity
-        const tm = ulid(this.Entity.getTilemap_asU8())
         const ts = ulid(this.Entity.getTileset_asU8())
-        this.load.image(tm, 'img/' + tm +'.png')
-        this.load.tilemapTiledJSON(ts, 'json/' + ts +'.json')
+        const tm = ulid(this.Entity.getTilemap_asU8())
+        this.load.image(tm, 'img/' + ts +'.png')
+        this.load.tilemapTiledJSON(tm, 'json/' + tm +'.json')
 
         // call current pc cell
         this.listCell([this.Entity.getCellid_asU8()])
@@ -62,10 +62,10 @@ export class Game extends Scene {
             const c = cells.getCellsList()[0]
             this.Cell.set(Orientation.None, c)
 
-            const tm = ulid(c.getTilemap_asU8())
             const ts = ulid(c.getTileset_asU8())
-            this.load.image(tm, 'img/' + tm +'.png')
-            this.load.tilemapTiledJSON(ts, 'json/' + ts +'.json')
+            const tm = ulid(c.getTilemap_asU8())
+            this.load.image(ts, 'img/' + ts +'.png')
+            this.load.tilemapTiledJSON(tm, 'json/' + tm +'.json')
 
             return c
         })
@@ -99,10 +99,10 @@ export class Game extends Scene {
 
                 this.Cell.set(o, c)
 
-                const tm = ulid(c.getTilemap_asU8())
                 const ts = ulid(c.getTileset_asU8())
-                this.load.image(tm, 'img/' + tm +'.png')
-                this.load.tilemapTiledJSON(ts, 'json/' + ts +'.json')
+                const tm = ulid(c.getTilemap_asU8())
+                this.load.image(ts, 'img/' + ts +'.png')
+                this.load.tilemapTiledJSON(tm, 'json/' + tm +'.json')
             })
         })
         .catch((err) => {
@@ -113,18 +113,18 @@ export class Game extends Scene {
     create() {
         // Create tilemap for all cells
         this.Cell.forEach((entry:Cell.Cell) => {
-            const tm = ulid(entry.getTilemap_asU8())
             const ts = ulid(entry.getTileset_asU8())
+            const tm = ulid(entry.getTilemap_asU8())
             const map = this.make.tilemap({ key: tm })
-            map.addTilesetImage(ts, tm)
+            map.addTilesetImage(ts, ts)
         })
 
         // Add entity tile
         const eid = ulid(this.Entity.getId_asU8())
-        const etm = ulid(this.Entity.getTilemap_asU8())
         const ets = ulid(this.Entity.getTileset_asU8())
+        const etm = ulid(this.Entity.getTilemap_asU8())
         const entityMap = this.make.tilemap({ key: eid })
-        entityMap.addTilesetImage(ets, etm)
+        entityMap.addTilesetImage(ets, ets)
 
         // Create layer in right order
         // map.createLayer(cellID, cellID)
