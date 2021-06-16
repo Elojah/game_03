@@ -43,8 +43,44 @@ export class Game extends Scene {
         this.Entity =  pc.getEntity() as Entity.E;
         this.Cell = new jspb.Map<Orientation, Cell.Cell>([])
     }
-    preload() {
+    preload() {}
+    create() {
+        this.loadAll()
+        .then(()=>{
+            this.load.start()
+            this.load.on('complete', ()=>{
+                // Create tilemap for all cells
+                this.Cell.forEach((entry:Cell.Cell) => {
+                    const ts = ulid(entry.getTileset_asU8())
+                    const tm = ulid(entry.getTilemap_asU8())
 
+                    const map = this.make.tilemap({ key: tm })
+                    const set = map.addTilesetImage(tm, ts)
+                })
+
+                // const entry = this.Cell.get(Orientation.None) as Cell.Cell
+                // const layer = map.createLayer('Tile Layer 1', set, 0, 0);
+                const camera = this.cameras.main;
+
+                // camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+
+
+                // Add entity tile
+                const eid = ulid(this.Entity.getId_asU8())
+                const ets = ulid(this.Entity.getTileset_asU8())
+                const etm = ulid(this.Entity.getTilemap_asU8())
+                const entityMap = this.make.tilemap({ key: etm })
+                entityMap.addTilesetImage(etm, ets)
+            })
+        })
+        .catch((err)=>{
+            console.log(err)
+        })
+    }
+    update() {}
+
+    // Helper
+    async loadAll() {
         // load pc entity
         const ts = ulid(this.Entity.getTileset_asU8())
         const tm = ulid(this.Entity.getTilemap_asU8())
@@ -52,7 +88,7 @@ export class Game extends Scene {
         this.load.tilemapTiledJSON(tm, 'json/' + tm +'.json')
 
         // call current pc cell
-        this.listCell([this.Entity.getCellid_asU8()])
+        return this.listCell([this.Entity.getCellid_asU8()])
         .then((cells: CellDTO.ListCellResp) => {
             // load current pc cell
             if (cells.getCellsList().length != 1) {
@@ -105,42 +141,7 @@ export class Game extends Scene {
                 this.load.tilemapTiledJSON(tm, 'json/' + tm +'.json')
             })
         })
-        .catch((err) => {
-            console.log(err)
-        })
-
     }
-    create() {
-        // Create tilemap for all cells
-        // this.Cell.forEach((entry:Cell.Cell) => {
-        // })
-        console.log(this.Cell)
-        console.log(this.Cell.get(Orientation.None))
-
-        const entry = this.Cell.get(Orientation.None) as Cell.Cell
-
-        const ts = ulid(entry.getTileset_asU8())
-        const tm = ulid(entry.getTilemap_asU8())
-
-        console.log(ts, tm)
-
-        const map = this.make.tilemap({ key: tm })
-        const set = map.addTilesetImage(tm, ts)
-
-        const layer = map.createLayer('Tile Layer 1', set, 0, 0);
-        const camera = this.cameras.main;
-
-        camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-
-
-        // Add entity tile
-        // const eid = ulid(this.Entity.getId_asU8())
-        // const ets = ulid(this.Entity.getTileset_asU8())
-        // const etm = ulid(this.Entity.getTilemap_asU8())
-        // const entityMap = this.make.tilemap({ key: etm })
-        // entityMap.addTilesetImage(etm, ets)
-    }
-    update() {}
 
     // API PC
     connectPC(callback: (message: CellDTO.Cell) => void) {
