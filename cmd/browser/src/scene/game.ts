@@ -49,28 +49,64 @@ export class Game extends Scene {
         .then(()=>{
             this.load.start()
             this.load.on('complete', ()=>{
+                const camera = this.cameras.main;
+
                 // Create tilemap for all cells
-                this.Cell.forEach((entry:Cell.Cell) => {
+                this.Cell.forEach((entry:Cell.Cell, key: Orientation) => {
                     const ts = ulid(entry.getTileset_asU8())
                     const tm = ulid(entry.getTilemap_asU8())
 
                     const map = this.make.tilemap({ key: tm })
                     const set = map.addTilesetImage(tm, ts)
+
+                    let x, y = 0
+                    switch (key) {
+                        case Orientation.None:
+                            camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+                            break;
+                        case Orientation.Up:
+                            y = -map.heightInPixels
+                            break;
+                        case Orientation.UpRight:
+                            x = map.widthInPixels
+                            y = -map.heightInPixels
+                            break;
+                        case Orientation.Right:
+                            x = map.widthInPixels
+                            break;
+                        case Orientation.DownRight:
+                            x = map.widthInPixels
+                            y = map.heightInPixels
+                            break;
+                        case Orientation.Down:
+                            y = map.heightInPixels
+                            break;
+                        case Orientation.DownLeft:
+                            x = -map.widthInPixels
+                            y = map.heightInPixels
+                            break;
+                        case Orientation.Left:
+                            x = -map.widthInPixels
+                            break;
+                        case Orientation.UpLeft:
+                            x = -map.widthInPixels
+                            y = -map.heightInPixels
+                            break;
+
+                    }
+
+                    const layer = map.createLayer('Tile Layer 1', set, x, y);
                 })
 
-                // const entry = this.Cell.get(Orientation.None) as Cell.Cell
-                // const layer = map.createLayer('Tile Layer 1', set, 0, 0);
-                const camera = this.cameras.main;
 
-                // camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
 
                 // Add entity tile
-                const eid = ulid(this.Entity.getId_asU8())
-                const ets = ulid(this.Entity.getTileset_asU8())
-                const etm = ulid(this.Entity.getTilemap_asU8())
-                const entityMap = this.make.tilemap({ key: etm })
-                entityMap.addTilesetImage(etm, ets)
+                // const eid = ulid(this.Entity.getId_asU8())
+                // const ets = ulid(this.Entity.getTileset_asU8())
+                // const etm = ulid(this.Entity.getTilemap_asU8())
+                // const entityMap = this.make.tilemap({ key: etm })
+                // entityMap.addTilesetImage(etm, ets)
             })
         })
         .catch((err)=>{
