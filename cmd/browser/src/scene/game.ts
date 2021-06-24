@@ -30,10 +30,11 @@ enum Orientation {
 
 export class Game extends Scene {
 
-
     PC: PC.PC;
     Entity: Entity.E;
     Cell: jspb.Map<Orientation, Cell.Cell>
+
+    Controls: Phaser.Cameras.Controls.FixedKeyControl
 
     constructor(config: string | Phaser.Types.Scenes.SettingsConfig) {
         super(config);
@@ -49,7 +50,17 @@ export class Game extends Scene {
         .then(()=>{
             this.load.start()
             this.load.on('complete', ()=>{
-                const camera = this.cameras.main;
+
+                const cursors = this.input.keyboard.createCursorKeys()
+                this.Controls = new Phaser.Cameras.Controls.FixedKeyControl({
+                    camera: this.cameras.main,
+                    left: cursors.left,
+                    right: cursors.right,
+                    up: cursors.up,
+                    down: cursors.down,
+                    zoomIn: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q),
+                    zoomOut: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E),
+                })
 
                 // Create tilemap for all cells
                 this.Cell.forEach((entry:Cell.Cell, key: Orientation) => {
@@ -62,7 +73,7 @@ export class Game extends Scene {
                     let x, y = 0
                     switch (key) {
                         case Orientation.None:
-                            camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+                            this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
                             break;
                         case Orientation.Up:
                             y = -map.heightInPixels
@@ -113,7 +124,11 @@ export class Game extends Scene {
             console.log(err)
         })
     }
-    update() {}
+
+    update(time: number, deltaTime: number)
+	{
+		this.Controls.update(deltaTime)
+	}
 
     // Helper
     async loadAll() {
