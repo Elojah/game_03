@@ -66,7 +66,7 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<number>}
  * @const
  */
-proto.dto.ListEntityReq.repeatedFields_ = [1];
+proto.dto.ListEntityReq.repeatedFields_ = [1,2];
 
 
 
@@ -99,7 +99,8 @@ proto.dto.ListEntityReq.prototype.toObject = function(opt_includeInstance) {
  */
 proto.dto.ListEntityReq.toObject = function(includeInstance, msg) {
   var f, obj = {
-    idsList: msg.getIdsList_asB64()
+    idsList: msg.getIdsList_asB64(),
+    cellidsList: msg.getCellidsList_asB64()
   };
 
   if (includeInstance) {
@@ -140,6 +141,10 @@ proto.dto.ListEntityReq.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.addIds(value);
       break;
+    case 2:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.addCellids(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -173,6 +178,13 @@ proto.dto.ListEntityReq.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeRepeatedBytes(
       1,
+      f
+    );
+  }
+  f = message.getCellidsList_asU8();
+  if (f.length > 0) {
+    writer.writeRepeatedBytes(
+      2,
       f
     );
   }
@@ -237,6 +249,67 @@ proto.dto.ListEntityReq.prototype.addIds = function(value, opt_index) {
  */
 proto.dto.ListEntityReq.prototype.clearIdsList = function() {
   return this.setIdsList([]);
+};
+
+
+/**
+ * repeated bytes CellIDs = 2;
+ * @return {!(Array<!Uint8Array>|Array<string>)}
+ */
+proto.dto.ListEntityReq.prototype.getCellidsList = function() {
+  return /** @type {!(Array<!Uint8Array>|Array<string>)} */ (jspb.Message.getRepeatedField(this, 2));
+};
+
+
+/**
+ * repeated bytes CellIDs = 2;
+ * This is a type-conversion wrapper around `getCellidsList()`
+ * @return {!Array<string>}
+ */
+proto.dto.ListEntityReq.prototype.getCellidsList_asB64 = function() {
+  return /** @type {!Array<string>} */ (jspb.Message.bytesListAsB64(
+      this.getCellidsList()));
+};
+
+
+/**
+ * repeated bytes CellIDs = 2;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getCellidsList()`
+ * @return {!Array<!Uint8Array>}
+ */
+proto.dto.ListEntityReq.prototype.getCellidsList_asU8 = function() {
+  return /** @type {!Array<!Uint8Array>} */ (jspb.Message.bytesListAsU8(
+      this.getCellidsList()));
+};
+
+
+/**
+ * @param {!(Array<!Uint8Array>|Array<string>)} value
+ * @return {!proto.dto.ListEntityReq} returns this
+ */
+proto.dto.ListEntityReq.prototype.setCellidsList = function(value) {
+  return jspb.Message.setField(this, 2, value || []);
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @param {number=} opt_index
+ * @return {!proto.dto.ListEntityReq} returns this
+ */
+proto.dto.ListEntityReq.prototype.addCellids = function(value, opt_index) {
+  return jspb.Message.addToRepeatedField(this, 2, value, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.dto.ListEntityReq} returns this
+ */
+proto.dto.ListEntityReq.prototype.clearCellidsList = function() {
+  return this.setCellidsList([]);
 };
 
 

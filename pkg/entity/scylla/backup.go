@@ -32,6 +32,11 @@ func (f filterBackup) where() (string, []interface{}) {
 		args = append(args, *f.CellID)
 	}
 
+	if len(f.CellIDs) > 0 {
+		clause = append(clause, `cell_id IN ?`)
+		args = append(args, f.CellIDs)
+	}
+
 	b := strings.Builder{}
 	b.WriteString(" WHERE ")
 
@@ -62,6 +67,15 @@ func (f filterBackup) index() string {
 
 	if f.CellID != nil {
 		cols = append(cols, f.CellID.String())
+	}
+
+	if f.CellIDs != nil {
+		ss := make([]string, 0, len(f.CellIDs))
+		for _, cid := range f.CellIDs {
+			ss = append(ss, cid.String())
+		}
+
+		cols = append(cols, strings.Join(ss, "|"))
 	}
 
 	return strings.Join(cols, "|")

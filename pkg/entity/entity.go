@@ -10,7 +10,8 @@ type Filter struct {
 	ID  *ulid.ID
 	IDs []ulid.ID
 
-	CellID *ulid.ID
+	CellID  *ulid.ID
+	CellIDs []ulid.ID
 
 	State []byte
 	Size  int

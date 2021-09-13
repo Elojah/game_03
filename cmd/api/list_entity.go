@@ -12,7 +12,7 @@ import (
 )
 
 func (h *handler) ListEntity(ctx context.Context, req *dto.ListEntityReq) (*dto.ListEntityResp, error) {
-	logger := log.With().Str("method", "list_cell").Logger()
+	logger := log.With().Str("method", "list_entity").Logger()
 
 	if req == nil {
 		return &dto.ListEntityResp{}, status.New(codes.Internal, gerrors.ErrNullRequest{}.Error()).Err()
@@ -32,8 +32,10 @@ func (h *handler) ListEntity(ctx context.Context, req *dto.ListEntityReq) (*dto.
 	// #Fetch pcs
 	entities, _, err := h.entity.FetchMany(ctx,
 		entity.Filter{
-			IDs:  req.IDs,
-			Size: len(req.IDs),
+			IDs:     req.IDs,
+			CellIDs: req.CellIDs,
+			State:   req.State,
+			Size:    len(req.IDs),
 		},
 	)
 	if err != nil {

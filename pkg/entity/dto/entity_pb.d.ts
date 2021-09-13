@@ -13,6 +13,13 @@ export class ListEntityReq extends jspb.Message {
   setIdsList(value: Array<Uint8Array | string>): void;
   addIds(value: Uint8Array | string, index?: number): Uint8Array | string;
 
+  clearCellidsList(): void;
+  getCellidsList(): Array<Uint8Array | string>;
+  getCellidsList_asU8(): Array<Uint8Array>;
+  getCellidsList_asB64(): Array<string>;
+  setCellidsList(value: Array<Uint8Array | string>): void;
+  addCellids(value: Uint8Array | string, index?: number): Uint8Array | string;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ListEntityReq.AsObject;
   static toObject(includeInstance: boolean, msg: ListEntityReq): ListEntityReq.AsObject;
@@ -26,6 +33,7 @@ export class ListEntityReq extends jspb.Message {
 export namespace ListEntityReq {
   export type AsObject = {
     idsList: Array<Uint8Array | string>,
+    cellidsList: Array<Uint8Array | string>,
   }
 }
 

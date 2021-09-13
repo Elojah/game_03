@@ -7,6 +7,9 @@ import {ulid} from '../lib/ulid'
 
 import * as API from '@cmd/api/grpc/api_pb_service';
 
+import * as Animation from '@pkg/entity/animation_pb';
+import * as AnimationDTO from '@pkg/entity/dto/animation_pb';
+
 import * as Entity from '@pkg/entity/entity_pb';
 import * as EntityDTO from '@pkg/entity/dto/entity_pb';
 
@@ -61,7 +64,7 @@ export class Game extends Scene {
         // })
 
 
-        this.loadAll()
+        this.loadCell()
         .then(()=>{
             this.load.start()
             this.load.on('complete', ()=>{
@@ -142,17 +145,69 @@ export class Game extends Scene {
 		// this.Controls.update(deltaTime)
 	}
 
-    // Helper
-    async loadAll() {
-        // load pc entity
-        // const ts = ulid(this.Entity.getTileset_asU8())
-        // const tm = ulid(this.Entity.getTilemap_asU8())
-        // this.load.image(ts, 'img/' + ts +'.png')
-        // this.load.tilemapTiledJSON(tm, 'json/' + tm +'.json')
-
+    // Loader Cell
+    async loadCell() {
         // call current pc cell
         return this.listCell([this.Entity.getCellid_asU8()])
         .then((cells: CellDTO.ListCellResp) => {
+            // load current pc cell
+            if (cells.getCellsList().length != 1) {
+                throw new Error('failed to load cell')
+            }
+
+            const c = cells.getCellsList()[0]
+            this.Cell.set(Orientation.None, c)
+
+            const ts = ulid(c.getTileset_asU8())
+            const tm = ulid(c.getTilemap_asU8())
+            this.load.image(ts, 'img/' + ts +'.png')
+            this.load.tilemapTiledJSON(tm, 'json/' + tm +'.json')
+
+            return c
+        })
+        .then((c: Cell.Cell) => {
+            // call contiguous pc cells
+            const contig = c.getContiguousMap() as jspb.Map<number, Uint8Array>
+
+            var cellIDs : Uint8Array[] = []
+            contig.forEach((entry) => {
+                cellIDs.push(entry)
+            })
+
+            return this.listCell(cellIDs)
+        })
+        .then((cells: CellDTO.ListCellResp) => {
+            // load contiguous pc cells
+            const contig = this.Cell.get(Orientation.None)?.getContiguousMap() as jspb.Map<number, Uint8Array>
+
+            // create reverted map to ease access
+            const revertContig = new jspb.Map<Uint8Array, number>([])
+            contig.forEach((entry, key) => {
+                revertContig.set(entry, key)
+            })
+
+            cells.getCellsList().map((c: Cell.Cell) => {
+                // Pre-assign contiguous cells
+                const o = revertContig.get(c.getId_asU8())
+                if (!o) {
+                    return
+                }
+
+                this.Cell.set(o, c)
+
+                const ts = ulid(c.getTileset_asU8())
+                const tm = ulid(c.getTilemap_asU8())
+                this.load.image(ts, 'img/' + ts +'.png')
+                this.load.tilemapTiledJSON(tm, 'json/' + tm +'.json')
+            })
+        })
+    }
+
+    // Loader Entity
+    async loadEntity() {
+        // call current pc cell
+        return this.listEntity([], [this.Entity.getCellid_asU8()])
+        .then((entities: EntityDTO.ListEntityResp) => {
             // load current pc cell
             if (cells.getCellsList().length != 1) {
                 throw new Error('failed to load cell')
@@ -264,9 +319,10 @@ export class Game extends Scene {
     }
 
     // API Entity
-    listEntity(IDs: Uint8Array[]) {
+    listEntity(IDs: Uint8Array[], CellIDs: Uint8Array[]) {
         let req = new EntityDTO.ListEntityReq();
         req.setIdsList(IDs)
+        req.setCellidsList(CellIDs)
         let md = new grpc.Metadata()
         md.set('token', this.registry.get('token'))
 
@@ -284,6 +340,33 @@ export class Game extends Scene {
                     }
 
                     resolve(message as EntityDTO.ListEntityResp)
+                }
+            });
+        })
+
+        return prom
+    }
+
+    listAnimation(EntityIDs: Uint8Array[]) {
+        let req = new AnimationDTO.ListAnimationReq();
+        req.setEntityidsList(EntityIDs)
+        let md = new grpc.Metadata()
+        md.set('token', this.registry.get('token'))
+
+        const prom = new Promise<AnimationDTO.ListAnimationResp>((resolve, reject) => {
+            grpc.unary(API.API.ListAnimation, {
+                metadata: md,
+                request: req,
+                host: 'http://localhost:8081',
+                onEnd: res => {
+                    const { status, statusMessage, headers, message, trailers } = res;
+                    if (status !== grpc.Code.OK || !message) {
+                        reject(res)
+
+                        return
+                    }
+
+                    resolve(message as AnimationDTO.ListAnimationResp)
                 }
             });
         })
