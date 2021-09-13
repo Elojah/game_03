@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package entity;
+
+option (gogoproto.testgen_all)  = true;
+option (gogoproto.benchgen_all) = true;
+option (gogoproto.populate_all) = true;
+option (gogoproto.goproto_registration) = true;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+message Animation {
+    bytes ID           = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    bytes EntityID     = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    bytes SheetID      = 3 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+
+    string Name        = 4;
+
+    int64 Start        = 5;
+    int64 End          = 6;
+    int32 Rate         = 7;
+}

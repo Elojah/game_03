@@ -82,7 +82,7 @@ browser:  ## Build browser content
 	$Q mkdir -p bin && mkdir -p bin/static
 	$Q yes | cp -rf cmd/$(BROWSER)/dist/. bin/static/
 
-# Utils
+# Proto lang
 .PHONY: proto-go proto-ts
 proto-go:    PB_LANG = GO
 proto-ts:    PB_LANG = TS
@@ -91,6 +91,7 @@ proto-go proto-ts: ## Regenerate protobuf files
 	$(info $(M) generate utils…) @
 	$Q $(GEN_PB_$(PB_LANG)) github.com/gogo/protobuf/gogoproto/gogo.proto
 	$(info $(M) generate domain…) @
+	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/entity/animation.proto
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/entity/entity.proto
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/entity/pc.proto
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/geometry/geometry.proto
@@ -105,6 +106,7 @@ proto-go proto-ts: ## Regenerate protobuf files
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/user/session.proto
 	$(info $(M) generate clients…) @
 	$(info $(M) generate dto…) @
+	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/entity/dto/animation.proto
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/entity/dto/entity.proto
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/entity/dto/pc.proto
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/room/dto/cell.proto
@@ -114,6 +116,10 @@ proto-go proto-ts: ## Regenerate protobuf files
 	$Q $(GEN_PB_SERVICE_$(PB_LANG)) $(GO_PACKAGE)/cmd/$(API)/grpc/$(API).proto
 	$Q $(GEN_PB_SERVICE_$(PB_LANG)) $(GO_PACKAGE)/cmd/$(ADMIN)/grpc/$(ADMIN).proto
 	$Q $(GEN_PB_SERVICE_$(PB_LANG)) $(GO_PACKAGE)/cmd/$(AUTH)/grpc/$(AUTH).proto
+
+# Proto
+.PHONY: proto
+proto: proto-go proto-ts
 
 # Vendor
 .PHONY: vendor

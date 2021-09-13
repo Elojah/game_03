@@ -30,11 +30,13 @@ enum Orientation {
 
 export class Game extends Scene {
 
+    // Domain
     PC: PC.PC;
     Entity: Entity.E;
     Cell: jspb.Map<Orientation, Cell.Cell>
 
-    Controls: Phaser.Cameras.Controls.FixedKeyControl
+    // Graphic
+    Player: any;
 
     constructor(config: string | Phaser.Types.Scenes.SettingsConfig) {
         super(config);
@@ -46,21 +48,23 @@ export class Game extends Scene {
     }
     preload() {}
     create() {
+        // const cursors = this.input.keyboard.createCursorKeys()
+        // this.Controls = new Phaser.Cameras.Controls.FixedKeyControl({
+        //     // active: true,
+        //     camera: this.cameras.main,
+        //     left: cursors.left,
+        //     right: cursors.right,
+        //     up: cursors.up,
+        //     down: cursors.down,
+        //     zoomIn: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q),
+        //     zoomOut: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E),
+        // })
+
+
         this.loadAll()
         .then(()=>{
             this.load.start()
             this.load.on('complete', ()=>{
-
-                const cursors = this.input.keyboard.createCursorKeys()
-                this.Controls = new Phaser.Cameras.Controls.FixedKeyControl({
-                    camera: this.cameras.main,
-                    left: cursors.left,
-                    right: cursors.right,
-                    up: cursors.up,
-                    down: cursors.down,
-                    zoomIn: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q),
-                    zoomOut: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E),
-                })
 
                 // Create tilemap for all cells
                 this.Cell.forEach((entry:Cell.Cell, key: Orientation) => {
@@ -73,7 +77,7 @@ export class Game extends Scene {
                     let x, y = 0
                     switch (key) {
                         case Orientation.None:
-                            this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+                            // this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
                             break;
                         case Orientation.Up:
                             y = -map.heightInPixels
@@ -109,15 +113,23 @@ export class Game extends Scene {
                     const layer = map.createLayer('Tile Layer 1', set, x, y);
                 })
 
-
-
-
                 // Add entity tile
-                // const eid = ulid(this.Entity.getId_asU8())
                 // const ets = ulid(this.Entity.getTileset_asU8())
                 // const etm = ulid(this.Entity.getTilemap_asU8())
-                // const entityMap = this.make.tilemap({ key: etm })
-                // entityMap.addTilesetImage(etm, ets)
+                // const emap = this.make.tilemap({ key: etm })
+                // const eset = emap.addTilesetImage(etm, ets)
+                // const elayer = emap.createLayer('Tile Layer 1', eset, this.cameras.main.centerX, this.cameras.main.centerY);
+
+                let p = this.physics.add.sprite(
+                    this.cameras.main.centerX,
+                    this.cameras.main.centerY,
+                    ulid(this.Entity.getId_asU8()),
+                )
+
+                //     this.anims.create(Phaser.Animations.Animation())
+
+                // this.cameras.main.startFollow()
+
             })
         })
         .catch((err)=>{
@@ -127,16 +139,16 @@ export class Game extends Scene {
 
     update(time: number, deltaTime: number)
 	{
-		this.Controls.update(deltaTime)
+		// this.Controls.update(deltaTime)
 	}
 
     // Helper
     async loadAll() {
         // load pc entity
-        const ts = ulid(this.Entity.getTileset_asU8())
-        const tm = ulid(this.Entity.getTilemap_asU8())
-        this.load.image(ts, 'img/' + ts +'.png')
-        this.load.tilemapTiledJSON(tm, 'json/' + tm +'.json')
+        // const ts = ulid(this.Entity.getTileset_asU8())
+        // const tm = ulid(this.Entity.getTilemap_asU8())
+        // this.load.image(ts, 'img/' + ts +'.png')
+        // this.load.tilemapTiledJSON(tm, 'json/' + tm +'.json')
 
         // call current pc cell
         return this.listCell([this.Entity.getCellid_asU8()])

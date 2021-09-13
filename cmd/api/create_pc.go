@@ -15,6 +15,8 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+var defaultSpriteID = ulid.MustParse("01F5X76JW6W6PS824SFXC9R8BB")
+
 func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.PC, error) {
 	logger := log.With().Str("method", "create_pc").Logger()
 
@@ -80,16 +82,14 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 
 	// #Insert entity backup
 	bu := entity.Backup{
-		ID:      ulid.NewID(),
-		UserID:  ses.UserID,
-		CellID:  c.CellID,
-		X:       0,
-		Y:       0,
-		Rot:     0,
-		Radius:  10, // nolint: gomnd
-		Tilemap: defaultTilemap,
-		Tileset: defaultTileset,
-		At:      time.Now().UnixNano(),
+		ID:     ulid.NewID(),
+		UserID: ses.UserID,
+		CellID: c.CellID,
+		X:      0,
+		Y:      0,
+		Rot:    0,
+		Radius: 10, // nolint: gomnd
+		At:     time.Now().UnixNano(),
 	}
 	if err := h.entity.InsertBackup(ctx, bu); err != nil {
 		logger.Error().Err(err).Msg("failed to create entity")

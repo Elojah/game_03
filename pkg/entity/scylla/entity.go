@@ -70,19 +70,19 @@ func (f filter) index() string {
 func (s Store) Insert(ctx context.Context, e entity.E) error {
 	q := s.Session.Query(
 		`INSERT INTO main.entity (
-			id, user_id, cell_id, x, y, rot, radius, tilemap, tileset, at
-			) VALUES (
-				?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+			id, user_id, cell_id,
+			name,
+			x, y, rot, radius,
+			at,
+			animation_id, animation_at
+		) VALUES (
+			?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 		)`,
-		e.ID,
-		e.UserID,
-		e.CellID,
-		e.X,
-		e.Y,
-		e.Rot,
-		e.Radius,
-		e.Tileset,
+		e.ID, e.UserID, e.CellID,
+		e.Name,
+		e.X, e.Y, e.Rot, e.Radius,
 		e.At,
+		e.AnimationID, e.AnimationAt,
 	).WithContext(ctx)
 
 	defer q.Release()
@@ -96,7 +96,13 @@ func (s Store) Insert(ctx context.Context, e entity.E) error {
 
 func (s Store) Fetch(ctx context.Context, f entity.Filter) (entity.E, error) {
 	b := strings.Builder{}
-	b.WriteString(`SELECT id, user_id, cell_id, x, y, rot, radius, tilemap, tileset, at FROM main.entity `)
+	b.WriteString(`SELECT
+		id, user_id, cell_id,
+		name,
+		x, y, rot, radius,
+		at
+		animation_id, animation_at
+	FROM main.entity `)
 
 	clause, args := filter(f).where()
 	b.WriteString(clause)
@@ -106,8 +112,10 @@ func (s Store) Fetch(ctx context.Context, f entity.Filter) (entity.E, error) {
 	var e entity.E
 	if err := q.Scan(
 		&e.ID, &e.UserID, &e.CellID,
+		&e.Name,
 		&e.X, &e.Y, &e.Rot, &e.Radius,
-		&e.Tilemap, &e.Tileset, &e.At,
+		&e.At,
+		&e.AnimationID, &e.AnimationAt,
 	); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
 			return entity.E{}, gerrors.ErrNotFound{Resource: "entity", Index: filter(f).index()}
@@ -125,7 +133,13 @@ func (s Store) FetchMany(ctx context.Context, f entity.Filter) ([]entity.E, []by
 	}
 
 	b := strings.Builder{}
-	b.WriteString(`SELECT id, user_id, cell_id, x, y, rot, radius, tilemap, tileset, at FROM main.entity `)
+	b.WriteString(`SELECT
+		id, user_id, cell_id,
+		name,
+		x, y, rot, radius,
+		at
+		animation_id, animation_at
+	FROM main.entity `)
 
 	clause, args := filter(f).where()
 	b.WriteString(clause)
@@ -148,16 +162,11 @@ func (s Store) FetchMany(ctx context.Context, f entity.Filter) ([]entity.E, []by
 
 	for ; scanner.Next(); i++ {
 		if err := scanner.Scan(
-			&es[i].ID,
-			&es[i].UserID,
-			&es[i].CellID,
-			&es[i].X,
-			&es[i].Y,
-			&es[i].Rot,
-			&es[i].Radius,
-			&es[i].Tilemap,
-			&es[i].Tileset,
+			&es[i].ID, &es[i].UserID, &es[i].CellID,
+			&es[i].Name,
+			&es[i].X, &es[i].Y, &es[i].Rot, &es[i].Radius,
 			&es[i].At,
+			&es[i].AnimationID, &es[i].AnimationAt,
 		); err != nil {
 			return nil, nil, err
 		}

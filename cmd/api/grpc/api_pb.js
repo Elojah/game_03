@@ -20,6 +20,8 @@ var github_com_elojah_game_03_pkg_entity_pc_pb = require('../../../../../../gith
 goog.object.extend(proto, github_com_elojah_game_03_pkg_entity_pc_pb);
 var github_com_elojah_game_03_pkg_entity_dto_entity_pb = require('../../../../../../github.com/elojah/game_03/pkg/entity/dto/entity_pb.js');
 goog.object.extend(proto, github_com_elojah_game_03_pkg_entity_dto_entity_pb);
+var github_com_elojah_game_03_pkg_entity_dto_animation_pb = require('../../../../../../github.com/elojah/game_03/pkg/entity/dto/animation_pb.js');
+goog.object.extend(proto, github_com_elojah_game_03_pkg_entity_dto_animation_pb);
 var github_com_elojah_game_03_pkg_entity_dto_pc_pb = require('../../../../../../github.com/elojah/game_03/pkg/entity/dto/pc_pb.js');
 goog.object.extend(proto, github_com_elojah_game_03_pkg_entity_dto_pc_pb);
 var github_com_elojah_game_03_pkg_room_room_pb = require('../../../../../../github.com/elojah/game_03/pkg/room/room_pb.js');

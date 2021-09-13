@@ -25,6 +25,7 @@ type Store interface {
 
 type App interface {
 	Store
+	StoreAnimation
 	StoreBackup
 	StorePC
 	CachePCConnect

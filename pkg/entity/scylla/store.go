@@ -7,6 +7,8 @@ import (
 
 var _ entity.Store = (*Store)(nil)
 
+var _ entity.StoreAnimation = (*Store)(nil)
+
 var _ entity.StoreBackup = (*Store)(nil)
 
 var _ entity.StorePC = (*Store)(nil)

@@ -1,3 +1,6 @@
+-- USER MANAGEMENT
+-- ---------------
+
 CREATE TABLE main.user (
     id              uuid PRIMARY KEY,
     twitch_id       varchar
@@ -20,6 +23,9 @@ CREATE TABLE main.session (
 );
 
 CREATE INDEX ON main.session(user_id);
+
+-- ROOM MANAGEMENT
+-- ---------------
 
 CREATE TABLE main.room (
     id              uuid PRIMARY KEY,
@@ -47,35 +53,55 @@ CREATE TABLE main.pc (
     PRIMARY KEY(user_id, world_id, id)
 );
 
+-- ENTITY MANAGEMENT
+-- -----------------
+
 -- must replicate main.entity_backup fields
 CREATE TABLE main.entity (
     id              uuid PRIMARY KEY,
     user_id         uuid,
     cell_id         uuid,
+    name            varchar,
     x               bigint,
     y               bigint,
     rot             smallint,
     radius          smallint,
-    tilemap         uuid,
-    tileset         uuid,
-    at              bigint
+    at              bigint,
+    animation_id    uuid,
+    animation_at    bigint
 );
 
 CREATE INDEX ON main.entity(cell_id);
+
+CREATE TABLE main.entity_animation (
+    id              uuid PRIMARY KEY,
+    entity_id       uuid,
+    sheet_id        uuid,
+    name            varchar,
+    start           bigint,
+    end             bigint,
+    rate            bigint
+);
+
+CREATE INDEX ON main.entity_animation(entity_id);
 
 -- must replicate main.entity fields
 CREATE TABLE main.entity_backup (
     id              uuid PRIMARY KEY,
     user_id         uuid,
     cell_id         uuid,
+    name            varchar,
     x               bigint,
     y               bigint,
     rot             smallint,
     radius          smallint,
-    tilemap         uuid,
-    tileset         uuid,
-    at              bigint
+    at              bigint,
+    animation_id    uuid,
+    animation_at    bigint
 );
+
+-- WORLD MANAGEMENT
+-- ----------------
 
 CREATE TABLE main.world (
     id              uuid PRIMARY KEY,

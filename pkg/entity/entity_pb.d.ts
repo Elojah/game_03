@@ -20,6 +20,9 @@ export class E extends jspb.Message {
   getCellid_asB64(): string;
   setCellid(value: Uint8Array | string): void;
 
+  getName(): string;
+  setName(value: string): void;
+
   getX(): number;
   setX(value: number): void;
 
@@ -32,18 +35,16 @@ export class E extends jspb.Message {
   getRadius(): number;
   setRadius(value: number): void;
 
-  getTilemap(): Uint8Array | string;
-  getTilemap_asU8(): Uint8Array;
-  getTilemap_asB64(): string;
-  setTilemap(value: Uint8Array | string): void;
-
-  getTileset(): Uint8Array | string;
-  getTileset_asU8(): Uint8Array;
-  getTileset_asB64(): string;
-  setTileset(value: Uint8Array | string): void;
-
   getAt(): number;
   setAt(value: number): void;
+
+  getAnimationid(): Uint8Array | string;
+  getAnimationid_asU8(): Uint8Array;
+  getAnimationid_asB64(): string;
+  setAnimationid(value: Uint8Array | string): void;
+
+  getAnimationat(): number;
+  setAnimationat(value: number): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): E.AsObject;
@@ -60,13 +61,14 @@ export namespace E {
     id: Uint8Array | string,
     userid: Uint8Array | string,
     cellid: Uint8Array | string,
+    name: string,
     x: number,
     y: number,
     rot: number,
     radius: number,
-    tilemap: Uint8Array | string,
-    tileset: Uint8Array | string,
     at: number,
+    animationid: Uint8Array | string,
+    animationat: number,
   }
 }
 
