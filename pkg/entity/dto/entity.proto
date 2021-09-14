@@ -13,8 +13,11 @@ import "github.com/elojah/game_03/pkg/entity/entity.proto";
 message ListEntityReq {
     repeated bytes IDs         = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
     repeated bytes CellIDs     = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    int64 Size                 = 3;
+    bytes State                = 4;
 }
 
 message ListEntityResp {
     repeated entity.E Entities = 1 [(gogoproto.nullable) = false];
+    bytes State                = 2;
 }

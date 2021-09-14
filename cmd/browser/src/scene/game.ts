@@ -38,8 +38,8 @@ export class Game extends Scene {
     Entity: Entity.E;
     Cell: jspb.Map<Orientation, Cell.Cell>
 
-    // Graphic
-    Player: any;
+    // // Graphic
+    // Player: any;
 
     constructor(config: string | Phaser.Types.Scenes.SettingsConfig) {
         super(config);
@@ -170,7 +170,7 @@ export class Game extends Scene {
             const contig = c.getContiguousMap() as jspb.Map<number, Uint8Array>
 
             var cellIDs : Uint8Array[] = []
-            contig.forEach((entry) => {
+            contig.forEach((entry: Uint8Array) => {
                 cellIDs.push(entry)
             })
 
@@ -182,7 +182,7 @@ export class Game extends Scene {
 
             // create reverted map to ease access
             const revertContig = new jspb.Map<Uint8Array, number>([])
-            contig.forEach((entry, key) => {
+            contig.forEach((entry: Uint8Array, key: number) => {
                 revertContig.set(entry, key)
             })
 
@@ -205,58 +205,36 @@ export class Game extends Scene {
 
     // Loader Entity
     async loadEntity() {
-        // call current pc cell
-        return this.listEntity([], [this.Entity.getCellid_asU8()])
+        // call list entities on current cell
+        return this.listEntity([], [this.Entity.getCellid_asU8()], new Uint8Array())
         .then((entities: EntityDTO.ListEntityResp) => {
-            // load current pc cell
-            if (cells.getCellsList().length != 1) {
-                throw new Error('failed to load cell')
-            }
 
-            const c = cells.getCellsList()[0]
-            this.Cell.set(Orientation.None, c)
-
-            const ts = ulid(c.getTileset_asU8())
-            const tm = ulid(c.getTilemap_asU8())
-            this.load.image(ts, 'img/' + ts +'.png')
-            this.load.tilemapTiledJSON(tm, 'json/' + tm +'.json')
-
-            return c
-        })
-        .then((c: Cell.Cell) => {
-            // call contiguous pc cells
-            const contig = c.getContiguousMap() as jspb.Map<number, Uint8Array>
-
-            var cellIDs : Uint8Array[] = []
-            contig.forEach((entry) => {
-                cellIDs.push(entry)
+            var entityIDs : Uint8Array[] = []
+            entities.getEntitiesList().forEach((entry: Entity.E) => {
+                entityIDs.push(entry.getId_asU8())
             })
 
-            return this.listCell(cellIDs)
+            return this.listAnimation(entityIDs, new Uint8Array())
         })
-        .then((cells: CellDTO.ListCellResp) => {
-            // load contiguous pc cells
-            const contig = this.Cell.get(Orientation.None)?.getContiguousMap() as jspb.Map<number, Uint8Array>
+        .then((animations: AnimationDTO.ListAnimationResp) => {
+            animations.getAnimationsList().forEach((an: Animation.Animation) => {
+                const animationID = ulid(an.getId_asU8())
+                const sheetID = ulid(an.getSheetid_asU8())
 
-            // create reverted map to ease access
-            const revertContig = new jspb.Map<Uint8Array, number>([])
-            contig.forEach((entry, key) => {
-                revertContig.set(entry, key)
-            })
-
-            cells.getCellsList().map((c: Cell.Cell) => {
-                // Pre-assign contiguous cells
-                const o = revertContig.get(c.getId_asU8())
-                if (!o) {
+                // return if already loaded
+                if (this.anims.get(animationID).frames.length > 0) {
                     return
                 }
 
-                this.Cell.set(o, c)
-
-                const ts = ulid(c.getTileset_asU8())
-                const tm = ulid(c.getTilemap_asU8())
-                this.load.image(ts, 'img/' + ts +'.png')
-                this.load.tilemapTiledJSON(tm, 'json/' + tm +'.json')
+                const anim = this.physics.add.sprite(0, 0, sheetID)
+                // this.load.image(sheetID, 'img/' + sheetID + '.png')
+                this.anims.create({
+                    frames: this.anims.generateFrameNumbers(
+                        sheetID,
+                        {start: an.getStart(), end: an.getEnd()},
+                    ),
+                    frameRate: an.getRate(),
+                })
             })
         })
     }
@@ -319,10 +297,11 @@ export class Game extends Scene {
     }
 
     // API Entity
-    listEntity(IDs: Uint8Array[], CellIDs: Uint8Array[]) {
+    listEntity(IDs: Uint8Array[], CellIDs: Uint8Array[], State: Uint8Array) {
         let req = new EntityDTO.ListEntityReq();
         req.setIdsList(IDs)
         req.setCellidsList(CellIDs)
+        req.setState(State)
         let md = new grpc.Metadata()
         md.set('token', this.registry.get('token'))
 
@@ -347,9 +326,10 @@ export class Game extends Scene {
         return prom
     }
 
-    listAnimation(EntityIDs: Uint8Array[]) {
+    listAnimation(EntityIDs: Uint8Array[], State: Uint8Array) {
         let req = new AnimationDTO.ListAnimationReq();
         req.setEntityidsList(EntityIDs)
+        req.setState(State)
         let md = new grpc.Metadata()
         md.set('token', this.registry.get('token'))
 

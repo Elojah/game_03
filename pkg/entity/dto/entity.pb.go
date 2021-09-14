@@ -4,6 +4,7 @@
 package dto
 
 import (
+	bytes "bytes"
 	fmt "fmt"
 	entity "github.com/elojah/game_03/pkg/entity"
 	github_com_elojah_game_03_pkg_ulid "github.com/elojah/game_03/pkg/ulid"
@@ -32,6 +33,8 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 type ListEntityReq struct {
 	IDs     []github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,1,rep,name=IDs,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"IDs"`
 	CellIDs []github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,2,rep,name=CellIDs,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"CellIDs"`
+	Size_   int64                                   `protobuf:"varint,3,opt,name=Size,proto3" json:"Size,omitempty"`
+	State   []byte                                  `protobuf:"bytes,4,opt,name=State,proto3" json:"State,omitempty"`
 }
 
 func (m *ListEntityReq) Reset()      { *m = ListEntityReq{} }
@@ -66,8 +69,23 @@ func (m *ListEntityReq) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_ListEntityReq proto.InternalMessageInfo
 
+func (m *ListEntityReq) GetSize_() int64 {
+	if m != nil {
+		return m.Size_
+	}
+	return 0
+}
+
+func (m *ListEntityReq) GetState() []byte {
+	if m != nil {
+		return m.State
+	}
+	return nil
+}
+
 type ListEntityResp struct {
 	Entities []entity.E `protobuf:"bytes,1,rep,name=Entities,proto3" json:"Entities"`
+	State    []byte     `protobuf:"bytes,2,opt,name=State,proto3" json:"State,omitempty"`
 }
 
 func (m *ListEntityResp) Reset()      { *m = ListEntityResp{} }
@@ -109,6 +127,13 @@ func (m *ListEntityResp) GetEntities() []entity.E {
 	return nil
 }
 
+func (m *ListEntityResp) GetState() []byte {
+	if m != nil {
+		return m.State
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*ListEntityReq)(nil), "dto.ListEntityReq")
 	golang_proto.RegisterType((*ListEntityReq)(nil), "dto.ListEntityReq")
@@ -124,25 +149,28 @@ func init() {
 }
 
 var fileDescriptor_f0596b60aed7bf7a = []byte{
-	// 286 bytes of a gzipped FileDescriptorProto
+	// 326 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x32, 0x4d, 0xcf, 0x2c, 0xc9,
 	0x28, 0x4d, 0xd2, 0x4b, 0xce, 0xcf, 0xd5, 0x4f, 0xcd, 0xc9, 0xcf, 0x4a, 0xcc, 0xd0, 0x4f, 0x4f,
 	0xcc, 0x4d, 0x8d, 0x37, 0x30, 0xd6, 0x2f, 0xc8, 0x4e, 0xd7, 0x4f, 0xcd, 0x2b, 0xc9, 0x2c, 0xa9,
 	0xd4, 0x4f, 0x29, 0xc9, 0x87, 0x32, 0xf5, 0x0a, 0x8a, 0xf2, 0x4b, 0xf2, 0x85, 0x98, 0x53, 0x4a,
 	0xf2, 0xa5, 0x74, 0x91, 0xf4, 0xa6, 0xe7, 0xa7, 0xe7, 0xeb, 0x83, 0xe5, 0x92, 0x4a, 0xd3, 0xc0,
-	0x3c, 0x30, 0x07, 0xcc, 0x82, 0xe8, 0x91, 0x32, 0x24, 0xca, 0x2a, 0x64, 0x6b, 0x94, 0x66, 0x32,
+	0x3c, 0x30, 0x07, 0xcc, 0x82, 0xe8, 0x91, 0x32, 0x24, 0xca, 0x2a, 0x64, 0x6b, 0x94, 0x0e, 0x33,
 	0x72, 0xf1, 0xfa, 0x64, 0x16, 0x97, 0xb8, 0x82, 0x05, 0x83, 0x52, 0x0b, 0x85, 0xec, 0xb9, 0x98,
 	0x3d, 0x5d, 0x8a, 0x25, 0x18, 0x15, 0x98, 0x35, 0x78, 0x9c, 0x74, 0x4f, 0xdc, 0x93, 0x67, 0xb8,
 	0x75, 0x4f, 0x5e, 0x15, 0xbf, 0xc9, 0xa5, 0x39, 0x99, 0x29, 0x7a, 0x9e, 0x2e, 0x41, 0x20, 0x9d,
 	0x42, 0xee, 0x5c, 0xec, 0xce, 0xa9, 0x39, 0x39, 0x20, 0x43, 0x98, 0xc8, 0x31, 0x04, 0xa6, 0x5b,
-	0xc9, 0x96, 0x8b, 0x0f, 0xd9, 0x69, 0xc5, 0x05, 0x42, 0xda, 0x5c, 0x1c, 0x60, 0x5e, 0x66, 0x2a,
-	0xc4, 0x81, 0xdc, 0x46, 0x9c, 0x7a, 0x50, 0xef, 0xb8, 0x3a, 0xb1, 0x80, 0xac, 0x09, 0x82, 0x2b,
-	0x70, 0x72, 0xb9, 0xf0, 0x50, 0x8e, 0xe1, 0xc6, 0x43, 0x39, 0x86, 0x0f, 0x0f, 0xe5, 0x18, 0x7f,
-	0x3c, 0x94, 0x63, 0x6c, 0x78, 0x24, 0xc7, 0xb8, 0xe2, 0x91, 0x1c, 0xe3, 0x8e, 0x47, 0x72, 0x8c,
-	0x07, 0x1e, 0xc9, 0x31, 0x9e, 0x78, 0x24, 0xc7, 0x78, 0xe1, 0x91, 0x1c, 0xe3, 0x83, 0x47, 0x72,
-	0x8c, 0x2f, 0x1e, 0xc9, 0x31, 0x7c, 0x78, 0x24, 0xc7, 0x38, 0xe1, 0xb1, 0x1c, 0xc3, 0x81, 0xc7,
-	0x72, 0x8c, 0x17, 0x1e, 0xcb, 0x31, 0xdc, 0x78, 0x2c, 0xc7, 0x90, 0xc4, 0x06, 0x0e, 0x27, 0x63,
-	0x40, 0x00, 0x00, 0x00, 0xff, 0xff, 0xb6, 0x32, 0xe7, 0x0a, 0xc7, 0x01, 0x00, 0x00,
+	0x48, 0x88, 0x8b, 0x25, 0x38, 0xb3, 0x2a, 0x55, 0x82, 0x59, 0x81, 0x51, 0x83, 0x39, 0x08, 0xcc,
+	0x16, 0x12, 0xe1, 0x62, 0x0d, 0x2e, 0x49, 0x2c, 0x49, 0x95, 0x60, 0x51, 0x60, 0xd4, 0xe0, 0x09,
+	0x82, 0x70, 0x94, 0x82, 0xb9, 0xf8, 0x90, 0x3d, 0x51, 0x5c, 0x20, 0xa4, 0xcd, 0xc5, 0x01, 0xe6,
+	0x65, 0xa6, 0x42, 0xbc, 0xc2, 0x6d, 0xc4, 0xa9, 0x07, 0xf5, 0xb8, 0xab, 0x13, 0x0b, 0xc8, 0x41,
+	0x41, 0x70, 0x05, 0x08, 0x43, 0x99, 0x90, 0x0c, 0x75, 0x72, 0xb9, 0xf0, 0x50, 0x8e, 0xe1, 0xc6,
+	0x43, 0x39, 0x86, 0x0f, 0x0f, 0xe5, 0x18, 0x7f, 0x3c, 0x94, 0x63, 0x6c, 0x78, 0x24, 0xc7, 0xb8,
+	0xe2, 0x91, 0x1c, 0xe3, 0x8e, 0x47, 0x72, 0x8c, 0x07, 0x1e, 0xc9, 0x31, 0x9e, 0x78, 0x24, 0xc7,
+	0x78, 0xe1, 0x91, 0x1c, 0xe3, 0x83, 0x47, 0x72, 0x8c, 0x2f, 0x1e, 0xc9, 0x31, 0x7c, 0x78, 0x24,
+	0xc7, 0x38, 0xe1, 0xb1, 0x1c, 0xc3, 0x81, 0xc7, 0x72, 0x8c, 0x17, 0x1e, 0xcb, 0x31, 0xdc, 0x78,
+	0x2c, 0xc7, 0x90, 0xc4, 0x06, 0x0e, 0x67, 0x63, 0x40, 0x00, 0x00, 0x00, 0xff, 0xff, 0x3f, 0xb4,
+	0x5c, 0x97, 0x07, 0x02, 0x00, 0x00,
 }
 
 func (this *ListEntityReq) Equal(that interface{}) bool {
@@ -180,6 +208,12 @@ func (this *ListEntityReq) Equal(that interface{}) bool {
 			return false
 		}
 	}
+	if this.Size_ != that1.Size_ {
+		return false
+	}
+	if !bytes.Equal(this.State, that1.State) {
+		return false
+	}
 	return true
 }
 func (this *ListEntityResp) Equal(that interface{}) bool {
@@ -209,16 +243,21 @@ func (this *ListEntityResp) Equal(that interface{}) bool {
 			return false
 		}
 	}
+	if !bytes.Equal(this.State, that1.State) {
+		return false
+	}
 	return true
 }
 func (this *ListEntityReq) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 6)
+	s := make([]string, 0, 8)
 	s = append(s, "&dto.ListEntityReq{")
 	s = append(s, "IDs: "+fmt.Sprintf("%#v", this.IDs)+",\n")
 	s = append(s, "CellIDs: "+fmt.Sprintf("%#v", this.CellIDs)+",\n")
+	s = append(s, "Size_: "+fmt.Sprintf("%#v", this.Size_)+",\n")
+	s = append(s, "State: "+fmt.Sprintf("%#v", this.State)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -226,7 +265,7 @@ func (this *ListEntityResp) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 5)
+	s := make([]string, 0, 6)
 	s = append(s, "&dto.ListEntityResp{")
 	if this.Entities != nil {
 		vs := make([]entity.E, len(this.Entities))
@@ -235,6 +274,7 @@ func (this *ListEntityResp) GoString() string {
 		}
 		s = append(s, "Entities: "+fmt.Sprintf("%#v", vs)+",\n")
 	}
+	s = append(s, "State: "+fmt.Sprintf("%#v", this.State)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -266,6 +306,18 @@ func (m *ListEntityReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.State) > 0 {
+		i -= len(m.State)
+		copy(dAtA[i:], m.State)
+		i = encodeVarintEntity(dAtA, i, uint64(len(m.State)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if m.Size_ != 0 {
+		i = encodeVarintEntity(dAtA, i, uint64(m.Size_))
+		i--
+		dAtA[i] = 0x18
+	}
 	if len(m.CellIDs) > 0 {
 		for iNdEx := len(m.CellIDs) - 1; iNdEx >= 0; iNdEx-- {
 			{
@@ -317,6 +369,13 @@ func (m *ListEntityResp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.State) > 0 {
+		i -= len(m.State)
+		copy(dAtA[i:], m.State)
+		i = encodeVarintEntity(dAtA, i, uint64(len(m.State)))
+		i--
+		dAtA[i] = 0x12
+	}
 	if len(m.Entities) > 0 {
 		for iNdEx := len(m.Entities) - 1; iNdEx >= 0; iNdEx-- {
 			{
@@ -359,6 +418,15 @@ func NewPopulatedListEntityReq(r randyEntity, easy bool) *ListEntityReq {
 		v4 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
 		this.CellIDs[i] = *v4
 	}
+	this.Size_ = int64(r.Int63())
+	if r.Intn(2) == 0 {
+		this.Size_ *= -1
+	}
+	v5 := r.Intn(100)
+	this.State = make([]byte, v5)
+	for i := 0; i < v5; i++ {
+		this.State[i] = byte(r.Intn(256))
+	}
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -367,12 +435,17 @@ func NewPopulatedListEntityReq(r randyEntity, easy bool) *ListEntityReq {
 func NewPopulatedListEntityResp(r randyEntity, easy bool) *ListEntityResp {
 	this := &ListEntityResp{}
 	if r.Intn(5) != 0 {
-		v5 := r.Intn(5)
-		this.Entities = make([]entity.E, v5)
-		for i := 0; i < v5; i++ {
-			v6 := entity.NewPopulatedE(r, easy)
-			this.Entities[i] = *v6
+		v6 := r.Intn(5)
+		this.Entities = make([]entity.E, v6)
+		for i := 0; i < v6; i++ {
+			v7 := entity.NewPopulatedE(r, easy)
+			this.Entities[i] = *v7
 		}
+	}
+	v8 := r.Intn(100)
+	this.State = make([]byte, v8)
+	for i := 0; i < v8; i++ {
+		this.State[i] = byte(r.Intn(256))
 	}
 	if !easy && r.Intn(10) != 0 {
 	}
@@ -398,9 +471,9 @@ func randUTF8RuneEntity(r randyEntity) rune {
 	return rune(ru + 61)
 }
 func randStringEntity(r randyEntity) string {
-	v7 := r.Intn(100)
-	tmps := make([]rune, v7)
-	for i := 0; i < v7; i++ {
+	v9 := r.Intn(100)
+	tmps := make([]rune, v9)
+	for i := 0; i < v9; i++ {
 		tmps[i] = randUTF8RuneEntity(r)
 	}
 	return string(tmps)
@@ -422,11 +495,11 @@ func randFieldEntity(dAtA []byte, r randyEntity, fieldNumber int, wire int) []by
 	switch wire {
 	case 0:
 		dAtA = encodeVarintPopulateEntity(dAtA, uint64(key))
-		v8 := r.Int63()
+		v10 := r.Int63()
 		if r.Intn(2) == 0 {
-			v8 *= -1
+			v10 *= -1
 		}
-		dAtA = encodeVarintPopulateEntity(dAtA, uint64(v8))
+		dAtA = encodeVarintPopulateEntity(dAtA, uint64(v10))
 	case 1:
 		dAtA = encodeVarintPopulateEntity(dAtA, uint64(key))
 		dAtA = append(dAtA, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
@@ -469,6 +542,13 @@ func (m *ListEntityReq) Size() (n int) {
 			n += 1 + l + sovEntity(uint64(l))
 		}
 	}
+	if m.Size_ != 0 {
+		n += 1 + sovEntity(uint64(m.Size_))
+	}
+	l = len(m.State)
+	if l > 0 {
+		n += 1 + l + sovEntity(uint64(l))
+	}
 	return n
 }
 
@@ -483,6 +563,10 @@ func (m *ListEntityResp) Size() (n int) {
 			l = e.Size()
 			n += 1 + l + sovEntity(uint64(l))
 		}
+	}
+	l = len(m.State)
+	if l > 0 {
+		n += 1 + l + sovEntity(uint64(l))
 	}
 	return n
 }
@@ -500,6 +584,8 @@ func (this *ListEntityReq) String() string {
 	s := strings.Join([]string{`&ListEntityReq{`,
 		`IDs:` + fmt.Sprintf("%v", this.IDs) + `,`,
 		`CellIDs:` + fmt.Sprintf("%v", this.CellIDs) + `,`,
+		`Size_:` + fmt.Sprintf("%v", this.Size_) + `,`,
+		`State:` + fmt.Sprintf("%v", this.State) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -515,6 +601,7 @@ func (this *ListEntityResp) String() string {
 	repeatedStringForEntities += "}"
 	s := strings.Join([]string{`&ListEntityResp{`,
 		`Entities:` + repeatedStringForEntities + `,`,
+		`State:` + fmt.Sprintf("%v", this.State) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -626,6 +713,59 @@ func (m *ListEntityReq) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Size_", wireType)
+			}
+			m.Size_ = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEntity
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Size_ |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field State", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEntity
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthEntity
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEntity
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.State = append(m.State[:0], dAtA[iNdEx:postIndex]...)
+			if m.State == nil {
+				m.State = []byte{}
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipEntity(dAtA[iNdEx:])
@@ -708,6 +848,40 @@ func (m *ListEntityResp) Unmarshal(dAtA []byte) error {
 			m.Entities = append(m.Entities, entity.E{})
 			if err := m.Entities[len(m.Entities)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field State", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEntity
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthEntity
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEntity
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.State = append(m.State[:0], dAtA[iNdEx:postIndex]...)
+			if m.State == nil {
+				m.State = []byte{}
 			}
 			iNdEx = postIndex
 		default:

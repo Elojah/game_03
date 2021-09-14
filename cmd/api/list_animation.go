@@ -28,8 +28,8 @@ func (h *handler) ListAnimation(ctx context.Context, req *dto.ListAnimationReq) 
 	ans, state, err := h.entity.FetchManyAnimation(ctx,
 		entity.FilterAnimation{
 			EntityIDs: req.EntityIDs,
-			Size:      int(req.Size_),
 			State:     req.State,
+			Size:      int(req.Size_),
 		},
 	)
 	if err != nil {

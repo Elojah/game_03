@@ -100,7 +100,9 @@ proto.dto.ListEntityReq.prototype.toObject = function(opt_includeInstance) {
 proto.dto.ListEntityReq.toObject = function(includeInstance, msg) {
   var f, obj = {
     idsList: msg.getIdsList_asB64(),
-    cellidsList: msg.getCellidsList_asB64()
+    cellidsList: msg.getCellidsList_asB64(),
+    size: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    state: msg.getState_asB64()
   };
 
   if (includeInstance) {
@@ -145,6 +147,14 @@ proto.dto.ListEntityReq.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.addCellids(value);
       break;
+    case 3:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setSize(value);
+      break;
+    case 4:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setState(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -185,6 +195,20 @@ proto.dto.ListEntityReq.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeRepeatedBytes(
       2,
+      f
+    );
+  }
+  f = message.getSize();
+  if (f !== 0) {
+    writer.writeInt64(
+      3,
+      f
+    );
+  }
+  f = message.getState_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      4,
       f
     );
   }
@@ -313,6 +337,66 @@ proto.dto.ListEntityReq.prototype.clearCellidsList = function() {
 };
 
 
+/**
+ * optional int64 Size = 3;
+ * @return {number}
+ */
+proto.dto.ListEntityReq.prototype.getSize = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.dto.ListEntityReq} returns this
+ */
+proto.dto.ListEntityReq.prototype.setSize = function(value) {
+  return jspb.Message.setProto3IntField(this, 3, value);
+};
+
+
+/**
+ * optional bytes State = 4;
+ * @return {!(string|Uint8Array)}
+ */
+proto.dto.ListEntityReq.prototype.getState = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/**
+ * optional bytes State = 4;
+ * This is a type-conversion wrapper around `getState()`
+ * @return {string}
+ */
+proto.dto.ListEntityReq.prototype.getState_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getState()));
+};
+
+
+/**
+ * optional bytes State = 4;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getState()`
+ * @return {!Uint8Array}
+ */
+proto.dto.ListEntityReq.prototype.getState_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getState()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.dto.ListEntityReq} returns this
+ */
+proto.dto.ListEntityReq.prototype.setState = function(value) {
+  return jspb.Message.setProto3BytesField(this, 4, value);
+};
+
+
 
 /**
  * List of repeated fields within this message type.
@@ -353,7 +437,8 @@ proto.dto.ListEntityResp.prototype.toObject = function(opt_includeInstance) {
 proto.dto.ListEntityResp.toObject = function(includeInstance, msg) {
   var f, obj = {
     entitiesList: jspb.Message.toObjectList(msg.getEntitiesList(),
-    github_com_elojah_game_03_pkg_entity_entity_pb.E.toObject, includeInstance)
+    github_com_elojah_game_03_pkg_entity_entity_pb.E.toObject, includeInstance),
+    state: msg.getState_asB64()
   };
 
   if (includeInstance) {
@@ -395,6 +480,10 @@ proto.dto.ListEntityResp.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value,github_com_elojah_game_03_pkg_entity_entity_pb.E.deserializeBinaryFromReader);
       msg.addEntities(value);
       break;
+    case 2:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setState(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -430,6 +519,13 @@ proto.dto.ListEntityResp.serializeBinaryToWriter = function(message, writer) {
       1,
       f,
       github_com_elojah_game_03_pkg_entity_entity_pb.E.serializeBinaryToWriter
+    );
+  }
+  f = message.getState_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      2,
+      f
     );
   }
 };
@@ -470,6 +566,48 @@ proto.dto.ListEntityResp.prototype.addEntities = function(opt_value, opt_index) 
  */
 proto.dto.ListEntityResp.prototype.clearEntitiesList = function() {
   return this.setEntitiesList([]);
+};
+
+
+/**
+ * optional bytes State = 2;
+ * @return {!(string|Uint8Array)}
+ */
+proto.dto.ListEntityResp.prototype.getState = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * optional bytes State = 2;
+ * This is a type-conversion wrapper around `getState()`
+ * @return {string}
+ */
+proto.dto.ListEntityResp.prototype.getState_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getState()));
+};
+
+
+/**
+ * optional bytes State = 2;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getState()`
+ * @return {!Uint8Array}
+ */
+proto.dto.ListEntityResp.prototype.getState_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getState()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.dto.ListEntityResp} returns this
+ */
+proto.dto.ListEntityResp.prototype.setState = function(value) {
+  return jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 

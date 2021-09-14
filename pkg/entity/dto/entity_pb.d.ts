@@ -20,6 +20,14 @@ export class ListEntityReq extends jspb.Message {
   setCellidsList(value: Array<Uint8Array | string>): void;
   addCellids(value: Uint8Array | string, index?: number): Uint8Array | string;
 
+  getSize(): number;
+  setSize(value: number): void;
+
+  getState(): Uint8Array | string;
+  getState_asU8(): Uint8Array;
+  getState_asB64(): string;
+  setState(value: Uint8Array | string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ListEntityReq.AsObject;
   static toObject(includeInstance: boolean, msg: ListEntityReq): ListEntityReq.AsObject;
@@ -34,6 +42,8 @@ export namespace ListEntityReq {
   export type AsObject = {
     idsList: Array<Uint8Array | string>,
     cellidsList: Array<Uint8Array | string>,
+    size: number,
+    state: Uint8Array | string,
   }
 }
 
@@ -42,6 +52,11 @@ export class ListEntityResp extends jspb.Message {
   getEntitiesList(): Array<github_com_elojah_game_03_pkg_entity_entity_pb.E>;
   setEntitiesList(value: Array<github_com_elojah_game_03_pkg_entity_entity_pb.E>): void;
   addEntities(value?: github_com_elojah_game_03_pkg_entity_entity_pb.E, index?: number): github_com_elojah_game_03_pkg_entity_entity_pb.E;
+
+  getState(): Uint8Array | string;
+  getState_asU8(): Uint8Array;
+  getState_asB64(): string;
+  setState(value: Uint8Array | string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ListEntityResp.AsObject;
@@ -56,6 +71,7 @@ export class ListEntityResp extends jspb.Message {
 export namespace ListEntityResp {
   export type AsObject = {
     entitiesList: Array<github_com_elojah_game_03_pkg_entity_entity_pb.E.AsObject>,
+    state: Uint8Array | string,
   }
 }
 

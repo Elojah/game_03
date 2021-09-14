@@ -18,24 +18,24 @@ func (h *handler) ListEntity(ctx context.Context, req *dto.ListEntityReq) (*dto.
 		return &dto.ListEntityResp{}, status.New(codes.Internal, gerrors.ErrNullRequest{}.Error()).Err()
 	}
 
+	// #Authenticate
+	_, err := h.user.Auth(ctx)
+	if err != nil {
+		return &dto.ListEntityResp{}, status.New(codes.Unauthenticated, err.Error()).Err()
+	}
+
 	// #Check request
 	if err := req.Check(); err != nil {
 		return &dto.ListEntityResp{}, status.New(codes.InvalidArgument, gerrors.ErrNullRequest{}.Error()).Err()
 	}
 
-	// #Authenticate
-	ses, err := h.user.Auth(ctx)
-	if err != nil {
-		return &dto.ListEntityResp{}, status.New(codes.Unauthenticated, err.Error()).Err()
-	}
-
 	// #Fetch pcs
-	entities, _, err := h.entity.FetchMany(ctx,
+	entities, state, err := h.entity.FetchMany(ctx,
 		entity.Filter{
 			IDs:     req.IDs,
 			CellIDs: req.CellIDs,
 			State:   req.State,
-			Size:    len(req.IDs),
+			Size:    int(req.Size_),
 		},
 	)
 	if err != nil {
@@ -44,13 +44,9 @@ func (h *handler) ListEntity(ctx context.Context, req *dto.ListEntityReq) (*dto.
 		return &dto.ListEntityResp{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
-	// #Filter out non user entities
-	var result dto.ListEntityResp
-
-	for _, e := range entities {
-		if e.UserID == ses.UserID {
-			result.Entities = append(result.Entities, e)
-		}
+	result := dto.ListEntityResp{
+		Entities: entities,
+		State:    state,
 	}
 
 	logger.Info().Msg("success")
