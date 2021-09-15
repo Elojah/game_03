@@ -128,11 +128,11 @@ export class Game extends Scene {
                 // const eset = emap.addTilesetImage(etm, ets)
                 // const elayer = emap.createLayer('Tile Layer 1', eset, this.cameras.main.centerX, this.cameras.main.centerY);
 
-                let p = this.physics.add.sprite(
-                    this.cameras.main.centerX,
-                    this.cameras.main.centerY,
-                    ulid(this.Entity.getId_asU8()),
-                )
+                // let p = this.physics.add.sprite(
+                //     this.cameras.main.centerX,
+                //     this.cameras.main.centerY,
+                //     ulid(this.Entity.getId_asU8()),
+                // )
 
                 //     this.anims.create(Phaser.Animations.Animation())
 
