@@ -41,7 +41,7 @@ func (f filterSession) index() string {
 		cols = append(cols, f.ID.String())
 	}
 
-	return strings.Join(cols, "|")
+	return strings.Join(cols, " - ")
 }
 
 func (s Store) InsertSession(ctx context.Context, ses user.Session) error {

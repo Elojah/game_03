@@ -78,7 +78,7 @@ func (f filter) index() string {
 		cols = append(cols, strings.Join(ss, "|"))
 	}
 
-	return strings.Join(cols, "|")
+	return strings.Join(cols, " - ")
 }
 
 func (s Store) Insert(ctx context.Context, e entity.E) error {

@@ -12,7 +12,7 @@ import (
 func (h *handler) MigrateUp(ctx context.Context, req *types.StringValue) (*types.Empty, error) {
 	logger := log.With().Str("method", "migrate_up").Logger()
 
-	logger = log.With().Str("dir", req.Value).Logger()
+	logger = logger.With().Str("dir", req.Value).Logger()
 
 	if err := h.migrate.Up(ctx, req.Value); err != nil {
 		return &types.Empty{}, status.New(codes.Internal, err.Error()).Err()

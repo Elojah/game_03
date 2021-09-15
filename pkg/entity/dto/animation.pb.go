@@ -31,9 +31,10 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type ListAnimationReq struct {
-	EntityIDs []github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,1,rep,name=EntityIDs,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"EntityIDs"`
-	Size_     int64                                   `protobuf:"varint,2,opt,name=Size,proto3" json:"Size,omitempty"`
-	State     []byte                                  `protobuf:"bytes,3,opt,name=State,proto3" json:"State,omitempty"`
+	IDs       []github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,1,rep,name=IDs,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"IDs"`
+	EntityIDs []github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,2,rep,name=EntityIDs,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"EntityIDs"`
+	Size_     int64                                   `protobuf:"varint,3,opt,name=Size,proto3" json:"Size,omitempty"`
+	State     []byte                                  `protobuf:"bytes,4,opt,name=State,proto3" json:"State,omitempty"`
 }
 
 func (m *ListAnimationReq) Reset()      { *m = ListAnimationReq{} }
@@ -148,28 +149,28 @@ func init() {
 }
 
 var fileDescriptor_90611f0100162c90 = []byte{
-	// 321 bytes of a gzipped FileDescriptorProto
+	// 333 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xb2, 0x48, 0xcf, 0x2c, 0xc9,
 	0x28, 0x4d, 0xd2, 0x4b, 0xce, 0xcf, 0xd5, 0x4f, 0xcd, 0xc9, 0xcf, 0x4a, 0xcc, 0xd0, 0x4f, 0x4f,
 	0xcc, 0x4d, 0x8d, 0x37, 0x30, 0xd6, 0x2f, 0xc8, 0x4e, 0xd7, 0x4f, 0xcd, 0x2b, 0xc9, 0x2c, 0xa9,
 	0xd4, 0x4f, 0x29, 0xc9, 0xd7, 0x4f, 0xcc, 0xcb, 0xcc, 0x4d, 0x2c, 0xc9, 0xcc, 0xcf, 0xd3, 0x2b,
 	0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x4e, 0x29, 0xc9, 0x97, 0xd2, 0x45, 0xd2, 0x9e, 0x9e, 0x9f,
 	0x9e, 0xaf, 0x0f, 0x96, 0x4b, 0x2a, 0x4d, 0x03, 0xf3, 0xc0, 0x1c, 0x30, 0x0b, 0xa2, 0x47, 0xca,
-	0x84, 0x28, 0xdb, 0xd0, 0x6c, 0x52, 0xea, 0x64, 0xe4, 0x12, 0xf0, 0xc9, 0x2c, 0x2e, 0x71, 0x84,
-	0x89, 0x07, 0xa5, 0x16, 0x0a, 0x79, 0x73, 0x71, 0xba, 0x82, 0x95, 0x7b, 0xba, 0x14, 0x4b, 0x30,
-	0x2a, 0x30, 0x6b, 0xf0, 0x38, 0xe9, 0x9e, 0xb8, 0x27, 0xcf, 0x70, 0xeb, 0x9e, 0xbc, 0x2a, 0x7e,
-	0x5b, 0x4a, 0x73, 0x32, 0x53, 0xf4, 0x3c, 0x5d, 0x82, 0x10, 0xfa, 0x85, 0x84, 0xb8, 0x58, 0x82,
-	0x33, 0xab, 0x52, 0x25, 0x98, 0x14, 0x18, 0x35, 0x98, 0x83, 0xc0, 0x6c, 0x21, 0x11, 0x2e, 0xd6,
-	0xe0, 0x92, 0xc4, 0x92, 0x54, 0x09, 0x66, 0x05, 0x46, 0x0d, 0x9e, 0x20, 0x08, 0x47, 0x29, 0x89,
-	0x4b, 0x10, 0xcd, 0x29, 0xc5, 0x05, 0x42, 0xe6, 0x5c, 0x5c, 0x70, 0x01, 0x88, 0x63, 0xb8, 0x8d,
-	0x04, 0xf5, 0x20, 0xbe, 0xd1, 0x83, 0xcb, 0x38, 0xb1, 0x80, 0xdc, 0x17, 0x84, 0xa4, 0x14, 0x61,
-	0x07, 0x13, 0x92, 0x1d, 0x4e, 0x2e, 0x17, 0x1e, 0xca, 0x31, 0xdc, 0x78, 0x28, 0xc7, 0xf0, 0xe1,
-	0xa1, 0x1c, 0xe3, 0x8f, 0x87, 0x72, 0x8c, 0x0d, 0x8f, 0xe4, 0x18, 0x57, 0x3c, 0x92, 0x63, 0xdc,
-	0xf1, 0x48, 0x8e, 0xf1, 0xc0, 0x23, 0x39, 0xc6, 0x13, 0x8f, 0xe4, 0x18, 0x2f, 0x3c, 0x92, 0x63,
-	0x7c, 0xf0, 0x48, 0x8e, 0xf1, 0xc5, 0x23, 0x39, 0x86, 0x0f, 0x8f, 0xe4, 0x18, 0x27, 0x3c, 0x96,
-	0x63, 0x38, 0xf0, 0x58, 0x8e, 0xf1, 0xc2, 0x63, 0x39, 0x86, 0x1b, 0x8f, 0xe5, 0x18, 0x92, 0xd8,
-	0xc0, 0x81, 0x67, 0x0c, 0x08, 0x00, 0x00, 0xff, 0xff, 0x90, 0xab, 0x61, 0x86, 0xe2, 0x01, 0x00,
-	0x00,
+	0x84, 0x28, 0xdb, 0xd0, 0x6c, 0x52, 0x3a, 0xc5, 0xc8, 0x25, 0xe0, 0x93, 0x59, 0x5c, 0xe2, 0x08,
+	0x13, 0x0f, 0x4a, 0x2d, 0x14, 0xb2, 0xe7, 0x62, 0xf6, 0x74, 0x29, 0x96, 0x60, 0x54, 0x60, 0xd6,
+	0xe0, 0x71, 0xd2, 0x3d, 0x71, 0x4f, 0x9e, 0xe1, 0xd6, 0x3d, 0x79, 0x55, 0xfc, 0xe6, 0x97, 0xe6,
+	0x64, 0xa6, 0xe8, 0x79, 0xba, 0x04, 0x81, 0x74, 0x0a, 0x79, 0x73, 0x71, 0xba, 0x82, 0xed, 0x03,
+	0x19, 0xc3, 0x44, 0x8e, 0x31, 0x08, 0xfd, 0x42, 0x42, 0x5c, 0x2c, 0xc1, 0x99, 0x55, 0xa9, 0x12,
+	0xcc, 0x0a, 0x8c, 0x1a, 0xcc, 0x41, 0x60, 0xb6, 0x90, 0x08, 0x17, 0x6b, 0x70, 0x49, 0x62, 0x49,
+	0xaa, 0x04, 0x8b, 0x02, 0xa3, 0x06, 0x4f, 0x10, 0x84, 0xa3, 0x94, 0xc4, 0x25, 0x88, 0xe6, 0x97,
+	0xe2, 0x02, 0x21, 0x73, 0x2e, 0x2e, 0xb8, 0x00, 0xc4, 0x4f, 0xdc, 0x46, 0x82, 0x7a, 0x90, 0xe0,
+	0xd0, 0x83, 0xcb, 0x38, 0xb1, 0x80, 0xdc, 0x17, 0x84, 0xa4, 0x14, 0x61, 0x07, 0x13, 0x92, 0x1d,
+	0x4e, 0x2e, 0x17, 0x1e, 0xca, 0x31, 0xdc, 0x78, 0x28, 0xc7, 0xf0, 0xe1, 0xa1, 0x1c, 0xe3, 0x8f,
+	0x87, 0x72, 0x8c, 0x0d, 0x8f, 0xe4, 0x18, 0x57, 0x3c, 0x92, 0x63, 0xdc, 0xf1, 0x48, 0x8e, 0xf1,
+	0xc0, 0x23, 0x39, 0xc6, 0x13, 0x8f, 0xe4, 0x18, 0x2f, 0x3c, 0x92, 0x63, 0x7c, 0xf0, 0x48, 0x8e,
+	0xf1, 0xc5, 0x23, 0x39, 0x86, 0x0f, 0x8f, 0xe4, 0x18, 0x27, 0x3c, 0x96, 0x63, 0x38, 0xf0, 0x58,
+	0x8e, 0xf1, 0xc2, 0x63, 0x39, 0x86, 0x1b, 0x8f, 0xe5, 0x18, 0x92, 0xd8, 0xc0, 0xa1, 0x6f, 0x0c,
+	0x08, 0x00, 0x00, 0xff, 0xff, 0xdc, 0xa8, 0x2f, 0xda, 0x23, 0x02, 0x00, 0x00,
 }
 
 func (this *ListAnimationReq) Equal(that interface{}) bool {
@@ -190,6 +191,14 @@ func (this *ListAnimationReq) Equal(that interface{}) bool {
 		return this == nil
 	} else if this == nil {
 		return false
+	}
+	if len(this.IDs) != len(that1.IDs) {
+		return false
+	}
+	for i := range this.IDs {
+		if !this.IDs[i].Equal(that1.IDs[i]) {
+			return false
+		}
 	}
 	if len(this.EntityIDs) != len(that1.EntityIDs) {
 		return false
@@ -243,8 +252,9 @@ func (this *ListAnimationReq) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 7)
+	s := make([]string, 0, 8)
 	s = append(s, "&dto.ListAnimationReq{")
+	s = append(s, "IDs: "+fmt.Sprintf("%#v", this.IDs)+",\n")
 	s = append(s, "EntityIDs: "+fmt.Sprintf("%#v", this.EntityIDs)+",\n")
 	s = append(s, "Size_: "+fmt.Sprintf("%#v", this.Size_)+",\n")
 	s = append(s, "State: "+fmt.Sprintf("%#v", this.State)+",\n")
@@ -301,12 +311,12 @@ func (m *ListAnimationReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		copy(dAtA[i:], m.State)
 		i = encodeVarintAnimation(dAtA, i, uint64(len(m.State)))
 		i--
-		dAtA[i] = 0x1a
+		dAtA[i] = 0x22
 	}
 	if m.Size_ != 0 {
 		i = encodeVarintAnimation(dAtA, i, uint64(m.Size_))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x18
 	}
 	if len(m.EntityIDs) > 0 {
 		for iNdEx := len(m.EntityIDs) - 1; iNdEx >= 0; iNdEx-- {
@@ -314,6 +324,20 @@ func (m *ListAnimationReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 				size := m.EntityIDs[iNdEx].Size()
 				i -= size
 				if _, err := m.EntityIDs[iNdEx].MarshalTo(dAtA[i:]); err != nil {
+					return 0, err
+				}
+				i = encodeVarintAnimation(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x12
+		}
+	}
+	if len(m.IDs) > 0 {
+		for iNdEx := len(m.IDs) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size := m.IDs[iNdEx].Size()
+				i -= size
+				if _, err := m.IDs[iNdEx].MarshalTo(dAtA[i:]); err != nil {
 					return 0, err
 				}
 				i = encodeVarintAnimation(dAtA, i, uint64(size))
@@ -383,18 +407,24 @@ func encodeVarintAnimation(dAtA []byte, offset int, v uint64) int {
 func NewPopulatedListAnimationReq(r randyAnimation, easy bool) *ListAnimationReq {
 	this := &ListAnimationReq{}
 	v1 := r.Intn(10)
-	this.EntityIDs = make([]github_com_elojah_game_03_pkg_ulid.ID, v1)
+	this.IDs = make([]github_com_elojah_game_03_pkg_ulid.ID, v1)
 	for i := 0; i < v1; i++ {
 		v2 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
-		this.EntityIDs[i] = *v2
+		this.IDs[i] = *v2
+	}
+	v3 := r.Intn(10)
+	this.EntityIDs = make([]github_com_elojah_game_03_pkg_ulid.ID, v3)
+	for i := 0; i < v3; i++ {
+		v4 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
+		this.EntityIDs[i] = *v4
 	}
 	this.Size_ = int64(r.Int63())
 	if r.Intn(2) == 0 {
 		this.Size_ *= -1
 	}
-	v3 := r.Intn(100)
-	this.State = make([]byte, v3)
-	for i := 0; i < v3; i++ {
+	v5 := r.Intn(100)
+	this.State = make([]byte, v5)
+	for i := 0; i < v5; i++ {
 		this.State[i] = byte(r.Intn(256))
 	}
 	if !easy && r.Intn(10) != 0 {
@@ -405,16 +435,16 @@ func NewPopulatedListAnimationReq(r randyAnimation, easy bool) *ListAnimationReq
 func NewPopulatedListAnimationResp(r randyAnimation, easy bool) *ListAnimationResp {
 	this := &ListAnimationResp{}
 	if r.Intn(5) != 0 {
-		v4 := r.Intn(5)
-		this.Animations = make([]entity.Animation, v4)
-		for i := 0; i < v4; i++ {
-			v5 := entity.NewPopulatedAnimation(r, easy)
-			this.Animations[i] = *v5
+		v6 := r.Intn(5)
+		this.Animations = make([]entity.Animation, v6)
+		for i := 0; i < v6; i++ {
+			v7 := entity.NewPopulatedAnimation(r, easy)
+			this.Animations[i] = *v7
 		}
 	}
-	v6 := r.Intn(100)
-	this.State = make([]byte, v6)
-	for i := 0; i < v6; i++ {
+	v8 := r.Intn(100)
+	this.State = make([]byte, v8)
+	for i := 0; i < v8; i++ {
 		this.State[i] = byte(r.Intn(256))
 	}
 	if !easy && r.Intn(10) != 0 {
@@ -441,9 +471,9 @@ func randUTF8RuneAnimation(r randyAnimation) rune {
 	return rune(ru + 61)
 }
 func randStringAnimation(r randyAnimation) string {
-	v7 := r.Intn(100)
-	tmps := make([]rune, v7)
-	for i := 0; i < v7; i++ {
+	v9 := r.Intn(100)
+	tmps := make([]rune, v9)
+	for i := 0; i < v9; i++ {
 		tmps[i] = randUTF8RuneAnimation(r)
 	}
 	return string(tmps)
@@ -465,11 +495,11 @@ func randFieldAnimation(dAtA []byte, r randyAnimation, fieldNumber int, wire int
 	switch wire {
 	case 0:
 		dAtA = encodeVarintPopulateAnimation(dAtA, uint64(key))
-		v8 := r.Int63()
+		v10 := r.Int63()
 		if r.Intn(2) == 0 {
-			v8 *= -1
+			v10 *= -1
 		}
-		dAtA = encodeVarintPopulateAnimation(dAtA, uint64(v8))
+		dAtA = encodeVarintPopulateAnimation(dAtA, uint64(v10))
 	case 1:
 		dAtA = encodeVarintPopulateAnimation(dAtA, uint64(key))
 		dAtA = append(dAtA, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
@@ -500,6 +530,12 @@ func (m *ListAnimationReq) Size() (n int) {
 	}
 	var l int
 	_ = l
+	if len(m.IDs) > 0 {
+		for _, e := range m.IDs {
+			l = e.Size()
+			n += 1 + l + sovAnimation(uint64(l))
+		}
+	}
 	if len(m.EntityIDs) > 0 {
 		for _, e := range m.EntityIDs {
 			l = e.Size()
@@ -546,6 +582,7 @@ func (this *ListAnimationReq) String() string {
 		return "nil"
 	}
 	s := strings.Join([]string{`&ListAnimationReq{`,
+		`IDs:` + fmt.Sprintf("%v", this.IDs) + `,`,
 		`EntityIDs:` + fmt.Sprintf("%v", this.EntityIDs) + `,`,
 		`Size_:` + fmt.Sprintf("%v", this.Size_) + `,`,
 		`State:` + fmt.Sprintf("%v", this.State) + `,`,
@@ -608,6 +645,41 @@ func (m *ListAnimationReq) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field IDs", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnimation
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthAnimation
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAnimation
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			var v github_com_elojah_game_03_pkg_ulid.ID
+			m.IDs = append(m.IDs, v)
+			if err := m.IDs[len(m.IDs)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field EntityIDs", wireType)
 			}
 			var byteLen int
@@ -641,7 +713,7 @@ func (m *ListAnimationReq) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 2:
+		case 3:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Size_", wireType)
 			}
@@ -660,7 +732,7 @@ func (m *ListAnimationReq) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 3:
+		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field State", wireType)
 			}

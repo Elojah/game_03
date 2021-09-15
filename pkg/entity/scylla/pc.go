@@ -73,7 +73,7 @@ func (f filterPC) index() string {
 		cols = append(cols, f.WorldID.String())
 	}
 
-	return strings.Join(cols, "|")
+	return strings.Join(cols, " - ")
 }
 
 func (s Store) InsertPC(ctx context.Context, pc entity.PC) error {

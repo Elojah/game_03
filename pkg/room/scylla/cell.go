@@ -55,7 +55,7 @@ func (f filterCell) index() string {
 		cols = append(cols, strings.Join(ss, "|"))
 	}
 
-	return strings.Join(cols, "|")
+	return strings.Join(cols, " - ")
 }
 
 func (s Store) InsertCell(ctx context.Context, c room.Cell) error {

@@ -15,8 +15,6 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-var defaultSpriteID = ulid.MustParse("01F5X76JW6W6PS824SFXC9R8BB")
-
 func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.PC, error) {
 	logger := log.With().Str("method", "create_pc").Logger()
 

@@ -66,7 +66,7 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<number>}
  * @const
  */
-proto.dto.ListAnimationReq.repeatedFields_ = [1];
+proto.dto.ListAnimationReq.repeatedFields_ = [1,2];
 
 
 
@@ -99,8 +99,9 @@ proto.dto.ListAnimationReq.prototype.toObject = function(opt_includeInstance) {
  */
 proto.dto.ListAnimationReq.toObject = function(includeInstance, msg) {
   var f, obj = {
+    idsList: msg.getIdsList_asB64(),
     entityidsList: msg.getEntityidsList_asB64(),
-    size: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    size: jspb.Message.getFieldWithDefault(msg, 3, 0),
     state: msg.getState_asB64()
   };
 
@@ -140,13 +141,17 @@ proto.dto.ListAnimationReq.deserializeBinaryFromReader = function(msg, reader) {
     switch (field) {
     case 1:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.addEntityids(value);
+      msg.addIds(value);
       break;
     case 2:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.addEntityids(value);
+      break;
+    case 3:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setSize(value);
       break;
-    case 3:
+    case 4:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setState(value);
       break;
@@ -179,24 +184,31 @@ proto.dto.ListAnimationReq.prototype.serializeBinary = function() {
  */
 proto.dto.ListAnimationReq.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getEntityidsList_asU8();
+  f = message.getIdsList_asU8();
   if (f.length > 0) {
     writer.writeRepeatedBytes(
       1,
       f
     );
   }
+  f = message.getEntityidsList_asU8();
+  if (f.length > 0) {
+    writer.writeRepeatedBytes(
+      2,
+      f
+    );
+  }
   f = message.getSize();
   if (f !== 0) {
     writer.writeInt64(
-      2,
+      3,
       f
     );
   }
   f = message.getState_asU8();
   if (f.length > 0) {
     writer.writeBytes(
-      3,
+      4,
       f
     );
   }
@@ -204,16 +216,77 @@ proto.dto.ListAnimationReq.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * repeated bytes EntityIDs = 1;
+ * repeated bytes IDs = 1;
  * @return {!(Array<!Uint8Array>|Array<string>)}
  */
-proto.dto.ListAnimationReq.prototype.getEntityidsList = function() {
+proto.dto.ListAnimationReq.prototype.getIdsList = function() {
   return /** @type {!(Array<!Uint8Array>|Array<string>)} */ (jspb.Message.getRepeatedField(this, 1));
 };
 
 
 /**
- * repeated bytes EntityIDs = 1;
+ * repeated bytes IDs = 1;
+ * This is a type-conversion wrapper around `getIdsList()`
+ * @return {!Array<string>}
+ */
+proto.dto.ListAnimationReq.prototype.getIdsList_asB64 = function() {
+  return /** @type {!Array<string>} */ (jspb.Message.bytesListAsB64(
+      this.getIdsList()));
+};
+
+
+/**
+ * repeated bytes IDs = 1;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getIdsList()`
+ * @return {!Array<!Uint8Array>}
+ */
+proto.dto.ListAnimationReq.prototype.getIdsList_asU8 = function() {
+  return /** @type {!Array<!Uint8Array>} */ (jspb.Message.bytesListAsU8(
+      this.getIdsList()));
+};
+
+
+/**
+ * @param {!(Array<!Uint8Array>|Array<string>)} value
+ * @return {!proto.dto.ListAnimationReq} returns this
+ */
+proto.dto.ListAnimationReq.prototype.setIdsList = function(value) {
+  return jspb.Message.setField(this, 1, value || []);
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @param {number=} opt_index
+ * @return {!proto.dto.ListAnimationReq} returns this
+ */
+proto.dto.ListAnimationReq.prototype.addIds = function(value, opt_index) {
+  return jspb.Message.addToRepeatedField(this, 1, value, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.dto.ListAnimationReq} returns this
+ */
+proto.dto.ListAnimationReq.prototype.clearIdsList = function() {
+  return this.setIdsList([]);
+};
+
+
+/**
+ * repeated bytes EntityIDs = 2;
+ * @return {!(Array<!Uint8Array>|Array<string>)}
+ */
+proto.dto.ListAnimationReq.prototype.getEntityidsList = function() {
+  return /** @type {!(Array<!Uint8Array>|Array<string>)} */ (jspb.Message.getRepeatedField(this, 2));
+};
+
+
+/**
+ * repeated bytes EntityIDs = 2;
  * This is a type-conversion wrapper around `getEntityidsList()`
  * @return {!Array<string>}
  */
@@ -224,7 +297,7 @@ proto.dto.ListAnimationReq.prototype.getEntityidsList_asB64 = function() {
 
 
 /**
- * repeated bytes EntityIDs = 1;
+ * repeated bytes EntityIDs = 2;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getEntityidsList()`
@@ -241,7 +314,7 @@ proto.dto.ListAnimationReq.prototype.getEntityidsList_asU8 = function() {
  * @return {!proto.dto.ListAnimationReq} returns this
  */
 proto.dto.ListAnimationReq.prototype.setEntityidsList = function(value) {
-  return jspb.Message.setField(this, 1, value || []);
+  return jspb.Message.setField(this, 2, value || []);
 };
 
 
@@ -251,7 +324,7 @@ proto.dto.ListAnimationReq.prototype.setEntityidsList = function(value) {
  * @return {!proto.dto.ListAnimationReq} returns this
  */
 proto.dto.ListAnimationReq.prototype.addEntityids = function(value, opt_index) {
-  return jspb.Message.addToRepeatedField(this, 1, value, opt_index);
+  return jspb.Message.addToRepeatedField(this, 2, value, opt_index);
 };
 
 
@@ -265,11 +338,11 @@ proto.dto.ListAnimationReq.prototype.clearEntityidsList = function() {
 
 
 /**
- * optional int64 Size = 2;
+ * optional int64 Size = 3;
  * @return {number}
  */
 proto.dto.ListAnimationReq.prototype.getSize = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
@@ -278,21 +351,21 @@ proto.dto.ListAnimationReq.prototype.getSize = function() {
  * @return {!proto.dto.ListAnimationReq} returns this
  */
 proto.dto.ListAnimationReq.prototype.setSize = function(value) {
-  return jspb.Message.setProto3IntField(this, 2, value);
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
 /**
- * optional bytes State = 3;
+ * optional bytes State = 4;
  * @return {!(string|Uint8Array)}
  */
 proto.dto.ListAnimationReq.prototype.getState = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
 /**
- * optional bytes State = 3;
+ * optional bytes State = 4;
  * This is a type-conversion wrapper around `getState()`
  * @return {string}
  */
@@ -303,7 +376,7 @@ proto.dto.ListAnimationReq.prototype.getState_asB64 = function() {
 
 
 /**
- * optional bytes State = 3;
+ * optional bytes State = 4;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getState()`
@@ -320,7 +393,7 @@ proto.dto.ListAnimationReq.prototype.getState_asU8 = function() {
  * @return {!proto.dto.ListAnimationReq} returns this
  */
 proto.dto.ListAnimationReq.prototype.setState = function(value) {
-  return jspb.Message.setProto3BytesField(this, 3, value);
+  return jspb.Message.setProto3BytesField(this, 4, value);
 };
 
 

@@ -64,7 +64,7 @@ func (f filter) index() string {
 		cols = append(cols, *f.TwitchID)
 	}
 
-	return strings.Join(cols, "|")
+	return strings.Join(cols, " - ")
 }
 
 func (s Store) Insert(ctx context.Context, u user.U) error {

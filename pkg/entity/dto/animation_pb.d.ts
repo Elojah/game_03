@@ -6,6 +6,13 @@ import * as github_com_gogo_protobuf_gogoproto_gogo_pb from "../../../../../../g
 import * as github_com_elojah_game_03_pkg_entity_animation_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/animation_pb";
 
 export class ListAnimationReq extends jspb.Message {
+  clearIdsList(): void;
+  getIdsList(): Array<Uint8Array | string>;
+  getIdsList_asU8(): Array<Uint8Array>;
+  getIdsList_asB64(): Array<string>;
+  setIdsList(value: Array<Uint8Array | string>): void;
+  addIds(value: Uint8Array | string, index?: number): Uint8Array | string;
+
   clearEntityidsList(): void;
   getEntityidsList(): Array<Uint8Array | string>;
   getEntityidsList_asU8(): Array<Uint8Array>;
@@ -33,6 +40,7 @@ export class ListAnimationReq extends jspb.Message {
 
 export namespace ListAnimationReq {
   export type AsObject = {
+    idsList: Array<Uint8Array | string>,
     entityidsList: Array<Uint8Array | string>,
     size: number,
     state: Uint8Array | string,

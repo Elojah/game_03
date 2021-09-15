@@ -78,7 +78,7 @@ func (f filterUser) index() string {
 		cols = append(cols, strings.Join(ss, "|"))
 	}
 
-	return strings.Join(cols, "|")
+	return strings.Join(cols, " - ")
 }
 
 func (s Store) InsertUser(ctx context.Context, c room.User) error {

@@ -27,6 +27,7 @@ func (h *handler) ListAnimation(ctx context.Context, req *dto.ListAnimationReq) 
 	// #Fetch animations
 	ans, state, err := h.entity.FetchManyAnimation(ctx,
 		entity.FilterAnimation{
+			IDs:       req.IDs,
 			EntityIDs: req.EntityIDs,
 			State:     req.State,
 			Size:      int(req.Size_),

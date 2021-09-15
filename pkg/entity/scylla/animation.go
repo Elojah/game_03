@@ -17,6 +17,11 @@ func (f filterAnimation) where() (string, []interface{}) {
 
 	var args []interface{}
 
+	if len(f.IDs) > 0 {
+		clause = append(clause, `id IN ?`)
+		args = append(args, f.IDs)
+	}
+
 	if len(f.EntityIDs) > 0 {
 		clause = append(clause, `entity_id IN ?`)
 		args = append(args, f.EntityIDs)
@@ -37,6 +42,15 @@ func (f filterAnimation) where() (string, []interface{}) {
 func (f filterAnimation) index() string {
 	var cols []string
 
+	if f.IDs != nil {
+		ss := make([]string, 0, len(f.IDs))
+		for _, id := range f.IDs {
+			ss = append(ss, id.String())
+		}
+
+		cols = append(cols, strings.Join(ss, "|"))
+	}
+
 	if f.EntityIDs != nil {
 		ss := make([]string, 0, len(f.EntityIDs))
 		for _, id := range f.EntityIDs {
@@ -46,7 +60,7 @@ func (f filterAnimation) index() string {
 		cols = append(cols, strings.Join(ss, "|"))
 	}
 
-	return strings.Join(cols, "|")
+	return strings.Join(cols, " - ")
 }
 
 func (s Store) InsertAnimation(ctx context.Context, an entity.Animation) error {

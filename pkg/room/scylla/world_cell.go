@@ -43,10 +43,10 @@ func (f filterWorldCell) index() string {
 	var cols []string
 
 	cols = append(cols, f.WorldID.String())
-	cols = append(cols, strconv.FormatInt(f.X, 10))
-	cols = append(cols, strconv.FormatInt(f.Y, 10))
+	cols = append(cols, strconv.FormatInt(f.X, 10)) // nolint: gomnd
+	cols = append(cols, strconv.FormatInt(f.Y, 10)) // nolint: gomnd
 
-	return strings.Join(cols, "|")
+	return strings.Join(cols, " - ")
 }
 
 func (s Store) InsertWorldCell(ctx context.Context, c room.WorldCell) error {

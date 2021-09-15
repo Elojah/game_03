@@ -41,7 +41,7 @@ func (f filterWorld) index() string {
 		cols = append(cols, f.ID.String())
 	}
 
-	return strings.Join(cols, "|")
+	return strings.Join(cols, " - ")
 }
 
 func (s Store) InsertWorld(ctx context.Context, w room.World) error {

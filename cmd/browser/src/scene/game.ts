@@ -31,15 +31,20 @@ enum Orientation {
     UpLeft,
 }
 
+type GraphicEntity = {
+    E: Entity.E
+    Sprite: Phaser.Physics.Arcade.Sprite
+}
+
 export class Game extends Scene {
 
-    // Domain
+    // Self
     PC: PC.PC;
     Entity: Entity.E;
     Cell: jspb.Map<Orientation, Cell.Cell>
 
-    // // Graphic
-    // Player: any;
+    // Others
+    Entities: Map<Uint8Array, GraphicEntity>;
 
     constructor(config: string | Phaser.Types.Scenes.SettingsConfig) {
         super(config);
@@ -209,12 +214,19 @@ export class Game extends Scene {
         return this.listEntity([], [this.Entity.getCellid_asU8()], new Uint8Array())
         .then((entities: EntityDTO.ListEntityResp) => {
 
-            var entityIDs : Uint8Array[] = []
+            var animationIDs : Uint8Array[] = []
             entities.getEntitiesList().forEach((entry: Entity.E) => {
-                entityIDs.push(entry.getId_asU8())
+                this.Entities.set(entry.getId_asU8(), {
+                    E: entry,
+                    // TODO: adjust x and y with cell position
+                    Sprite: this.physics.add.sprite(entry.getX(), entry.getY(), ulid(entry.getId_asU8()))
+                })
+
+                animationIDs.push(entry.getAnimationid_asU8())
             })
 
-            return this.listAnimation(entityIDs, new Uint8Array())
+
+            return this.listAnimation(animationIDs, [], new Uint8Array())
         })
         .then((animations: AnimationDTO.ListAnimationResp) => {
             animations.getAnimationsList().forEach((an: Animation.Animation) => {
@@ -226,9 +238,12 @@ export class Game extends Scene {
                     return
                 }
 
-                const anim = this.physics.add.sprite(0, 0, sheetID)
-                // this.load.image(sheetID, 'img/' + sheetID + '.png')
+                // Load sprite sheet
+                this.load.spritesheet(sheetID, 'img/' + sheetID + '.png')
+
+                // Create animation
                 this.anims.create({
+                    key: animationID,
                     frames: this.anims.generateFrameNumbers(
                         sheetID,
                         {start: an.getStart(), end: an.getEnd()},
@@ -326,8 +341,9 @@ export class Game extends Scene {
         return prom
     }
 
-    listAnimation(EntityIDs: Uint8Array[], State: Uint8Array) {
+    listAnimation(IDs: Uint8Array[], EntityIDs: Uint8Array[], State: Uint8Array) {
         let req = new AnimationDTO.ListAnimationReq();
+        req.setIdsList(IDs)
         req.setEntityidsList(EntityIDs)
         req.setState(State)
         let md = new grpc.Metadata()

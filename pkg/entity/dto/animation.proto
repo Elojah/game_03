@@ -11,10 +11,11 @@ import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "github.com/elojah/game_03/pkg/entity/animation.proto";
 
 message ListAnimationReq {
-    repeated bytes EntityIDs             = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    repeated bytes IDs                   = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    repeated bytes EntityIDs             = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
 
-    int64 Size                           = 2;
-    bytes State                          = 3;
+    int64 Size                           = 3;
+    bytes State                          = 4;
 }
 
 message ListAnimationResp {
