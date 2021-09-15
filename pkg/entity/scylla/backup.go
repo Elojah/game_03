@@ -114,7 +114,7 @@ func (s Store) FetchBackup(ctx context.Context, f entity.FilterBackup) (entity.B
 		id, user_id, cell_id,
 		name,
 		x, y, rot, radius,
-		at
+		at,
 		animation_id, animation_at
 	FROM main.entity `)
 
@@ -151,7 +151,7 @@ func (s Store) FetchManyBackup(ctx context.Context, f entity.FilterBackup) ([]en
 		id, user_id, cell_id,
 		name,
 		x, y, rot, radius,
-		at
+		at,
 		animation_id, animation_at
 	FROM main.entity `)
 

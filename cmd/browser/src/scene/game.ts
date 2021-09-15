@@ -33,7 +33,7 @@ enum Orientation {
 
 type GraphicEntity = {
     E: Entity.E
-    Sprite: Phaser.Physics.Arcade.Sprite
+    Sprite: Phaser.GameObjects.Sprite
 }
 
 export class Game extends Scene {
@@ -213,13 +213,13 @@ export class Game extends Scene {
         // call list entities on current cell
         return this.listEntity([], [this.Entity.getCellid_asU8()], new Uint8Array())
         .then((entities: EntityDTO.ListEntityResp) => {
-
+            // load all entities
             var animationIDs : Uint8Array[] = []
             entities.getEntitiesList().forEach((entry: Entity.E) => {
                 this.Entities.set(entry.getId_asU8(), {
                     E: entry,
                     // TODO: adjust x and y with cell position
-                    Sprite: this.physics.add.sprite(entry.getX(), entry.getY(), ulid(entry.getId_asU8()))
+                    Sprite: this.add.sprite(entry.getX(), entry.getY(), ulid(entry.getId_asU8()))
                 })
 
                 animationIDs.push(entry.getAnimationid_asU8())
@@ -229,6 +229,7 @@ export class Game extends Scene {
             return this.listAnimation(animationIDs, [], new Uint8Array())
         })
         .then((animations: AnimationDTO.ListAnimationResp) => {
+            // load all current animations
             animations.getAnimationsList().forEach((an: Animation.Animation) => {
                 const animationID = ulid(an.getId_asU8())
                 const sheetID = ulid(an.getSheetid_asU8())
@@ -238,7 +239,7 @@ export class Game extends Scene {
                     return
                 }
 
-                // Load sprite sheet
+                // load sprite sheet
                 this.load.spritesheet(sheetID, 'img/' + sheetID + '.png')
 
                 // Create animation
@@ -250,6 +251,12 @@ export class Game extends Scene {
                     ),
                     frameRate: an.getRate(),
                 })
+            })
+        })
+        .then((value: void) => {
+            // associate animation to entity
+            this.Entities.forEach((ge: GraphicEntity) => {
+                ge.Sprite.anims.play(ulid(ge.E.getAnimationid_asU8()))
             })
         })
     }

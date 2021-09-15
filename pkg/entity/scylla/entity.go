@@ -114,7 +114,7 @@ func (s Store) Fetch(ctx context.Context, f entity.Filter) (entity.E, error) {
 		id, user_id, cell_id,
 		name,
 		x, y, rot, radius,
-		at
+		at,
 		animation_id, animation_at
 	FROM main.entity `)
 
@@ -151,7 +151,7 @@ func (s Store) FetchMany(ctx context.Context, f entity.Filter) ([]entity.E, []by
 		id, user_id, cell_id,
 		name,
 		x, y, rot, radius,
-		at
+		at,
 		animation_id, animation_at
 	FROM main.entity `)
 
