@@ -29,6 +29,12 @@ export class Animation extends jspb.Message {
   getEnd(): number;
   setEnd(value: number): void;
 
+  getFramewidth(): number;
+  setFramewidth(value: number): void;
+
+  getFrameheight(): number;
+  setFrameheight(value: number): void;
+
   getRate(): number;
   setRate(value: number): void;
 
@@ -50,6 +56,8 @@ export namespace Animation {
     name: string,
     start: number,
     end: number,
+    framewidth: number,
+    frameheight: number,
     rate: number,
   }
 }

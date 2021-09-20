@@ -15,6 +15,13 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+// TMP DATA FOR DEV WIP.
+var (
+	defaultSheetID = ulid.MustParse("01FG1V2REECYMF2MQHNE3589SE")
+)
+
+// !TMP DATA FOR DEV WIP
+
 func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.PC, error) {
 	logger := log.With().Str("method", "create_pc").Logger()
 
@@ -78,16 +85,39 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
+	entityID := ulid.NewID()
+	animationID := ulid.NewID()
+
+	// #Insert default idle animation
+	anim := entity.Animation{
+		ID:          animationID,
+		EntityID:    entityID,
+		SheetID:     defaultSheetID,
+		Name:        "idle",
+		Start:       0,
+		End:         4,   // nolint: gomnd
+		FrameWidth:  100, // nolint: gomnd
+		FrameHeight: 100, // nolint: gomnd
+		Rate:        4,   // nolint: gomnd
+	}
+	if err := h.entity.InsertAnimation(ctx, anim); err != nil {
+		logger.Error().Err(err).Msg("failed to create animation")
+
+		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
 	// #Insert entity backup
 	bu := entity.Backup{
-		ID:     ulid.NewID(),
-		UserID: ses.UserID,
-		CellID: c.CellID,
-		X:      0,
-		Y:      0,
-		Rot:    0,
-		Radius: 10, // nolint: gomnd
-		At:     time.Now().UnixNano(),
+		ID:          entityID,
+		UserID:      ses.UserID,
+		CellID:      c.CellID,
+		X:           0,
+		Y:           0,
+		Rot:         0,
+		Radius:      10, // nolint: gomnd
+		At:          time.Now().UnixNano(),
+		AnimationID: animationID,
+		AnimationAt: 0,
 	}
 	if err := h.entity.InsertBackup(ctx, bu); err != nil {
 		logger.Error().Err(err).Msg("failed to create entity")
@@ -96,12 +126,13 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 	}
 
 	// #Insert owner PC
-	if err := h.entity.InsertPC(ctx, entity.PC{
+	pc := entity.PC{
 		ID:       ulid.NewID(),
 		EntityID: bu.ID,
 		UserID:   ses.UserID,
 		WorldID:  ro.WorldID,
-	}); err != nil {
+	}
+	if err := h.entity.InsertPC(ctx, pc); err != nil {
 		logger.Error().Err(err).Msg("failed to create pc")
 
 		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
@@ -109,5 +140,5 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 
 	logger.Info().Msg("success")
 
-	return &entity.PC{}, nil
+	return &pc, nil
 }

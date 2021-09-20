@@ -115,7 +115,7 @@ export class Home extends Scene {
         rc?.addEventListener('click', () => {
             this.createRoom((document.getElementById('room-create-name') as HTMLInputElement).value)
             .then((ro: Room.R) => {
-                console.log('successfully created room', ro)
+                console.log('successfully created room ', ro.getId_asB64())
 
                 // reset room list
                 const roomList = document.getElementById('room-list')
@@ -200,7 +200,7 @@ export class Home extends Scene {
             const createPC = () => {
                 this.createPC(roomID)
                 .then((pc: PC.PC) => {
-                    console.log('successfully created pc', pc)
+                    console.log('successfully created pc ', pc.getId_asB64())
 
                     // reset pc list
                     const pcList = document.getElementById('pc-list')

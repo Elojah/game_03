@@ -11,16 +11,15 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// TMP DATA FOR DEV WIP
-
+// TMP DATA FOR DEV WIP.
 const (
 	height, width         = 1000, 1000
 	cellHeight, cellWidth = 200, 200
 )
 
 var (
-	defaultTilemap = ulid.MustParse("01F5X76JW6W6PS824SFXC9RZZ9")
-	defaultTileset = ulid.MustParse("01F5X76JW6W6PS824SFXC9RAA0")
+	defaultTilemap = ulid.MustParse("01FG1V2RER0529MJTZ9WE5HJF3")
+	defaultTileset = ulid.MustParse("01FG1V2RERMABQRXEYKT8T1HYV")
 )
 
 // !TMP DATA FOR DEV WIP
@@ -105,5 +104,5 @@ func (h *handler) CreateRoom(ctx context.Context, req *room.R) (*room.R, error) 
 
 	logger.Info().Msg("success")
 
-	return &room.R{}, nil
+	return req, nil
 }

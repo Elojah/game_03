@@ -80,6 +80,8 @@ CREATE TABLE main.entity_animation (
     name            varchar,
     start           bigint,
     end             bigint,
+    frame_width     bigint,
+    frame_height    bigint,
     rate            bigint
 );
 

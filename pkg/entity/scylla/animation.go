@@ -65,14 +65,14 @@ func (f filterAnimation) index() string {
 
 func (s Store) InsertAnimation(ctx context.Context, an entity.Animation) error {
 	q := s.Session.Query(
-		`INSERT INTO main.animation (
+		`INSERT INTO main.entity_animation (
 			id, entity_id, sheet_id,
 			name,
-			start, end, rate
-		) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+			start, end, frame_width, frame_height, rate
+		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 		an.ID, an.EntityID, an.SheetID,
 		an.Name,
-		an.Start, an.End, an.Rate,
+		an.Start, an.End, an.FrameWidth, an.FrameHeight, an.Rate,
 	).WithContext(ctx)
 
 	defer q.Release()
@@ -89,7 +89,7 @@ func (s Store) FetchAnimation(ctx context.Context, f entity.FilterAnimation) (en
 	b.WriteString(`SELECT
 		id, entity_id, sheet_id,
 		name,
-		start, end, rate
+		start, end, frame_width, frame_height, rate
 	FROM main.entity_animation `)
 
 	clause, args := filterAnimation(f).where()
@@ -101,7 +101,7 @@ func (s Store) FetchAnimation(ctx context.Context, f entity.FilterAnimation) (en
 	if err := q.Scan(
 		&an.ID, &an.EntityID, &an.SheetID,
 		&an.Name,
-		&an.Start, &an.End, &an.Rate,
+		&an.Start, &an.End, &an.FrameWidth, &an.FrameHeight, &an.Rate,
 	); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
 			return entity.Animation{}, gerrors.ErrNotFound{Resource: "an", Index: filterAnimation(f).index()}
@@ -122,7 +122,7 @@ func (s Store) FetchManyAnimation(ctx context.Context, f entity.FilterAnimation)
 	b.WriteString(`SELECT
 		id, entity_id, sheet_id,
 		name,
-		start, end, rate
+		start, end, frame_width, frame_height, rate
 	FROM main.entity_animation `)
 
 	clause, args := filterAnimation(f).where()
@@ -148,7 +148,7 @@ func (s Store) FetchManyAnimation(ctx context.Context, f entity.FilterAnimation)
 		if err := scanner.Scan(
 			&ans[i].ID, &ans[i].EntityID, &ans[i].SheetID,
 			&ans[i].Name,
-			&ans[i].Start, &ans[i].End, &ans[i].Rate,
+			&ans[i].Start, &ans[i].End, &ans[i].FrameWidth, &ans[i].FrameHeight, &ans[i].Rate,
 		); err != nil {
 			return nil, nil, err
 		}

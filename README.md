@@ -14,5 +14,3 @@ $ make web && ./bin/game_03_web config/web/local.json
 ```
 
 ### TODO
-- adapt db model to add `Tileset` to PC
-- Fetch PC tileset at game load

@@ -3,6 +3,8 @@
 
 var github_com_elojah_game_03_cmd_api_grpc_api_pb = require("../../../../../../github.com/elojah/game_03/cmd/api/grpc/api_pb");
 var google_protobuf_empty_pb = require("google-protobuf/google/protobuf/empty_pb");
+var github_com_elojah_game_03_pkg_entity_animation_pb = require("../../../../../../github.com/elojah/game_03/pkg/entity/animation_pb");
+var github_com_elojah_game_03_pkg_entity_entity_pb = require("../../../../../../github.com/elojah/game_03/pkg/entity/entity_pb");
 var github_com_elojah_game_03_pkg_entity_pc_pb = require("../../../../../../github.com/elojah/game_03/pkg/entity/pc_pb");
 var github_com_elojah_game_03_pkg_entity_dto_entity_pb = require("../../../../../../github.com/elojah/game_03/pkg/entity/dto/entity_pb");
 var github_com_elojah_game_03_pkg_entity_dto_animation_pb = require("../../../../../../github.com/elojah/game_03/pkg/entity/dto/animation_pb");
@@ -26,6 +28,15 @@ API.ListEntity = {
   responseStream: false,
   requestType: github_com_elojah_game_03_pkg_entity_dto_entity_pb.ListEntityReq,
   responseType: github_com_elojah_game_03_pkg_entity_dto_entity_pb.ListEntityResp
+};
+
+API.CreateAnimation = {
+  methodName: "CreateAnimation",
+  service: API,
+  requestStream: false,
+  responseStream: false,
+  requestType: github_com_elojah_game_03_pkg_entity_animation_pb.Animation,
+  responseType: google_protobuf_empty_pb.Empty
 };
 
 API.ListAnimation = {
@@ -62,6 +73,15 @@ API.ConnectPC = {
   responseStream: true,
   requestType: github_com_elojah_game_03_pkg_entity_pc_pb.PC,
   responseType: github_com_elojah_game_03_pkg_room_dto_cell_pb.Cell
+};
+
+API.CreateEntity = {
+  methodName: "CreateEntity",
+  service: API,
+  requestStream: false,
+  responseStream: false,
+  requestType: github_com_elojah_game_03_pkg_entity_entity_pb.E,
+  responseType: github_com_elojah_game_03_pkg_entity_entity_pb.E
 };
 
 API.CreateRoom = {
@@ -121,6 +141,37 @@ APIClient.prototype.listEntity = function listEntity(requestMessage, metadata, c
     callback = arguments[1];
   }
   var client = grpc.unary(API.ListEntity, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+APIClient.prototype.createAnimation = function createAnimation(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(API.CreateAnimation, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -274,6 +325,37 @@ APIClient.prototype.connectPC = function connectPC(requestMessage, metadata) {
     },
     cancel: function () {
       listeners = null;
+      client.close();
+    }
+  };
+};
+
+APIClient.prototype.createEntity = function createEntity(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(API.CreateEntity, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
       client.close();
     }
   };

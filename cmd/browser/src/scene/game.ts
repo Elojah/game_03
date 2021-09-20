@@ -68,7 +68,6 @@ export class Game extends Scene {
         //     zoomOut: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E),
         // })
 
-
         this.loadCell()
         .then(()=>{
             this.load.start()
@@ -80,7 +79,7 @@ export class Game extends Scene {
                     const tm = ulid(entry.getTilemap_asU8())
 
                     const map = this.make.tilemap({ key: tm })
-                    const set = map.addTilesetImage(tm, ts)
+                    const set = map.addTilesetImage(ts)
 
                     let x, y = 0
                     switch (key) {
