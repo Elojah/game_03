@@ -1,4 +1,4 @@
-import {Scene} from "phaser";
+import {Loader, Scene} from "phaser";
 import {grpc} from '@improbable-eng/grpc-web';
 
 import * as jspb from "google-protobuf";
@@ -44,7 +44,11 @@ export class Game extends Scene {
     Cell: jspb.Map<Orientation, Cell.Cell>
 
     // Others
-    Entities: Map<Uint8Array, GraphicEntity>;
+    Entities: Map<string, GraphicEntity>
+
+    // Specific loader for entities
+    // Default loader this.load reserved for cells
+    EntityLoader: Phaser.Loader.LoaderPlugin
 
     constructor(config: string | Phaser.Types.Scenes.SettingsConfig) {
         super(config);
@@ -53,6 +57,8 @@ export class Game extends Scene {
         this.PC =  pc.getPc() as PC.PC;
         this.Entity =  pc.getEntity() as Entity.E;
         this.Cell = new jspb.Map<Orientation, Cell.Cell>([])
+
+        this.EntityLoader = new Phaser.Loader.LoaderPlugin(this)
     }
     preload() {}
     create() {
@@ -69,12 +75,17 @@ export class Game extends Scene {
         // })
 
         this.loadCell()
-        .then(()=>{
+        .then(() => {
+            return this.connect()
+        })
+        .then(() => {
             this.load.start()
             this.load.on('complete', ()=>{
+                console.log('load cells complete')
 
                 // Create tilemap for all cells
                 this.Cell.forEach((entry:Cell.Cell, key: Orientation) => {
+                    console.log('display cell', ulid(entry.getId_asU8()))
                     const ts = ulid(entry.getTileset_asU8())
                     const tm = ulid(entry.getTilemap_asU8())
 
@@ -152,7 +163,13 @@ export class Game extends Scene {
     // Loader Cell
     async loadCell() {
         // call current pc cell
-        return this.listCell([this.Entity.getCellid_asU8()])
+        return this.listCell((() => {
+            const req = new CellDTO.ListCellReq()
+
+            req.setIdsList([this.Entity.getCellid_asU8()])
+
+            return req
+        })())
         .then((cells: CellDTO.ListCellResp) => {
             // load current pc cell
             if (cells.getCellsList().length != 1) {
@@ -178,7 +195,13 @@ export class Game extends Scene {
                 cellIDs.push(entry)
             })
 
-            return this.listCell(cellIDs)
+            return this.listCell((() => {
+                const req = new CellDTO.ListCellReq()
+
+                req.setIdsList(cellIDs)
+
+                return req
+            })())
         })
         .then((cells: CellDTO.ListCellResp) => {
             // load contiguous pc cells
@@ -207,61 +230,78 @@ export class Game extends Scene {
         })
     }
 
-    // Loader Entity
-    async loadEntity() {
+
+    // Connect
+    async connect() {
         // call list entities on current cell
-        return this.listEntity([], [this.Entity.getCellid_asU8()], new Uint8Array())
-        .then((entities: EntityDTO.ListEntityResp) => {
+        return this.connectPC((message: EntityDTO.ListEntityResp) => {
             // load all entities
             var animationIDs : Uint8Array[] = []
-            entities.getEntitiesList().forEach((entry: Entity.E) => {
-                this.Entities.set(entry.getId_asU8(), {
+            this.Entities = new Map()
+
+            message.getEntitiesList().forEach((entry: Entity.E) => {
+                this.Entities.set(ulid(entry.getId_asU8()), {
                     E: entry,
                     // TODO: adjust x and y with cell position
-                    Sprite: this.add.sprite(entry.getX(), entry.getY(), ulid(entry.getId_asU8()))
+                    Sprite: this.add.sprite(entry.getX()+50, entry.getY()+50, ulid(entry.getId_asU8()))
                 })
 
                 animationIDs.push(entry.getAnimationid_asU8())
             })
 
+            // load all animations
+            this.listAnimation((() => {
+                const req = new AnimationDTO.ListAnimationReq()
 
-            return this.listAnimation(animationIDs, [], new Uint8Array())
-        })
-        .then((animations: AnimationDTO.ListAnimationResp) => {
-            // load all current animations
-            animations.getAnimationsList().forEach((an: Animation.Animation) => {
-                const animationID = ulid(an.getId_asU8())
-                const sheetID = ulid(an.getSheetid_asU8())
+                req.setIdsList(animationIDs)
+                req.setSize(animationIDs.length)
 
-                // return if already loaded
-                if (this.anims.get(animationID).frames.length > 0) {
-                    return
-                }
+                return req
+            })())
+            .then((animations: AnimationDTO.ListAnimationResp) => {
+                // load all current animations
+                animations.getAnimationsList().forEach((an: Animation.Animation) => {
+                    const animationID = ulid(an.getId_asU8())
+                    const sheetID = ulid(an.getSheetid_asU8())
 
-                // load sprite sheet
-                this.load.spritesheet(sheetID, 'img/' + sheetID + '.png')
+                    // return if already loaded
+                    if (this.anims.exists(animationID)) {
+                        // Play entity animation
+                        this.Entities.get(ulid(an.getEntityid_asU8()))?.Sprite.play(animationID, false)
 
-                // Create animation
-                this.anims.create({
-                    key: animationID,
-                    frames: this.anims.generateFrameNumbers(
-                        sheetID,
-                        {start: an.getStart(), end: an.getEnd()},
-                    ),
-                    frameRate: an.getRate(),
+                        return
+                    }
+
+                    // load sprite sheet
+                    this.EntityLoader.spritesheet(sheetID, 'img/' + sheetID + '.png', {
+                            frameWidth: an.getFramewidth(),
+                            frameHeight: an.getFrameheight(),
+                            startFrame: an.getFramestart(),
+                            endFrame: an.getFrameend(),
+                            margin: an.getFramemargin(),
+                            spacing: an.getFramespacing(),
+                    }).once('filecomplete-spritesheet-' + sheetID, () => {
+                        // Create animation
+                        this.anims.create({
+                            key: animationID,
+                            frames: this.anims.generateFrameNumbers(
+                                sheetID,
+                                {start: an.getStart(), end: an.getEnd(), first: an.getStart()},
+                            ),
+                            frameRate: an.getRate(),
+                            repeat: -1,
+                        })
+
+                        // Play entity animation
+                        this.Entities.get(ulid(an.getEntityid_asU8()))?.Sprite.play(animationID, false)
+                    }).start()
                 })
-            })
-        })
-        .then((value: void) => {
-            // associate animation to entity
-            this.Entities.forEach((ge: GraphicEntity) => {
-                ge.Sprite.anims.play(ulid(ge.E.getAnimationid_asU8()))
             })
         })
     }
 
     // API PC
-    connectPC(callback: (message: CellDTO.Cell) => void) {
+    connectPC(callback: (message: EntityDTO.ListEntityResp) => void) {
         let req = this.PC;
         let md = new grpc.Metadata()
         md.set('token', this.registry.get('token'))
@@ -271,7 +311,7 @@ export class Game extends Scene {
                 metadata: md,
                 request: req,
                 host: 'http://localhost:8081',
-                onMessage: (message: CellDTO.Cell) => {
+                onMessage: (message: EntityDTO.ListEntityResp) => {
                     callback(message)
                 },
                 onEnd: (code: grpc.Code, message: string | undefined, trailers: grpc.Metadata)  => {
@@ -290,9 +330,7 @@ export class Game extends Scene {
     }
 
     // API Cell
-    listCell(IDs: Uint8Array[]) {
-        let req = new CellDTO.ListCellReq();
-        req.setIdsList(IDs)
+    listCell(req: CellDTO.ListCellReq) {
         let md = new grpc.Metadata()
         md.set('token', this.registry.get('token'))
 
@@ -318,11 +356,7 @@ export class Game extends Scene {
     }
 
     // API Entity
-    listEntity(IDs: Uint8Array[], CellIDs: Uint8Array[], State: Uint8Array) {
-        let req = new EntityDTO.ListEntityReq();
-        req.setIdsList(IDs)
-        req.setCellidsList(CellIDs)
-        req.setState(State)
+    listEntity(req: EntityDTO.ListEntityReq) {
         let md = new grpc.Metadata()
         md.set('token', this.registry.get('token'))
 
@@ -347,11 +381,8 @@ export class Game extends Scene {
         return prom
     }
 
-    listAnimation(IDs: Uint8Array[], EntityIDs: Uint8Array[], State: Uint8Array) {
-        let req = new AnimationDTO.ListAnimationReq();
-        req.setIdsList(IDs)
-        req.setEntityidsList(EntityIDs)
-        req.setState(State)
+    // API Animation
+    listAnimation(req: AnimationDTO.ListAnimationReq) {
         let md = new grpc.Metadata()
         md.set('token', this.registry.get('token'))
 

@@ -74,9 +74,13 @@ proto.entity.Animation.toObject = function(includeInstance, msg) {
     name: jspb.Message.getFieldWithDefault(msg, 4, ""),
     start: jspb.Message.getFieldWithDefault(msg, 5, 0),
     end: jspb.Message.getFieldWithDefault(msg, 6, 0),
-    framewidth: jspb.Message.getFieldWithDefault(msg, 7, 0),
-    frameheight: jspb.Message.getFieldWithDefault(msg, 8, 0),
-    rate: jspb.Message.getFieldWithDefault(msg, 9, 0)
+    rate: jspb.Message.getFieldWithDefault(msg, 7, 0),
+    framewidth: jspb.Message.getFieldWithDefault(msg, 8, 0),
+    frameheight: jspb.Message.getFieldWithDefault(msg, 9, 0),
+    framestart: jspb.Message.getFieldWithDefault(msg, 10, 0),
+    frameend: jspb.Message.getFieldWithDefault(msg, 11, 0),
+    framemargin: jspb.Message.getFieldWithDefault(msg, 12, 0),
+    framespacing: jspb.Message.getFieldWithDefault(msg, 13, 0)
   };
 
   if (includeInstance) {
@@ -138,16 +142,32 @@ proto.entity.Animation.deserializeBinaryFromReader = function(msg, reader) {
       msg.setEnd(value);
       break;
     case 7:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setFramewidth(value);
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setRate(value);
       break;
     case 8:
       var value = /** @type {number} */ (reader.readInt64());
-      msg.setFrameheight(value);
+      msg.setFramewidth(value);
       break;
     case 9:
-      var value = /** @type {number} */ (reader.readInt32());
-      msg.setRate(value);
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setFrameheight(value);
+      break;
+    case 10:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setFramestart(value);
+      break;
+    case 11:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setFrameend(value);
+      break;
+    case 12:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setFramemargin(value);
+      break;
+    case 13:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setFramespacing(value);
       break;
     default:
       reader.skipField();
@@ -220,24 +240,52 @@ proto.entity.Animation.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getFramewidth();
+  f = message.getRate();
   if (f !== 0) {
-    writer.writeInt64(
+    writer.writeInt32(
       7,
       f
     );
   }
-  f = message.getFrameheight();
+  f = message.getFramewidth();
   if (f !== 0) {
     writer.writeInt64(
       8,
       f
     );
   }
-  f = message.getRate();
+  f = message.getFrameheight();
   if (f !== 0) {
-    writer.writeInt32(
+    writer.writeInt64(
       9,
+      f
+    );
+  }
+  f = message.getFramestart();
+  if (f !== 0) {
+    writer.writeInt64(
+      10,
+      f
+    );
+  }
+  f = message.getFrameend();
+  if (f !== 0) {
+    writer.writeInt64(
+      11,
+      f
+    );
+  }
+  f = message.getFramemargin();
+  if (f !== 0) {
+    writer.writeInt64(
+      12,
+      f
+    );
+  }
+  f = message.getFramespacing();
+  if (f !== 0) {
+    writer.writeInt64(
+      13,
       f
     );
   }
@@ -425,10 +473,10 @@ proto.entity.Animation.prototype.setEnd = function(value) {
 
 
 /**
- * optional int64 FrameWidth = 7;
+ * optional int32 Rate = 7;
  * @return {number}
  */
-proto.entity.Animation.prototype.getFramewidth = function() {
+proto.entity.Animation.prototype.getRate = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
 };
 
@@ -437,16 +485,16 @@ proto.entity.Animation.prototype.getFramewidth = function() {
  * @param {number} value
  * @return {!proto.entity.Animation} returns this
  */
-proto.entity.Animation.prototype.setFramewidth = function(value) {
+proto.entity.Animation.prototype.setRate = function(value) {
   return jspb.Message.setProto3IntField(this, 7, value);
 };
 
 
 /**
- * optional int64 FrameHeight = 8;
+ * optional int64 FrameWidth = 8;
  * @return {number}
  */
-proto.entity.Animation.prototype.getFrameheight = function() {
+proto.entity.Animation.prototype.getFramewidth = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
 };
 
@@ -455,16 +503,16 @@ proto.entity.Animation.prototype.getFrameheight = function() {
  * @param {number} value
  * @return {!proto.entity.Animation} returns this
  */
-proto.entity.Animation.prototype.setFrameheight = function(value) {
+proto.entity.Animation.prototype.setFramewidth = function(value) {
   return jspb.Message.setProto3IntField(this, 8, value);
 };
 
 
 /**
- * optional int32 Rate = 9;
+ * optional int64 FrameHeight = 9;
  * @return {number}
  */
-proto.entity.Animation.prototype.getRate = function() {
+proto.entity.Animation.prototype.getFrameheight = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 9, 0));
 };
 
@@ -473,8 +521,80 @@ proto.entity.Animation.prototype.getRate = function() {
  * @param {number} value
  * @return {!proto.entity.Animation} returns this
  */
-proto.entity.Animation.prototype.setRate = function(value) {
+proto.entity.Animation.prototype.setFrameheight = function(value) {
   return jspb.Message.setProto3IntField(this, 9, value);
+};
+
+
+/**
+ * optional int64 FrameStart = 10;
+ * @return {number}
+ */
+proto.entity.Animation.prototype.getFramestart = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 10, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.entity.Animation} returns this
+ */
+proto.entity.Animation.prototype.setFramestart = function(value) {
+  return jspb.Message.setProto3IntField(this, 10, value);
+};
+
+
+/**
+ * optional int64 FrameEnd = 11;
+ * @return {number}
+ */
+proto.entity.Animation.prototype.getFrameend = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 11, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.entity.Animation} returns this
+ */
+proto.entity.Animation.prototype.setFrameend = function(value) {
+  return jspb.Message.setProto3IntField(this, 11, value);
+};
+
+
+/**
+ * optional int64 FrameMargin = 12;
+ * @return {number}
+ */
+proto.entity.Animation.prototype.getFramemargin = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 12, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.entity.Animation} returns this
+ */
+proto.entity.Animation.prototype.setFramemargin = function(value) {
+  return jspb.Message.setProto3IntField(this, 12, value);
+};
+
+
+/**
+ * optional int64 FrameSpacing = 13;
+ * @return {number}
+ */
+proto.entity.Animation.prototype.getFramespacing = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 13, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.entity.Animation} returns this
+ */
+proto.entity.Animation.prototype.setFramespacing = function(value) {
+  return jspb.Message.setProto3IntField(this, 13, value);
 };
 
 

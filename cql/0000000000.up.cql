@@ -80,9 +80,13 @@ CREATE TABLE main.entity_animation (
     name            varchar,
     start           bigint,
     end             bigint,
+    rate            bigint,
     frame_width     bigint,
     frame_height    bigint,
-    rate            bigint
+    frame_start     bigint,
+    frame_end       bigint,
+    frame_margin    bigint,
+    frame_spacing   bigint
 );
 
 CREATE INDEX ON main.entity_animation(entity_id);

@@ -11,12 +11,14 @@ import (
 
 	apigrpc "github.com/elojah/game_03/cmd/api/grpc"
 	entityapp "github.com/elojah/game_03/pkg/entity/app"
+	entityredis "github.com/elojah/game_03/pkg/entity/redis"
 	entityscylla "github.com/elojah/game_03/pkg/entity/scylla"
 	roomapp "github.com/elojah/game_03/pkg/room/app"
 	roomscylla "github.com/elojah/game_03/pkg/room/scylla"
 	twitchapp "github.com/elojah/game_03/pkg/twitch/app"
 	twitchhttp "github.com/elojah/game_03/pkg/twitch/http"
 	userapp "github.com/elojah/game_03/pkg/user/app"
+	userredis "github.com/elojah/game_03/pkg/user/redis"
 	userscylla "github.com/elojah/game_03/pkg/user/scylla"
 	"github.com/elojah/go-grpcweb"
 	ghttp "github.com/elojah/go-http"
@@ -125,11 +127,13 @@ func run(prog string, filename string) {
 	cs = append(cs, &twitchApp)
 
 	entityStore := &entityscylla.Store{Service: scyllas}
+	entityCache := &entityredis.Cache{Service: rediss}
 	entityApp := entityapp.App{
 		Store:          entityStore,
 		StoreAnimation: entityStore,
 		StoreBackup:    entityStore,
 		StorePC:        entityStore,
+		CachePCConnect: entityCache,
 	}
 
 	roomStore := &roomscylla.Store{Service: scyllas}
@@ -142,9 +146,11 @@ func run(prog string, filename string) {
 	}
 
 	userStore := &userscylla.Store{Service: scyllas}
+	userCache := &userredis.Cache{Service: rediss}
 	userApp := userapp.App{
 		Store:        userStore,
 		StoreSession: userStore,
+		CacheSession: userCache,
 	}
 
 	// init handler

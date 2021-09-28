@@ -58,8 +58,8 @@ github.com/elojah/go-grpc v0.0.0-20201121123916-be372e8b71f9 h1:PLe6wF9jq3+GO3DD
 github.com/elojah/go-grpc v0.0.0-20201121123916-be372e8b71f9/go.mod h1:BvDrs79DnOo/+o8OeprqP4TpTicBfVDwJvch9juTQ4A=
 github.com/elojah/go-grpcweb v0.0.0-20201122135700-fcd712e39004 h1:mu8E5203iz4nN7ZiVDlGGkuLMQV81535RRaYD8PVebA=
 github.com/elojah/go-grpcweb v0.0.0-20201122135700-fcd712e39004/go.mod h1:sE0tG3ZMIpZAhanhhYWs+VbLSibDeXYUGkBahnN7yLI=
-github.com/elojah/go-http v0.0.0-20210401202257-6d25088a2ea7 h1:cY/kqKatp7Q0mnybRcdlfDg/ZEuO8/Zrlln6fADWyf0=
-github.com/elojah/go-http v0.0.0-20210401202257-6d25088a2ea7/go.mod h1:RVbN6C6gkKVZNkYGp07xhUghFoahkDpGyFdNatI1Uzc=
+github.com/elojah/go-http v0.0.0-20210928113357-410ee2c1f9cf h1:trTAdXDAMbX6PXqspU64pXb2gVwkDJc1eSendZi/RKo=
+github.com/elojah/go-http v0.0.0-20210928113357-410ee2c1f9cf/go.mod h1:RVbN6C6gkKVZNkYGp07xhUghFoahkDpGyFdNatI1Uzc=
 github.com/elojah/go-log v0.0.0-20201121131125-8f1993f08a4b h1:Lh0A9JtmlhwA3Pt7ByTNaPZMoeTaZ6ImA5/JpibomOo=
 github.com/elojah/go-log v0.0.0-20201121131125-8f1993f08a4b/go.mod h1:Bct11u6yQ9R5WXRQqOs8NOd90ZKzrT77XfXlcIgcD7A=
 github.com/elojah/go-redis v0.0.0-20201121123746-6614a554c9b4 h1:08AdvOfjIP6nVsGC2DYZstNW7SrHF+qXi7k9FKXtQ30=

@@ -67,7 +67,14 @@ export class Home extends Scene {
         follow.setInteractive()
     }
     loadFollow(after: string, first: number) {
-        this.listFollow(after, first)
+        this.listFollow((() => {
+            const req = new TwitchDTO.ListFollowReq()
+
+            req.setAfter(after)
+            req.setFirst(first.toString())
+
+            return req
+        })())
         .then((follows: TwitchDTO.ListFollowResp) => {
             // update cursor
             const flm = document.getElementById('follow-load-more')
@@ -113,7 +120,13 @@ export class Home extends Scene {
         // init html create room button
         const rc = document.getElementById('room-create')
         rc?.addEventListener('click', () => {
-            this.createRoom((document.getElementById('room-create-name') as HTMLInputElement).value)
+            this.createRoom((() => {
+                const req = new Room.R()
+
+                req.setName((document.getElementById('room-create-name') as HTMLInputElement).value)
+
+                return req
+            })())
             .then((ro: Room.R) => {
                 console.log('successfully created room ', ro.getId_asB64())
 
@@ -130,7 +143,14 @@ export class Home extends Scene {
         })
     }
     loadRoom(size: number, state: Uint8Array) {
-        this.listRoom(size, state)
+        this.listRoom((() => {
+            const req = new RoomDTO.ListRoomReq()
+
+            req.setSize(size)
+            req.setState(state)
+
+            return req
+        })())
         .then((rooms: RoomDTO.ListRoomResp) => {
             // update cursor
             const rlm = document.getElementById('room-load-more')
@@ -184,7 +204,15 @@ export class Home extends Scene {
         pc.setInteractive()
     }
     loadPC(roomID: Uint8Array,size: number, state: Uint8Array) {
-        this.listPC(roomID, size, state)
+        this.listPC((() => {
+            const req = new PCDTO.ListPCReq()
+
+            req.setRoomid(roomID)
+            req.setSize(size)
+            req.setState(state)
+
+            return req
+        })())
         .then((pcs: PCDTO.ListPCResp) => {
 
             // update create pc
@@ -198,7 +226,13 @@ export class Home extends Scene {
 
             // add new event listener
             const createPC = () => {
-                this.createPC(roomID)
+                this.createPC((() => {
+                    const req = new PCDTO.CreatePCReq()
+
+                    req.setRoomid(roomID)
+
+                    return req
+                })())
                 .then((pc: PC.PC) => {
                     console.log('successfully created pc ', pc.getId_asB64())
 
@@ -210,7 +244,7 @@ export class Home extends Scene {
                     this.loadPC(roomID, 20, new Uint8Array)
                 })
                 .catch((err) => {
-                    console.log('failed to create pc')
+                    console.log('failed to create pc:' + err)
                 })
             }
             pcc?.addEventListener('click', createPC)
@@ -286,10 +320,7 @@ export class Home extends Scene {
     }
 
     // API Follow
-    listFollow(after: string, first: number) {
-        let req = new TwitchDTO.ListFollowReq();
-        req.setFirst(first.toString())
-        req.setAfter(after)
+    listFollow(req: TwitchDTO.ListFollowReq) {
         let md = new grpc.Metadata()
         md.set('token', this.registry.get('token'))
 
@@ -315,10 +346,7 @@ export class Home extends Scene {
     }
 
     // API Room
-    listRoom(size: number, state: Uint8Array) {
-        let req = new RoomDTO.ListRoomReq();
-        req.setSize(size)
-        req.setState(state)
+    listRoom(req: RoomDTO.ListRoomReq) {
         let md = new grpc.Metadata()
         md.set('token', this.registry.get('token'))
 
@@ -342,9 +370,7 @@ export class Home extends Scene {
 
         return prom
     }
-    createRoom(name: string) {
-        let req = new Room.R();
-        req.setName(name)
+    createRoom(req: Room.R) {
         let md = new grpc.Metadata()
         md.set('token', this.registry.get('token'))
 
@@ -370,11 +396,7 @@ export class Home extends Scene {
     }
 
     // API PC
-    listPC(roomID: Uint8Array, size: number, state: Uint8Array) {
-        let req = new PCDTO.ListPCReq();
-        req.setRoomid(roomID)
-        req.setSize(size)
-        req.setState(state)
+    listPC(req: PCDTO.ListPCReq) {
         let md = new grpc.Metadata()
         md.set('token', this.registry.get('token'))
 
@@ -398,9 +420,7 @@ export class Home extends Scene {
 
         return prom
     }
-    createPC(roomID: Uint8Array) {
-        let req = new PCDTO.CreatePCReq();
-        req.setRoomid(roomID)
+    createPC(req: PCDTO.CreatePCReq) {
         let md = new grpc.Metadata()
         md.set('token', this.registry.get('token'))
 

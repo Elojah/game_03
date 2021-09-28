@@ -5,7 +5,7 @@ go 1.15
 require (
 	github.com/elojah/go-grpc v0.0.0-20201121123916-be372e8b71f9
 	github.com/elojah/go-grpcweb v0.0.0-20201122135700-fcd712e39004
-	github.com/elojah/go-http v0.0.0-20210401202257-6d25088a2ea7
+	github.com/elojah/go-http v0.0.0-20210928113357-410ee2c1f9cf
 	github.com/elojah/go-log v0.0.0-20201121131125-8f1993f08a4b
 	github.com/elojah/go-redis v0.0.0-20201121123746-6614a554c9b4
 	github.com/elojah/go-scylla v0.0.0-20210418165157-8d6f0d33003e

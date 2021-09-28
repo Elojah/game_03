@@ -72,7 +72,7 @@ API.ConnectPC = {
   requestStream: false,
   responseStream: true,
   requestType: github_com_elojah_game_03_pkg_entity_pc_pb.PC,
-  responseType: github_com_elojah_game_03_pkg_room_dto_cell_pb.Cell
+  responseType: github_com_elojah_game_03_pkg_entity_dto_entity_pb.ListEntityResp
 };
 
 API.CreateEntity = {

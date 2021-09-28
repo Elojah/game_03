@@ -66,7 +66,7 @@ type APIConnectPC = {
   readonly requestStream: false;
   readonly responseStream: true;
   readonly requestType: typeof github_com_elojah_game_03_pkg_entity_pc_pb.PC;
-  readonly responseType: typeof github_com_elojah_game_03_pkg_room_dto_cell_pb.Cell;
+  readonly responseType: typeof github_com_elojah_game_03_pkg_entity_dto_entity_pb.ListEntityResp;
 };
 
 type APICreateEntity = {
@@ -216,7 +216,7 @@ export class APIClient {
     requestMessage: github_com_elojah_game_03_pkg_entity_dto_pc_pb.ListPCReq,
     callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_entity_dto_pc_pb.ListPCResp|null) => void
   ): UnaryResponse;
-  connectPC(requestMessage: github_com_elojah_game_03_pkg_entity_pc_pb.PC, metadata?: grpc.Metadata): ResponseStream<github_com_elojah_game_03_pkg_room_dto_cell_pb.Cell>;
+  connectPC(requestMessage: github_com_elojah_game_03_pkg_entity_pc_pb.PC, metadata?: grpc.Metadata): ResponseStream<github_com_elojah_game_03_pkg_entity_dto_entity_pb.ListEntityResp>;
   createEntity(
     requestMessage: github_com_elojah_game_03_pkg_entity_entity_pb.E,
     metadata: grpc.Metadata,

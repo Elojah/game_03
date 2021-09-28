@@ -18,9 +18,12 @@ message Animation {
 
     int64 Start        = 5;
     int64 End          = 6;
+    int32 Rate         = 7;
 
-    int64 FrameWidth   = 7;
-    int64 FrameHeight  = 8;
-
-    int32 Rate         = 9;
+    int64 FrameWidth   = 8;
+    int64 FrameHeight  = 9;
+    int64 FrameStart   = 10;
+    int64 FrameEnd     = 11;
+    int64 FrameMargin  = 12;
+    int64 FrameSpacing = 13;
 }

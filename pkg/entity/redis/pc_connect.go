@@ -14,7 +14,7 @@ import (
 const (
 	pcConnectKey = "connect_pc_entity:"
 
-	defaultExpire = 1 * time.Hour
+	defaultExpire = 1 * time.Second
 )
 
 // UpsertPCConnect implementation for pcConnect in redis.

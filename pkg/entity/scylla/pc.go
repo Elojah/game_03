@@ -116,7 +116,7 @@ func (s Store) FetchPC(ctx context.Context, f entity.FilterPC) (entity.PC, error
 }
 
 func (s Store) FetchManyPC(ctx context.Context, f entity.FilterPC) ([]entity.PC, []byte, error) {
-	if f.Size == 0 {
+	if f.Size <= 0 {
 		return nil, nil, nil
 	}
 

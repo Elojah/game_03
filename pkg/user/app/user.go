@@ -15,7 +15,7 @@ var _ user.App = (*App)(nil)
 type App struct {
 	user.Store
 	user.StoreSession
-	// user.CacheSession
+	user.CacheSession
 }
 
 func (a App) Auth(ctx context.Context) (user.Session, error) {
@@ -41,4 +41,12 @@ func (a App) Auth(ctx context.Context) (user.Session, error) {
 	}
 
 	return a.StoreSession.FetchSession(ctx, user.FilterSession{ID: &id})
+}
+
+func (a App) FetchSession(ctx context.Context, f user.FilterSession) (user.Session, error) {
+	return a.StoreSession.FetchSession(ctx, f)
+}
+
+func (a App) DeleteSession(ctx context.Context, f user.FilterSession) error {
+	return a.StoreSession.DeleteSession(ctx, f)
 }

@@ -17,6 +17,8 @@ func (f filter) where() (string, []interface{}) {
 
 	var args []interface{}
 
+	var allowFiltering bool
+
 	if f.ID != nil {
 		clause = append(clause, `id = ?`)
 		args = append(args, *f.ID)
@@ -35,6 +37,7 @@ func (f filter) where() (string, []interface{}) {
 	if len(f.CellIDs) > 0 {
 		clause = append(clause, `cell_id IN ?`)
 		args = append(args, f.CellIDs)
+		allowFiltering = true
 	}
 
 	b := strings.Builder{}
@@ -44,6 +47,10 @@ func (f filter) where() (string, []interface{}) {
 		b.WriteString("false")
 	} else {
 		b.WriteString(strings.Join(clause, " AND "))
+	}
+
+	if allowFiltering {
+		b.WriteString(" ALLOW FILTERING ")
 	}
 
 	return b.String(), args
@@ -142,7 +149,7 @@ func (s Store) Fetch(ctx context.Context, f entity.Filter) (entity.E, error) {
 }
 
 func (s Store) FetchMany(ctx context.Context, f entity.Filter) ([]entity.E, []byte, error) {
-	if f.Size == 0 {
+	if f.Size <= 0 {
 		return nil, nil, nil
 	}
 

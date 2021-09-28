@@ -68,11 +68,13 @@ func (s Store) InsertAnimation(ctx context.Context, an entity.Animation) error {
 		`INSERT INTO main.entity_animation (
 			id, entity_id, sheet_id,
 			name,
-			start, end, frame_width, frame_height, rate
-		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+			start, end, rate,
+			frame_width, frame_height, frame_start, frame_end, frame_margin, frame_spacing
+		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 		an.ID, an.EntityID, an.SheetID,
 		an.Name,
-		an.Start, an.End, an.FrameWidth, an.FrameHeight, an.Rate,
+		an.Start, an.End, an.Rate,
+		an.FrameWidth, an.FrameHeight, an.FrameStart, an.FrameEnd, an.FrameMargin, an.FrameSpacing,
 	).WithContext(ctx)
 
 	defer q.Release()
@@ -89,7 +91,8 @@ func (s Store) FetchAnimation(ctx context.Context, f entity.FilterAnimation) (en
 	b.WriteString(`SELECT
 		id, entity_id, sheet_id,
 		name,
-		start, end, frame_width, frame_height, rate
+		start, end, rate,
+		frame_width, frame_height, frame_start, frame_end, frame_margin, frame_spacing
 	FROM main.entity_animation `)
 
 	clause, args := filterAnimation(f).where()
@@ -101,7 +104,8 @@ func (s Store) FetchAnimation(ctx context.Context, f entity.FilterAnimation) (en
 	if err := q.Scan(
 		&an.ID, &an.EntityID, &an.SheetID,
 		&an.Name,
-		&an.Start, &an.End, &an.FrameWidth, &an.FrameHeight, &an.Rate,
+		&an.Start, &an.End, &an.Rate,
+		&an.FrameWidth, &an.FrameHeight, &an.FrameStart, &an.FrameEnd, &an.FrameMargin, &an.FrameSpacing,
 	); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
 			return entity.Animation{}, gerrors.ErrNotFound{Resource: "an", Index: filterAnimation(f).index()}
@@ -114,7 +118,7 @@ func (s Store) FetchAnimation(ctx context.Context, f entity.FilterAnimation) (en
 }
 
 func (s Store) FetchManyAnimation(ctx context.Context, f entity.FilterAnimation) ([]entity.Animation, []byte, error) {
-	if f.Size == 0 {
+	if f.Size <= 0 {
 		return nil, nil, nil
 	}
 
@@ -122,7 +126,8 @@ func (s Store) FetchManyAnimation(ctx context.Context, f entity.FilterAnimation)
 	b.WriteString(`SELECT
 		id, entity_id, sheet_id,
 		name,
-		start, end, frame_width, frame_height, rate
+		start, end, rate,
+		frame_width, frame_height, frame_start, frame_end, frame_margin, frame_spacing
 	FROM main.entity_animation `)
 
 	clause, args := filterAnimation(f).where()
@@ -148,7 +153,10 @@ func (s Store) FetchManyAnimation(ctx context.Context, f entity.FilterAnimation)
 		if err := scanner.Scan(
 			&ans[i].ID, &ans[i].EntityID, &ans[i].SheetID,
 			&ans[i].Name,
-			&ans[i].Start, &ans[i].End, &ans[i].FrameWidth, &ans[i].FrameHeight, &ans[i].Rate,
+			&ans[i].Start, &ans[i].End, &ans[i].Rate,
+			&ans[i].FrameWidth, &ans[i].FrameHeight,
+			&ans[i].FrameStart, &ans[i].FrameEnd,
+			&ans[i].FrameMargin, &ans[i].FrameSpacing,
 		); err != nil {
 			return nil, nil, err
 		}

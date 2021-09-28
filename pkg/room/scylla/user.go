@@ -120,7 +120,7 @@ func (s Store) FetchUser(ctx context.Context, f room.FilterUser) (room.User, err
 }
 
 func (s Store) FetchManyUser(ctx context.Context, f room.FilterUser) ([]room.User, []byte, error) {
-	if f.Size == 0 {
+	if f.Size <= 0 {
 		return nil, nil, nil
 	}
 

@@ -26,6 +26,9 @@ AUTH              = auth
 WEB               = web
 BROWSER           = browser
 
+# Static directory name for browser
+STATIC            = static
+
 PROTOC_GEN_TS      = $(DIR)/cmd/$(BROWSER)/node_modules/.bin/protoc-gen-ts
 GEN_PB_GO          = protoc -I=$(GOPATH)/src --gogoslick_out=$(GOPATH)/src
 GEN_PB_TS          = protoc -I=$(GOPATH)/src --plugin=protoc-gen-ts=$(PROTOC_GEN_TS) --js_out=import_style=commonjs,binary:$(GOPATH)/src --ts_out="service=grpc-web:$(GOPATH)/src"
@@ -79,8 +82,8 @@ web: ## Build web binary
 browser:  ## Build browser content
 	$(info $(M) building bundle browser…) @
 	$Q cd cmd/$(BROWSER) && npx webpack --config webpack.config.js
-	$Q mkdir -p bin && rm -rf bin/static && mkdir -p bin/static
-	$Q yes | cp -rf cmd/$(BROWSER)/dist/. bin/static/
+	$Q mkdir -p bin && rm -rf bin/$(STATIC) && mkdir -p bin/$(STATIC)
+	$Q yes | cp -rf cmd/$(BROWSER)/dist/. bin/$(STATIC)/
 
 # Proto lang
 .PHONY: proto-go proto-ts
@@ -149,7 +152,18 @@ test:
 	$(info $(M) running go test…) @
 	$Q $(GO) test -cover -race -v ./...
 
-# Helpers
+# Clean
+.PHONY: clean
+clean:
+	$(info $(M) cleaning bin…) @
+	$Q rm -rf bin/$(PACKAGE)_$(API)_*
+	$Q rm -rf bin/$(PACKAGE)_$(ADMIN)_*
+	$Q rm -rf bin/$(PACKAGE)_$(AUTH)_*
+	$Q rm -rf bin/$(PACKAGE)_$(WEB)_*
+	$Q rm -rf bin/$(STATIC)
+
+## Helpers
+
 .PHONY: go-version
 go-version: ## Print go version used in this makefile
 	$Q echo $(GO)

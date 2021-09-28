@@ -29,14 +29,26 @@ export class Animation extends jspb.Message {
   getEnd(): number;
   setEnd(value: number): void;
 
+  getRate(): number;
+  setRate(value: number): void;
+
   getFramewidth(): number;
   setFramewidth(value: number): void;
 
   getFrameheight(): number;
   setFrameheight(value: number): void;
 
-  getRate(): number;
-  setRate(value: number): void;
+  getFramestart(): number;
+  setFramestart(value: number): void;
+
+  getFrameend(): number;
+  setFrameend(value: number): void;
+
+  getFramemargin(): number;
+  setFramemargin(value: number): void;
+
+  getFramespacing(): number;
+  setFramespacing(value: number): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Animation.AsObject;
@@ -56,9 +68,13 @@ export namespace Animation {
     name: string,
     start: number,
     end: number,
+    rate: number,
     framewidth: number,
     frameheight: number,
-    rate: number,
+    framestart: number,
+    frameend: number,
+    framemargin: number,
+    framespacing: number,
   }
 }
 

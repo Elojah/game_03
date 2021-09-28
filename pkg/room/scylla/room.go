@@ -121,7 +121,7 @@ func (s Store) Fetch(ctx context.Context, f room.Filter) (room.R, error) {
 }
 
 func (s Store) FetchMany(ctx context.Context, f room.Filter) ([]room.R, []byte, error) {
-	if f.Size == 0 {
+	if f.Size <= 0 {
 		return nil, nil, nil
 	}
 

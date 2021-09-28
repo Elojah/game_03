@@ -83,7 +83,7 @@ func (f filterBackup) index() string {
 
 func (s Store) InsertBackup(ctx context.Context, bu entity.Backup) error {
 	q := s.Session.Query(
-		`INSERT INTO main.entity (
+		`INSERT INTO main.entity_backup (
 			id, user_id, cell_id,
 			name,
 			x, y, rot, radius,
@@ -108,6 +108,38 @@ func (s Store) InsertBackup(ctx context.Context, bu entity.Backup) error {
 	return nil
 }
 
+func (s Store) UpdateBackup(ctx context.Context, f entity.FilterBackup, bu entity.Backup) error {
+	b := strings.Builder{}
+	b.WriteString(`UPDATE main.entity_backup SET
+		user_id = ?, cell_id = ?,
+		name = ?,
+		x = ?, y = ?, rot = ?, radius = ?,
+		at = ?,
+		animation_id = ?, animation_at = ?
+	`)
+
+	clause, args := filterBackup(f).where()
+	b.WriteString(clause)
+
+	args = append([]interface{}{
+		bu.UserID, bu.CellID,
+		bu.Name,
+		bu.X, bu.Y, bu.Rot, bu.Radius,
+		bu.At,
+		bu.AnimationID, bu.AnimationAt,
+	}, args...)
+
+	q := s.Session.Query(b.String(), args...).WithContext(ctx)
+
+	defer q.Release()
+
+	if err := q.Exec(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (s Store) FetchBackup(ctx context.Context, f entity.FilterBackup) (entity.Backup, error) {
 	b := strings.Builder{}
 	b.WriteString(`SELECT
@@ -116,7 +148,7 @@ func (s Store) FetchBackup(ctx context.Context, f entity.FilterBackup) (entity.B
 		x, y, rot, radius,
 		at,
 		animation_id, animation_at
-	FROM main.entity `)
+	FROM main.entity_backup `)
 
 	clause, args := filterBackup(f).where()
 	b.WriteString(clause)
@@ -142,7 +174,7 @@ func (s Store) FetchBackup(ctx context.Context, f entity.FilterBackup) (entity.B
 }
 
 func (s Store) FetchManyBackup(ctx context.Context, f entity.FilterBackup) ([]entity.Backup, []byte, error) {
-	if f.Size == 0 {
+	if f.Size <= 0 {
 		return nil, nil, nil
 	}
 
@@ -153,7 +185,7 @@ func (s Store) FetchManyBackup(ctx context.Context, f entity.FilterBackup) ([]en
 		x, y, rot, radius,
 		at,
 		animation_id, animation_at
-	FROM main.entity `)
+	FROM main.entity_backup `)
 
 	clause, args := filterBackup(f).where()
 	b.WriteString(clause)
