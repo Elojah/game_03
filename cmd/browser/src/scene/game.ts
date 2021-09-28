@@ -74,18 +74,19 @@ export class Game extends Scene {
         //     zoomOut: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E),
         // })
 
-        this.loadCell()
+        // Connect for entity sync
+        this.connect()
         .then(() => {
-            return this.connect()
+            console.log('disconnect')
         })
+
+        // Load cell sync
+        this.loadCell()
         .then(() => {
             this.load.start()
             this.load.on('complete', ()=>{
-                console.log('load cells complete')
-
                 // Create tilemap for all cells
                 this.Cell.forEach((entry:Cell.Cell, key: Orientation) => {
-                    console.log('display cell', ulid(entry.getId_asU8()))
                     const ts = ulid(entry.getTileset_asU8())
                     const tm = ulid(entry.getTilemap_asU8())
 
