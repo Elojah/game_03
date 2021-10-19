@@ -95,14 +95,14 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 		SheetID:      defaultSheetID,
 		Name:         "idle",
 		Start:        0,
-		End:          4,  // nolint: gomnd
-		Rate:         4,  // nolint: gomnd
-		FrameWidth:   32, // nolint: gomnd
+		End:          8,  // nolint: gomnd
+		Rate:         8,  // nolint: gomnd
+		FrameWidth:   16, // nolint: gomnd
 		FrameHeight:  32, // nolint: gomnd
 		FrameStart:   0,
-		FrameEnd:     20, // nolint: gomnd
-		FrameMargin:  5,  // nolint: gomnd
-		FrameSpacing: 5,  // nolint: gomnd
+		FrameEnd:     8, // nolint: gomnd
+		FrameMargin:  0, // nolint: gomnd
+		FrameSpacing: 3, // nolint: gomnd
 	}
 	if err := h.entity.InsertAnimation(ctx, anim); err != nil {
 		logger.Error().Err(err).Msg("failed to create animation")
