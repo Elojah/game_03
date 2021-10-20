@@ -69,6 +69,15 @@ type APIConnectPC = {
   readonly responseType: typeof github_com_elojah_game_03_pkg_entity_dto_entity_pb.ListEntityResp;
 };
 
+type APIUpdatePC = {
+  readonly methodName: string;
+  readonly service: typeof API;
+  readonly requestStream: true;
+  readonly responseStream: false;
+  readonly requestType: typeof github_com_elojah_game_03_pkg_entity_pc_pb.PC;
+  readonly responseType: typeof google_protobuf_empty_pb.Empty;
+};
+
 type APICreateEntity = {
   readonly methodName: string;
   readonly service: typeof API;
@@ -131,6 +140,7 @@ export class API {
   static readonly CreatePC: APICreatePC;
   static readonly ListPC: APIListPC;
   static readonly ConnectPC: APIConnectPC;
+  static readonly UpdatePC: APIUpdatePC;
   static readonly CreateEntity: APICreateEntity;
   static readonly CreateRoom: APICreateRoom;
   static readonly ListRoom: APIListRoom;
@@ -217,6 +227,7 @@ export class APIClient {
     callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_entity_dto_pc_pb.ListPCResp|null) => void
   ): UnaryResponse;
   connectPC(requestMessage: github_com_elojah_game_03_pkg_entity_pc_pb.PC, metadata?: grpc.Metadata): ResponseStream<github_com_elojah_game_03_pkg_entity_dto_entity_pb.ListEntityResp>;
+  updatePC(metadata?: grpc.Metadata): RequestStream<github_com_elojah_game_03_pkg_entity_pc_pb.PC>;
   createEntity(
     requestMessage: github_com_elojah_game_03_pkg_entity_entity_pb.E,
     metadata: grpc.Metadata,

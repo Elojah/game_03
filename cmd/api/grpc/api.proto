@@ -36,6 +36,7 @@ service API {
     rpc ListPC(dto.ListPCReq) returns (dto.ListPCResp);
     // stream
     rpc ConnectPC(entity.PC) returns (stream dto.ListEntityResp);
+    rpc UpdatePC(stream entity.PC) returns (google.protobuf.Empty);
 
     // Entity
     rpc CreateEntity(entity.E) returns (entity.E);

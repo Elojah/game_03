@@ -75,6 +75,15 @@ API.ConnectPC = {
   responseType: github_com_elojah_game_03_pkg_entity_dto_entity_pb.ListEntityResp
 };
 
+API.UpdatePC = {
+  methodName: "UpdatePC",
+  service: API,
+  requestStream: true,
+  responseStream: false,
+  requestType: github_com_elojah_game_03_pkg_entity_pc_pb.PC,
+  responseType: google_protobuf_empty_pb.Empty
+};
+
 API.CreateEntity = {
   methodName: "CreateEntity",
   service: API,
@@ -322,6 +331,47 @@ APIClient.prototype.connectPC = function connectPC(requestMessage, metadata) {
     on: function (type, handler) {
       listeners[type].push(handler);
       return this;
+    },
+    cancel: function () {
+      listeners = null;
+      client.close();
+    }
+  };
+};
+
+APIClient.prototype.updatePC = function updatePC(metadata) {
+  var listeners = {
+    end: [],
+    status: []
+  };
+  var client = grpc.client(API.UpdatePC, {
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport
+  });
+  client.onEnd(function (status, statusMessage, trailers) {
+    listeners.status.forEach(function (handler) {
+      handler({ code: status, details: statusMessage, metadata: trailers });
+    });
+    listeners.end.forEach(function (handler) {
+      handler({ code: status, details: statusMessage, metadata: trailers });
+    });
+    listeners = null;
+  });
+  return {
+    on: function (type, handler) {
+      listeners[type].push(handler);
+      return this;
+    },
+    write: function (requestMessage) {
+      if (!client.started) {
+        client.start(metadata);
+      }
+      client.send(requestMessage);
+      return this;
+    },
+    end: function () {
+      client.finishSend();
     },
     cancel: function () {
       listeners = null;

@@ -62,17 +62,10 @@ export class Game extends Scene {
     }
     preload() {}
     create() {
-        // const cursors = this.input.keyboard.createCursorKeys()
-        // this.Controls = new Phaser.Cameras.Controls.FixedKeyControl({
-        //     // active: true,
-        //     camera: this.cameras.main,
-        //     left: cursors.left,
-        //     right: cursors.right,
-        //     up: cursors.up,
-        //     down: cursors.down,
-        //     zoomIn: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q),
-        //     zoomOut: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E),
-        // })
+        this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W).on('down', () => {this.movePC(Orientation.Up)})
+        this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S).on('down', () => {this.movePC(Orientation.Down)})
+        this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A).on('down', () => {this.movePC(Orientation.Left)})
+        this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D).on('down', () => {this.movePC(Orientation.Right)})
 
         // Connect for entity sync
         this.connect()
@@ -154,6 +147,10 @@ export class Game extends Scene {
         .catch((err)=>{
             console.log(err)
         })
+    }
+
+    movePC(o: Orientation) {
+
     }
 
     update(time: number, deltaTime: number)
