@@ -5,15 +5,15 @@ import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty
 
 import {ulid} from '../lib/ulid'
 
-import * as API from '@cmd/api/grpc/api_pb_service';
+import * as API from 'cmd/api/grpc/api_pb_service';
 
-import * as TwitchDTO from '@pkg/twitch/dto/follow_pb';
+import * as TwitchDTO from 'pkg/twitch/dto/follow_pb';
 
-import * as RoomDTO from '@pkg/room/dto/room_pb';
-import * as Room from '@pkg/room/room_pb';
+import * as RoomDTO from 'pkg/room/dto/room_pb';
+import * as Room from 'pkg/room/room_pb';
 
-import * as PCDTO from '@pkg/entity/dto/pc_pb';
-import * as PC from '@pkg/entity/pc_pb';
+import * as PCDTO from 'pkg/entity/dto/pc_pb';
+import * as PC from 'pkg/entity/pc_pb';
 
 export class Home extends Scene {
 

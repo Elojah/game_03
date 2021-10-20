@@ -5,19 +5,19 @@ import * as jspb from "google-protobuf";
 
 import {ulid} from '../lib/ulid'
 
-import * as API from '@cmd/api/grpc/api_pb_service';
+import * as API from 'cmd/api/grpc/api_pb_service';
 
-import * as Animation from '@pkg/entity/animation_pb';
-import * as AnimationDTO from '@pkg/entity/dto/animation_pb';
+import * as Animation from 'pkg/entity/animation_pb';
+import * as AnimationDTO from 'pkg/entity/dto/animation_pb';
 
-import * as Entity from '@pkg/entity/entity_pb';
-import * as EntityDTO from '@pkg/entity/dto/entity_pb';
+import * as Entity from 'pkg/entity/entity_pb';
+import * as EntityDTO from 'pkg/entity/dto/entity_pb';
 
-import * as PC from '@pkg/entity/pc_pb';
-import * as PCDTO from '@pkg/entity/dto/pc_pb';
+import * as PC from 'pkg/entity/pc_pb';
+import * as PCDTO from 'pkg/entity/dto/pc_pb';
 
-import * as Cell from '@pkg/room/cell_pb';
-import * as CellDTO from '@pkg/room/dto/cell_pb';
+import * as Cell from 'pkg/room/cell_pb';
+import * as CellDTO from 'pkg/room/dto/cell_pb';
 
 enum Orientation {
     None = 0,

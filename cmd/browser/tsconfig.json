@@ -12,8 +12,9 @@
       "noEmitOnError": true,
       "baseUrl": "./",
       "paths": {
-        "@cmd/*": ["../../cmd/*"],
-        "@pkg/*": ["../../pkg/*"]
+        "*": ["node_modules/*"],
+        "cmd/*": ["../../cmd/*"],
+        "pkg/*": ["../../pkg/*"]
       }
     }
 }

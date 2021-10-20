@@ -766,7 +766,10 @@ func (m *WorldCell) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
+			if skippy < 0 {
+				return ErrInvalidLengthCell
+			}
+			if (iNdEx + skippy) < 0 {
 				return ErrInvalidLengthCell
 			}
 			if (iNdEx + skippy) > l {
@@ -948,7 +951,7 @@ func (m *Cell) Unmarshal(dAtA []byte) error {
 					if err != nil {
 						return err
 					}
-					if (skippy < 0) || (iNdEx+skippy) < 0 {
+					if skippy < 0 {
 						return ErrInvalidLengthCell
 					}
 					if (iNdEx + skippy) > postIndex {
@@ -1031,7 +1034,10 @@ func (m *Cell) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
+			if skippy < 0 {
+				return ErrInvalidLengthCell
+			}
+			if (iNdEx + skippy) < 0 {
 				return ErrInvalidLengthCell
 			}
 			if (iNdEx + skippy) > l {

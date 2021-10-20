@@ -1,6 +1,6 @@
-import {Home} from "@cmd/browser/src/scene/home";
-import {Login} from "@cmd/browser/src/scene/login";
-import {Game} from "@cmd/browser/src/scene/game";
+import {Home} from "cmd/browser/src/scene/home";
+import {Login} from "cmd/browser/src/scene/login";
+import {Game} from "cmd/browser/src/scene/game";
 
 function main() {
 
