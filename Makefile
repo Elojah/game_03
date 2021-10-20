@@ -33,7 +33,7 @@ PROTOC_GEN_TS      = $(DIR)/cmd/$(BROWSER)/node_modules/.bin/protoc-gen-ts
 GEN_PB_GO          = protoc -I=$(GOPATH)/src --gogoslick_out=$(GOPATH)/src
 GEN_PB_TS          = protoc -I=$(GOPATH)/src --plugin=protoc-gen-ts=$(PROTOC_GEN_TS) --js_out=import_style=commonjs,binary:$(GOPATH)/src --ts_out="service=grpc-web:$(GOPATH)/src"
 GEN_PB_SERVICE_GO  = protoc -I=$(GOPATH)/src --gogoslick_out=plugins=grpc,Mgoogle/protobuf/empty.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/wrappers.proto=github.com/gogo/protobuf/types:$(GOPATH)/src
-GEN_PB_SERVICE_TS  = protoc -I=$(GOPATH)/src --plugin=protoc-gen-ts=$(PROTOC_GEN_TS) --js_out=import_style=commonjs,binary:$(GOPATH)/src --ts_out=service=grpc-web:$(GOPATH)/src
+GEN_PB_SERVICE_TS  = protoc -I=$(GOPATH)/src --plugin=protoc-gen-ts=$(PROTOC_GEN_TS) --js_out=import_style=browser,binary:$(GOPATH)/src --ts_out=service=grpc-web:$(GOPATH)/src
 
 .PHONY: all
 all: api admin auth web
