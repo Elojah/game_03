@@ -64,8 +64,8 @@ github.com/elojah/go-log v0.0.0-20201121131125-8f1993f08a4b h1:Lh0A9JtmlhwA3Pt7B
 github.com/elojah/go-log v0.0.0-20201121131125-8f1993f08a4b/go.mod h1:Bct11u6yQ9R5WXRQqOs8NOd90ZKzrT77XfXlcIgcD7A=
 github.com/elojah/go-redis v0.0.0-20201121123746-6614a554c9b4 h1:08AdvOfjIP6nVsGC2DYZstNW7SrHF+qXi7k9FKXtQ30=
 github.com/elojah/go-redis v0.0.0-20201121123746-6614a554c9b4/go.mod h1:eaLfx0eO4B4o0JcALlpL7CIFpA/y32T5/KT8rbv5m6c=
-github.com/elojah/go-scylla v0.0.0-20210418165157-8d6f0d33003e h1:tLLEHRC4q5UOmAeB1zulZyR62SIGk+GWYupX0shnvTM=
-github.com/elojah/go-scylla v0.0.0-20210418165157-8d6f0d33003e/go.mod h1:4SXgUQIZvhvZ+Sb0eOQaeKycM0pgRyV8jZEzTB9Bn4Y=
+github.com/elojah/go-scylla v0.0.0-20211020122449-c0687e5993d0 h1:EH3Ee9zZKBOsK9NSPzIjvbmYOn9BjpORk8RcCwnv7rE=
+github.com/elojah/go-scylla v0.0.0-20211020122449-c0687e5993d0/go.mod h1:4SXgUQIZvhvZ+Sb0eOQaeKycM0pgRyV8jZEzTB9Bn4Y=
 github.com/envoyproxy/go-control-plane v0.9.0/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/go-control-plane v0.9.4/go.mod h1:6rpuAdCZL397s3pYoYcLgu1mIlRU8Am5FuJP05cCM98=

@@ -8,7 +8,7 @@ require (
 	github.com/elojah/go-http v0.0.0-20210928113357-410ee2c1f9cf
 	github.com/elojah/go-log v0.0.0-20201121131125-8f1993f08a4b
 	github.com/elojah/go-redis v0.0.0-20201121123746-6614a554c9b4
-	github.com/elojah/go-scylla v0.0.0-20210418165157-8d6f0d33003e
+	github.com/elojah/go-scylla v0.0.0-20211020122449-c0687e5993d0
 	github.com/go-redis/redis/v8 v8.4.0
 	github.com/gocql/gocql v0.0.0-20201024154641-5913df4d474e
 	github.com/gogo/protobuf v1.3.1
