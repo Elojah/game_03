@@ -197,6 +197,12 @@ export class Game extends Scene {
                 break;
         }
 
+        // Move entity locally
+        const s = this.Entities.get(ulid(this.Entity.getId_asU8()))
+        s?.Sprite.setX(this.Entity.getX())
+        s?.Sprite.setY(this.Entity.getY())
+
+        // Send new entity to server
         this.EntityClient.send(this.Entity)
     }
 
