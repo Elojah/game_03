@@ -25,6 +25,8 @@ func (h *handler) UpdateEntity(stream ggrpc.API_UpdateEntityServer) error {
 		return status.New(codes.Unauthenticated, err.Error()).Err()
 	}
 
+	logger.Info().Msg("success")
+
 	for {
 		// Check context done
 		select {

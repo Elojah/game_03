@@ -37,12 +37,21 @@ type GraphicEntity = {
     Sprite: Phaser.GameObjects.Sprite
 }
 
+type Controls = {
+    Up: Phaser.Input.Keyboard.Key
+    Down: Phaser.Input.Keyboard.Key
+    Left: Phaser.Input.Keyboard.Key
+    Right: Phaser.Input.Keyboard.Key
+}
+
 export class Game extends Scene {
 
     // Self
     PC: PC.PC;
     Entity: Entity.E;
     Cell: jspb.Map<Orientation, Cell.Cell>
+    Cursors: Phaser.Types.Input.Keyboard.CursorKeys
+    // Controls: Controls;
 
     // Others
     Entities: Map<string, GraphicEntity>
@@ -50,6 +59,11 @@ export class Game extends Scene {
     // Specific loader for entities
     // Default loader this.load reserved for cells
     EntityLoader: Phaser.Loader.LoaderPlugin
+
+    // 2 buffers for entity update
+    // Rendering buffer is frozen and used by update
+    EntityBuffer: Array<string>
+    EntityBufferRendering: Array<string>
 
     // Grpc client to send entity updates to server
     EntityClient: grpc.Client<Entity.E, Entity.E>
@@ -63,13 +77,22 @@ export class Game extends Scene {
         this.Cell = new jspb.Map<Orientation, Cell.Cell>([])
 
         this.EntityLoader = new Phaser.Loader.LoaderPlugin(this)
+        this.EntityBuffer = new Array<string>()
+        this.EntityBufferRendering = new Array<string>()
     }
     preload() {}
     create() {
-        this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W).on('down', () => {this.movePC(Orientation.Up)})
-        this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S).on('down', () => {this.movePC(Orientation.Down)})
-        this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A).on('down', () => {this.movePC(Orientation.Left)})
-        this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D).on('down', () => {this.movePC(Orientation.Right)})
+        // this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W).on('down', () => {this.movePC(Orientation.Up)})
+        // this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S).on('down', () => {this.movePC(Orientation.Down)})
+        // this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A).on('down', () => {this.movePC(Orientation.Left)})
+        // this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D).on('down', () => {this.movePC(Orientation.Right)})
+
+        // this.Controls.Up = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W)
+        // this.Controls.Down = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)
+        // this.Controls.Left = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A)
+        // this.Controls.Right = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D)
+
+        this.Cursors = this.input.keyboard.createCursorKeys();
 
         // Connect for entity sync
         this.connect()
@@ -158,58 +181,73 @@ export class Game extends Scene {
         })
     }
 
-    movePC(o: Orientation) {
-        switch (o) {
-            case Orientation.None:
-                // this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-                break;
-            case Orientation.Up:
-                // this.Entity.setX(this.Entity.getX() + 0)
-                this.Entity.setY(this.Entity.getY() - 1)
-                break;
-            case Orientation.UpRight:
-                this.Entity.setX(this.Entity.getX() + 1)
-                this.Entity.setY(this.Entity.getY() - 1)
-                break;
-            case Orientation.Right:
-                this.Entity.setX(this.Entity.getX() + 1)
-                // this.Entity.setY(this.Entity.getY() - 1)
-                break;
-            case Orientation.DownRight:
-                this.Entity.setX(this.Entity.getX() + 1)
-                this.Entity.setY(this.Entity.getY() + 1)
-                break;
-            case Orientation.Down:
-                // this.Entity.setX(this.Entity.getX() + 0)
-                this.Entity.setY(this.Entity.getY() + 1)
-                break;
-            case Orientation.DownLeft:
-                this.Entity.setX(this.Entity.getX() - 0)
-                this.Entity.setY(this.Entity.getY() + 1)
-                break;
-            case Orientation.Left:
-                this.Entity.setX(this.Entity.getX() - 1)
-                // this.Entity.setY(this.Entity.getY() - 1)
-                break;
-            case Orientation.UpLeft:
-                this.Entity.setX(this.Entity.getX() - 1)
-                this.Entity.setY(this.Entity.getY() - 1)
-                break;
+    update(time: number, deltaTime: number) {
+        // Controls update
+        if (this.Cursors.up.isDown && this.Cursors.right.isDown) {
+            this.Entity.setX(this.Entity.getX() + 1)
+            this.Entity.setY(this.Entity.getY() - 1)
+
+            const e = this.Entities?.get(ulid(this.Entity.getId_asU8()))
+            e?.Sprite.play(ulid(e.E.getAnimationid_asU8()), true)
+        } else if (this.Cursors.down.isDown && this.Cursors.right.isDown) {
+            this.Entity.setX(this.Entity.getX() + 1)
+            this.Entity.setY(this.Entity.getY() + 1)
+
+            const e = this.Entities?.get(ulid(this.Entity.getId_asU8()))
+            e?.Sprite.play(ulid(e.E.getAnimationid_asU8()), true)
+        } else if (this.Cursors.down.isDown && this.Cursors.left.isDown) {
+            this.Entity.setX(this.Entity.getX() - 1)
+            this.Entity.setY(this.Entity.getY() + 1)
+
+            const e = this.Entities?.get(ulid(this.Entity.getId_asU8()))
+            e?.Sprite.play(ulid(e.E.getAnimationid_asU8()), true)
+        } else if (this.Cursors.up.isDown && this.Cursors.left.isDown) {
+            this.Entity.setX(this.Entity.getX() - 1)
+            this.Entity.setY(this.Entity.getY() - 1)
+
+            const e = this.Entities?.get(ulid(this.Entity.getId_asU8()))
+            e?.Sprite.play(ulid(e.E.getAnimationid_asU8()), true)
+        } else if (this.Cursors.up.isDown) {
+            this.Entity.setY(this.Entity.getY() - 1)
+        } else if (this.Cursors.right.isDown) {
+            this.Entity.setX(this.Entity.getX() + 1)
+        } else if (this.Cursors.down.isDown) {
+            this.Entity.setY(this.Entity.getY() + 1)
+        } else if (this.Cursors.left.isDown) {
+            this.Entity.setX(this.Entity.getX() - 1)
+        } else {
+            const e = this.Entities?.get(ulid(this.Entity.getId_asU8()))
+            e?.Sprite.play(ulid(e.E.getAnimationid_asU8()), true)
+
+            return
         }
 
         // Move entity locally
-        const s = this.Entities.get(ulid(this.Entity.getId_asU8()))
-        s?.Sprite.setX(this.Entity.getX())
-        s?.Sprite.setY(this.Entity.getY())
+        const e = this.Entities?.get(ulid(this.Entity.getId_asU8()))
+        e?.Sprite.setX(this.Entity.getX())
+        e?.Sprite.setY(this.Entity.getY())
 
         // Send new entity to server
-        this.EntityClient.send(this.Entity)
-    }
+        // this.EntityClient?.send(this.Entity)
 
-    update(time: number, deltaTime: number)
-	{
-		// this.Controls.update(deltaTime)
-	}
+        // Swap buffers
+        const temp = this.EntityBuffer
+        this.EntityBuffer = this.EntityBufferRendering
+        this.EntityBufferRendering = temp
+
+        // Entity queue update
+        this.EntityBufferRendering.forEach((value: string) => {
+            // Reconciliation for self
+            if (value == ulid(this.Entity.getId_asU8())) {
+                return
+            }
+
+            const e = this.Entities.get(value)
+            e?.Sprite.play(ulid(e.E.getAnimationid_asU8()), true)
+        })
+
+        this.EntityBufferRendering = []
+    }
 
     // Loader Cell
     async loadCell() {
@@ -317,7 +355,7 @@ export class Game extends Scene {
                     // return if already loaded
                     if (this.anims.exists(animationID)) {
                         // Play entity animation
-                        this.Entities.get(ulid(an.getEntityid_asU8()))?.Sprite.play(animationID, false)
+                        this.EntityBuffer.push(ulid(an.getEntityid_asU8()))
 
                         return
                     }
@@ -343,7 +381,7 @@ export class Game extends Scene {
                         })
 
                         // Play entity animation
-                        this.Entities.get(ulid(an.getEntityid_asU8()))?.Sprite.play(animationID, false)
+                        this.EntityBuffer.push(ulid(an.getEntityid_asU8()))
                     }).start()
                 })
             })
