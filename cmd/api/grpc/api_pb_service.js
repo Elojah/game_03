@@ -21,6 +21,24 @@ var API = (function () {
   return API;
 }());
 
+API.ConnectPC = {
+  methodName: "ConnectPC",
+  service: API,
+  requestStream: false,
+  responseStream: true,
+  requestType: github_com_elojah_game_03_pkg_entity_pc_pb.PC,
+  responseType: github_com_elojah_game_03_pkg_entity_dto_entity_pb.ListEntityResp
+};
+
+API.UpdateEntity = {
+  methodName: "UpdateEntity",
+  service: API,
+  requestStream: true,
+  responseStream: false,
+  requestType: github_com_elojah_game_03_pkg_entity_entity_pb.E,
+  responseType: google_protobuf_empty_pb.Empty
+};
+
 API.ListEntity = {
   methodName: "ListEntity",
   service: API,
@@ -64,24 +82,6 @@ API.ListPC = {
   responseStream: false,
   requestType: github_com_elojah_game_03_pkg_entity_dto_pc_pb.ListPCReq,
   responseType: github_com_elojah_game_03_pkg_entity_dto_pc_pb.ListPCResp
-};
-
-API.ConnectPC = {
-  methodName: "ConnectPC",
-  service: API,
-  requestStream: false,
-  responseStream: true,
-  requestType: github_com_elojah_game_03_pkg_entity_pc_pb.PC,
-  responseType: github_com_elojah_game_03_pkg_entity_dto_entity_pb.ListEntityResp
-};
-
-API.UpdatePC = {
-  methodName: "UpdatePC",
-  service: API,
-  requestStream: true,
-  responseStream: false,
-  requestType: github_com_elojah_game_03_pkg_entity_pc_pb.PC,
-  responseType: google_protobuf_empty_pb.Empty
 };
 
 API.CreateEntity = {
@@ -144,6 +144,86 @@ function APIClient(serviceHost, options) {
   this.serviceHost = serviceHost;
   this.options = options || {};
 }
+
+APIClient.prototype.connectPC = function connectPC(requestMessage, metadata) {
+  var listeners = {
+    data: [],
+    end: [],
+    status: []
+  };
+  var client = grpc.invoke(API.ConnectPC, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onMessage: function (responseMessage) {
+      listeners.data.forEach(function (handler) {
+        handler(responseMessage);
+      });
+    },
+    onEnd: function (status, statusMessage, trailers) {
+      listeners.status.forEach(function (handler) {
+        handler({ code: status, details: statusMessage, metadata: trailers });
+      });
+      listeners.end.forEach(function (handler) {
+        handler({ code: status, details: statusMessage, metadata: trailers });
+      });
+      listeners = null;
+    }
+  });
+  return {
+    on: function (type, handler) {
+      listeners[type].push(handler);
+      return this;
+    },
+    cancel: function () {
+      listeners = null;
+      client.close();
+    }
+  };
+};
+
+APIClient.prototype.updateEntity = function updateEntity(metadata) {
+  var listeners = {
+    end: [],
+    status: []
+  };
+  var client = grpc.client(API.UpdateEntity, {
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport
+  });
+  client.onEnd(function (status, statusMessage, trailers) {
+    listeners.status.forEach(function (handler) {
+      handler({ code: status, details: statusMessage, metadata: trailers });
+    });
+    listeners.end.forEach(function (handler) {
+      handler({ code: status, details: statusMessage, metadata: trailers });
+    });
+    listeners = null;
+  });
+  return {
+    on: function (type, handler) {
+      listeners[type].push(handler);
+      return this;
+    },
+    write: function (requestMessage) {
+      if (!client.started) {
+        client.start(metadata);
+      }
+      client.send(requestMessage);
+      return this;
+    },
+    end: function () {
+      client.finishSend();
+    },
+    cancel: function () {
+      listeners = null;
+      client.close();
+    }
+  };
+};
 
 APIClient.prototype.listEntity = function listEntity(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
@@ -295,86 +375,6 @@ APIClient.prototype.listPC = function listPC(requestMessage, metadata, callback)
   return {
     cancel: function () {
       callback = null;
-      client.close();
-    }
-  };
-};
-
-APIClient.prototype.connectPC = function connectPC(requestMessage, metadata) {
-  var listeners = {
-    data: [],
-    end: [],
-    status: []
-  };
-  var client = grpc.invoke(API.ConnectPC, {
-    request: requestMessage,
-    host: this.serviceHost,
-    metadata: metadata,
-    transport: this.options.transport,
-    debug: this.options.debug,
-    onMessage: function (responseMessage) {
-      listeners.data.forEach(function (handler) {
-        handler(responseMessage);
-      });
-    },
-    onEnd: function (status, statusMessage, trailers) {
-      listeners.status.forEach(function (handler) {
-        handler({ code: status, details: statusMessage, metadata: trailers });
-      });
-      listeners.end.forEach(function (handler) {
-        handler({ code: status, details: statusMessage, metadata: trailers });
-      });
-      listeners = null;
-    }
-  });
-  return {
-    on: function (type, handler) {
-      listeners[type].push(handler);
-      return this;
-    },
-    cancel: function () {
-      listeners = null;
-      client.close();
-    }
-  };
-};
-
-APIClient.prototype.updatePC = function updatePC(metadata) {
-  var listeners = {
-    end: [],
-    status: []
-  };
-  var client = grpc.client(API.UpdatePC, {
-    host: this.serviceHost,
-    metadata: metadata,
-    transport: this.options.transport
-  });
-  client.onEnd(function (status, statusMessage, trailers) {
-    listeners.status.forEach(function (handler) {
-      handler({ code: status, details: statusMessage, metadata: trailers });
-    });
-    listeners.end.forEach(function (handler) {
-      handler({ code: status, details: statusMessage, metadata: trailers });
-    });
-    listeners = null;
-  });
-  return {
-    on: function (type, handler) {
-      listeners[type].push(handler);
-      return this;
-    },
-    write: function (requestMessage) {
-      if (!client.started) {
-        client.start(metadata);
-      }
-      client.send(requestMessage);
-      return this;
-    },
-    end: function () {
-      client.finishSend();
-    },
-    cancel: function () {
-      listeners = null;
       client.close();
     }
   };

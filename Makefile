@@ -90,7 +90,7 @@ browser:  ## Build browser content
 proto-go:    PB_LANG = GO
 proto-ts:    PB_LANG = TS
 proto-go proto-ts: ## Regenerate protobuf files
-	$(info $(M) running protobuf…) @
+	$(info $(M) running protobuf $(PB_LANG)…) @
 	$(info $(M) generate utils…) @
 	$Q $(GEN_PB_$(PB_LANG)) github.com/gogo/protobuf/gogoproto/gogo.proto
 	$(info $(M) generate domain…) @

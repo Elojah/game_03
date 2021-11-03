@@ -18,6 +18,7 @@ import * as PCDTO from 'pkg/entity/dto/pc_pb';
 
 import * as Cell from 'pkg/room/cell_pb';
 import * as CellDTO from 'pkg/room/dto/cell_pb';
+import { client } from "@improbable-eng/grpc-web/dist/typings/client";
 
 enum Orientation {
     None = 0,
@@ -50,6 +51,9 @@ export class Game extends Scene {
     // Default loader this.load reserved for cells
     EntityLoader: Phaser.Loader.LoaderPlugin
 
+    // Grpc client to send entity updates to server
+    EntityClient: grpc.Client<Entity.E, Entity.E>
+
     constructor(config: string | Phaser.Types.Scenes.SettingsConfig) {
         super(config);
     }
@@ -70,7 +74,13 @@ export class Game extends Scene {
         // Connect for entity sync
         this.connect()
         .then(() => {
-            console.log('disconnect')
+            console.log('disconnect from server')
+        })
+
+        // Connect for entity send
+        this.connectUpdate()
+        .then(() => {
+            console.log('disconnect to server')
         })
 
         // Load cell sync
@@ -119,7 +129,6 @@ export class Game extends Scene {
                             x = -map.widthInPixels
                             y = -map.heightInPixels
                             break;
-
                     }
 
                     const layer = map.createLayer('Tile Layer 1', set, x, y);
@@ -150,7 +159,45 @@ export class Game extends Scene {
     }
 
     movePC(o: Orientation) {
+        switch (o) {
+            case Orientation.None:
+                // this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+                break;
+            case Orientation.Up:
+                // this.Entity.setX(this.Entity.getX() + 0)
+                this.Entity.setY(this.Entity.getY() - 1)
+                break;
+            case Orientation.UpRight:
+                this.Entity.setX(this.Entity.getX() + 1)
+                this.Entity.setY(this.Entity.getY() - 1)
+                break;
+            case Orientation.Right:
+                this.Entity.setX(this.Entity.getX() + 1)
+                // this.Entity.setY(this.Entity.getY() - 1)
+                break;
+            case Orientation.DownRight:
+                this.Entity.setX(this.Entity.getX() + 1)
+                this.Entity.setY(this.Entity.getY() + 1)
+                break;
+            case Orientation.Down:
+                // this.Entity.setX(this.Entity.getX() + 0)
+                this.Entity.setY(this.Entity.getY() + 1)
+                break;
+            case Orientation.DownLeft:
+                this.Entity.setX(this.Entity.getX() - 0)
+                this.Entity.setY(this.Entity.getY() + 1)
+                break;
+            case Orientation.Left:
+                this.Entity.setX(this.Entity.getX() - 1)
+                // this.Entity.setY(this.Entity.getY() - 1)
+                break;
+            case Orientation.UpLeft:
+                this.Entity.setX(this.Entity.getX() - 1)
+                this.Entity.setY(this.Entity.getY() - 1)
+                break;
+        }
 
+        this.EntityClient.send(this.Entity)
     }
 
     update(time: number, deltaTime: number)
@@ -228,7 +275,6 @@ export class Game extends Scene {
         })
     }
 
-
     // Connect
     async connect() {
         // call list entities on current cell
@@ -298,6 +344,15 @@ export class Game extends Scene {
         })
     }
 
+    // Update server
+    async connectUpdate() {
+        // call update entity
+        return this.updateEntity()
+        .then((client: grpc.Client<Entity.E, Entity.E>) => {
+            this.EntityClient = client
+        })
+    }
+
     // API PC
     connectPC(callback: (message: EntityDTO.ListEntityResp) => void) {
         let req = this.PC;
@@ -321,6 +376,22 @@ export class Game extends Scene {
 
                     resolve(message)
                 }
+            });
+        })
+
+        return prom
+    }
+
+    // API PC
+    updateEntity() {
+        let req = this.PC;
+        let md = new grpc.Metadata()
+        md.set('token', this.registry.get('token'))
+
+        const prom = new Promise<grpc.Client<Entity.E, Entity.E>>((resolve, reject) => {
+            grpc.client(API.API.UpdateEntity, {
+                // metadata: md,
+                host: 'http://localhost:8081',
             });
         })
 

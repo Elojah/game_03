@@ -24,6 +24,10 @@ import "github.com/elojah/game_03/pkg/twitch/dto/follow.proto";
 
 
 service API {
+    // STREAM LOOPS
+    rpc ConnectPC(entity.PC) returns (stream dto.ListEntityResp);
+    rpc UpdateEntity(stream entity.E) returns (google.protobuf.Empty);
+
     // Entity
     rpc ListEntity(dto.ListEntityReq) returns (dto.ListEntityResp);
 
@@ -34,9 +38,6 @@ service API {
     // PC
     rpc CreatePC(dto.CreatePCReq) returns (entity.PC);
     rpc ListPC(dto.ListPCReq) returns (dto.ListPCResp);
-    // stream
-    rpc ConnectPC(entity.PC) returns (stream dto.ListEntityResp);
-    rpc UpdatePC(stream entity.PC) returns (google.protobuf.Empty);
 
     // Entity
     rpc CreateEntity(entity.E) returns (entity.E);
