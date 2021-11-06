@@ -1,6 +1,6 @@
 # game_03
 
-(WIP)
+Development setup:
 
 ```sh
 $ docker-compose up -d # wait ~10 sec for scylla to boot
@@ -13,4 +13,11 @@ $ make browser
 $ make web && ./bin/game_03_web config/web/local.json
 ```
 
+```sh
+$ grpcurl -v -import-path ../../.. -proto cmd/api/grpc/api.proto -d '{}' -plaintext localhost:8081 grpc.API/CreateAnimation # import default animations
+```
+
+
 ### TODO
+
+- Add default animations as JSON in some file somewhere + add default animations with at createPC

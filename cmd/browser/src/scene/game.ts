@@ -49,11 +49,14 @@ export class Game extends Scene {
     // Self
     PC: PC.PC;
     Entity: Entity.E;
+    EntityID: string;
+
     Cell: jspb.Map<Orientation, Cell.Cell>
     Cursors: Phaser.Types.Input.Keyboard.CursorKeys
     // Controls: Controls;
 
     // Others
+    Animations: Map<string, string>
     Entities: Map<string, GraphicEntity>
 
     // Specific loader for entities
@@ -74,7 +77,11 @@ export class Game extends Scene {
     init (pc: PCDTO.PC) {
         this.PC =  pc.getPc() as PC.PC;
         this.Entity =  pc.getEntity() as Entity.E;
+        this.EntityID = ulid(this.Entity.getId_asU8())
         this.Cell = new jspb.Map<Orientation, Cell.Cell>([])
+
+        this.Animations = new Map()
+        this.Entities = new Map()
 
         this.EntityLoader = new Phaser.Loader.LoaderPlugin(this)
         this.EntityBuffer = new Array<string>()
@@ -182,50 +189,48 @@ export class Game extends Scene {
     }
 
     update(time: number, deltaTime: number) {
-        // Controls update
+        // Controls + local anim update
+        let animationID = null
+
         if (this.Cursors.up.isDown && this.Cursors.right.isDown) {
             this.Entity.setX(this.Entity.getX() + 1)
             this.Entity.setY(this.Entity.getY() - 1)
-
-            const e = this.Entities?.get(ulid(this.Entity.getId_asU8()))
-            e?.Sprite.play(ulid(e.E.getAnimationid_asU8()), true)
+            animationID = this.Animations.get(this.EntityID + ':' + 'up')
         } else if (this.Cursors.down.isDown && this.Cursors.right.isDown) {
             this.Entity.setX(this.Entity.getX() + 1)
             this.Entity.setY(this.Entity.getY() + 1)
-
-            const e = this.Entities?.get(ulid(this.Entity.getId_asU8()))
-            e?.Sprite.play(ulid(e.E.getAnimationid_asU8()), true)
+            animationID = this.Animations.get(this.EntityID + ':' + 'down')
         } else if (this.Cursors.down.isDown && this.Cursors.left.isDown) {
             this.Entity.setX(this.Entity.getX() - 1)
             this.Entity.setY(this.Entity.getY() + 1)
-
-            const e = this.Entities?.get(ulid(this.Entity.getId_asU8()))
-            e?.Sprite.play(ulid(e.E.getAnimationid_asU8()), true)
+            animationID = this.Animations.get(this.EntityID + ':' + 'down')
         } else if (this.Cursors.up.isDown && this.Cursors.left.isDown) {
             this.Entity.setX(this.Entity.getX() - 1)
             this.Entity.setY(this.Entity.getY() - 1)
-
-            const e = this.Entities?.get(ulid(this.Entity.getId_asU8()))
-            e?.Sprite.play(ulid(e.E.getAnimationid_asU8()), true)
+            animationID = this.Animations.get(this.EntityID + ':' + 'up')
         } else if (this.Cursors.up.isDown) {
             this.Entity.setY(this.Entity.getY() - 1)
+            animationID = this.Animations.get(this.EntityID + ':' + 'up')
         } else if (this.Cursors.right.isDown) {
             this.Entity.setX(this.Entity.getX() + 1)
+            animationID = this.Animations.get(this.EntityID + ':' + 'right')
         } else if (this.Cursors.down.isDown) {
             this.Entity.setY(this.Entity.getY() + 1)
+            animationID = this.Animations.get(this.EntityID + ':' + 'down')
         } else if (this.Cursors.left.isDown) {
             this.Entity.setX(this.Entity.getX() - 1)
+            animationID = this.Animations.get(this.EntityID + ':' + 'left')
         } else {
-            const e = this.Entities?.get(ulid(this.Entity.getId_asU8()))
-            e?.Sprite.play(ulid(e.E.getAnimationid_asU8()), true)
-
-            return
+            animationID = this.Animations.get(this.EntityID + ':' + 'idle')
         }
 
         // Move entity locally
-        const e = this.Entities?.get(ulid(this.Entity.getId_asU8()))
+        const e = this.Entities?.get(this.EntityID)
         e?.Sprite.setX(this.Entity.getX())
         e?.Sprite.setY(this.Entity.getY())
+        if (animationID) {
+            e?.Sprite.play(animationID, true)
+        }
 
         // Send new entity to server
         // this.EntityClient?.send(this.Entity)
@@ -236,15 +241,15 @@ export class Game extends Scene {
         this.EntityBufferRendering = temp
 
         // Entity queue update
-        this.EntityBufferRendering.forEach((value: string) => {
-            // Reconciliation for self
-            if (value == ulid(this.Entity.getId_asU8())) {
-                return
-            }
+        // this.EntityBufferRendering.forEach((value: string) => {
+        //     // Reconciliation for self
+        //     if (value == ulid(this.Entity.getId_asU8())) {
+        //         return
+        //     }
 
-            const e = this.Entities.get(value)
-            e?.Sprite.play(ulid(e.E.getAnimationid_asU8()), true)
-        })
+        //     const e = this.Entities.get(value)
+        //     e?.Sprite.play(ulid(e.E.getAnimationid_asU8()), true)
+        // })
 
         this.EntityBufferRendering = []
     }
@@ -324,25 +329,42 @@ export class Game extends Scene {
         // call list entities on current cell
         return this.connectPC((message: EntityDTO.ListEntityResp) => {
             // load all entities
-            var animationIDs : Uint8Array[] = []
-            this.Entities = new Map()
+            var entityIDs : Uint8Array[] = []
 
             message.getEntitiesList().forEach((entry: Entity.E) => {
-                this.Entities.set(ulid(entry.getId_asU8()), {
-                    E: entry,
-                    // TODO: adjust x and y with cell position
-                    Sprite: this.add.sprite(entry.getX()+50, entry.getY()+50, ulid(entry.getId_asU8()))
-                })
+                const id = ulid(entry.getId_asU8())
 
-                animationIDs.push(entry.getAnimationid_asU8())
+                if (this.Entities.has(id)) {
+                    // update state only
+                    this.Entities.get(id)!.E = entry
+                } else {
+                    // create associated sprite
+                    this.Entities.set(id, {
+                        E: entry,
+                        // TODO: adjust x and y with cell position
+                        Sprite: this.add.sprite(entry.getX(), entry.getY(), ulid(entry.getId_asU8()))
+                    })
+
+                    // load entity animations
+                    entityIDs.push(entry.getId_asU8())
+                }
+
             })
+
+            if (entityIDs.length == 0) {
+                this.EntityBuffer.push(...entityIDs.map((id: Uint8Array) => {
+                    return ulid(id)
+                }))
+
+                return
+            }
 
             // load all animations
             this.listAnimation((() => {
                 const req = new AnimationDTO.ListAnimationReq()
 
-                req.setIdsList(animationIDs)
-                req.setSize(animationIDs.length)
+                req.setEntityidsList(entityIDs)
+                req.setSize(1000)
 
                 return req
             })())
@@ -379,6 +401,9 @@ export class Game extends Scene {
                             frameRate: an.getRate(),
                             repeat: -1,
                         })
+
+                        // Add animation to mapper
+                        this.Animations.set(ulid(an.getEntityid_asU8())+":"+an.getName(), animationID)
 
                         // Play entity animation
                         this.EntityBuffer.push(ulid(an.getEntityid_asU8()))

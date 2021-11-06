@@ -17,6 +17,8 @@ func (f filterAnimation) where() (string, []interface{}) {
 
 	var args []interface{}
 
+	var allowFiltering bool
+
 	if len(f.IDs) > 0 {
 		clause = append(clause, `id IN ?`)
 		args = append(args, f.IDs)
@@ -25,6 +27,7 @@ func (f filterAnimation) where() (string, []interface{}) {
 	if len(f.EntityIDs) > 0 {
 		clause = append(clause, `entity_id IN ?`)
 		args = append(args, f.EntityIDs)
+		allowFiltering = true
 	}
 
 	b := strings.Builder{}
@@ -34,6 +37,10 @@ func (f filterAnimation) where() (string, []interface{}) {
 		b.WriteString("false")
 	} else {
 		b.WriteString(strings.Join(clause, " AND "))
+	}
+
+	if allowFiltering {
+		b.WriteString(" ALLOW FILTERING ")
 	}
 
 	return b.String(), args

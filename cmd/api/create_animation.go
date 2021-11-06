@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 
 	"github.com/elojah/game_03/pkg/entity"
 	gerrors "github.com/elojah/game_03/pkg/errors"
@@ -24,12 +25,26 @@ func (h *handler) CreateAnimation(ctx context.Context, req *entity.Animation) (*
 		return &types.Empty{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	}
 
-	// // Create animation
-	// if err := h.entity.InsertAnimation(ctx, *req); err != nil {
-	// 	logger.Error().Err(err).Msg("failed to create animation")
+	if _, err := h.entity.Fetch(ctx, entity.Filter{
+		ID: &req.EntityID,
+	}); err != nil {
+		if errors.As(err, &gerrors.ErrNotFound{}) {
+			logger.Error().Err(err).Msg("entity not found")
 
-	// 	return &types.Empty{}, status.New(codes.Internal, err.Error()).Err()
-	// }
+			return &types.Empty{}, status.New(codes.NotFound, err.Error()).Err()
+		}
+
+		logger.Error().Err(err).Msg("failed to fetch entity")
+
+		return &types.Empty{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
+	// Create animation
+	if err := h.entity.InsertAnimation(ctx, *req); err != nil {
+		logger.Error().Err(err).Msg("failed to create animation")
+
+		return &types.Empty{}, status.New(codes.Internal, err.Error()).Err()
+	}
 
 	logger.Info().Msg("success")
 
