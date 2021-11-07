@@ -101,7 +101,7 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 		FrameHeight:  32, // nolint: gomnd
 		FrameStart:   0,
 		FrameEnd:     8, // nolint: gomnd
-		FrameMargin:  0, // nolint: gomnd
+		FrameMargin:  0,
 		FrameSpacing: 3, // nolint: gomnd
 	}
 	if err := h.entity.InsertAnimation(ctx, anim); err != nil {

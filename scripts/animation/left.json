@@ -1,0 +1,15 @@
+{
+    "ID"          : ,
+    "EntityID"    : ,
+    "SheetID"     : ,
+    "Name"        : "left",
+    "Start"       : 0,
+    "End"         : 8,
+    "Rate"        : 8,
+    "FrameWidth"  : 16,
+    "FrameHeight" : 32,
+    "FrameStart"  : 0,
+    "FrameEnd"    : 8,
+    "FrameMargin" : 0,
+    "FrameSpacing": 3
+}
