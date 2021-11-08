@@ -75,3 +75,37 @@ export namespace ListAnimationResp {
   }
 }
 
+export class CreateAnimationReq extends jspb.Message {
+  hasAnimation(): boolean;
+  clearAnimation(): void;
+  getAnimation(): github_com_elojah_game_03_pkg_entity_animation_pb.Animation | undefined;
+  setAnimation(value?: github_com_elojah_game_03_pkg_entity_animation_pb.Animation): void;
+
+  getId(): string;
+  setId(value: string): void;
+
+  getEntityid(): string;
+  setEntityid(value: string): void;
+
+  getSheetid(): string;
+  setSheetid(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): CreateAnimationReq.AsObject;
+  static toObject(includeInstance: boolean, msg: CreateAnimationReq): CreateAnimationReq.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: CreateAnimationReq, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CreateAnimationReq;
+  static deserializeBinaryFromReader(message: CreateAnimationReq, reader: jspb.BinaryReader): CreateAnimationReq;
+}
+
+export namespace CreateAnimationReq {
+  export type AsObject = {
+    animation?: github_com_elojah_game_03_pkg_entity_animation_pb.Animation.AsObject,
+    id: string,
+    entityid: string,
+    sheetid: string,
+  }
+}
+

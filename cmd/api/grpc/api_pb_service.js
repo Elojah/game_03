@@ -3,7 +3,6 @@
 
 var github_com_elojah_game_03_cmd_api_grpc_api_pb = require("../../../../../../github.com/elojah/game_03/cmd/api/grpc/api_pb");
 var google_protobuf_empty_pb = require("google-protobuf/google/protobuf/empty_pb");
-var github_com_elojah_game_03_pkg_entity_animation_pb = require("../../../../../../github.com/elojah/game_03/pkg/entity/animation_pb");
 var github_com_elojah_game_03_pkg_entity_entity_pb = require("../../../../../../github.com/elojah/game_03/pkg/entity/entity_pb");
 var github_com_elojah_game_03_pkg_entity_pc_pb = require("../../../../../../github.com/elojah/game_03/pkg/entity/pc_pb");
 var github_com_elojah_game_03_pkg_entity_dto_entity_pb = require("../../../../../../github.com/elojah/game_03/pkg/entity/dto/entity_pb");
@@ -53,7 +52,7 @@ API.CreateAnimation = {
   service: API,
   requestStream: false,
   responseStream: false,
-  requestType: github_com_elojah_game_03_pkg_entity_animation_pb.Animation,
+  requestType: github_com_elojah_game_03_pkg_entity_dto_animation_pb.CreateAnimationReq,
   responseType: google_protobuf_empty_pb.Empty
 };
 

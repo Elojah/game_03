@@ -20,6 +20,7 @@ import (
 	userapp "github.com/elojah/game_03/pkg/user/app"
 	userredis "github.com/elojah/game_03/pkg/user/redis"
 	userscylla "github.com/elojah/game_03/pkg/user/scylla"
+	ggrpc "github.com/elojah/go-grpc"
 	"github.com/elojah/go-grpcweb"
 	ghttp "github.com/elojah/go-http"
 	glog "github.com/elojah/go-log"
@@ -28,6 +29,7 @@ import (
 	"github.com/hashicorp/go-multierror"
 	"github.com/rs/zerolog/log"
 	_ "google.golang.org/grpc/encoding/gzip"
+	"google.golang.org/grpc/reflection"
 )
 
 const (
@@ -160,6 +162,27 @@ func run(prog string, filename string) {
 		twitch: twitchApp,
 		user:   userApp,
 	}
+
+	// init grpc ONLY server
+	grpcapi := ggrpc.Service{}
+	grpcapi.Register = func() {
+		reflection.Register(grpcapi.Server)
+		apigrpc.RegisterAPIServer(grpcapi.Server, &h)
+	}
+
+	if err := grpcapi.Dial(ctx, cfg.GRPC); err != nil {
+		log.Error().Err(err).Msg("failed to dial grpc")
+
+		return
+	}
+
+	cs = append(cs, &grpcapi)
+
+	go func() {
+		if err := grpcapi.Serve(ctx); err != nil {
+			log.Error().Err(err).Msg("failed to serve grpc")
+		}
+	}()
 
 	// init grpc api server
 	grpcwapi := grpcweb.Service{}

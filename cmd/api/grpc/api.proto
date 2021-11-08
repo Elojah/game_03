@@ -32,7 +32,7 @@ service API {
     rpc ListEntity(dto.ListEntityReq) returns (dto.ListEntityResp);
 
     // Animation
-    rpc CreateAnimation(entity.Animation) returns (google.protobuf.Empty);
+    rpc CreateAnimation(dto.CreateAnimationReq) returns (google.protobuf.Empty);
     rpc ListAnimation(dto.ListAnimationReq) returns (dto.ListAnimationResp);
 
     // PC

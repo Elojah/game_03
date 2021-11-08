@@ -3,7 +3,6 @@
 
 import * as github_com_elojah_game_03_cmd_api_grpc_api_pb from "../../../../../../github.com/elojah/game_03/cmd/api/grpc/api_pb";
 import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty_pb";
-import * as github_com_elojah_game_03_pkg_entity_animation_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/animation_pb";
 import * as github_com_elojah_game_03_pkg_entity_entity_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/entity_pb";
 import * as github_com_elojah_game_03_pkg_entity_pc_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/pc_pb";
 import * as github_com_elojah_game_03_pkg_entity_dto_entity_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/dto/entity_pb";
@@ -47,7 +46,7 @@ type APICreateAnimation = {
   readonly service: typeof API;
   readonly requestStream: false;
   readonly responseStream: false;
-  readonly requestType: typeof github_com_elojah_game_03_pkg_entity_animation_pb.Animation;
+  readonly requestType: typeof github_com_elojah_game_03_pkg_entity_dto_animation_pb.CreateAnimationReq;
   readonly responseType: typeof google_protobuf_empty_pb.Empty;
 };
 
@@ -193,12 +192,12 @@ export class APIClient {
     callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_entity_dto_entity_pb.ListEntityResp|null) => void
   ): UnaryResponse;
   createAnimation(
-    requestMessage: github_com_elojah_game_03_pkg_entity_animation_pb.Animation,
+    requestMessage: github_com_elojah_game_03_pkg_entity_dto_animation_pb.CreateAnimationReq,
     metadata: grpc.Metadata,
     callback: (error: ServiceError|null, responseMessage: google_protobuf_empty_pb.Empty|null) => void
   ): UnaryResponse;
   createAnimation(
-    requestMessage: github_com_elojah_game_03_pkg_entity_animation_pb.Animation,
+    requestMessage: github_com_elojah_game_03_pkg_entity_dto_animation_pb.CreateAnimationReq,
     callback: (error: ServiceError|null, responseMessage: google_protobuf_empty_pb.Empty|null) => void
   ): UnaryResponse;
   listAnimation(
