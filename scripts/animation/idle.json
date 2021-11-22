@@ -1,17 +1,17 @@
 {
-    "ID": "01FKZ67HVD3MMPJV2DSRCJPTEN",
+    "ID": "01FM1YY76G9879YJSZAFSGJ52Y",
     "EntityID": "",
     "SheetID": "01FG1V2REECYMF2MQHNE3589SE",
     "Animation": {
         "Name": "idle",
         "Start": 0,
-        "End": 17,
+        "End": 1,
         "Rate": 8,
         "FrameWidth": 16,
-        "FrameHeight": 32,
+        "FrameHeight": 16,
         "FrameStart": 0,
-        "FrameEnd": 4,
-        "FrameMargin": 1,
-        "FrameSpacing": 3
+        "FrameEnd": 263,
+        "FrameMargin": 4,
+        "FrameSpacing": 4
     }
 }

@@ -13,10 +13,11 @@ $ make browser
 $ make web && ./bin/game_03_web config/web/local.json
 ```
 
-```sh
-$ grpcurl -v -import-path ../../.. -proto cmd/api/grpc/api.proto -d '{}' -plaintext localhost:8081 grpc.API/CreateAnimation # import default animations
-```
+Initial data:
 
+```sh
+$ ./scripts/create_default_animations.sh
+```
 
 ### TODO
 

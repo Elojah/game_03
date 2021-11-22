@@ -4,14 +4,14 @@
     "SheetID": "01FG1V2REECYMF2MQHNE3589SE",
     "Animation": {
         "Name": "up",
-        "Start": 0,
-        "End": 17,
+        "Start": 4,
+        "End": 5,
         "Rate": 8,
         "FrameWidth": 16,
-        "FrameHeight": 32,
-        "FrameStart": 9,
-        "FrameEnd": 12,
-        "FrameMargin": 1,
-        "FrameSpacing": 3
+        "FrameHeight": 16,
+        "FrameStart": 0,
+        "FrameEnd": 263,
+        "FrameMargin": 4,
+        "FrameSpacing": 4
     }
 }

@@ -86,28 +86,49 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 	}
 
 	entityID := ulid.NewID()
-	animationID := ulid.NewID()
 
 	// #Insert default idle animation
-	anim := entity.Animation{
-		ID:           animationID,
-		EntityID:     entityID,
-		SheetID:      defaultSheetID,
-		Name:         "idle",
-		Start:        0,
-		End:          8,  // nolint: gomnd
-		Rate:         8,  // nolint: gomnd
-		FrameWidth:   16, // nolint: gomnd
-		FrameHeight:  32, // nolint: gomnd
-		FrameStart:   0,
-		FrameEnd:     8, // nolint: gomnd
-		FrameMargin:  0,
-		FrameSpacing: 3, // nolint: gomnd
+	defaultIDs := []ulid.ID{
+		ulid.MustParse("01FM1YY76G9879YJSZAFSGJ52Y"),
+		ulid.MustParse("01FM1YXHHEJE1CKG48CFSC8K3J"),
+		ulid.MustParse("01FKZ9H6BK0QC6TH7WAP70DK98"),
+		ulid.MustParse("01FKZ67HVD3MMPJV2DSRCJPTEN"),
+		ulid.MustParse("01FM1XM4G365AH6Y7YZ2KHDAP0"),
 	}
-	if err := h.entity.InsertAnimation(ctx, anim); err != nil {
-		logger.Error().Err(err).Msg("failed to create animation")
+
+	ans, _, err := h.entity.FetchManyAnimation(ctx, entity.FilterAnimation{
+		IDs:  defaultIDs,
+		Size: 5, // nolint: gomnd
+	})
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to fetch many animation")
 
 		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
+	if len(ans) != 5 { // nolint: gomnd
+		err := gerrors.ErrMissingDefaultAnimations{EntityID: entityID.String()}
+
+		logger.Error().Err(err).Msg("failed to create pc")
+
+		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
+	var idle ulid.ID
+
+	for _, an := range ans {
+		an.ID = ulid.NewID()
+		an.EntityID = entityID
+
+		if an.Name == "idle" {
+			idle = an.ID
+		}
+
+		if err := h.entity.InsertAnimation(ctx, an); err != nil {
+			logger.Error().Err(err).Msg("failed to create animation")
+
+			return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
+		}
 	}
 
 	// #Insert entity backup
@@ -120,7 +141,7 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 		Rot:         0,
 		Radius:      10, // nolint: gomnd
 		At:          time.Now().UnixNano(),
-		AnimationID: animationID,
+		AnimationID: idle,
 		AnimationAt: 0,
 	}
 	if err := h.entity.InsertBackup(ctx, bu); err != nil {

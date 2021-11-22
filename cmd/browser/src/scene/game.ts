@@ -48,7 +48,7 @@ export class Game extends Scene {
 
     // Self
     PC: PC.PC;
-    Entity: Entity.E;
+    Entity: GraphicEntity;
     EntityID: string;
 
     Cell: jspb.Map<Orientation, Cell.Cell>
@@ -71,13 +71,20 @@ export class Game extends Scene {
     // Grpc client to send entity updates to server
     EntityClient: grpc.Client<Entity.E, Entity.E>
 
+    // Spritesheets already loaded
+    SpriteSheets: Map<string, integer>
+
     constructor(config: string | Phaser.Types.Scenes.SettingsConfig) {
         super(config);
     }
     init (pc: PCDTO.PC) {
         this.PC =  pc.getPc() as PC.PC;
-        this.Entity =  pc.getEntity() as Entity.E;
-        this.EntityID = ulid(this.Entity.getId_asU8())
+        const e = pc.getEntity() as Entity.E;
+        this.Entity = {
+            E: e,
+            Sprite: this.add.sprite(e.getX(), e.getY(), ulid(e.getId_asU8()))
+        }
+        this.EntityID = ulid(this.Entity.E.getId_asU8())
         this.Cell = new jspb.Map<Orientation, Cell.Cell>([])
 
         this.Animations = new Map()
@@ -86,6 +93,8 @@ export class Game extends Scene {
         this.EntityLoader = new Phaser.Loader.LoaderPlugin(this)
         this.EntityBuffer = new Array<string>()
         this.EntityBufferRendering = new Array<string>()
+
+        this.SpriteSheets = new Map()
     }
     preload() {}
     create() {
@@ -178,9 +187,6 @@ export class Game extends Scene {
                 // )
 
                 //     this.anims.create(Phaser.Animations.Animation())
-
-                // this.cameras.main.startFollow()
-
             })
         })
         .catch((err)=>{
@@ -193,43 +199,42 @@ export class Game extends Scene {
         let animationID = null
 
         if (this.Cursors.up.isDown && this.Cursors.right.isDown) {
-            this.Entity.setX(this.Entity.getX() + 1)
-            this.Entity.setY(this.Entity.getY() - 1)
+            this.Entity.E.setX(this.Entity.E.getX() + 1)
+            this.Entity.E.setY(this.Entity.E.getY() - 1)
             animationID = this.Animations.get(this.EntityID + ':' + 'up')
         } else if (this.Cursors.down.isDown && this.Cursors.right.isDown) {
-            this.Entity.setX(this.Entity.getX() + 1)
-            this.Entity.setY(this.Entity.getY() + 1)
+            this.Entity.E.setX(this.Entity.E.getX() + 1)
+            this.Entity.E.setY(this.Entity.E.getY() + 1)
             animationID = this.Animations.get(this.EntityID + ':' + 'down')
         } else if (this.Cursors.down.isDown && this.Cursors.left.isDown) {
-            this.Entity.setX(this.Entity.getX() - 1)
-            this.Entity.setY(this.Entity.getY() + 1)
+            this.Entity.E.setX(this.Entity.E.getX() - 1)
+            this.Entity.E.setY(this.Entity.E.getY() + 1)
             animationID = this.Animations.get(this.EntityID + ':' + 'down')
         } else if (this.Cursors.up.isDown && this.Cursors.left.isDown) {
-            this.Entity.setX(this.Entity.getX() - 1)
-            this.Entity.setY(this.Entity.getY() - 1)
+            this.Entity.E.setX(this.Entity.E.getX() - 1)
+            this.Entity.E.setY(this.Entity.E.getY() - 1)
             animationID = this.Animations.get(this.EntityID + ':' + 'up')
         } else if (this.Cursors.up.isDown) {
-            this.Entity.setY(this.Entity.getY() - 1)
+            this.Entity.E.setY(this.Entity.E.getY() - 1)
             animationID = this.Animations.get(this.EntityID + ':' + 'up')
         } else if (this.Cursors.right.isDown) {
-            this.Entity.setX(this.Entity.getX() + 1)
+            this.Entity.E.setX(this.Entity.E.getX() + 1)
             animationID = this.Animations.get(this.EntityID + ':' + 'right')
         } else if (this.Cursors.down.isDown) {
-            this.Entity.setY(this.Entity.getY() + 1)
+            this.Entity.E.setY(this.Entity.E.getY() + 1)
             animationID = this.Animations.get(this.EntityID + ':' + 'down')
         } else if (this.Cursors.left.isDown) {
-            this.Entity.setX(this.Entity.getX() - 1)
+            this.Entity.E.setX(this.Entity.E.getX() - 1)
             animationID = this.Animations.get(this.EntityID + ':' + 'left')
         } else {
             animationID = this.Animations.get(this.EntityID + ':' + 'idle')
         }
 
         // Move entity locally
-        const e = this.Entities?.get(this.EntityID)
-        e?.Sprite.setX(this.Entity.getX())
-        e?.Sprite.setY(this.Entity.getY())
+        this.Entity?.Sprite.setX(this.Entity.E.getX())
+        this.Entity?.Sprite.setY(this.Entity.E.getY())
         if (animationID) {
-            e?.Sprite.play(animationID, true)
+            this.Entity?.Sprite.play(animationID, true)
         }
 
         // Send new entity to server
@@ -260,7 +265,7 @@ export class Game extends Scene {
         return this.listCell((() => {
             const req = new CellDTO.ListCellReq()
 
-            req.setIdsList([this.Entity.getCellid_asU8()])
+            req.setIdsList([this.Entity.E.getCellid_asU8()])
 
             return req
         })())
@@ -339,11 +344,19 @@ export class Game extends Scene {
                     this.Entities.get(id)!.E = entry
                 } else {
                     // create associated sprite
+                    const sprite = this.add.sprite(entry.getX(), entry.getY(), ulid(entry.getId_asU8()))
+
                     this.Entities.set(id, {
                         E: entry,
                         // TODO: adjust x and y with cell position
-                        Sprite: this.add.sprite(entry.getX(), entry.getY(), ulid(entry.getId_asU8()))
+                        Sprite: sprite
                     })
+
+                    if (id == ulid(this.Entity.E.getId_asU8())) {
+                        this.Entity.Sprite = sprite
+                        // local player sprite loaded, start camera follow
+                        this.cameras.main.startFollow(this.Entity.Sprite)
+                    }
 
                     // load entity animations
                     entityIDs.push(entry.getId_asU8())
@@ -382,32 +395,48 @@ export class Game extends Scene {
                         return
                     }
 
-                    // load sprite sheet
-                    this.EntityLoader.spritesheet(sheetID, 'img/' + sheetID + '.png', {
+                    const loadAnim = () => {
+                            // Create animation
+                            const newAnim = this.anims.create({
+                                key: animationID,
+                                frames: this.anims.generateFrameNumbers(
+                                    sheetID,
+                                    {start: an.getStart(), end: an.getEnd()},
+                                ),
+                                frameRate: an.getRate(),
+                                repeat: -1,
+                            })
+                            if (!newAnim) {
+                                console.log('failed to load animation ' + animationID)
+
+                                return
+                            }
+
+                            // Add animation to mapper
+                            this.Animations.set(ulid(an.getEntityid_asU8())+":"+an.getName(), animationID)
+
+                            // Play entity animation
+                            this.EntityBuffer.push(ulid(an.getEntityid_asU8()))
+                    }
+
+                    if (!this.SpriteSheets.get(sheetID)) {
+                        // load sprite sheet
+                        this.EntityLoader.spritesheet(sheetID, 'img/' + sheetID + '.png', {
                             frameWidth: an.getFramewidth(),
                             frameHeight: an.getFrameheight(),
                             startFrame: an.getFramestart(),
                             endFrame: an.getFrameend(),
                             margin: an.getFramemargin(),
                             spacing: an.getFramespacing(),
-                    }).once('filecomplete-spritesheet-' + sheetID, () => {
-                        // Create animation
-                        this.anims.create({
-                            key: animationID,
-                            frames: this.anims.generateFrameNumbers(
-                                sheetID,
-                                {start: an.getStart(), end: an.getEnd(), first: an.getStart()},
-                            ),
-                            frameRate: an.getRate(),
-                            repeat: -1,
-                        })
+                        }).once('filecomplete-spritesheet-' + sheetID, () => {
+                            // Add spritesheet to loaded
+                            this.SpriteSheets.set(sheetID, 1)
 
-                        // Add animation to mapper
-                        this.Animations.set(ulid(an.getEntityid_asU8())+":"+an.getName(), animationID)
-
-                        // Play entity animation
-                        this.EntityBuffer.push(ulid(an.getEntityid_asU8()))
-                    }).start()
+                            loadAnim()
+                        }).start()
+                    } else {
+                        loadAnim()
+                    }
                 })
             })
         })
