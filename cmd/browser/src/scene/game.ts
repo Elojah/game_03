@@ -170,6 +170,7 @@ export class Game extends Scene {
                             break;
                     }
 
+                    console.log('display layer ' + key.toString())
                     const layer = map.createLayer('Tile Layer 1', set, x, y);
                 })
 
@@ -198,28 +199,28 @@ export class Game extends Scene {
         // Controls + local anim update
         let animationID = null
 
-        if (this.Cursors.up.isDown && this.Cursors.right.isDown) {
-            this.Entity.E.setX(this.Entity.E.getX() + 1)
+        if (this.Cursors.up.isDown) {
             this.Entity.E.setY(this.Entity.E.getY() - 1)
             animationID = this.Animations.get(this.EntityID + ':' + 'up')
-        } else if (this.Cursors.down.isDown && this.Cursors.right.isDown) {
-            this.Entity.E.setX(this.Entity.E.getX() + 1)
-            this.Entity.E.setY(this.Entity.E.getY() + 1)
-            animationID = this.Animations.get(this.EntityID + ':' + 'down')
-        } else if (this.Cursors.down.isDown && this.Cursors.left.isDown) {
-            this.Entity.E.setX(this.Entity.E.getX() - 1)
-            this.Entity.E.setY(this.Entity.E.getY() + 1)
-            animationID = this.Animations.get(this.EntityID + ':' + 'down')
-        } else if (this.Cursors.up.isDown && this.Cursors.left.isDown) {
-            this.Entity.E.setX(this.Entity.E.getX() - 1)
-            this.Entity.E.setY(this.Entity.E.getY() - 1)
-            animationID = this.Animations.get(this.EntityID + ':' + 'up')
-        } else if (this.Cursors.up.isDown) {
-            this.Entity.E.setY(this.Entity.E.getY() - 1)
-            animationID = this.Animations.get(this.EntityID + ':' + 'up')
+
+            if (this.Entity.E.getY() < 0) {
+                const id = this.Cell.get(Orientation.Up)?.getId_asU8() || ''
+                this.Entity.E.setCellid(id)
+                this.loadCell().then(() => {
+                    console.log('loaded cell')
+                })
+            }
         } else if (this.Cursors.right.isDown) {
             this.Entity.E.setX(this.Entity.E.getX() + 1)
             animationID = this.Animations.get(this.EntityID + ':' + 'right')
+
+            if (this.Entity.E.getY() > 100) {
+                const id = this.Cell.get(Orientation.Up)?.getId_asU8() || ''
+                this.Entity.E.setCellid(id)
+                this.loadCell().then(() => {
+                    console.log('loaded cell')
+                })
+            }
         } else if (this.Cursors.down.isDown) {
             this.Entity.E.setY(this.Entity.E.getY() + 1)
             animationID = this.Animations.get(this.EntityID + ':' + 'down')
@@ -229,6 +230,8 @@ export class Game extends Scene {
         } else {
             animationID = this.Animations.get(this.EntityID + ':' + 'idle')
         }
+
+        if (this.Entity.E.getX())
 
         // Move entity locally
         this.Entity?.Sprite.setX(this.Entity.E.getX())
@@ -411,6 +414,8 @@ export class Game extends Scene {
 
                                 return
                             }
+
+                            console.log('set animation:'+ulid(an.getEntityid_asU8())+":"+an.getName())
 
                             // Add animation to mapper
                             this.Animations.set(ulid(an.getEntityid_asU8())+":"+an.getName(), animationID)
