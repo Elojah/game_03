@@ -11,6 +11,7 @@ var github_com_elojah_game_03_pkg_entity_dto_pc_pb = require("../../../../../../
 var github_com_elojah_game_03_pkg_room_room_pb = require("../../../../../../github.com/elojah/game_03/pkg/room/room_pb");
 var github_com_elojah_game_03_pkg_room_dto_cell_pb = require("../../../../../../github.com/elojah/game_03/pkg/room/dto/cell_pb");
 var github_com_elojah_game_03_pkg_room_dto_room_pb = require("../../../../../../github.com/elojah/game_03/pkg/room/dto/room_pb");
+var github_com_elojah_game_03_pkg_room_dto_world_pb = require("../../../../../../github.com/elojah/game_03/pkg/room/dto/world_pb");
 var github_com_elojah_game_03_pkg_twitch_dto_follow_pb = require("../../../../../../github.com/elojah/game_03/pkg/twitch/dto/follow_pb");
 var grpc = require("@improbable-eng/grpc-web").grpc;
 
@@ -117,6 +118,15 @@ API.ListCell = {
   responseStream: false,
   requestType: github_com_elojah_game_03_pkg_room_dto_cell_pb.ListCellReq,
   responseType: github_com_elojah_game_03_pkg_room_dto_cell_pb.ListCellResp
+};
+
+API.ListWorld = {
+  methodName: "ListWorld",
+  service: API,
+  requestStream: false,
+  responseStream: false,
+  requestType: github_com_elojah_game_03_pkg_room_dto_world_pb.ListWorldReq,
+  responseType: github_com_elojah_game_03_pkg_room_dto_world_pb.ListWorldResp
 };
 
 API.ListFollow = {
@@ -477,6 +487,37 @@ APIClient.prototype.listCell = function listCell(requestMessage, metadata, callb
     callback = arguments[1];
   }
   var client = grpc.unary(API.ListCell, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+APIClient.prototype.listWorld = function listWorld(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(API.ListWorld, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,

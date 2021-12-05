@@ -11,7 +11,6 @@ import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 import "google/protobuf/empty.proto";
 
-import "github.com/elojah/game_03/pkg/entity/animation.proto";
 import "github.com/elojah/game_03/pkg/entity/entity.proto";
 import "github.com/elojah/game_03/pkg/entity/pc.proto";
 import "github.com/elojah/game_03/pkg/entity/dto/entity.proto";
@@ -20,6 +19,7 @@ import "github.com/elojah/game_03/pkg/entity/dto/pc.proto";
 import "github.com/elojah/game_03/pkg/room/room.proto";
 import "github.com/elojah/game_03/pkg/room/dto/cell.proto";
 import "github.com/elojah/game_03/pkg/room/dto/room.proto";
+import "github.com/elojah/game_03/pkg/room/dto/world.proto";
 import "github.com/elojah/game_03/pkg/twitch/dto/follow.proto";
 
 
@@ -48,6 +48,9 @@ service API {
 
     // Cell
     rpc ListCell(dto.ListCellReq) returns (dto.ListCellResp);
+
+    // World
+    rpc ListWorld(dto.ListWorldReq) returns (dto.ListWorldResp);
 
     // Twitch
     rpc ListFollow(dto.ListFollowReq) returns (dto.ListFollowResp);
