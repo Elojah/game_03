@@ -203,13 +203,13 @@ export class Game extends Scene {
             this.Entity.E.setY(this.Entity.E.getY() - 1)
             animationID = this.Animations.get(this.EntityID + ':' + 'up')
 
-            if (this.Entity.E.getY() < this.Cell.get(Orientation.None)) {
-                const id = this.Cell.get(Orientation.Up)?.getId_asU8() || ''
-                this.Entity.E.setCellid(id)
-                this.loadCell().then(() => {
-                    console.log('loaded cell')
-                })
-            }
+            // if (this.Entity.E.getY() < this.Cell.get(Orientation.None)) {
+            //     const id = this.Cell.get(Orientation.Up)?.getId_asU8() || ''
+            //     this.Entity.E.setCellid(id)
+            //     this.loadCell().then(() => {
+            //         console.log('loaded cell')
+            //     })
+            // }
         } else if (this.Cursors.right.isDown) {
             this.Entity.E.setX(this.Entity.E.getX() + 1)
             animationID = this.Animations.get(this.EntityID + ':' + 'right')

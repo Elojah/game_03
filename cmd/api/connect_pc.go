@@ -21,6 +21,7 @@ const (
 	entitiesBatch = 20
 )
 
+// nolint: gocognit
 func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) error {
 	ctx := stream.Context()
 	logger := log.With().Str("method", "connect_pc").Logger()

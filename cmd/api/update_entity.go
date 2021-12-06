@@ -11,10 +11,6 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-const (
-	updateEntityStreamName = "updateEntity"
-)
-
 func (h *handler) UpdateEntity(stream ggrpc.API_UpdateEntityServer) error {
 	ctx := stream.Context()
 	logger := log.With().Str("method", "update_entity").Logger()

@@ -2,100 +2,45 @@ package main
 
 import (
 	"context"
-	"errors"
 
-	"github.com/elojah/game_03/pkg/entity"
-	"github.com/elojah/game_03/pkg/entity/dto"
 	gerrors "github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/room"
-	"github.com/elojah/game_03/pkg/ulid"
+	"github.com/elojah/game_03/pkg/room/dto"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-func (h *handler) ListWorld(ctx context.Context, req *dto.ListPCReq) (*dto.ListPCResp, error) {
-	logger := log.With().Str("method", "list_pc").Logger()
+func (h *handler) ListWorld(ctx context.Context, req *dto.ListWorldReq) (*dto.ListWorldResp, error) {
+	logger := log.With().Str("method", "list_world").Logger()
 
 	if req == nil {
-		return &dto.ListPCResp{}, status.New(codes.Internal, gerrors.ErrNullRequest{}.Error()).Err()
+		return &dto.ListWorldResp{}, status.New(codes.Internal, gerrors.ErrNullRequest{}.Error()).Err()
 	}
 
 	// #Authenticate
-	ses, err := h.user.Auth(ctx)
+	_, err := h.user.Auth(ctx)
 	if err != nil {
-		return &dto.ListPCResp{}, status.New(codes.Unauthenticated, err.Error()).Err()
+		return &dto.ListWorldResp{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	}
 
-	// #Fetch rooms
-	r, err := h.room.Fetch(ctx,
-		room.Filter{
-			ID: &req.RoomID,
-		},
-	)
-	if err != nil {
-		if errors.As(err, &gerrors.ErrNotFound{}) {
-			logger.Error().Err(err).Msg("room not found")
+	if err := req.Check(); err != nil {
+		logger.Error().Err(err).Msg("request check failed")
 
-			return &dto.ListPCResp{}, status.New(codes.NotFound, err.Error()).Err()
-		}
-
-		logger.Error().Err(err).Msg("failed to fetch rooms")
-
-		return &dto.ListPCResp{}, status.New(codes.Internal, err.Error()).Err()
+		return &dto.ListWorldResp{}, status.New(codes.InvalidArgument, err.Error()).Err()
 	}
 
-	// #Fetch pcs
-	pcs, state, err := h.entity.FetchManyPC(ctx,
-		entity.FilterPC{
-			UserID:  &ses.UserID,
-			WorldID: &r.WorldID,
-			Size:    int(req.Size_),
-			State:   req.State,
-		},
-	)
-	if err != nil {
-		logger.Error().Err(err).Msg("failed to fetch pcs")
-
-		return &dto.ListPCResp{}, status.New(codes.Internal, err.Error()).Err()
-	}
-
-	// #Fetch entities
-	entityIDs := make([]ulid.ID, 0, len(pcs))
-	for _, pc := range pcs {
-		entityIDs = append(entityIDs, pc.EntityID)
-	}
-
-	ents, _, err := h.entity.FetchManyBackup(ctx, entity.Filter{
-		IDs:  entityIDs,
-		Size: len(entityIDs),
+	ws, _, err := h.room.FetchManyWorld(ctx, room.FilterWorld{
+		IDs:  req.IDs,
+		Size: len(req.IDs),
 	})
 	if err != nil {
-		logger.Error().Err(err).Msg("failed to fetch entities")
+		logger.Error().Err(err).Msg("failed to fetch world")
 
-		return &dto.ListPCResp{}, status.New(codes.Internal, err.Error()).Err()
+		return &dto.ListWorldResp{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
-	entsMap := make(map[ulid.ID]entity.E, len(ents))
-	for _, ent := range ents {
-		entsMap[ent.ID] = ent
-	}
-
-	// #Associate entities to PCs
-	result := dto.ListPCResp{PCs: make([]dto.PC, 0, len(pcs)), State: state}
-
-	for _, pc := range pcs {
-		ent, ok := entsMap[pc.EntityID]
-		if !ok {
-			// should not happen
-			continue
-		}
-
-		result.PCs = append(result.PCs, dto.PC{
-			PC:     pc,
-			Entity: ent,
-		})
-	}
+	result := dto.ListWorldResp{Worlds: ws}
 
 	logger.Info().Msg("success")
 

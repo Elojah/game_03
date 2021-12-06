@@ -7,13 +7,18 @@ import (
 )
 
 type FilterWorld struct {
-	ID *ulid.ID
+	ID  *ulid.ID
+	IDs []ulid.ID
+
+	State []byte
+	Size  int
 }
 
 type StoreWorld interface {
 	InsertWorld(context.Context, World) error
 	FetchWorld(context.Context, FilterWorld) (World, error)
 	DeleteWorld(context.Context, FilterWorld) error
+	FetchManyWorld(context.Context, FilterWorld) ([]World, []byte, error)
 }
 
 func (w World) NewCells() [][]Cell { // nolint: gocognit

@@ -15,13 +15,6 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// TMP DATA FOR DEV WIP.
-var (
-	defaultSheetID = ulid.MustParse("01FG1V2REECYMF2MQHNE3589SE")
-)
-
-// !TMP DATA FOR DEV WIP
-
 func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.PC, error) {
 	logger := log.With().Str("method", "create_pc").Logger()
 
