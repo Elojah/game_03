@@ -22,6 +22,11 @@ func (f filterWorld) where() (string, []interface{}) {
 		args = append(args, *f.ID)
 	}
 
+	if len(f.IDs) > 0 {
+		clause = append(clause, `id IN ?`)
+		args = append(args, f.IDs)
+	}
+
 	b := strings.Builder{}
 	b.WriteString(" WHERE ")
 
@@ -92,7 +97,7 @@ func (s Store) FetchManyWorld(ctx context.Context, f room.FilterWorld) ([]room.W
 	b := strings.Builder{}
 	b.WriteString(`SELECT
 		id,
-		width, height
+		width, height,
 		cell_width, cell_height
 	FROM main.world `)
 

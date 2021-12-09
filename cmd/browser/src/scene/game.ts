@@ -18,7 +18,13 @@ import * as PCDTO from 'pkg/entity/dto/pc_pb';
 
 import * as Cell from 'pkg/room/cell_pb';
 import * as CellDTO from 'pkg/room/dto/cell_pb';
+
+import * as World from 'pkg/room/world_pb';
+import * as WorldDTO from 'pkg/room/dto/world_pb';
+
 import { client } from "@improbable-eng/grpc-web/dist/typings/client";
+
+const entitySpriteDepth = 42
 
 enum Orientation {
     None = 0,
@@ -74,6 +80,9 @@ export class Game extends Scene {
     // Spritesheets already loaded
     SpriteSheets: Map<string, integer>
 
+    // Current world loaded
+    World: World.World
+
     constructor(config: string | Phaser.Types.Scenes.SettingsConfig) {
         super(config);
     }
@@ -95,6 +104,8 @@ export class Game extends Scene {
         this.EntityBufferRendering = new Array<string>()
 
         this.SpriteSheets = new Map()
+
+        this.World = new World.World()
     }
     preload() {}
     create() {
@@ -122,73 +133,26 @@ export class Game extends Scene {
             console.log('disconnect to server')
         })
 
-        // Load cell sync
-        this.loadCell()
+        // Load world & cell sync
+        this.listWorld((() => {
+            const req = new WorldDTO.ListWorldReq()
+
+            req.setIdsList([this.PC.getWorldid_asU8()])
+
+            return req
+        })())
+        .then((ws: WorldDTO.ListWorldResp) => {
+            if (ws.getWorldsList().length != 1) {
+                console.log("failed to load world")
+            } else {
+                this.World = ws.getWorldsList()[0]
+            }
+        }).then(() => {
+            return this.loadCell()
+        })
         .then(() => {
             this.load.start()
-            this.load.on('complete', ()=>{
-                // Create tilemap for all cells
-                this.Cell.forEach((entry:Cell.Cell, key: Orientation) => {
-                    const ts = ulid(entry.getTileset_asU8())
-                    const tm = ulid(entry.getTilemap_asU8())
-
-                    const map = this.make.tilemap({ key: tm })
-                    const set = map.addTilesetImage(ts)
-
-                    let x, y = 0
-                    switch (key) {
-                        case Orientation.None:
-                            // this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-                            break;
-                        case Orientation.Up:
-                            y = -map.heightInPixels
-                            break;
-                        case Orientation.UpRight:
-                            x = map.widthInPixels
-                            y = -map.heightInPixels
-                            break;
-                        case Orientation.Right:
-                            x = map.widthInPixels
-                            break;
-                        case Orientation.DownRight:
-                            x = map.widthInPixels
-                            y = map.heightInPixels
-                            break;
-                        case Orientation.Down:
-                            y = map.heightInPixels
-                            break;
-                        case Orientation.DownLeft:
-                            x = -map.widthInPixels
-                            y = map.heightInPixels
-                            break;
-                        case Orientation.Left:
-                            x = -map.widthInPixels
-                            break;
-                        case Orientation.UpLeft:
-                            x = -map.widthInPixels
-                            y = -map.heightInPixels
-                            break;
-                    }
-
-                    console.log('display layer ' + key.toString())
-                    const layer = map.createLayer('Tile Layer 1', set, x, y);
-                })
-
-                // Add entity tile
-                // const ets = ulid(this.Entity.getTileset_asU8())
-                // const etm = ulid(this.Entity.getTilemap_asU8())
-                // const emap = this.make.tilemap({ key: etm })
-                // const eset = emap.addTilesetImage(etm, ets)
-                // const elayer = emap.createLayer('Tile Layer 1', eset, this.cameras.main.centerX, this.cameras.main.centerY);
-
-                // let p = this.physics.add.sprite(
-                //     this.cameras.main.centerX,
-                //     this.cameras.main.centerY,
-                //     ulid(this.Entity.getId_asU8()),
-                // )
-
-                //     this.anims.create(Phaser.Animations.Animation())
-            })
+            this.load.on('complete', this.displayMap)
         })
         .catch((err)=>{
             console.log(err)
@@ -203,35 +167,78 @@ export class Game extends Scene {
             this.Entity.E.setY(this.Entity.E.getY() - 1)
             animationID = this.Animations.get(this.EntityID + ':' + 'up')
 
-            // if (this.Entity.E.getY() < this.Cell.get(Orientation.None)) {
-            //     const id = this.Cell.get(Orientation.Up)?.getId_asU8() || ''
-            //     this.Entity.E.setCellid(id)
-            //     this.loadCell().then(() => {
-            //         console.log('loaded cell')
-            //     })
-            // }
+            if (this.Entity.E.getY() < 0) {
+                // TO DO WITH COLLISION
+                const id = this.Cell.get(Orientation.Up)?.getId_asU8()
+                if (id) {
+                    this.Entity.E.setCellid(id)
+                    this.Entity.E.setY(this.World.getCellheight() - 1)
+
+                    this.loadCell().then(() => {
+                        this.displayMap()
+                        console.log('loaded cell')
+                    })
+                } else {
+                    this.Entity.E.setY(0)
+                }
+            }
         } else if (this.Cursors.right.isDown) {
             this.Entity.E.setX(this.Entity.E.getX() + 1)
             animationID = this.Animations.get(this.EntityID + ':' + 'right')
 
-            if (this.Entity.E.getY() > 100) {
-                const id = this.Cell.get(Orientation.Up)?.getId_asU8() || ''
-                this.Entity.E.setCellid(id)
-                this.loadCell().then(() => {
-                    console.log('loaded cell')
-                })
+            if (this.Entity.E.getX() > this.World.getCellwidth()) {
+                const id = this.Cell.get(Orientation.Right)?.getId_asU8()
+                if (id) {
+                    this.Entity.E.setCellid(id)
+                    this.Entity.E.setX(0)
+
+                    this.loadCell().then(() => {
+                        this.displayMap()
+                        console.log('loaded cell')
+                    })
+                } else {
+                    this.Entity.E.setX(this.World.getCellwidth() - 1)
+                }
             }
         } else if (this.Cursors.down.isDown) {
             this.Entity.E.setY(this.Entity.E.getY() + 1)
             animationID = this.Animations.get(this.EntityID + ':' + 'down')
+
+            if (this.Entity.E.getY() > this.World.getCellheight()) {
+                const id = this.Cell.get(Orientation.Down)?.getId_asU8()
+                if (id) {
+                    this.Entity.E.setCellid(id)
+                    this.Entity.E.setY(0)
+
+                    this.loadCell().then(() => {
+                        this.displayMap()
+                        console.log('loaded cell')
+                    })
+                } else {
+                    this.Entity.E.setY(this.World.getCellheight() - 1)
+                }
+            }
         } else if (this.Cursors.left.isDown) {
             this.Entity.E.setX(this.Entity.E.getX() - 1)
             animationID = this.Animations.get(this.EntityID + ':' + 'left')
+
+            if (this.Entity.E.getX() < 0) {
+                const id = this.Cell.get(Orientation.Left)?.getId_asU8()
+                if (id) {
+                    this.Entity.E.setCellid(id)
+                    this.Entity.E.setX(this.World.getCellwidth() - 1)
+
+                    this.loadCell().then(() => {
+                        this.displayMap()
+                        console.log('loaded cell')
+                    })
+                } else {
+                    this.Entity.E.setX(0)
+                }
+            }
         } else {
             animationID = this.Animations.get(this.EntityID + ':' + 'idle')
         }
-
-        if (this.Entity.E.getX())
 
         // Move entity locally
         this.Entity?.Sprite.setX(this.Entity.E.getX())
@@ -262,6 +269,55 @@ export class Game extends Scene {
         this.EntityBufferRendering = []
     }
 
+    displayMap() {
+            // Create tilemap for all cells
+            this.Cell.forEach((entry:Cell.Cell, key: Orientation) => {
+                const ts = ulid(entry.getTileset_asU8())
+                const tm = ulid(entry.getTilemap_asU8())
+
+                const map = this.make.tilemap({ key: tm })
+                const set = map.addTilesetImage(ts)
+
+                let x, y = 0
+                switch (key) {
+                    case Orientation.None:
+                        // this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+                        break;
+                    case Orientation.Up:
+                        y = -map.heightInPixels
+                        break;
+                    case Orientation.UpRight:
+                        x = map.widthInPixels
+                        y = -map.heightInPixels
+                        break;
+                    case Orientation.Right:
+                        x = map.widthInPixels
+                        break;
+                    case Orientation.DownRight:
+                        x = map.widthInPixels
+                        y = map.heightInPixels
+                        break;
+                    case Orientation.Down:
+                        y = map.heightInPixels
+                        break;
+                    case Orientation.DownLeft:
+                        x = -map.widthInPixels
+                        y = map.heightInPixels
+                        break;
+                    case Orientation.Left:
+                        x = -map.widthInPixels
+                        break;
+                    case Orientation.UpLeft:
+                        x = -map.widthInPixels
+                        y = -map.heightInPixels
+                        break;
+                }
+
+                console.log('display layer ' + key.toString())
+                const layer = map.createLayer('Tile Layer 1', set, x, y);
+            })
+    }
+
     // Loader Cell
     async loadCell() {
         // call current pc cell
@@ -277,6 +333,9 @@ export class Game extends Scene {
             if (cells.getCellsList().length != 1) {
                 throw new Error('failed to load cell')
             }
+
+            // Clear previous cells
+            this.Cell.clear()
 
             const c = cells.getCellsList()[0]
             this.Cell.set(Orientation.None, c)
@@ -348,6 +407,7 @@ export class Game extends Scene {
                 } else {
                     // create associated sprite
                     const sprite = this.add.sprite(entry.getX(), entry.getY(), ulid(entry.getId_asU8()))
+                    sprite.setDepth(entitySpriteDepth)
 
                     this.Entities.set(id, {
                         E: entry,
@@ -572,6 +632,32 @@ export class Game extends Scene {
                     }
 
                     resolve(message as AnimationDTO.ListAnimationResp)
+                }
+            });
+        })
+
+        return prom
+    }
+
+    // API World
+    listWorld(req: WorldDTO.ListWorldReq) {
+        let md = new grpc.Metadata()
+        md.set('token', this.registry.get('token'))
+
+        const prom = new Promise<WorldDTO.ListWorldResp>((resolve, reject) => {
+            grpc.unary(API.API.ListWorld, {
+                metadata: md,
+                request: req,
+                host: 'http://localhost:8081',
+                onEnd: res => {
+                    const { status, statusMessage, headers, message, trailers } = res;
+                    if (status !== grpc.Code.OK || !message) {
+                        reject(res)
+
+                        return
+                    }
+
+                    resolve(message as WorldDTO.ListWorldResp)
                 }
             });
         })

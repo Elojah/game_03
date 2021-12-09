@@ -22,13 +22,10 @@ type StoreWorld interface {
 }
 
 func (w World) NewCells() [][]Cell { // nolint: gocognit
-	nh := w.Height / w.CellHeight
-	nw := w.Width / w.CellWidth
-
 	// Create cells with ID
-	cells := make([][]Cell, nh)
+	cells := make([][]Cell, w.Height)
 	for i := range cells {
-		cells[i] = make([]Cell, nw)
+		cells[i] = make([]Cell, w.Width)
 		for j := range cells[i] {
 			cells[i][j] = Cell{
 				ID:         ulid.NewID(),

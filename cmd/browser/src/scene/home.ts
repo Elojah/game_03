@@ -15,6 +15,9 @@ import * as Room from 'pkg/room/room_pb';
 import * as PCDTO from 'pkg/entity/dto/pc_pb';
 import * as PC from 'pkg/entity/pc_pb';
 
+import * as WorldDTO from 'pkg/room/dto/world_pb';
+import * as World from 'pkg/room/world_pb';
+
 export class Home extends Scene {
 
     HTMLlogin: Phaser.GameObjects.DOMElement;
