@@ -152,7 +152,10 @@ export class Game extends Scene {
         })
         .then(() => {
             this.load.start()
-            this.load.on('complete', this.displayMap)
+            this.load.on('complete', () => {
+                this.displayMap()
+                console.log('map loaded')
+            })
         })
         .catch((err)=>{
             console.log(err)

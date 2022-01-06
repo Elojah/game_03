@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 
 	gerrors "github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/room"
@@ -18,8 +17,6 @@ func (h *handler) ListWorld(ctx context.Context, req *dto.ListWorldReq) (*dto.Li
 	if req == nil {
 		return &dto.ListWorldResp{}, status.New(codes.Internal, gerrors.ErrNullRequest{}.Error()).Err()
 	}
-
-	fmt.Println(req)
 
 	// #Authenticate
 	_, err := h.user.Auth(ctx)

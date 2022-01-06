@@ -13,7 +13,7 @@ import (
 
 // TMP DATA FOR DEV WIP.
 const (
-	height, width         = 1000, 1000
+	height, width         = 20, 20
 	cellHeight, cellWidth = 200, 200
 )
 
