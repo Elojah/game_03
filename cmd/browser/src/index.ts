@@ -13,10 +13,16 @@ function main() {
       parent: 'main',
       mode: Phaser.Scale.FIT,
       autoCenter: Phaser.Scale.CENTER_BOTH,
-      // width: window.innerWidth,
-      // height: window.innerHeight
-      width: 160,
-      height: 160,
+      min:{
+        width: 256,
+        height: 144,
+      },
+      max: {
+        width: 1920,
+        height: 1080,
+      },
+      width: window.innerWidth,
+      height: window.innerHeight
     },
     dom: {
       createContainer: true
