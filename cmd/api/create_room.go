@@ -14,7 +14,7 @@ import (
 // TMP DATA FOR DEV WIP.
 const (
 	height, width         = 20, 20
-	cellHeight, cellWidth = 200, 200
+	cellHeight, cellWidth = 1920, 1080
 )
 
 var (
@@ -59,6 +59,8 @@ func (h *handler) CreateRoom(ctx context.Context, req *room.R) (*room.R, error) 
 		for j, c := range cl {
 			c.Tilemap = defaultTilemap
 			c.Tileset = defaultTileset
+			c.X = int64(i)
+			c.Y = int64(j)
 
 			if err := h.room.InsertCell(ctx, c); err != nil {
 				logger.Error().Err(err).Msg("failed to create cell")

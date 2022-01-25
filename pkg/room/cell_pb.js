@@ -335,7 +335,9 @@ proto.room.Cell.toObject = function(includeInstance, msg) {
     id: msg.getId_asB64(),
     contiguousMap: (f = msg.getContiguousMap()) ? f.toObject(includeInstance, undefined) : [],
     tilemap: msg.getTilemap_asB64(),
-    tileset: msg.getTileset_asB64()
+    tileset: msg.getTileset_asB64(),
+    x: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    y: jspb.Message.getFieldWithDefault(msg, 6, 0)
   };
 
   if (includeInstance) {
@@ -390,6 +392,14 @@ proto.room.Cell.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setTileset(value);
       break;
+    case 5:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setX(value);
+      break;
+    case 6:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setY(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -441,6 +451,20 @@ proto.room.Cell.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeBytes(
       4,
+      f
+    );
+  }
+  f = message.getX();
+  if (f !== 0) {
+    writer.writeInt64(
+      5,
+      f
+    );
+  }
+  f = message.getY();
+  if (f !== 0) {
+    writer.writeInt64(
+      6,
       f
     );
   }
@@ -579,6 +603,36 @@ proto.room.Cell.prototype.getTileset_asU8 = function() {
 /** @param {!(string|Uint8Array)} value */
 proto.room.Cell.prototype.setTileset = function(value) {
   jspb.Message.setProto3BytesField(this, 4, value);
+};
+
+
+/**
+ * optional int64 X = 5;
+ * @return {number}
+ */
+proto.room.Cell.prototype.getX = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+};
+
+
+/** @param {number} value */
+proto.room.Cell.prototype.setX = function(value) {
+  jspb.Message.setProto3IntField(this, 5, value);
+};
+
+
+/**
+ * optional int64 Y = 6;
+ * @return {number}
+ */
+proto.room.Cell.prototype.getY = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+};
+
+
+/** @param {number} value */
+proto.room.Cell.prototype.setY = function(value) {
+  jspb.Message.setProto3IntField(this, 6, value);
 };
 
 

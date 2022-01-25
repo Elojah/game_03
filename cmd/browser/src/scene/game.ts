@@ -71,6 +71,8 @@ export class Game extends Scene {
     CellLoader: Phaser.Loader.LoaderPlugin
     // Current world loaded
     World: World.World
+    // Client cell loading
+    Border: Map<Orientation, number>
 
     // Entities
     Entities: Map<string, GraphicEntity>
@@ -103,6 +105,7 @@ export class Game extends Scene {
 
         this.Cells = new Map()
         this.CellLoader = new Phaser.Loader.LoaderPlugin(this)
+        this.Border = new Map()
 
         this.Entities = new Map()
         this.EntityLoader = new Phaser.Loader.LoaderPlugin(this)
@@ -156,12 +159,11 @@ export class Game extends Scene {
                 this.World = ws.getWorldsList()[0]
             }
         }).then(() => {
-            return this.loadCell()
+            return this.loadMap(Orientation.None)
         })
         .then(() => {
             this.load.start()
             this.load.on('complete', () => {
-                // // this.displayMap()
                 console.log('load complete')
             })
         })
@@ -173,85 +175,79 @@ export class Game extends Scene {
     update(time: number, deltaTime: number) {
         // Controls + local anim update
         let animationID = null
+        let deltaX: number = 0
+        let deltaY: number = 0
 
+        // Move entity
         if (this.Cursors.up.isDown) {
-            this.Entity.E.setY(this.Entity.E.getY() - 1)
+            deltaY = -1
             animationID = this.Animations.get(this.EntityID + ':' + 'up')
-
-            if (this.Entity.E.getY() < 0) {
-                // TO DO WITH COLLISION
-                const id = this.Cells.get(Orientation.Up)?.Cell.getId_asU8()
-                if (id) {
-                    this.Entity.E.setCellid(id)
-                    this.Entity.E.setY(this.World.getCellheight() - 1)
-
-                    this.loadCell().then(() => {
-                        this.displayMap()
-                        console.log('loaded cell')
-                    })
-                } else {
-                    this.Entity.E.setY(0)
-                }
-            }
         } else if (this.Cursors.right.isDown) {
-            this.Entity.E.setX(this.Entity.E.getX() + 1)
+            deltaX = 1
             animationID = this.Animations.get(this.EntityID + ':' + 'right')
-
-            if (this.Entity.E.getX() > this.World.getCellwidth()) {
-                const id = this.Cells.get(Orientation.Right)?.Cell.getId_asU8()
-                if (id) {
-                    this.Entity.E.setCellid(id)
-                    this.Entity.E.setX(0)
-
-                    this.loadCell().then(() => {
-                        this.displayMap()
-                        console.log('loaded cell')
-                    })
-                } else {
-                    this.Entity.E.setX(this.World.getCellwidth() - 1)
-                }
-            }
         } else if (this.Cursors.down.isDown) {
-            this.Entity.E.setY(this.Entity.E.getY() + 1)
+            deltaY = 1
             animationID = this.Animations.get(this.EntityID + ':' + 'down')
-
-            if (this.Entity.E.getY() > this.World.getCellheight()) {
-                const id = this.Cells.get(Orientation.Down)?.Cell.getId_asU8()
-                if (id) {
-                    this.Entity.E.setCellid(id)
-                    this.Entity.E.setY(0)
-
-                    this.loadCell().then(() => {
-                        this.displayMap()
-                        console.log('loaded cell')
-                    })
-                } else {
-                    this.Entity.E.setY(this.World.getCellheight() - 1)
-                }
-            }
         } else if (this.Cursors.left.isDown) {
-            this.Entity.E.setX(this.Entity.E.getX() - 1)
+            deltaX = -1
             animationID = this.Animations.get(this.EntityID + ':' + 'left')
-
-            if (this.Entity.E.getX() < 0) {
-                const id = this.Cells.get(Orientation.Left)?.Cell.getId_asU8()
-                if (id) {
-                    this.Entity.E.setCellid(id)
-                    this.Entity.E.setX(this.World.getCellwidth() - 1)
-
-                    this.loadCell().then(() => {
-                        this.displayMap()
-                        console.log('loaded cell')
-                    })
-                } else {
-                    this.Entity.E.setX(0)
-                }
-            }
         } else {
             animationID = this.Animations.get(this.EntityID + ':' + 'idle')
         }
 
-        // Move entity locally
+        let o = Orientation.None
+        const x = this.Entity.E.getX() + deltaX
+        const y = this.Entity.E.getY() + deltaY
+        const up = this.Border.get(Orientation.Up)!
+        const right = this.Border.get(Orientation.Right)!
+        const down = this.Border.get(Orientation.Down)!
+        const left = this.Border.get(Orientation.Left)!
+        if (y < up) {
+            if (x < left) {
+                o = Orientation.UpLeft
+            } else if (x < right) {
+                o = Orientation.Up
+            } else {
+                o = Orientation.UpRight
+            }
+        } else if (y < down) {
+            if (x < left) {
+                o = Orientation.Left
+            } else if (x < right) {
+                o = Orientation.None
+            } else {
+                o = Orientation.Right
+            }
+        } else {
+            if (x < left) {
+                o = Orientation.DownLeft
+            } else if (x < right) {
+                o = Orientation.Down
+            } else {
+                o = Orientation.DownRight
+            }
+        }
+
+        if (o != Orientation.None) {
+            const id = this.Cells.get(o)?.Cell.getId_asU8()
+            if (id) {
+                this.Entity.E.setCellid(id)
+
+                this.loadMap(o).then(() => {
+                    console.log('loaded cell')
+                })
+            } else {
+                // don't move entity, out of world
+                deltaX = 0
+                deltaY = 0
+            }
+        }
+
+        // Move entity
+        this.Entity.E.setX(this.Entity.E.getX() + deltaX)
+        this.Entity.E.setY(this.Entity.E.getY() + deltaY)
+
+        // Move entity client side
         this.Entity?.Sprite.setX(this.Entity.E.getX())
         this.Entity?.Sprite.setY(this.Entity.E.getY())
         if (animationID) {
@@ -282,6 +278,7 @@ export class Game extends Scene {
 
 
     // Orientation o uses preload surrounded cells
+    // Orientation.None loads everything
     async loadMap(o: Orientation) {
         // call current pc cell
         return this.listCell((() => {
@@ -304,22 +301,24 @@ export class Game extends Scene {
 
             switch (o) {
                 case Orientation.None:
-                    // create new graphic cell from loaded cell
+                    // create new blank graphic cell from loaded cell
                     const m = this.make.tilemap()
                     this.Cells.set(Orientation.None, {
                         Cell: c,
                         Tilemap: m,
-                        Layer: m.createBlankLayer('tmp', ''),
+                        Layer: m.createBlankLayer('blank', ''),
                     })
                     // assign new cells to load
-                    cellIDs.push(contig.get(Orientation.Up)!)
-                    cellIDs.push(contig.get(Orientation.UpRight)!)
-                    cellIDs.push(contig.get(Orientation.Right)!)
-                    cellIDs.push(contig.get(Orientation.DownRight)!)
-                    cellIDs.push(contig.get(Orientation.Down)!)
-                    cellIDs.push(contig.get(Orientation.DownLeft)!)
-                    cellIDs.push(contig.get(Orientation.Left)!)
-                    cellIDs.push(contig.get(Orientation.UpLeft)!)
+                    cellIDs.push(
+                        contig.get(Orientation.Up)!,
+                        contig.get(Orientation.UpRight)!,
+                        contig.get(Orientation.Right)!,
+                        contig.get(Orientation.DownRight)!,
+                        contig.get(Orientation.Down)!,
+                        contig.get(Orientation.DownLeft)!,
+                        contig.get(Orientation.Left)!,
+                        contig.get(Orientation.UpLeft)!,
+                    )
                     break;
                 case Orientation.Up:
                     // shift preloaded
@@ -330,9 +329,11 @@ export class Game extends Scene {
                     this.Cells.set(Orientation.None, this.Cells.get(Orientation.Down)!)
                     this.Cells.set(Orientation.Right, this.Cells.get(Orientation.DownRight)!)
                     // assign new cells to load
-                    cellIDs.push(contig.get(Orientation.UpLeft)!)
-                    cellIDs.push(contig.get(Orientation.Up)!)
-                    cellIDs.push(contig.get(Orientation.UpRight)!)
+                    cellIDs.push(
+                        contig.get(Orientation.UpLeft)!,
+                        contig.get(Orientation.Up)!,
+                        contig.get(Orientation.UpRight)!,
+                    )
                     break;
                 case Orientation.UpRight:
                     // shift preloaded
@@ -341,11 +342,13 @@ export class Game extends Scene {
                     this.Cells.set(Orientation.Down, this.Cells.get(Orientation.Right)!)
                     this.Cells.set(Orientation.None, this.Cells.get(Orientation.UpRight)!)
                     // assign new cells to load
-                    cellIDs.push(contig.get(Orientation.UpLeft)!)
-                    cellIDs.push(contig.get(Orientation.Up)!)
-                    cellIDs.push(contig.get(Orientation.UpRight)!)
-                    cellIDs.push(contig.get(Orientation.Right)!)
-                    cellIDs.push(contig.get(Orientation.DownRight)!)
+                    cellIDs.push(
+                        contig.get(Orientation.UpLeft)!,
+                        contig.get(Orientation.Up)!,
+                        contig.get(Orientation.UpRight)!,
+                        contig.get(Orientation.Right)!,
+                        contig.get(Orientation.DownRight)!,
+                    )
                     break;
                 case Orientation.Right:
                     // shift preloaded
@@ -356,9 +359,11 @@ export class Game extends Scene {
                     this.Cells.set(Orientation.DownLeft, this.Cells.get(Orientation.Down)!)
                     this.Cells.set(Orientation.Down, this.Cells.get(Orientation.DownRight)!)
                     // assign new cells to load
-                    cellIDs.push(contig.get(Orientation.UpRight)!)
-                    cellIDs.push(contig.get(Orientation.Right)!)
-                    cellIDs.push(contig.get(Orientation.DownRight)!)
+                    cellIDs.push(
+                        contig.get(Orientation.UpRight)!,
+                        contig.get(Orientation.Right)!,
+                        contig.get(Orientation.DownRight)!
+                    )
                     break;
                 case Orientation.DownRight:
                     // shift preloaded
@@ -367,11 +372,13 @@ export class Game extends Scene {
                     this.Cells.set(Orientation.Up, this.Cells.get(Orientation.Right)!)
                     this.Cells.set(Orientation.None, this.Cells.get(Orientation.DownRight)!)
                     // assign new cells to load
-                    cellIDs.push(contig.get(Orientation.DownLeft)!)
-                    cellIDs.push(contig.get(Orientation.Down)!)
-                    cellIDs.push(contig.get(Orientation.DownRight)!)
-                    cellIDs.push(contig.get(Orientation.Right)!)
-                    cellIDs.push(contig.get(Orientation.UpRight)!)
+                    cellIDs.push(
+                        contig.get(Orientation.DownLeft)!,
+                        contig.get(Orientation.Down)!,
+                        contig.get(Orientation.DownRight)!,
+                        contig.get(Orientation.Right)!,
+                        contig.get(Orientation.UpRight)!,
+                    )
                     break;
                 case Orientation.Down:
                     // shift preloaded
@@ -382,9 +389,11 @@ export class Game extends Scene {
                     this.Cells.set(Orientation.None, this.Cells.get(Orientation.Down)!)
                     this.Cells.set(Orientation.Right, this.Cells.get(Orientation.DownRight)!)
                     // assign new cells to load
-                    cellIDs.push(contig.get(Orientation.DownLeft)!)
-                    cellIDs.push(contig.get(Orientation.Down)!)
-                    cellIDs.push(contig.get(Orientation.DownRight)!)
+                    cellIDs.push(
+                        contig.get(Orientation.DownLeft)!,
+                        contig.get(Orientation.Down)!,
+                        contig.get(Orientation.DownRight)!,
+                    )
                     break;
                 case Orientation.DownLeft:
                     // shift preloaded
@@ -393,11 +402,13 @@ export class Game extends Scene {
                     this.Cells.set(Orientation.Up, this.Cells.get(Orientation.Left)!)
                     this.Cells.set(Orientation.None, this.Cells.get(Orientation.DownLeft)!)
                     // assign new cells to load
-                    cellIDs.push(contig.get(Orientation.DownRight)!)
-                    cellIDs.push(contig.get(Orientation.Down)!)
-                    cellIDs.push(contig.get(Orientation.DownLeft)!)
-                    cellIDs.push(contig.get(Orientation.Left)!)
-                    cellIDs.push(contig.get(Orientation.UpLeft)!)
+                    cellIDs.push(
+                        contig.get(Orientation.DownRight)!,
+                        contig.get(Orientation.Down)!,
+                        contig.get(Orientation.DownLeft)!,
+                        contig.get(Orientation.Left)!,
+                        contig.get(Orientation.UpLeft)!,
+                    )
                     break;
                 case Orientation.Left:
                     // shift preloaded
@@ -408,9 +419,11 @@ export class Game extends Scene {
                     this.Cells.set(Orientation.DownRight, this.Cells.get(Orientation.Down)!)
                     this.Cells.set(Orientation.Down, this.Cells.get(Orientation.DownLeft)!)
                     // assign new cells to load
-                    cellIDs.push(contig.get(Orientation.UpLeft)!)
-                    cellIDs.push(contig.get(Orientation.Left)!)
-                    cellIDs.push(contig.get(Orientation.DownLeft)!)
+                    cellIDs.push(
+                        contig.get(Orientation.UpLeft)!,
+                        contig.get(Orientation.Left)!,
+                        contig.get(Orientation.DownLeft)!,
+                    )
                     break;
                 case Orientation.UpLeft:
                     // shift preloaded
@@ -419,178 +432,183 @@ export class Game extends Scene {
                     this.Cells.set(Orientation.Down, this.Cells.get(Orientation.Left)!)
                     this.Cells.set(Orientation.None, this.Cells.get(Orientation.UpLeft)!)
                     // assign new cells to load
-                    cellIDs.push(contig.get(Orientation.UpRight)!)
-                    cellIDs.push(contig.get(Orientation.Up)!)
-                    cellIDs.push(contig.get(Orientation.UpLeft)!)
-                    cellIDs.push(contig.get(Orientation.Left)!)
-                    cellIDs.push(contig.get(Orientation.DownLeft)!)
+                    cellIDs.push(
+                        contig.get(Orientation.UpRight)!,
+                        contig.get(Orientation.Up)!,
+                        contig.get(Orientation.UpLeft)!,
+                        contig.get(Orientation.Left)!,
+                        contig.get(Orientation.DownLeft)!,
+                    )
                     break;
             }
+
+            // update border after none cell is up to date
+            const cn = this.Cells.get(Orientation.None)!
+            this.Border.set(Orientation.Up, cn.Cell.getY() * this.World.getCellheight())
+            this.Border.set(Orientation.Right, (cn.Cell.getX() + 1) * this.World.getCellwidth())
+            this.Border.set(Orientation.Down, (cn.Cell.getY() + 1) * this.World.getCellheight())
+            this.Border.set(Orientation.Left, cn.Cell.getX() * this.World.getCellwidth())
 
             return this.listCell((() => {
                 const req = new CellDTO.ListCellReq()
 
-                req.setIdsList(cellIDs)
+                req.setIdsList(cellIDs.filter((v) => (!(v == undefined))))
 
                 return req
             })())
         })
         .then((cells: CellDTO.ListCellResp) => {
 
-            // TODO
-            // TODO
-            // TODO
-
-            // load contiguous pc cells
-            const contig = this.Cells.get(Orientation.None)?.Cell.getContiguousMap() as jspb.Map<number, Uint8Array>
-
-
-
-            // create reverted map to ease access
-            const revertContig = new jspb.Map<Uint8Array, number>([])
-            contig.forEach((entry: Uint8Array, key: number) => {
-                revertContig.set(entry, key)
+            // map new loaded cells
+            const cellMap = new Map<string, Cell.Cell>()
+            cells.getCellsList().map((v) => {
+                cellMap.set(ulid(v.getId_asU8()), v)
             })
 
-            cells.getCellsList().map((c: Cell.Cell) => {
-                // Pre-assign contiguous cells
-                const o = revertContig.get(c.getId_asU8())
-                if (!o) {
+            const contig = this.Cells.get(Orientation.None)?.Cell.getContiguousMap() as jspb.Map<number, Uint8Array>
+
+            // must fit above loaded cells array
+            const loadedCells = new Array<Orientation>()
+            switch (o) {
+                case Orientation.None:
+                    loadedCells.push(
+                        Orientation.None,
+                        Orientation.Up,
+                        Orientation.UpRight,
+                        Orientation.Right,
+                        Orientation.DownRight,
+                        Orientation.Down,
+                        Orientation.DownLeft,
+                        Orientation.Left,
+                        Orientation.UpLeft
+                    )
+                    break;
+                case Orientation.Up:
+                    loadedCells.push(
+                        Orientation.Up,
+                        Orientation.UpRight,
+                        Orientation.UpLeft
+                    )
+                    break;
+                case Orientation.UpRight:
+                    loadedCells.push(
+                        Orientation.Up,
+                        Orientation.UpRight,
+                        Orientation.Right,
+                        Orientation.DownRight,
+                        Orientation.UpLeft
+                    )
+                    break;
+                case Orientation.Right:
+                    loadedCells.push(
+                        Orientation.UpRight,
+                        Orientation.Right,
+                        Orientation.DownRight,
+                    )
+                    break;
+                case Orientation.DownRight:
+                    loadedCells.push(
+                        Orientation.UpRight,
+                        Orientation.Right,
+                        Orientation.DownRight,
+                        Orientation.Down,
+                        Orientation.DownLeft,
+                    )
+                    break;
+                case Orientation.Down:
+                    loadedCells.push(
+                        Orientation.DownRight,
+                        Orientation.Down,
+                        Orientation.DownLeft,
+                    )
+                    break;
+                case Orientation.DownLeft:
+                    loadedCells.push(
+                        Orientation.DownRight,
+                        Orientation.Down,
+                        Orientation.DownLeft,
+                        Orientation.Left,
+                        Orientation.UpLeft
+                    )
+                    break;
+                case Orientation.Left:
+                    loadedCells.push(
+                        Orientation.DownLeft,
+                        Orientation.Left,
+                        Orientation.UpLeft
+                    )
+                    break;
+                case Orientation.UpLeft:
+                    loadedCells.push(
+                        Orientation.Up,
+                        Orientation.UpRight,
+                        Orientation.DownLeft,
+                        Orientation.Left,
+                        Orientation.UpLeft
+                    )
+                    break;
+            }
+
+            loadedCells.map((v) => {
+                if (!contig.has(v)) {
+                    // world border
                     return
                 }
 
-                this.Cell.set(o, c)
+                const c = cellMap.get(ulid(contig.get(v)!))!
 
-                const ts = ulid(c.getTileset_asU8())
+                if (!c) {
+                    // world border
+                    // TO INVESTIGATE, shouldn't happen ?
+                    return
+                }
+
                 const tm = ulid(c.getTilemap_asU8())
-                this.load.image(ts, 'img/' + ts +'.png')
-                this.load.tilemapTiledJSON(tm, 'json/' + tm +'.json')
+                const ts = ulid(c.getTileset_asU8())
+
+                this.CellLoader.image(ts, 'img/' + ts +'.png')
+                this.CellLoader.tilemapTiledJSON(tm, 'json/' + tm +'.json')
+
+                const m = this.make.tilemap()
+                this.Cells.set(v, {
+                    Cell: c,
+                    Tilemap: m,
+                    Layer: m.createBlankLayer('blank', ''),
+                })
+
+                let loadedTM: boolean, loadedTS: boolean = false
+                const load = () => {
+                    if (!loadedTM || !loadedTS) {
+                        return
+                    }
+
+                    // create new cell
+                    const map = this.make.tilemap({key: tm, width: this.World.getWidth(), height: this.World.getHeight()})
+                    const set = map.addTilesetImage(ts)
+                    const layer = map.createLayer('Tile Layer 1', set, c.getX() * this.World.getWidth(), c.getY() * this.World.getHeight())
+
+                    const cc = this.Cells.get(v)
+                    if (!cc) {
+                        // should never happen
+                        return
+                    }
+
+                    cc.Tilemap = map
+                    cc.Layer = layer
+                }
+                this.CellLoader.on('filecomplete-json-' + tm, () => {
+                    loadedTM = true
+                    load()
+                })
+                this.CellLoader.on('filecomplete-image-' + ts, () => {
+                    loadedTS = true
+                    load()
+                })
             })
+
+            this.CellLoader.start()
         })
     }
-
-
-    // displayMap() {
-    //         // Create tilemap for all cells
-    //         this.Cell.forEach((entry:Cell.Cell, key: Orientation) => {
-    //             const ts = ulid(entry.getTileset_asU8())
-    //             const tm = ulid(entry.getTilemap_asU8())
-
-    //             const map = this.make.tilemap({ key: tm })
-    //             const set = map.addTilesetImage(ts)
-
-    //             let x, y = 0
-    //             switch (key) {
-    //                 case Orientation.None:
-    //                     // this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-    //                     break;
-    //                 case Orientation.Up:
-    //                     y = -map.heightInPixels
-    //                     break;
-    //                 case Orientation.UpRight:
-    //                     x = map.widthInPixels
-    //                     y = -map.heightInPixels
-    //                     break;
-    //                 case Orientation.Right:
-    //                     x = map.widthInPixels
-    //                     break;
-    //                 case Orientation.DownRight:
-    //                     x = map.widthInPixels
-    //                     y = map.heightInPixels
-    //                     break;
-    //                 case Orientation.Down:
-    //                     y = map.heightInPixels
-    //                     break;
-    //                 case Orientation.DownLeft:
-    //                     x = -map.widthInPixels
-    //                     y = map.heightInPixels
-    //                     break;
-    //                 case Orientation.Left:
-    //                     x = -map.widthInPixels
-    //                     break;
-    //                 case Orientation.UpLeft:
-    //                     x = -map.widthInPixels
-    //                     y = -map.heightInPixels
-    //                     break;
-    //             }
-
-    //             console.log('display layer ' + key.toString())
-    //             const layer = map.createLayer('Tile Layer 1', set, x, y);
-    //         })
-    // }
-
-    // // Loader Cell
-    // async loadCell() {
-    //     // call current pc cell
-    //     return this.listCell((() => {
-    //         const req = new CellDTO.ListCellReq()
-
-    //         req.setIdsList([this.Entity.E.getCellid_asU8()])
-
-    //         return req
-    //     })())
-    //     .then((cells: CellDTO.ListCellResp) => {
-    //         // load current pc cell
-    //         if (cells.getCellsList().length != 1) {
-    //             throw new Error('failed to load cell')
-    //         }
-
-    //         // Clear previous cells
-    //         this.Cell.clear()
-
-    //         const c = cells.getCellsList()[0]
-    //         this.Cell.set(Orientation.None, c)
-
-    //         const ts = ulid(c.getTileset_asU8())
-    //         const tm = ulid(c.getTilemap_asU8())
-    //         this.load.image(ts, 'img/' + ts +'.png')
-    //         this.load.tilemapTiledJSON(tm, 'json/' + tm +'.json')
-
-    //     //     return c
-    //     // })
-    //     // .then((c: Cell.Cell) => {
-    //         // call contiguous pc cells
-    //         const contig = c.getContiguousMap() as jspb.Map<number, Uint8Array>
-
-    //         var cellIDs : Uint8Array[] = []
-    //         contig.forEach((entry: Uint8Array) => {
-    //             cellIDs.push(entry)
-    //         })
-
-    //         return this.listCell((() => {
-    //             const req = new CellDTO.ListCellReq()
-
-    //             req.setIdsList(cellIDs)
-
-    //             return req
-    //         })())
-    //     })
-    //     .then((cells: CellDTO.ListCellResp) => {
-    //         // load contiguous pc cells
-    //         const contig = this.Cell.get(Orientation.None)?.getContiguousMap() as jspb.Map<number, Uint8Array>
-
-    //         // create reverted map to ease access
-    //         const revertContig = new jspb.Map<Uint8Array, number>([])
-    //         contig.forEach((entry: Uint8Array, key: number) => {
-    //             revertContig.set(entry, key)
-    //         })
-
-    //         cells.getCellsList().map((c: Cell.Cell) => {
-    //             // Pre-assign contiguous cells
-    //             const o = revertContig.get(c.getId_asU8())
-    //             if (!o) {
-    //                 return
-    //             }
-
-    //             this.Cell.set(o, c)
-
-    //             const ts = ulid(c.getTileset_asU8())
-    //             const tm = ulid(c.getTilemap_asU8())
-    //             this.load.image(ts, 'img/' + ts +'.png')
-    //             this.load.tilemapTiledJSON(tm, 'json/' + tm +'.json')
-    //         })
-    //     })
-    // }
 
     // Connect
     async connect() {
