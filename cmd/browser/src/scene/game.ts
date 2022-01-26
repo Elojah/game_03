@@ -177,19 +177,20 @@ export class Game extends Scene {
         let animationID = null
         let deltaX: number = 0
         let deltaY: number = 0
+        const speed: number = 10
 
         // Move entity
         if (this.Cursors.up.isDown) {
-            deltaY = -1
+            deltaY = -speed
             animationID = this.Animations.get(this.EntityID + ':' + 'up')
         } else if (this.Cursors.right.isDown) {
-            deltaX = 1
+            deltaX = speed
             animationID = this.Animations.get(this.EntityID + ':' + 'right')
         } else if (this.Cursors.down.isDown) {
-            deltaY = 1
+            deltaY = speed
             animationID = this.Animations.get(this.EntityID + ':' + 'down')
         } else if (this.Cursors.left.isDown) {
-            deltaX = -1
+            deltaX = -speed
             animationID = this.Animations.get(this.EntityID + ':' + 'left')
         } else {
             animationID = this.Animations.get(this.EntityID + ':' + 'idle')
@@ -202,6 +203,10 @@ export class Game extends Scene {
         const right = this.Border.get(Orientation.Right)!
         const down = this.Border.get(Orientation.Down)!
         const left = this.Border.get(Orientation.Left)!
+
+        console.log(y, up, down)
+        console.log(x, right, left)
+
         if (y < up) {
             if (x < left) {
                 o = Orientation.UpLeft
@@ -578,6 +583,7 @@ export class Game extends Scene {
 
                 let loadedTM: boolean, loadedTS: boolean = false
                 const load = () => {
+                    console.log('load ', v, loadedTM, loadedTS)
                     if (!loadedTM || !loadedTS) {
                         return
                     }
@@ -596,11 +602,13 @@ export class Game extends Scene {
                     cc.Tilemap = map
                     cc.Layer = layer
                 }
-                this.CellLoader.on('filecomplete-json-' + tm, () => {
+                this.CellLoader.on('filecomplete-tilemapJSON-' + tm, () => {
+                    console.log('json complete on ', v)
                     loadedTM = true
                     load()
                 })
                 this.CellLoader.on('filecomplete-image-' + ts, () => {
+                    console.log('image complete on ', v)
                     loadedTS = true
                     load()
                 })

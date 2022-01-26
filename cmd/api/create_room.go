@@ -14,7 +14,7 @@ import (
 // TMP DATA FOR DEV WIP.
 const (
 	height, width         = 20, 20
-	cellHeight, cellWidth = 1920, 1080
+	cellHeight, cellWidth = 1080, 1920
 )
 
 var (
