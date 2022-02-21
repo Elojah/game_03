@@ -73,6 +73,8 @@ export class Game extends Scene {
     World: World.World
     // Client cell loading
     Border: Map<Orientation, number>
+    // Loading mutex
+    Loading: Uint8Array | undefined
 
     // Entities
     Entities: Map<string, GraphicEntity>
@@ -204,8 +206,8 @@ export class Game extends Scene {
         const down = this.Border.get(Orientation.Down)!
         const left = this.Border.get(Orientation.Left)!
 
-        console.log(y, up, down)
-        console.log(x, right, left)
+        // console.log(y, up, down)
+        // console.log(x, right, left)
 
         if (y < up) {
             if (x < left) {
@@ -233,8 +235,9 @@ export class Game extends Scene {
             }
         }
 
-        if (o != Orientation.None) {
+        if (o != Orientation.None && this.Loading != undefined) {
             const id = this.Cells.get(o)?.Cell.getId_asU8()
+            this.Loading = id
             if (id) {
                 this.Entity.E.setCellid(id)
 
@@ -243,8 +246,8 @@ export class Game extends Scene {
                 })
             } else {
                 // don't move entity, out of world
-                deltaX = 0
-                deltaY = 0
+                // deltaX = 0
+                // deltaY = 0
             }
         }
 
@@ -469,8 +472,15 @@ export class Game extends Scene {
             cells.getCellsList().map((v) => {
                 cellMap.set(ulid(v.getId_asU8()), v)
             })
+            if (o == Orientation.None) {
+                const c = this.Cells.get(Orientation.None)!
+                cellMap.set(ulid(c?.Cell.getId_asU8()), c.Cell)
+            }
 
             const contig = this.Cells.get(Orientation.None)?.Cell.getContiguousMap() as jspb.Map<number, Uint8Array>
+            if (o == Orientation.None) {
+                contig.set(Orientation.None, this.Cells.get(Orientation.None)?.Cell.getId_asU8()!)
+            }
 
             // must fit above loaded cells array
             const loadedCells = new Array<Orientation>()
@@ -554,9 +564,11 @@ export class Game extends Scene {
                     break;
             }
 
+            let loaded = 0
             loadedCells.map((v) => {
                 if (!contig.has(v)) {
                     // world border
+                    console.log('contig has no:', v)
                     return
                 }
 
@@ -565,8 +577,11 @@ export class Game extends Scene {
                 if (!c) {
                     // world border
                     // TO INVESTIGATE, shouldn't happen ?
+                    console.log('cell not found:', v)
                     return
                 }
+
+                console.log(v)
 
                 const tm = ulid(c.getTilemap_asU8())
                 const ts = ulid(c.getTileset_asU8())
@@ -589,9 +604,9 @@ export class Game extends Scene {
                     }
 
                     // create new cell
-                    const map = this.make.tilemap({key: tm, width: this.World.getWidth(), height: this.World.getHeight()})
+                    const map = this.make.tilemap({key: tm, width: this.World.getCellwidth(), height: this.World.getCellheight()})
                     const set = map.addTilesetImage(ts)
-                    const layer = map.createLayer('Tile Layer 1', set, c.getX() * this.World.getWidth(), c.getY() * this.World.getHeight())
+                    const layer = map.createLayer('Tile Layer 1', set, c.getX() * this.World.getCellwidth(), c.getY() * this.World.getCellheight())
 
                     const cc = this.Cells.get(v)
                     if (!cc) {
@@ -601,6 +616,14 @@ export class Game extends Scene {
 
                     cc.Tilemap = map
                     cc.Layer = layer
+
+                    // Loading reset
+                    // Add safe concurrency for next 2 instructions
+                    loaded++
+                    console.log('loaded:', v, ':', loaded)
+                    if (loaded == loadedCells.length) {
+                        this.Loading = undefined
+                    }
                 }
                 this.CellLoader.on('filecomplete-tilemapJSON-' + tm, () => {
                     console.log('json complete on ', v)
