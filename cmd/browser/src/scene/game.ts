@@ -161,6 +161,7 @@ export class Game extends Scene {
                 this.World = ws.getWorldsList()[0]
             }
         }).then(() => {
+            this.Loading = this.Entity.E.getCellid_asU8()
             return this.loadMap(Orientation.None)
         })
         .then(() => {
@@ -206,7 +207,9 @@ export class Game extends Scene {
         const down = this.Border.get(Orientation.Down)!
         const left = this.Border.get(Orientation.Left)!
 
+        // 190, 0, 1080
         // console.log(y, up, down)
+        // 2120, 1920, 0
         // console.log(x, right, left)
 
         if (y < up) {
@@ -235,7 +238,8 @@ export class Game extends Scene {
             }
         }
 
-        if (o != Orientation.None && this.Loading != undefined) {
+        if (o != Orientation.None && this.Loading == undefined) {
+            console.log('loading new:', o)
             const id = this.Cells.get(o)?.Cell.getId_asU8()
             this.Loading = id
             if (id) {
@@ -565,23 +569,33 @@ export class Game extends Scene {
             }
 
             let loaded = 0
-            loadedCells.map((v) => {
-                if (!contig.has(v)) {
+            loadedCells.map((o) => {
+                const resetLoad = () => {
+                    loaded++
+                    console.log('loaded:', o, ':', loaded)
+                    if (loaded == loadedCells.length) {
+                        console.log('loading unlock')
+                        this.Loading = undefined
+                    }
+                }
+
+                if (!contig.has(o)) {
                     // world border
-                    console.log('contig has no:', v)
+                    console.log('contig has no:', o)
+                    resetLoad()
                     return
                 }
 
-                const c = cellMap.get(ulid(contig.get(v)!))!
+                const c = cellMap.get(ulid(contig.get(o)!))!
 
                 if (!c) {
                     // world border
                     // TO INVESTIGATE, shouldn't happen ?
-                    console.log('cell not found:', v)
+                    console.log('cell not found:', o)
                     return
                 }
 
-                console.log(v)
+                console.log(o)
 
                 const tm = ulid(c.getTilemap_asU8())
                 const ts = ulid(c.getTileset_asU8())
@@ -590,15 +604,15 @@ export class Game extends Scene {
                 this.CellLoader.tilemapTiledJSON(tm, 'json/' + tm +'.json')
 
                 const m = this.make.tilemap()
-                this.Cells.set(v, {
+                this.Cells.set(o, {
                     Cell: c,
                     Tilemap: m,
                     Layer: m.createBlankLayer('blank', ''),
                 })
 
-                let loadedTM: boolean, loadedTS: boolean = false
+                let loadedTM: boolean = false, loadedTS: boolean = false
                 const load = () => {
-                    console.log('load ', v, loadedTM, loadedTS)
+                    console.log('load ', o, loadedTM, loadedTS)
                     if (!loadedTM || !loadedTS) {
                         return
                     }
@@ -608,7 +622,7 @@ export class Game extends Scene {
                     const set = map.addTilesetImage(ts)
                     const layer = map.createLayer('Tile Layer 1', set, c.getX() * this.World.getCellwidth(), c.getY() * this.World.getCellheight())
 
-                    const cc = this.Cells.get(v)
+                    const cc = this.Cells.get(o)
                     if (!cc) {
                         // should never happen
                         return
@@ -619,24 +633,41 @@ export class Game extends Scene {
 
                     // Loading reset
                     // Add safe concurrency for next 2 instructions
-                    loaded++
-                    console.log('loaded:', v, ':', loaded)
-                    if (loaded == loadedCells.length) {
-                        this.Loading = undefined
-                    }
+                    resetLoad()
                 }
-                this.CellLoader.on('filecomplete-tilemapJSON-' + tm, () => {
-                    console.log('json complete on ', v)
+
+                // Check if files already been loaded
+                if (this.cache.tilemap.exists(tm)) {
                     loadedTM = true
                     load()
-                })
-                this.CellLoader.on('filecomplete-image-' + ts, () => {
-                    console.log('image complete on ', v)
+                } else {
+                    this.CellLoader.on('filecomplete-tilemapJSON-' + tm, () => {
+                        console.log('json complete on ', o)
+                        loadedTM = true
+                        load()
+                    })
+                }
+
+                if (this.textures.exists(ts)) {
                     loadedTS = true
                     load()
-                })
+                } else {
+                    console.log('add listener on ', 'filecomplete-image-' + ts)
+                    this.CellLoader.on('filecomplete-image-' + ts, () => {
+                        console.log('image complete on ', o)
+                        loadedTS = true
+                        load()
+                    })
+                }
             })
 
+            this.CellLoader.on('complete',  () => {
+                console.log('reset loader')
+                this.CellLoader.removeAllListeners()
+                this.CellLoader.reset()
+            })
+
+            console.log('start global cell loading')
             this.CellLoader.start()
         })
     }
