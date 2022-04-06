@@ -309,10 +309,24 @@ export class Game extends Scene {
             const c = cells.getCellsList()[0]
             const contig = c.getContiguousMap() as jspb.Map<number, Uint8Array>
 
-            var cellIDs : Uint8Array[] = []
+            var newCellIDs : Uint8Array[] = []
+            var deletedCells : GraphicCell[] = []
 
             switch (o) {
                 case Orientation.None:
+                    // assign new cells to load
+                    newCellIDs.push(
+                        contig.get(Orientation.Up)!,
+                        contig.get(Orientation.UpRight)!,
+                        contig.get(Orientation.Right)!,
+                        contig.get(Orientation.DownRight)!,
+                        contig.get(Orientation.Down)!,
+                        contig.get(Orientation.DownLeft)!,
+                        contig.get(Orientation.Left)!,
+                        contig.get(Orientation.UpLeft)!,
+                    )
+                    // assign cells to delete
+                    // deletedCells.push()
                     // create new blank graphic cell from loaded cell
                     const m = this.make.tilemap()
                     this.Cells.set(Orientation.None, {
@@ -320,79 +334,108 @@ export class Game extends Scene {
                         Tilemap: m,
                         Layer: m.createBlankLayer('blank', ''),
                     })
-                    // assign new cells to load
-                    cellIDs.push(
-                        contig.get(Orientation.Up)!,
-                        contig.get(Orientation.UpRight)!,
-                        contig.get(Orientation.Right)!,
-                        contig.get(Orientation.DownRight)!,
-                        contig.get(Orientation.Down)!,
-                        contig.get(Orientation.DownLeft)!,
-                        contig.get(Orientation.Left)!,
-                        contig.get(Orientation.UpLeft)!,
-                    )
                     break;
                 case Orientation.Up:
+                    // assign new cells to load
+                    newCellIDs.push(
+                        contig.get(Orientation.UpLeft)!,
+                        contig.get(Orientation.Up)!,
+                        contig.get(Orientation.UpRight)!,
+                    )
+                    // assign cells to delete
+                    deletedCells.push(
+                        this.Cells.get(Orientation.DownLeft)!,
+                        this.Cells.get(Orientation.Down)!,
+                        this.Cells.get(Orientation.DownRight)!,
+                    )
                     // shift preloaded
                     this.Cells.set(Orientation.DownLeft, this.Cells.get(Orientation.Left)!)
                     this.Cells.set(Orientation.Down, this.Cells.get(Orientation.None)!)
                     this.Cells.set(Orientation.DownRight, this.Cells.get(Orientation.Right)!)
-                    this.Cells.set(Orientation.Left, this.Cells.get(Orientation.DownLeft)!)
-                    this.Cells.set(Orientation.None, this.Cells.get(Orientation.Down)!)
-                    this.Cells.set(Orientation.Right, this.Cells.get(Orientation.DownRight)!)
+                    this.Cells.set(Orientation.Left, this.Cells.get(Orientation.UpLeft)!)
+                    this.Cells.set(Orientation.None, this.Cells.get(Orientation.Up)!)
+                    this.Cells.set(Orientation.Right, this.Cells.get(Orientation.UpRight)!)
+                    break;
+                case Orientation.UpRight:
                     // assign new cells to load
-                    cellIDs.push(
+                    newCellIDs.push(
                         contig.get(Orientation.UpLeft)!,
                         contig.get(Orientation.Up)!,
                         contig.get(Orientation.UpRight)!,
+                        contig.get(Orientation.Right)!,
+                        contig.get(Orientation.DownRight)!,
                     )
-                    break;
-                case Orientation.UpRight:
+                    // assign cells to delete
+                    deletedCells.push(
+                        this.Cells.get(Orientation.UpLeft)!,
+                        this.Cells.get(Orientation.Left)!,
+                        this.Cells.get(Orientation.DownLeft)!,
+                        this.Cells.get(Orientation.Down)!,
+                        this.Cells.get(Orientation.DownRight)!,
+                    )
                     // shift preloaded
                     this.Cells.set(Orientation.Left, this.Cells.get(Orientation.Up)!)
                     this.Cells.set(Orientation.DownLeft, this.Cells.get(Orientation.None)!)
                     this.Cells.set(Orientation.Down, this.Cells.get(Orientation.Right)!)
                     this.Cells.set(Orientation.None, this.Cells.get(Orientation.UpRight)!)
-                    // assign new cells to load
-                    cellIDs.push(
-                        contig.get(Orientation.UpLeft)!,
-                        contig.get(Orientation.Up)!,
-                        contig.get(Orientation.UpRight)!,
-                        contig.get(Orientation.Right)!,
-                        contig.get(Orientation.DownRight)!,
-                    )
                     break;
                 case Orientation.Right:
-                    // shift preloaded
-                    this.Cells.set(Orientation.UpLeft, this.Cells.get(Orientation.Up)!)
-                    this.Cells.set(Orientation.Up, this.Cells.get(Orientation.UpRight)!)
-                    this.Cells.set(Orientation.Left, this.Cells.get(Orientation.None)!)
-                    this.Cells.set(Orientation.None, this.Cells.get(Orientation.Right)!)
-                    this.Cells.set(Orientation.DownLeft, this.Cells.get(Orientation.Down)!)
-                    this.Cells.set(Orientation.Down, this.Cells.get(Orientation.DownRight)!)
                     // assign new cells to load
-                    cellIDs.push(
+                    newCellIDs.push(
                         contig.get(Orientation.UpRight)!,
                         contig.get(Orientation.Right)!,
                         contig.get(Orientation.DownRight)!
                     )
+                    // assign cells to delete
+                    deletedCells.push(
+                        this.Cells.get(Orientation.UpLeft)!,
+                        this.Cells.get(Orientation.Left)!,
+                        this.Cells.get(Orientation.DownLeft)!,
+                    )
+                    // shift preloaded
+                    this.Cells.set(Orientation.UpLeft, this.Cells.get(Orientation.Up)!)
+                    this.Cells.set(Orientation.Left, this.Cells.get(Orientation.None)!)
+                    this.Cells.set(Orientation.DownLeft, this.Cells.get(Orientation.Down)!)
+                    this.Cells.set(Orientation.Up, this.Cells.get(Orientation.UpRight)!)
+                    this.Cells.set(Orientation.None, this.Cells.get(Orientation.Right)!)
+                    this.Cells.set(Orientation.Down, this.Cells.get(Orientation.DownRight)!)
                     break;
                 case Orientation.DownRight:
-                    // shift preloaded
-                    this.Cells.set(Orientation.Left, this.Cells.get(Orientation.Down)!)
-                    this.Cells.set(Orientation.UpLeft, this.Cells.get(Orientation.None)!)
-                    this.Cells.set(Orientation.Up, this.Cells.get(Orientation.Right)!)
-                    this.Cells.set(Orientation.None, this.Cells.get(Orientation.DownRight)!)
                     // assign new cells to load
-                    cellIDs.push(
+                    newCellIDs.push(
                         contig.get(Orientation.DownLeft)!,
                         contig.get(Orientation.Down)!,
                         contig.get(Orientation.DownRight)!,
                         contig.get(Orientation.Right)!,
                         contig.get(Orientation.UpRight)!,
                     )
+                    // assign cells to delete
+                    deletedCells.push(
+                        this.Cells.get(Orientation.UpLeft)!,
+                        this.Cells.get(Orientation.Left)!,
+                        this.Cells.get(Orientation.DownLeft)!,
+                        this.Cells.get(Orientation.Up)!,
+                        this.Cells.get(Orientation.UpRight)!,
+                    )
+                    // shift preloaded
+                    this.Cells.set(Orientation.Left, this.Cells.get(Orientation.Down)!)
+                    this.Cells.set(Orientation.UpLeft, this.Cells.get(Orientation.None)!)
+                    this.Cells.set(Orientation.Up, this.Cells.get(Orientation.Right)!)
+                    this.Cells.set(Orientation.None, this.Cells.get(Orientation.DownRight)!)
                     break;
                 case Orientation.Down:
+                    // assign new cells to load
+                    newCellIDs.push(
+                        contig.get(Orientation.DownLeft)!,
+                        contig.get(Orientation.Down)!,
+                        contig.get(Orientation.DownRight)!,
+                    )
+                    // assign cells to delete
+                    deletedCells.push(
+                        this.Cells.get(Orientation.UpLeft)!,
+                        this.Cells.get(Orientation.Up)!,
+                        this.Cells.get(Orientation.UpRight)!,
+                    )
                     // shift preloaded
                     this.Cells.set(Orientation.UpLeft, this.Cells.get(Orientation.Left)!)
                     this.Cells.set(Orientation.Up, this.Cells.get(Orientation.None)!)
@@ -400,57 +443,73 @@ export class Game extends Scene {
                     this.Cells.set(Orientation.Left, this.Cells.get(Orientation.DownLeft)!)
                     this.Cells.set(Orientation.None, this.Cells.get(Orientation.Down)!)
                     this.Cells.set(Orientation.Right, this.Cells.get(Orientation.DownRight)!)
-                    // assign new cells to load
-                    cellIDs.push(
-                        contig.get(Orientation.DownLeft)!,
-                        contig.get(Orientation.Down)!,
-                        contig.get(Orientation.DownRight)!,
-                    )
                     break;
                 case Orientation.DownLeft:
+                    // assign new cells to load
+                    newCellIDs.push(
+                        contig.get(Orientation.DownRight)!,
+                        contig.get(Orientation.Down)!,
+                        contig.get(Orientation.DownLeft)!,
+                        contig.get(Orientation.Left)!,
+                        contig.get(Orientation.UpLeft)!,
+                    )
+                    // assign cells to delete
+                    deletedCells.push(
+                        this.Cells.get(Orientation.UpLeft)!,
+                        this.Cells.get(Orientation.Up)!,
+                        this.Cells.get(Orientation.UpRight)!,
+                        this.Cells.get(Orientation.Right)!,
+                        this.Cells.get(Orientation.DownRight)!,
+                    )
                     // shift preloaded
                     this.Cells.set(Orientation.Right, this.Cells.get(Orientation.Down)!)
                     this.Cells.set(Orientation.UpRight, this.Cells.get(Orientation.None)!)
                     this.Cells.set(Orientation.Up, this.Cells.get(Orientation.Left)!)
                     this.Cells.set(Orientation.None, this.Cells.get(Orientation.DownLeft)!)
-                    // assign new cells to load
-                    cellIDs.push(
-                        contig.get(Orientation.DownRight)!,
-                        contig.get(Orientation.Down)!,
-                        contig.get(Orientation.DownLeft)!,
-                        contig.get(Orientation.Left)!,
-                        contig.get(Orientation.UpLeft)!,
-                    )
                     break;
                 case Orientation.Left:
-                    // shift preloaded
-                    this.Cells.set(Orientation.UpRight, this.Cells.get(Orientation.Up)!)
-                    this.Cells.set(Orientation.Up, this.Cells.get(Orientation.UpLeft)!)
-                    this.Cells.set(Orientation.Right, this.Cells.get(Orientation.None)!)
-                    this.Cells.set(Orientation.None, this.Cells.get(Orientation.Left)!)
-                    this.Cells.set(Orientation.DownRight, this.Cells.get(Orientation.Down)!)
-                    this.Cells.set(Orientation.Down, this.Cells.get(Orientation.DownLeft)!)
                     // assign new cells to load
-                    cellIDs.push(
+                    newCellIDs.push(
                         contig.get(Orientation.UpLeft)!,
                         contig.get(Orientation.Left)!,
                         contig.get(Orientation.DownLeft)!,
                     )
+                    // assign cells to delete
+                    deletedCells.push(
+                        this.Cells.get(Orientation.UpRight)!,
+                        this.Cells.get(Orientation.Right)!,
+                        this.Cells.get(Orientation.DownRight)!,
+                    )
+                    // shift preloaded
+                    this.Cells.set(Orientation.UpRight, this.Cells.get(Orientation.Up)!)
+                    this.Cells.set(Orientation.Right, this.Cells.get(Orientation.None)!)
+                    this.Cells.set(Orientation.DownRight, this.Cells.get(Orientation.Down)!)
+                    this.Cells.set(Orientation.Up, this.Cells.get(Orientation.UpLeft)!)
+                    this.Cells.set(Orientation.None, this.Cells.get(Orientation.Left)!)
+                    this.Cells.set(Orientation.Down, this.Cells.get(Orientation.DownLeft)!)
                     break;
                 case Orientation.UpLeft:
-                    // shift preloaded
-                    this.Cells.set(Orientation.Right, this.Cells.get(Orientation.Up)!)
-                    this.Cells.set(Orientation.DownRight, this.Cells.get(Orientation.None)!)
-                    this.Cells.set(Orientation.Down, this.Cells.get(Orientation.Left)!)
-                    this.Cells.set(Orientation.None, this.Cells.get(Orientation.UpLeft)!)
                     // assign new cells to load
-                    cellIDs.push(
+                    newCellIDs.push(
                         contig.get(Orientation.UpRight)!,
                         contig.get(Orientation.Up)!,
                         contig.get(Orientation.UpLeft)!,
                         contig.get(Orientation.Left)!,
                         contig.get(Orientation.DownLeft)!,
                     )
+                    // assign cells to delete
+                    deletedCells.push(
+                        this.Cells.get(Orientation.UpRight)!,
+                        this.Cells.get(Orientation.Right)!,
+                        this.Cells.get(Orientation.DownRight)!,
+                        this.Cells.get(Orientation.Down)!,
+                        this.Cells.get(Orientation.DownLeft)!,
+                    )
+                    // shift preloaded
+                    this.Cells.set(Orientation.Right, this.Cells.get(Orientation.Up)!)
+                    this.Cells.set(Orientation.DownRight, this.Cells.get(Orientation.None)!)
+                    this.Cells.set(Orientation.Down, this.Cells.get(Orientation.Left)!)
+                    this.Cells.set(Orientation.None, this.Cells.get(Orientation.UpLeft)!)
                     break;
             }
 
@@ -461,10 +520,12 @@ export class Game extends Scene {
             this.Border.set(Orientation.Down, (cn.Cell.getY() + 1) * this.World.getCellheight())
             this.Border.set(Orientation.Left, cn.Cell.getX() * this.World.getCellwidth())
 
+            this.hideCells(deletedCells).then(() => { console.log('finish to destroy unused tilemaps') })
+
             return this.listCell((() => {
                 const req = new CellDTO.ListCellReq()
 
-                req.setIdsList(cellIDs.filter((v) => (!(v == undefined))))
+                req.setIdsList(newCellIDs.filter((v) => (!(v == undefined))))
 
                 return req
             })())
@@ -669,6 +730,14 @@ export class Game extends Scene {
 
             console.log('start global cell loading')
             this.CellLoader.start()
+        })
+    }
+
+    async hideCells(cells: GraphicCell[]) {
+        cells.map((c) => {
+            if (c) {
+                c.Tilemap.destroy()
+            }
         })
     }
 
