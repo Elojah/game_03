@@ -71,8 +71,8 @@ func (h *handler) CreateRoom(ctx context.Context, req *room.R) (*room.R, error) 
 			if err := h.room.InsertWorldCell(ctx, room.WorldCell{
 				WorldID: w.ID,
 				CellID:  c.ID,
-				X:       int64(i),
-				Y:       int64(j),
+				X:       c.X,
+				Y:       c.Y,
 			}); err != nil {
 				logger.Error().Err(err).Msg("failed to create world cell")
 

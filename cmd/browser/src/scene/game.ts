@@ -176,6 +176,7 @@ export class Game extends Scene {
     }
 
     update(time: number, deltaTime: number) {
+
         // Controls + local anim update
         let animationID = null
         let deltaX: number = 0
@@ -239,9 +240,11 @@ export class Game extends Scene {
         }
 
         if (o != Orientation.None && this.Loading == undefined) {
-            console.log('loading new:', o)
             const id = this.Cells.get(o)?.Cell.getId_asU8()
             this.Loading = id
+
+            console.log('loading new direction:', o, id)
+
             if (id) {
                 this.Entity.E.setCellid(id)
 
@@ -250,8 +253,8 @@ export class Game extends Scene {
                 })
             } else {
                 // don't move entity, out of world
-                // deltaX = 0
-                // deltaY = 0
+                deltaX = 0
+                deltaY = 0
             }
         }
 
@@ -392,6 +395,7 @@ export class Game extends Scene {
                         this.Cells.get(Orientation.Left)!,
                         this.Cells.get(Orientation.DownLeft)!,
                     )
+                    console.log('deleted cells:', deletedCells)
                     // shift preloaded
                     this.Cells.set(Orientation.UpLeft, this.Cells.get(Orientation.Up)!)
                     this.Cells.set(Orientation.Left, this.Cells.get(Orientation.None)!)
@@ -399,6 +403,7 @@ export class Game extends Scene {
                     this.Cells.set(Orientation.Up, this.Cells.get(Orientation.UpRight)!)
                     this.Cells.set(Orientation.None, this.Cells.get(Orientation.Right)!)
                     this.Cells.set(Orientation.Down, this.Cells.get(Orientation.DownRight)!)
+                    console.log('deleted cells:', deletedCells)
                     break;
                 case Orientation.DownRight:
                     // assign new cells to load
@@ -515,10 +520,13 @@ export class Game extends Scene {
 
             // update border after none cell is up to date
             const cn = this.Cells.get(Orientation.None)!
-            this.Border.set(Orientation.Up, cn.Cell.getY() * this.World.getCellheight())
-            this.Border.set(Orientation.Right, (cn.Cell.getX() + 1) * this.World.getCellwidth())
-            this.Border.set(Orientation.Down, (cn.Cell.getY() + 1) * this.World.getCellheight())
-            this.Border.set(Orientation.Left, cn.Cell.getX() * this.World.getCellwidth())
+            this.Border.set(Orientation.Up, cn.Cell.getX() * this.World.getCellheight())
+            this.Border.set(Orientation.Right, (cn.Cell.getY() + 1) * this.World.getCellwidth())
+            this.Border.set(Orientation.Down, (cn.Cell.getX() + 1) * this.World.getCellheight())
+            this.Border.set(Orientation.Left, cn.Cell.getY() * this.World.getCellwidth())
+
+            console.log('y/x cell', cn.Cell.getX(), cn.Cell.getY())
+            console.log('border:', this.Border)
 
             this.hideCells(deletedCells).then(() => { console.log('finish to destroy unused tilemaps') })
 
@@ -656,8 +664,6 @@ export class Game extends Scene {
                     return
                 }
 
-                console.log(o)
-
                 const tm = ulid(c.getTilemap_asU8())
                 const ts = ulid(c.getTileset_asU8())
 
@@ -665,6 +671,9 @@ export class Game extends Scene {
                 this.CellLoader.tilemapTiledJSON(tm, 'json/' + tm +'.json')
 
                 const m = this.make.tilemap()
+
+                console.log('set cell:', o, ulid(c.getId_asU8()))
+
                 this.Cells.set(o, {
                     Cell: c,
                     Tilemap: m,
