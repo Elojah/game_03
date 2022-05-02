@@ -93,6 +93,9 @@ export class Game extends Scene {
     // Spritesheets already loaded
     SpriteSheets: Map<string, integer>
 
+    // Static blank cell for filling
+    Blank: GraphicCell
+
     constructor(config: string | Phaser.Types.Scenes.SettingsConfig) {
         super(config);
     }
@@ -119,6 +122,13 @@ export class Game extends Scene {
         this.SpriteSheets = new Map()
 
         this.World = new World.World()
+
+        const m = this.make.tilemap()
+        this.Blank = {
+            Cell: new Cell.Cell,
+            Tilemap: m,
+            Layer: m.createBlankLayer('blank', ''),
+        }
     }
     preload() {}
     create() {
@@ -328,15 +338,25 @@ export class Game extends Scene {
                         contig.get(Orientation.Left)!,
                         contig.get(Orientation.UpLeft)!,
                     )
+
                     // assign cells to delete
                     // deletedCells.push()
                     // create new blank graphic cell from loaded cell
                     const m = this.make.tilemap()
                     this.Cells.set(Orientation.None, {
                         Cell: c,
-                        Tilemap: m,
-                        Layer: m.createBlankLayer('blank', ''),
+                        Tilemap: this.Blank.Tilemap,
+                        Layer: this.Blank.Layer,
                     })
+
+                    this.Cells.delete(Orientation.Up)
+                    this.Cells.delete(Orientation.UpRight)
+                    this.Cells.delete(Orientation.Right)
+                    this.Cells.delete(Orientation.DownRight)
+                    this.Cells.delete(Orientation.Down)
+                    this.Cells.delete(Orientation.DownLeft)
+                    this.Cells.delete(Orientation.Left)
+                    this.Cells.delete(Orientation.UpLeft)
                     break;
                 case Orientation.Up:
                     // assign new cells to load
@@ -345,6 +365,7 @@ export class Game extends Scene {
                         contig.get(Orientation.Up)!,
                         contig.get(Orientation.UpRight)!,
                     )
+
                     // assign cells to delete
                     deletedCells.push(
                         this.Cells.get(Orientation.DownLeft)!,
@@ -358,6 +379,9 @@ export class Game extends Scene {
                     this.Cells.set(Orientation.Left, this.Cells.get(Orientation.UpLeft)!)
                     this.Cells.set(Orientation.None, this.Cells.get(Orientation.Up)!)
                     this.Cells.set(Orientation.Right, this.Cells.get(Orientation.UpRight)!)
+                    this.Cells.delete(Orientation.UpLeft)
+                    this.Cells.delete(Orientation.Up)
+                    this.Cells.delete(Orientation.UpRight)
                     break;
                 case Orientation.UpRight:
                     // assign new cells to load
@@ -368,6 +392,7 @@ export class Game extends Scene {
                         contig.get(Orientation.Right)!,
                         contig.get(Orientation.DownRight)!,
                     )
+
                     // assign cells to delete
                     deletedCells.push(
                         this.Cells.get(Orientation.UpLeft)!,
@@ -381,6 +406,11 @@ export class Game extends Scene {
                     this.Cells.set(Orientation.DownLeft, this.Cells.get(Orientation.None)!)
                     this.Cells.set(Orientation.Down, this.Cells.get(Orientation.Right)!)
                     this.Cells.set(Orientation.None, this.Cells.get(Orientation.UpRight)!)
+                    this.Cells.delete(Orientation.UpLeft)
+                    this.Cells.delete(Orientation.Up)
+                    this.Cells.delete(Orientation.UpRight)
+                    this.Cells.delete(Orientation.Right)
+                    this.Cells.delete(Orientation.DownRight)
                     break;
                 case Orientation.Right:
                     // assign new cells to load
@@ -389,13 +419,13 @@ export class Game extends Scene {
                         contig.get(Orientation.Right)!,
                         contig.get(Orientation.DownRight)!
                     )
+
                     // assign cells to delete
                     deletedCells.push(
                         this.Cells.get(Orientation.UpLeft)!,
                         this.Cells.get(Orientation.Left)!,
                         this.Cells.get(Orientation.DownLeft)!,
                     )
-                    console.log('deleted cells:', deletedCells)
                     // shift preloaded
                     this.Cells.set(Orientation.UpLeft, this.Cells.get(Orientation.Up)!)
                     this.Cells.set(Orientation.Left, this.Cells.get(Orientation.None)!)
@@ -403,7 +433,9 @@ export class Game extends Scene {
                     this.Cells.set(Orientation.Up, this.Cells.get(Orientation.UpRight)!)
                     this.Cells.set(Orientation.None, this.Cells.get(Orientation.Right)!)
                     this.Cells.set(Orientation.Down, this.Cells.get(Orientation.DownRight)!)
-                    console.log('deleted cells:', deletedCells)
+                    this.Cells.delete(Orientation.UpRight)
+                    this.Cells.delete(Orientation.Right)
+                    this.Cells.delete(Orientation.DownRight)
                     break;
                 case Orientation.DownRight:
                     // assign new cells to load
@@ -414,6 +446,7 @@ export class Game extends Scene {
                         contig.get(Orientation.Right)!,
                         contig.get(Orientation.UpRight)!,
                     )
+
                     // assign cells to delete
                     deletedCells.push(
                         this.Cells.get(Orientation.UpLeft)!,
@@ -427,6 +460,11 @@ export class Game extends Scene {
                     this.Cells.set(Orientation.UpLeft, this.Cells.get(Orientation.None)!)
                     this.Cells.set(Orientation.Up, this.Cells.get(Orientation.Right)!)
                     this.Cells.set(Orientation.None, this.Cells.get(Orientation.DownRight)!)
+                    this.Cells.delete(Orientation.DownLeft)
+                    this.Cells.delete(Orientation.Down)
+                    this.Cells.delete(Orientation.DownRight)
+                    this.Cells.delete(Orientation.Right)
+                    this.Cells.delete(Orientation.UpRight)
                     break;
                 case Orientation.Down:
                     // assign new cells to load
@@ -435,6 +473,7 @@ export class Game extends Scene {
                         contig.get(Orientation.Down)!,
                         contig.get(Orientation.DownRight)!,
                     )
+
                     // assign cells to delete
                     deletedCells.push(
                         this.Cells.get(Orientation.UpLeft)!,
@@ -448,6 +487,9 @@ export class Game extends Scene {
                     this.Cells.set(Orientation.Left, this.Cells.get(Orientation.DownLeft)!)
                     this.Cells.set(Orientation.None, this.Cells.get(Orientation.Down)!)
                     this.Cells.set(Orientation.Right, this.Cells.get(Orientation.DownRight)!)
+                    this.Cells.delete(Orientation.DownLeft)
+                    this.Cells.delete(Orientation.Down)
+                    this.Cells.delete(Orientation.DownRight)
                     break;
                 case Orientation.DownLeft:
                     // assign new cells to load
@@ -458,6 +500,7 @@ export class Game extends Scene {
                         contig.get(Orientation.Left)!,
                         contig.get(Orientation.UpLeft)!,
                     )
+
                     // assign cells to delete
                     deletedCells.push(
                         this.Cells.get(Orientation.UpLeft)!,
@@ -471,6 +514,11 @@ export class Game extends Scene {
                     this.Cells.set(Orientation.UpRight, this.Cells.get(Orientation.None)!)
                     this.Cells.set(Orientation.Up, this.Cells.get(Orientation.Left)!)
                     this.Cells.set(Orientation.None, this.Cells.get(Orientation.DownLeft)!)
+                    this.Cells.delete(Orientation.DownRight)
+                    this.Cells.delete(Orientation.Down)
+                    this.Cells.delete(Orientation.DownLeft)
+                    this.Cells.delete(Orientation.Left)
+                    this.Cells.delete(Orientation.UpLeft)
                     break;
                 case Orientation.Left:
                     // assign new cells to load
@@ -479,6 +527,7 @@ export class Game extends Scene {
                         contig.get(Orientation.Left)!,
                         contig.get(Orientation.DownLeft)!,
                     )
+
                     // assign cells to delete
                     deletedCells.push(
                         this.Cells.get(Orientation.UpRight)!,
@@ -492,6 +541,9 @@ export class Game extends Scene {
                     this.Cells.set(Orientation.Up, this.Cells.get(Orientation.UpLeft)!)
                     this.Cells.set(Orientation.None, this.Cells.get(Orientation.Left)!)
                     this.Cells.set(Orientation.Down, this.Cells.get(Orientation.DownLeft)!)
+                    this.Cells.delete(Orientation.UpLeft)
+                    this.Cells.delete(Orientation.Left)
+                    this.Cells.delete(Orientation.DownLeft)
                     break;
                 case Orientation.UpLeft:
                     // assign new cells to load
@@ -502,7 +554,8 @@ export class Game extends Scene {
                         contig.get(Orientation.Left)!,
                         contig.get(Orientation.DownLeft)!,
                     )
-                    // assign cells to delete
+
+                        // assign cells to delete
                     deletedCells.push(
                         this.Cells.get(Orientation.UpRight)!,
                         this.Cells.get(Orientation.Right)!,
@@ -515,6 +568,11 @@ export class Game extends Scene {
                     this.Cells.set(Orientation.DownRight, this.Cells.get(Orientation.None)!)
                     this.Cells.set(Orientation.Down, this.Cells.get(Orientation.Left)!)
                     this.Cells.set(Orientation.None, this.Cells.get(Orientation.UpLeft)!)
+                    this.Cells.delete(Orientation.UpRight)
+                    this.Cells.delete(Orientation.Up)
+                    this.Cells.delete(Orientation.UpLeft)
+                    this.Cells.delete(Orientation.Left)
+                    this.Cells.delete(Orientation.DownLeft)
                     break;
             }
 
@@ -524,9 +582,6 @@ export class Game extends Scene {
             this.Border.set(Orientation.Right, (cn.Cell.getY() + 1) * this.World.getCellwidth())
             this.Border.set(Orientation.Down, (cn.Cell.getX() + 1) * this.World.getCellheight())
             this.Border.set(Orientation.Left, cn.Cell.getY() * this.World.getCellwidth())
-
-            console.log('y/x cell', cn.Cell.getX(), cn.Cell.getY())
-            console.log('border:', this.Border)
 
             this.hideCells(deletedCells).then(() => { console.log('finish to destroy unused tilemaps') })
 
@@ -641,7 +696,6 @@ export class Game extends Scene {
             loadedCells.map((o) => {
                 const resetLoad = () => {
                     loaded++
-                    console.log('loaded:', o, ':', loaded)
                     if (loaded == loadedCells.length) {
                         console.log('loading unlock')
                         this.Loading = undefined
@@ -672,7 +726,6 @@ export class Game extends Scene {
 
                 const m = this.make.tilemap()
 
-                console.log('set cell:', o, ulid(c.getId_asU8()))
 
                 this.Cells.set(o, {
                     Cell: c,
@@ -690,7 +743,7 @@ export class Game extends Scene {
                     // create new cell
                     const map = this.make.tilemap({key: tm, width: this.World.getCellwidth(), height: this.World.getCellheight()})
                     const set = map.addTilesetImage(ts)
-                    const layer = map.createLayer('Tile Layer 1', set, c.getX() * this.World.getCellwidth(), c.getY() * this.World.getCellheight())
+                    const layer = map.createLayer('Tile Layer 1', set, c.getY() * this.World.getCellwidth(), c.getX() * this.World.getCellheight())
 
                     const cc = this.Cells.get(o)
                     if (!cc) {
