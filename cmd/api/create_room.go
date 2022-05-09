@@ -59,8 +59,8 @@ func (h *handler) CreateRoom(ctx context.Context, req *room.R) (*room.R, error) 
 		for j, c := range cl {
 			c.Tilemap = defaultTilemap
 			c.Tileset = defaultTileset
-			c.X = int64(i)
-			c.Y = int64(j)
+			c.X = int64(j)
+			c.Y = int64(i)
 
 			if err := h.room.InsertCell(ctx, c); err != nil {
 				logger.Error().Err(err).Msg("failed to create cell")

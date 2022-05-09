@@ -578,10 +578,10 @@ export class Game extends Scene {
 
             // update border after none cell is up to date
             const cn = this.Cells.get(Orientation.None)!
-            this.Border.set(Orientation.Up, cn.Cell.getX() * this.World.getCellheight())
-            this.Border.set(Orientation.Right, (cn.Cell.getY() + 1) * this.World.getCellwidth())
-            this.Border.set(Orientation.Down, (cn.Cell.getX() + 1) * this.World.getCellheight())
-            this.Border.set(Orientation.Left, cn.Cell.getY() * this.World.getCellwidth())
+            this.Border.set(Orientation.Up, cn.Cell.getY() * this.World.getCellheight())
+            this.Border.set(Orientation.Right, (cn.Cell.getX() + 1) * this.World.getCellwidth())
+            this.Border.set(Orientation.Down, (cn.Cell.getY() + 1) * this.World.getCellheight())
+            this.Border.set(Orientation.Left, cn.Cell.getX() * this.World.getCellwidth())
 
             this.hideCells(deletedCells).then(() => { console.log('finish to destroy unused tilemaps') })
 
@@ -743,7 +743,7 @@ export class Game extends Scene {
                     // create new cell
                     const map = this.make.tilemap({key: tm, width: this.World.getCellwidth(), height: this.World.getCellheight()})
                     const set = map.addTilesetImage(ts)
-                    const layer = map.createLayer('Tile Layer 1', set, c.getY() * this.World.getCellwidth(), c.getX() * this.World.getCellheight())
+                    const layer = map.createLayer('Tile Layer 1', set, c.getX() * this.World.getCellwidth(), c.getY() * this.World.getCellheight())
 
                     const cc = this.Cells.get(o)
                     if (!cc) {
