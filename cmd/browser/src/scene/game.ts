@@ -23,6 +23,7 @@ import * as World from 'pkg/room/world_pb';
 import * as WorldDTO from 'pkg/room/dto/world_pb';
 
 import { client } from "@improbable-eng/grpc-web/dist/typings/client";
+import { ProtobufMessage } from "@improbable-eng/grpc-web/dist/typings/message";
 
 const entitySpriteDepth = 42
 
@@ -268,6 +269,11 @@ export class Game extends Scene {
             }
         }
 
+        if (deltaX != 0 || deltaY != 0) {
+            // Send new entity to server
+            this.EntityClient?.send(this.Entity.E)
+        }
+
         // Move entity
         this.Entity.E.setX(this.Entity.E.getX() + deltaX)
         this.Entity.E.setY(this.Entity.E.getY() + deltaY)
@@ -279,24 +285,34 @@ export class Game extends Scene {
             this.Entity?.Sprite.play(animationID, true)
         }
 
-        // Send new entity to server
-        // this.EntityClient?.send(this.Entity)
-
         // Swap buffers
         const temp = this.EntityBuffer
         this.EntityBuffer = this.EntityBufferRendering
         this.EntityBufferRendering = temp
 
         // Entity queue update
-        // this.EntityBufferRendering.forEach((value: string) => {
-        //     // Reconciliation for self
-        //     if (value == ulid(this.Entity.getId_asU8())) {
-        //         return
-        //     }
+        this.EntityBufferRendering.forEach((value: string) => {
 
-        //     const e = this.Entities.get(value)
-        //     e?.Sprite.play(ulid(e.E.getAnimationid_asU8()), true)
-        // })
+            console.log('buffer entity: ', value)
+
+            // self reconciliation
+            if (value == ulid(this.Entity.E.getId_asU8())) {
+                return
+            }
+
+            const e = this.Entities.get(value)
+
+            if (!e) {
+                console.log('missing entity ', value)
+                return
+            }
+
+            console.log('render entity:', value, ' at ', e.E.getX(), e.E.getY(), ulid(e.E.getAnimationid_asU8()))
+
+            e?.Sprite.setX(e.E.getX())
+            e?.Sprite.setY(e.E.getY())
+            e?.Sprite.play(ulid(e.E.getAnimationid_asU8()), true)
+        })
 
         this.EntityBufferRendering = []
     }
@@ -816,6 +832,7 @@ export class Game extends Scene {
                 if (this.Entities.has(id)) {
                     // update state only
                     this.Entities.get(id)!.E = entry
+                    this.EntityBuffer.push(ulid(entry.getId_asU8()))
                 } else {
                     // create associated sprite
                     const sprite = this.add.sprite(entry.getX(), entry.getY(), ulid(entry.getId_asU8()))
@@ -835,15 +852,12 @@ export class Game extends Scene {
 
                     // load entity animations
                     entityIDs.push(entry.getId_asU8())
+                    this.EntityBuffer.push(ulid(entry.getId_asU8()))
                 }
 
             })
 
             if (entityIDs.length == 0) {
-                this.EntityBuffer.push(...entityIDs.map((id: Uint8Array) => {
-                    return ulid(id)
-                }))
-
                 return
             }
 
@@ -919,13 +933,18 @@ export class Game extends Scene {
         })
     }
 
-    // Update server
+    // Connect server update
     async connectUpdate() {
         // call update entity
-        return this.updateEntity()
-        .then((client: grpc.Client<Entity.E, Entity.E>) => {
-            this.EntityClient = client
-        })
+        this.EntityClient = grpc.client(API.API.UpdateEntity, {
+            host: 'http://localhost:8081',
+        });
+
+        let md = new grpc.Metadata()
+        md.set('token', this.registry.get('token'))
+        this.EntityClient.start(md)
+        // TODO final cleaner/dc, is there a defer in ts ?
+        // this.EntityClient.finishSend()
     }
 
     // API PC
@@ -951,22 +970,6 @@ export class Game extends Scene {
 
                     resolve(message)
                 }
-            });
-        })
-
-        return prom
-    }
-
-    // API PC
-    updateEntity() {
-        let req = this.PC;
-        let md = new grpc.Metadata()
-        md.set('token', this.registry.get('token'))
-
-        const prom = new Promise<grpc.Client<Entity.E, Entity.E>>((resolve, reject) => {
-            grpc.client(API.API.UpdateEntity, {
-                // metadata: md,
-                host: 'http://localhost:8081',
             });
         })
 

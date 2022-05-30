@@ -88,6 +88,75 @@ func (f filter) index() string {
 	return strings.Join(cols, " - ")
 }
 
+type patch entity.Patch
+
+func (p patch) set() (string, []interface{}) {
+	var clause []string
+
+	var args []interface{}
+
+	if p.UserID != nil {
+		clause = append(clause, `user_id = ?`)
+		args = append(args, *p.UserID)
+	}
+
+	if p.CellID != nil {
+		clause = append(clause, `cell_id = ?`)
+		args = append(args, *p.CellID)
+	}
+
+	if p.Name != nil {
+		clause = append(clause, `name = ?`)
+		args = append(args, *p.Name)
+	}
+
+	if p.X != nil {
+		clause = append(clause, `x = ?`)
+		args = append(args, *p.X)
+	}
+
+	if p.Y != nil {
+		clause = append(clause, `y = ?`)
+		args = append(args, *p.Y)
+	}
+
+	if p.Rot != nil {
+		clause = append(clause, `rot = ?`)
+		args = append(args, *p.Rot)
+	}
+
+	if p.Radius != nil {
+		clause = append(clause, `radius = ?`)
+		args = append(args, *p.Radius)
+	}
+
+	if p.At != nil {
+		clause = append(clause, `at = ?`)
+		args = append(args, *p.At)
+	}
+
+	if p.AnimationID != nil {
+		clause = append(clause, `animation_id = ?`)
+		args = append(args, *p.AnimationID)
+	}
+
+	if p.AnimationAt != nil {
+		clause = append(clause, `animation_at = ?`)
+		args = append(args, *p.AnimationAt)
+	}
+
+	b := strings.Builder{}
+	b.WriteString(" SET ")
+
+	if len(clause) == 0 {
+		b.WriteString("0") // raise error update
+	} else {
+		b.WriteString(strings.Join(clause, ", "))
+	}
+
+	return b.String(), args
+}
+
 func (s Store) Insert(ctx context.Context, e entity.E) error {
 	q := s.Session.Query(
 		`INSERT INTO main.entity (
@@ -105,6 +174,27 @@ func (s Store) Insert(ctx context.Context, e entity.E) error {
 		e.At,
 		e.AnimationID, e.AnimationAt,
 	).WithContext(ctx)
+
+	defer q.Release()
+
+	if err := q.Exec(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s Store) Update(ctx context.Context, f entity.Filter, p entity.Patch) error {
+	b := strings.Builder{}
+	b.WriteString(`UPDATE main.entity`)
+
+	set, sArgs := patch(p).set()
+	b.WriteString(set)
+
+	clause, args := filter(f).where()
+	b.WriteString(clause)
+
+	q := s.Session.Query(b.String(), append(sArgs, args...)...).WithContext(ctx)
 
 	defer q.Release()
 

@@ -141,6 +141,9 @@ func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) err
 
 	t := time.NewTicker(refreshRate)
 
+	// TODO: remove debug
+	staticDebugID := ulid.NewID()
+
 	for {
 		select {
 		case _ = <-ctx.Done():
@@ -196,6 +199,17 @@ func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) err
 
 					break
 				}
+
+				// TODO: remove debug
+				entities = append(entities, entity.E{
+					ID:          staticDebugID,
+					UserID:      current.UserID,
+					CellID:      current.CellID,
+					Name:        "test debug pet",
+					X:           current.X + 5, // nolint: gomnd
+					Y:           current.Y + 5, // nolint: gomnd
+					AnimationID: current.AnimationID,
+				})
 
 				if err := stream.SendMsg(&dto.ListEntityResp{
 					Entities: entities,

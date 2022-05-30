@@ -17,8 +17,22 @@ type Filter struct {
 	Size  int
 }
 
+type Patch struct {
+	UserID      *ulid.ID
+	CellID      *ulid.ID
+	Name        *string
+	X           *int64
+	Y           *int64
+	Rot         *int32
+	Radius      *int32
+	At          *int64
+	AnimationID *ulid.ID
+	AnimationAt *int64
+}
+
 type Store interface {
 	Insert(context.Context, E) error
+	Update(context.Context, Filter, Patch) error
 	Fetch(context.Context, Filter) (E, error)
 	FetchMany(context.Context, Filter) ([]E, []byte, error)
 	Delete(context.Context, Filter) error
