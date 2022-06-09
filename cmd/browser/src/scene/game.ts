@@ -22,9 +22,6 @@ import * as CellDTO from 'pkg/room/dto/cell_pb';
 import * as World from 'pkg/room/world_pb';
 import * as WorldDTO from 'pkg/room/dto/world_pb';
 
-import { client } from "@improbable-eng/grpc-web/dist/typings/client";
-import { ProtobufMessage } from "@improbable-eng/grpc-web/dist/typings/message";
-
 const entitySpriteDepth = 42
 
 enum Orientation {
@@ -41,7 +38,24 @@ enum Orientation {
 
 type GraphicEntity = {
     E: Entity.E
+    XQueue: Array<number>
+    YQueue: Array<number>
+    Interpolation: number
     Sprite: Phaser.GameObjects.Sprite
+}
+
+function updateGraphicEntity(ge: GraphicEntity, e: Entity.E) {
+    ge.XQueue.concat(ge.E.getX())
+    if (ge.XQueue.length > 10) {
+        ge.XQueue.shift()
+    }
+
+    ge.YQueue.concat(ge.E.getY())
+    if (ge.YQueue.length > 10) {
+        ge.YQueue.shift()
+    }
+
+    ge.E = e
 }
 
 type GraphicCell = {
@@ -105,6 +119,9 @@ export class Game extends Scene {
         const e = pc.getEntity() as Entity.E;
         this.Entity = {
             E: e,
+            XQueue: Array<number>(),
+            YQueue: Array<number>(),
+            Interpolation: 0,
             Sprite: this.add.sprite(e.getX(), e.getY(), ulid(e.getId_asU8()))
         }
         this.EntityID = ulid(this.Entity.E.getId_asU8())
@@ -219,11 +236,6 @@ export class Game extends Scene {
         const down = this.Border.get(Orientation.Down)!
         const left = this.Border.get(Orientation.Left)!
 
-        // 190, 0, 1080
-        // console.log(y, up, down)
-        // 2120, 1920, 0
-        // console.log(x, right, left)
-
         if (y < up) {
             if (x < left) {
                 o = Orientation.UpLeft
@@ -286,14 +298,11 @@ export class Game extends Scene {
         }
 
         // Swap buffers
-        const temp = this.EntityBuffer
-        this.EntityBuffer = this.EntityBufferRendering
-        this.EntityBufferRendering = temp
+        this.EntityBufferRendering = this.EntityBuffer
+        this.EntityBuffer = []
 
         // Entity queue update
         this.EntityBufferRendering.forEach((value: string) => {
-
-            console.log('buffer entity: ', value)
 
             // self reconciliation
             if (value == ulid(this.Entity.E.getId_asU8())) {
@@ -309,8 +318,17 @@ export class Game extends Scene {
 
             console.log('render entity:', value, ' at ', e.E.getX(), e.E.getY(), ulid(e.E.getAnimationid_asU8()))
 
-            e?.Sprite.setX(e.E.getX())
-            e?.Sprite.setY(e.E.getY())
+            if (e.Interpolation == 1) {
+                e.Interpolation = 0
+            } else {
+                e.Interpolation += 0.01
+            }
+
+            const x = Phaser.Math.Interpolation.Bezier(e.XQueue, e.Interpolation)
+            const y = Phaser.Math.Interpolation.Bezier(e.YQueue, e.Interpolation)
+            console.log('   real interpolation to', x, y)
+            e?.Sprite.setX(x)
+            e?.Sprite.setY(y)
             e?.Sprite.play(ulid(e.E.getAnimationid_asU8()), true)
         })
 
@@ -831,7 +849,8 @@ export class Game extends Scene {
 
                 if (this.Entities.has(id)) {
                     // update state only
-                    this.Entities.get(id)!.E = entry
+                    updateGraphicEntity(this.Entities.get(id)!, entry)
+                    // this.Entities.get(id)!.E = entry
                     this.EntityBuffer.push(ulid(entry.getId_asU8()))
                 } else {
                     // create associated sprite
@@ -840,6 +859,9 @@ export class Game extends Scene {
 
                     this.Entities.set(id, {
                         E: entry,
+                        XQueue: Array<number>(),
+                        YQueue: Array<number>(),
+                        Interpolation: 0,
                         // TODO: adjust x and y with cell position
                         Sprite: sprite
                     })

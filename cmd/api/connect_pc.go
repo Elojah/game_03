@@ -178,7 +178,7 @@ func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) err
 			// Convert contiguous cell ids
 			cellIDs := [9]ulid.ID{current.CellID}
 			for n, id := range ce.Contiguous {
-				cellIDs[n+1] = id
+				cellIDs[n] = id
 			}
 
 			// #Fetch all entities
