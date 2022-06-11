@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	refreshRate   = 1000 * time.Millisecond
+	refreshRate   = 100 * time.Millisecond
 	entitiesBatch = 20
 )
 

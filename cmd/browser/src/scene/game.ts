@@ -38,22 +38,15 @@ enum Orientation {
 
 type GraphicEntity = {
     E: Entity.E
-    XQueue: Array<number>
-    YQueue: Array<number>
+    Direction: Phaser.Geom.Point
     Interpolation: number
     Sprite: Phaser.GameObjects.Sprite
 }
 
 function updateGraphicEntity(ge: GraphicEntity, e: Entity.E) {
-    ge.XQueue.concat(ge.E.getX())
-    if (ge.XQueue.length > 10) {
-        ge.XQueue.shift()
-    }
-
-    ge.YQueue.concat(ge.E.getY())
-    if (ge.YQueue.length > 10) {
-        ge.YQueue.shift()
-    }
+    // update direction to last known position
+    ge.Direction.setTo(e.getX(), e.getY())
+    // TODO update interpolation as speed to catch up latency
 
     ge.E = e
 }
@@ -119,9 +112,8 @@ export class Game extends Scene {
         const e = pc.getEntity() as Entity.E;
         this.Entity = {
             E: e,
-            XQueue: Array<number>(),
-            YQueue: Array<number>(),
-            Interpolation: 0,
+            Direction: new Phaser.Geom.Point(),
+            Interpolation: 0.05, // default speed
             Sprite: this.add.sprite(e.getX(), e.getY(), ulid(e.getId_asU8()))
         }
         this.EntityID = ulid(this.Entity.E.getId_asU8())
@@ -318,14 +310,8 @@ export class Game extends Scene {
 
             console.log('render entity:', value, ' at ', e.E.getX(), e.E.getY(), ulid(e.E.getAnimationid_asU8()))
 
-            if (e.Interpolation == 1) {
-                e.Interpolation = 0
-            } else {
-                e.Interpolation += 0.01
-            }
-
-            const x = Phaser.Math.Interpolation.Bezier(e.XQueue, e.Interpolation)
-            const y = Phaser.Math.Interpolation.Bezier(e.YQueue, e.Interpolation)
+            const x = Phaser.Math.Interpolation.SmoothStep(e.Interpolation, e.Sprite.x, e.Direction.x)
+            const y = Phaser.Math.Interpolation.SmoothStep(e.Interpolation, e.Sprite.y, e.Direction.y)
             console.log('   real interpolation to', x, y)
             e?.Sprite.setX(x)
             e?.Sprite.setY(y)
@@ -859,9 +845,8 @@ export class Game extends Scene {
 
                     this.Entities.set(id, {
                         E: entry,
-                        XQueue: Array<number>(),
-                        YQueue: Array<number>(),
-                        Interpolation: 0,
+                        Direction: new Phaser.Geom.Point(),
+                        Interpolation: 0.5, // default speed
                         // TODO: adjust x and y with cell position
                         Sprite: sprite
                     })
