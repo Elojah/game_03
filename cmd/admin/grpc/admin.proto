@@ -16,6 +16,9 @@ service Admin {
     // DB migrations
     rpc MigrateUp(google.protobuf.StringValue) returns (google.protobuf.Empty);
 
+    // Map creation
+    rpc CreateTileMap(google.protobuf.StringValue) returns (google.protobuf.Empty);
+
     // Ping
     rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
 }

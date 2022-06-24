@@ -21,4 +21,6 @@ $ ./scripts/create_default_animations.sh
 
 ### TODO
 
+- Manage collision
+- Manage map creation
 - Add default animations as JSON in some file somewhere + add default animations with at createPC

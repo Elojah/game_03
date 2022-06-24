@@ -45,10 +45,22 @@ type GraphicEntity = {
 
 function updateGraphicEntity(ge: GraphicEntity, e: Entity.E) {
     // update direction to last known position
+    if (ge.Direction.x != e.getX() || ge.Direction.y != e.getY()) {
+        // TODO update interpolation as speed to catch up latency
+        ge.Interpolation = 0
+    }
+
+    // TODO Add prediction/reconciliation ?
+
     ge.Direction.setTo(e.getX(), e.getY())
-    // TODO update interpolation as speed to catch up latency
 
     ge.E = e
+}
+
+function interpolateGraphicEntity(ge: GraphicEntity) {
+    if (ge.Interpolation < 1) {
+        ge.Interpolation = ge.Interpolation + 0.05
+    }
 }
 
 type GraphicCell = {
@@ -112,8 +124,8 @@ export class Game extends Scene {
         const e = pc.getEntity() as Entity.E;
         this.Entity = {
             E: e,
-            Direction: new Phaser.Geom.Point(),
-            Interpolation: 0.05, // default speed
+            Direction: new Phaser.Geom.Point(e.getX(), e.getY()),
+            Interpolation: 0.00, // default speed
             Sprite: this.add.sprite(e.getX(), e.getY(), ulid(e.getId_asU8()))
         }
         this.EntityID = ulid(this.Entity.E.getId_asU8())
@@ -282,43 +294,45 @@ export class Game extends Scene {
         this.Entity.E.setX(this.Entity.E.getX() + deltaX)
         this.Entity.E.setY(this.Entity.E.getY() + deltaY)
 
+        // Swap buffers
+        // this.EntityBufferRendering = this.EntityBuffer
+        // this.EntityBuffer = []
+
+        // Entity queue update
+        // this.EntityBufferRendering.forEach((value: string) => {
+        this.Entities.forEach((e: GraphicEntity) => {
+
+            // self reconciliation
+            if (e.E.getId() == ulid(this.Entity.E.getId_asU8())) {
+                return
+            }
+
+            // const e = this.Entities.get(value)
+
+            // if (!e) {
+            //     console.log('missing entity ', value)
+            //     return
+            // }
+
+
+            interpolateGraphicEntity(e)
+
+            const x = e.Sprite.x + ((e.Direction.x - e.Sprite.x) * e.Interpolation)
+            const y = e.Sprite.y + ((e.Direction.y - e.Sprite.y) * e.Interpolation)
+            e?.Sprite.setX(x)
+            e?.Sprite.setY(y)
+            e?.Sprite.play(ulid(e.E.getAnimationid_asU8()), true)
+        })
+
         // Move entity client side
+        // KEEP THIS AFTER OTHER ENTITY UPDATES or phaser weirdly stutters
         this.Entity?.Sprite.setX(this.Entity.E.getX())
         this.Entity?.Sprite.setY(this.Entity.E.getY())
         if (animationID) {
             this.Entity?.Sprite.play(animationID, true)
         }
 
-        // Swap buffers
-        this.EntityBufferRendering = this.EntityBuffer
-        this.EntityBuffer = []
-
-        // Entity queue update
-        this.EntityBufferRendering.forEach((value: string) => {
-
-            // self reconciliation
-            if (value == ulid(this.Entity.E.getId_asU8())) {
-                return
-            }
-
-            const e = this.Entities.get(value)
-
-            if (!e) {
-                console.log('missing entity ', value)
-                return
-            }
-
-            console.log('render entity:', value, ' at ', e.E.getX(), e.E.getY(), ulid(e.E.getAnimationid_asU8()))
-
-            const x = Phaser.Math.Interpolation.SmoothStep(e.Interpolation, e.Sprite.x, e.Direction.x)
-            const y = Phaser.Math.Interpolation.SmoothStep(e.Interpolation, e.Sprite.y, e.Direction.y)
-            console.log('   real interpolation to', x, y)
-            e?.Sprite.setX(x)
-            e?.Sprite.setY(y)
-            e?.Sprite.play(ulid(e.E.getAnimationid_asU8()), true)
-        })
-
-        this.EntityBufferRendering = []
+        // this.EntityBufferRendering = []
     }
 
 
@@ -837,7 +851,7 @@ export class Game extends Scene {
                     // update state only
                     updateGraphicEntity(this.Entities.get(id)!, entry)
                     // this.Entities.get(id)!.E = entry
-                    this.EntityBuffer.push(ulid(entry.getId_asU8()))
+                    // this.EntityBuffer.push(ulid(entry.getId_asU8()))
                 } else {
                     // create associated sprite
                     const sprite = this.add.sprite(entry.getX(), entry.getY(), ulid(entry.getId_asU8()))
@@ -845,8 +859,8 @@ export class Game extends Scene {
 
                     this.Entities.set(id, {
                         E: entry,
-                        Direction: new Phaser.Geom.Point(),
-                        Interpolation: 0.5, // default speed
+                        Direction: new Phaser.Geom.Point(entry.getX(), entry.getY()),
+                        Interpolation: 0.00, // default speed
                         // TODO: adjust x and y with cell position
                         Sprite: sprite
                     })
@@ -859,7 +873,7 @@ export class Game extends Scene {
 
                     // load entity animations
                     entityIDs.push(entry.getId_asU8())
-                    this.EntityBuffer.push(ulid(entry.getId_asU8()))
+                    // this.EntityBuffer.push(ulid(entry.getId_asU8()))
                 }
 
             })
@@ -886,7 +900,7 @@ export class Game extends Scene {
                     // return if already loaded
                     if (this.anims.exists(animationID)) {
                         // Play entity animation
-                        this.EntityBuffer.push(ulid(an.getEntityid_asU8()))
+                        // this.EntityBuffer.push(ulid(an.getEntityid_asU8()))
 
                         return
                     }
@@ -914,7 +928,7 @@ export class Game extends Scene {
                             this.Animations.set(ulid(an.getEntityid_asU8())+":"+an.getName(), animationID)
 
                             // Play entity animation
-                            this.EntityBuffer.push(ulid(an.getEntityid_asU8()))
+                            // this.EntityBuffer.push(ulid(an.getEntityid_asU8()))
                     }
 
                     if (!this.SpriteSheets.get(sheetID)) {

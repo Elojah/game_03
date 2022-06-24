@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"math/rand"
 	"time"
 
 	"github.com/elojah/game_03/cmd/api/grpc"
@@ -142,7 +143,21 @@ func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) err
 	t := time.NewTicker(refreshRate)
 
 	// TODO: remove debug
-	staticDebugID := ulid.NewID()
+	staticDebugEntities := []entity.E{}
+	staticDebugoffset := [][2]int{}
+
+	for i := 0; i < 5; i++ {
+		staticDebugEntities = append(staticDebugEntities, entity.E{
+			ID:   ulid.NewID(),
+			Name: "test debug pet",
+		})
+
+		staticDebugoffset = append(staticDebugoffset, [2]int{
+			rand.Intn(400) - 200,
+			rand.Intn(400) - 200,
+		})
+	}
+	// !TODO: remove debug
 
 	for {
 		select {
@@ -201,15 +216,16 @@ func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) err
 				}
 
 				// TODO: remove debug
-				entities = append(entities, entity.E{
-					ID:          staticDebugID,
-					UserID:      current.UserID,
-					CellID:      current.CellID,
-					Name:        "test debug pet",
-					X:           current.X + 5, // nolint: gomnd
-					Y:           current.Y + 5, // nolint: gomnd
-					AnimationID: current.AnimationID,
-				})
+				for i := range staticDebugEntities {
+					staticDebugEntities[i].UserID = current.UserID
+					staticDebugEntities[i].CellID = current.CellID
+					staticDebugEntities[i].X = current.X + int64(staticDebugoffset[i][0])
+					staticDebugEntities[i].Y = current.Y + int64(staticDebugoffset[i][1])
+					staticDebugEntities[i].AnimationID = current.AnimationID
+				}
+
+				entities = append(entities, staticDebugEntities...)
+				// !TODO: remove debug
 
 				if err := stream.SendMsg(&dto.ListEntityResp{
 					Entities: entities,
