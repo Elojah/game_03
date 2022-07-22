@@ -11,7 +11,7 @@ require (
 	github.com/elojah/go-scylla v0.0.0-20211020122449-c0687e5993d0
 	github.com/go-redis/redis/v8 v8.4.0
 	github.com/gocql/gocql v0.0.0-20201024154641-5913df4d474e
-	github.com/gogo/protobuf v1.3.1
+	github.com/gogo/protobuf v1.3.2
 	github.com/golang/protobuf v1.4.3
 	github.com/gorilla/sessions v1.2.1
 	github.com/hashicorp/go-multierror v1.1.0

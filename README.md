@@ -2,6 +2,16 @@
 
 Development setup:
 
+Initial prep:
+
+```sh
+$ cd cmd/browser && npm install
+$ GO111MODULE=off go get github.com/gogo/protobuf/proto
+$ go install github.com/gogo/protobuf/protoc-gen-gogoslick
+```
+
+Setup:
+
 ```sh
 $ docker-compose up -d # wait ~10 sec for scylla to boot
 $ cat scripts/keyspace.sh | docker exec -i game_03_scylla cqlsh

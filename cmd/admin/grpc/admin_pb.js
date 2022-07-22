@@ -1,3 +1,4 @@
+// source: github.com/elojah/game_03/cmd/admin/grpc/admin.proto
 /**
  * @fileoverview
  * @enhanceable

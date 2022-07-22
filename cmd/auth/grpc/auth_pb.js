@@ -1,3 +1,4 @@
+// source: github.com/elojah/game_03/cmd/auth/grpc/auth.proto
 /**
  * @fileoverview
  * @enhanceable
