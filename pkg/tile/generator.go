@@ -1,17 +1,151 @@
 package tile
 
+import (
+	"fmt"
+	"math"
+	"math/rand"
+	"strings"
+	"time"
+
+	"github.com/elojah/game_03/pkg/geometry"
+)
+
 // Params required for map generation.
 type Params struct {
-	Density    uint64
-	SizeMin    uint64
-	SizeMax    uint64
-	Distortion uint64
-	PathMin    uint64
-	PathMax    uint64
+	Height          uint64
+	Width           uint64
+	CellHeight      uint64
+	CellWidth       uint64
+	WorldDensity    float64
+	PlatformDensity float64
+	PlatformPadding float64
+	SizeMin         uint64
+	SizeMax         uint64
+	Distortion      uint64
+	PathMin         uint64
+	PathMax         uint64
+	PathDistorsion  uint64
 }
 
-// Generator generates a new map.
-type Generator struct {
-	Params       Params
-	Intermediate [][]int
+type Field int8
+
+const (
+	None Field = iota
+	Ground
+)
+
+type GroundGenerator struct {
+	Map [][]Field
+}
+
+// Display prints map in terminal.
+// Debug only.
+func (g GroundGenerator) Display() {
+	var delimiter strings.Builder
+	for i := 0; i < len(g.Map[0]); i++ {
+		delimiter.WriteByte('_')
+	}
+
+	fmt.Println(delimiter.String())
+
+	for i := 0; i < len(g.Map); i++ {
+		fmt.Print("|")
+
+		for j := 0; j < len(g.Map[i]); j++ {
+			switch g.Map[i][j] {
+			case None:
+				fmt.Print(" ")
+			case Ground:
+				fmt.Print("x")
+			default:
+				fmt.Printf("%d", g.Map[i][j])
+			}
+		}
+		fmt.Println("|")
+	}
+	fmt.Println(delimiter.String())
+}
+
+func (g *GroundGenerator) set(x, y int64, f Field) {
+	if x >= 0 && x < int64(len(g.Map)) &&
+		len(g.Map) > 0 &&
+		y >= 0 && y < int64(len(g.Map[x])) {
+		g.Map[x][y] = f
+	}
+}
+
+func (g *GroundGenerator) get(x, y int64) (Field, bool) {
+	if x >= 0 && x < int64(len(g.Map)) &&
+		len(g.Map) > 0 &&
+		y >= 0 && y < int64(len(g.Map[x])) {
+		return g.Map[x][y], true
+	}
+
+	return None, false
+}
+
+func (g *GroundGenerator) Gen(params Params) {
+	rand.Seed(time.Now().UnixNano())
+
+	g.Map = make([][]Field, params.Height*params.CellHeight)
+
+	for i := int64(0); i < int64(params.Height*params.CellHeight); i++ {
+		g.Map[i] = make([]Field, params.Width*params.CellWidth)
+	}
+
+	nPlatforms := int64(float64(params.Height*params.Width) * params.WorldDensity)
+	platforms := make([]geometry.Vec2, 0, nPlatforms)
+
+	for i := 0; i < int(nPlatforms); i++ {
+		platforms = append(platforms, geometry.Vec2{
+			X: rand.Int63n(int64(params.Height * params.CellHeight)), // nolint: gosec
+			Y: rand.Int63n(int64(params.Width * params.CellWidth)),   // nolint: gosec
+		})
+	}
+
+	for _, p := range platforms {
+		pl := g.generatePlatform(
+			int64(params.SizeMin)+rand.Int63n(int64(params.SizeMax-params.SizeMin)), // nolint: gosec
+			int64(params.SizeMin)+rand.Int63n(int64(params.SizeMax-params.SizeMin)), // nolint: gosec
+			params.PlatformDensity,
+			params.PlatformPadding,
+		)
+		for i := int64(0); i < int64(len(pl)); i++ {
+			for j := int64(0); j < int64(len(pl[i])); j++ {
+				// override only if current spot is empty
+				if n, ok := g.get(i+p.X, j+p.Y); ok && n == None {
+					g.set(i+p.X, j+p.Y, pl[i][j])
+				}
+			}
+		}
+	}
+}
+
+func (g GroundGenerator) generatePlatform(height int64, width int64, density float64, padding float64) [][]Field {
+	p := make([][]Field, height)
+
+	for i := int64(0); i < height; i++ {
+		p[i] = make([]Field, width)
+
+		// adjust width padding
+		pad := (rand.Float64() * padding * float64(width)) - float64(width/2) // nolint: gosec, gomnd
+		minW := math.Max(pad, 0)
+		maxW := math.Min(float64(width), pad+float64(width))
+
+		for j := int64(minW); j < int64(maxW); j++ {
+			if n := rand.Float64(); n < density { // nolint: gosec
+				p[i][j] = Ground
+			} else {
+				p[i][j] = None
+			}
+		}
+	}
+
+	return p
+}
+
+func (g GroundGenerator) Tilemap() Map {
+	m := Map{}
+
+	return m
 }
