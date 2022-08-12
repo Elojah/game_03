@@ -145,7 +145,7 @@ func (g GroundGenerator) generatePlatform(height int64, width int64, density flo
 }
 
 func (g GroundGenerator) Tilemap() Map {
-	m := Map{}
+	m := NewMap()
 
 	return m
 }

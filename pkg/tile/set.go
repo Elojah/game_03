@@ -1,6 +1,6 @@
 package tile
 
-type Tileset struct {
+type Set struct {
 	BackgroundColor  string
 	Class            string
 	Columns          int
@@ -20,9 +20,9 @@ type Tileset struct {
 	TileCount        int
 	TiledVersion     string
 	TileHeight       int
-	TileOffset       TileOffset
+	TileOffset       Offset
 	TileRenderSize   string
-	Tiles            []Tile
+	Tiles            []T
 	TileWidth        int
 	Transformations  Transformations
 	TransparentColor string
@@ -37,7 +37,7 @@ type Grid struct {
 	Width       int
 }
 
-type TileOffset struct {
+type Offset struct {
 	X int
 	Y int
 }
@@ -49,7 +49,7 @@ type Transformations struct {
 	PreferUntransformed bool
 }
 
-type Tile struct {
+type T struct {
 	Animation   []Frame
 	Class       string
 	ID          int
@@ -102,9 +102,9 @@ type WangTile struct {
 }
 
 type ObjectTemplate struct {
-	Type    string
-	Tileset Tileset
-	Object  Object
+	Type   string
+	Set    Set
+	Object Object
 }
 
 type Property struct {

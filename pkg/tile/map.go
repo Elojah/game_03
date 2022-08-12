@@ -7,7 +7,7 @@ type Map struct {
 	Height           int
 	HexSideLength    int
 	Infinite         bool
-	Layer            []Layer
+	Layers           []Layer
 	NextLayerID      int
 	NextObjectID     int
 	Orientation      string
@@ -18,11 +18,40 @@ type Map struct {
 	StaggerAxis      string
 	StaggerIndex     string
 	TiledVersion     string
+	Tilesets         []Set
 	TileHeight       int
 	TileWidth        int
 	Type             string
 	Version          string
 	Width            int
+}
+
+func NewMap() Map {
+	return Map{
+		BackgroundColor:  "#000000",
+		CompressionLevel: -1,
+		Height:           0,
+		Width:            0,
+		Infinite:         false,
+		Layers:           nil,
+		NextLayerID:      2, // nolint:gomnd
+		NextObjectID:     1,
+		Orientation:      "orthogonal",
+		RenderOrder:      "right-down",
+		TiledVersion:     "custom",
+		TileHeight:       32, // nolint: gomnd
+		TileWidth:        32, // nolint: gomnd
+		Tilesets:         nil,
+		Type:             "map",
+		Version:          "custom",
+
+		HexSideLength:   0,
+		ParallaxOriginX: 0,
+		ParallaxOriginY: 0,
+		Properties:      nil,
+		StaggerAxis:     "",
+		StaggerIndex:    "",
+	}
 }
 
 type Layer struct {
