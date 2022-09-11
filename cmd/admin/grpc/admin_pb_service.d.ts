@@ -15,6 +15,15 @@ type AdminMigrateUp = {
   readonly responseType: typeof google_protobuf_empty_pb.Empty;
 };
 
+type AdminCreateTilemap = {
+  readonly methodName: string;
+  readonly service: typeof Admin;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof google_protobuf_empty_pb.Empty;
+  readonly responseType: typeof google_protobuf_wrappers_pb.StringValue;
+};
+
 type AdminPing = {
   readonly methodName: string;
   readonly service: typeof Admin;
@@ -27,6 +36,7 @@ type AdminPing = {
 export class Admin {
   static readonly serviceName: string;
   static readonly MigrateUp: AdminMigrateUp;
+  static readonly CreateTilemap: AdminCreateTilemap;
   static readonly Ping: AdminPing;
 }
 
@@ -70,6 +80,15 @@ export class AdminClient {
   migrateUp(
     requestMessage: google_protobuf_wrappers_pb.StringValue,
     callback: (error: ServiceError|null, responseMessage: google_protobuf_empty_pb.Empty|null) => void
+  ): UnaryResponse;
+  createTilemap(
+    requestMessage: google_protobuf_empty_pb.Empty,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: google_protobuf_wrappers_pb.StringValue|null) => void
+  ): UnaryResponse;
+  createTilemap(
+    requestMessage: google_protobuf_empty_pb.Empty,
+    callback: (error: ServiceError|null, responseMessage: google_protobuf_wrappers_pb.StringValue|null) => void
   ): UnaryResponse;
   ping(
     requestMessage: google_protobuf_empty_pb.Empty,

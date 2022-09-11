@@ -1,6 +1,8 @@
 package tile
 
 import (
+	"encoding/base64"
+	"encoding/binary"
 	"fmt"
 	"math"
 	"math/rand"
@@ -25,6 +27,8 @@ type Params struct {
 	PathMin         uint64
 	PathMax         uint64
 	PathDistorsion  uint64
+
+	Set Set
 }
 
 type Field int8
@@ -144,8 +148,38 @@ func (g GroundGenerator) generatePlatform(height int64, width int64, density flo
 	return p
 }
 
-func (g GroundGenerator) Tilemap() Map {
+func (g GroundGenerator) Tilemap(params Params) Map {
 	m := NewMap()
+
+	// Main layer
+	layer := NewLayer()
+	layer.Height = int(params.Height)
+	layer.Width = int(params.Width)
+	layer.ID = 1
+	m.Layers = append(m.Layers, layer)
+
+	m.Height = int(params.Height)
+	m.Width = int(params.Width)
+	m.NextLayerID = 2
+	m.NextObjectID = 1
+	m.Tilesets = append(m.Tilesets, params.Set)
+
+	if len(g.Map) == 0 {
+		return m
+	}
+
+	size := len(g.Map) * len(g.Map[0])
+	data := make([]byte, 0, 4*size)
+
+	for i := 0; i < len(g.Map); i++ {
+		for j := 0; j < len(g.Map[i]); j++ {
+			raw := make([]byte, 4)
+			binary.LittleEndian.PutUint32(raw, uint32(g.Map[i][j]))
+			data = append(data, raw...)
+		}
+	}
+
+	m.Layers[0].Data = base64.StdEncoding.EncodeToString(data)
 
 	return m
 }

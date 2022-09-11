@@ -13,12 +13,13 @@ import (
 
 // TMP DATA FOR DEV WIP.
 const (
-	height, width         = 20, 20
+	height, width         = 3, 3
 	cellHeight, cellWidth = 1080, 1920
 )
 
 var (
-	defaultTilemap = ulid.MustParse("01FG1V2RER0529MJTZ9WE5HJF3")
+	// defaultTilemap = ulid.MustParse("01FG1V2RER0529MJTZ9WE5HJF3")
+	defaultTilemap = ulid.MustParse("01GCPMHAV29MSC3KZ8R11NPV1C")
 	defaultTileset = ulid.MustParse("01FG1V2RERMABQRXEYKT8T1HYV")
 )
 

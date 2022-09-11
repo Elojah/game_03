@@ -39,7 +39,7 @@ func (h *handler) Login(ctx context.Context, req *types.StringValue) (*types.Str
 	); err != nil {
 		logger.Error().Err(err).Msg("failed to get users")
 
-		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+		// return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
 	// #Check if user exist
