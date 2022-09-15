@@ -18,6 +18,7 @@ require (
 	github.com/ilyakaznacheev/cleanenv v1.2.5
 	github.com/mwitkow/go-conntrack v0.0.0-20190716064945-2f068394615f // indirect
 	github.com/oklog/ulid v1.3.1
+	github.com/panjf2000/ants/v2 v2.5.0
 	github.com/rs/zerolog v1.20.0
 	github.com/scylladb/gocqlx v1.5.0
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43

@@ -1,6 +1,10 @@
 package app
 
-import "github.com/elojah/game_03/pkg/entity"
+import (
+	"context"
+
+	"github.com/elojah/game_03/pkg/entity"
+)
 
 var _ entity.App = (*App)(nil)
 
@@ -10,4 +14,8 @@ type App struct {
 	entity.StoreBackup
 	entity.StorePC
 	entity.CachePCConnect
+}
+
+func (a *App) FetchManyParallelByCell(ctx context.Context, f entity.Filter) ([]entity.E, []byte, error) {
+	return nil, nil, nil
 }

@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"errors"
-	"math/rand"
 	"time"
 
 	"github.com/elojah/game_03/cmd/api/grpc"
@@ -12,6 +11,8 @@ import (
 	gerrors "github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/room"
 	"github.com/elojah/game_03/pkg/ulid"
+	"github.com/panjf2000/ants/v2"
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -19,11 +20,19 @@ import (
 
 const (
 	refreshRate   = 100 * time.Millisecond
-	entitiesBatch = 20
+	entitiesBatch = 50
+	nRoutines     = 20
 )
 
-// nolint: gocognit
-func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) error {
+type antsLogger struct {
+	zerolog.Logger
+}
+
+func (l *antsLogger) Printf(format string, args ...interface{}) {
+	l.Logger.Info().Msgf(format, args)
+}
+
+func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) error { //nolint: gocognit
 	ctx := stream.Context()
 	logger := log.With().Str("method", "connect_pc").Logger()
 
@@ -142,22 +151,17 @@ func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) err
 
 	t := time.NewTicker(refreshRate)
 
-	// TODO: remove debug
-	staticDebugEntities := []entity.E{}
-	staticDebugoffset := [][2]int{}
+	p, err := ants.NewPool(
+		nRoutines,
+		ants.WithLogger(&antsLogger{logger}),
+		ants.WithPreAlloc(true),
+		ants.WithNonblocking(true),
+	)
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to create pools")
 
-	for i := 0; i < 5; i++ {
-		staticDebugEntities = append(staticDebugEntities, entity.E{
-			ID:   ulid.NewID(),
-			Name: "test debug pet",
-		})
-
-		staticDebugoffset = append(staticDebugoffset, [2]int{
-			rand.Intn(400) - 200,
-			rand.Intn(400) - 200,
-		})
+		return status.New(codes.Internal, err.Error()).Err()
 	}
-	// !TODO: remove debug
 
 	for {
 		select {
@@ -196,51 +200,44 @@ func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) err
 				cellIDs[n] = id
 			}
 
-			// #Fetch all entities
-			var entities []entity.E
+			for _, id := range cellIDs {
+				id := id
 
-			var state []byte
+				p.Submit(func() {
+					var state []byte
 
-			for {
-				entities, state, err = h.entity.FetchMany(ctx,
-					entity.Filter{
-						CellIDs: cellIDs[:],
-						State:   state,
-						Size:    entitiesBatch,
-					},
-				)
-				if err != nil {
-					logger.Error().Err(err).Msg("failed to fetch entites")
+					for {
+						entities, st, err := h.entity.FetchMany(ctx,
+							entity.Filter{
+								CellID: &id,
+								State:  state,
+								Size:   entitiesBatch,
+							},
+						)
+						if err != nil {
+							logger.Error().Err(err).Msg("failed to fetch entites")
 
-					break
-				}
+							return
+						}
 
-				// TODO: remove debug
-				for i := range staticDebugEntities {
-					staticDebugEntities[i].UserID = current.UserID
-					staticDebugEntities[i].CellID = current.CellID
-					staticDebugEntities[i].X = current.X + int64(staticDebugoffset[i][0])
-					staticDebugEntities[i].Y = current.Y + int64(staticDebugoffset[i][1])
-					staticDebugEntities[i].AnimationID = current.AnimationID
-				}
+						state = st
 
-				entities = append(entities, staticDebugEntities...)
-				// !TODO: remove debug
+						if err := stream.SendMsg(&dto.ListEntityResp{
+							Entities: entities,
+							State:    state,
+						}); err != nil {
+							logger.Error().Err(err).Msg("failed to send message")
 
-				if err := stream.SendMsg(&dto.ListEntityResp{
-					Entities: entities,
-					State:    state,
-				}); err != nil {
-					logger.Error().Err(err).Msg("failed to send message")
+							return
+						}
 
-					break
-				}
+						if len(state) == 0 {
+							logger.Info().Msg("success")
 
-				if len(state) == 0 {
-					logger.Info().Msg("success")
-
-					break
-				}
+							return
+						}
+					}
+				})
 			}
 		}
 	}
