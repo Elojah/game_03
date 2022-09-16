@@ -31,6 +31,39 @@ type Set struct {
 	WangSets         []WangSet       `json:"wangsets"`
 }
 
+func NewSet() Set {
+	return Set{
+		BackgroundColor:  "#000000",
+		Class:            "background",
+		Columns:          0,
+		FillMode:         "stretch",
+		FirstGID:         0,
+		Grid:             Grid{},
+		Image:            "",
+		ImageHeight:      0,
+		ImageWidth:       0,
+		Margin:           0,
+		Name:             "",
+		ObjectAlignment:  "unspecified",
+		Properties:       nil,
+		Source:           "",
+		Spacing:          0,
+		Terrains:         nil,
+		TileCount:        0,
+		TiledVersion:     "custom",
+		TileHeight:       0,
+		TileOffset:       Offset{},
+		TileRenderSize:   "tile",
+		Tiles:            nil,
+		TileWidth:        0,
+		Transformations:  Transformations{},
+		TransparentColor: "#000000",
+		Type:             "tileset",
+		Version:          "1.4",
+		WangSets:         nil,
+	}
+}
+
 type Grid struct {
 	Height      int    `json:"height"`
 	Orientation string `json:"orientation"`
@@ -105,16 +138,4 @@ type ObjectTemplate struct {
 	Type   string `json:"type"`
 	Set    Set    `json:"set"`
 	Object Object `json:"object"`
-}
-
-type Property struct {
-	Name         string      `json:"name"`
-	Type         string      `json:"type"`
-	PropertyType string      `json:"propertytype"`
-	Value        interface{} `json:"value"`
-}
-
-type Point struct {
-	X float64 `json:"x"`
-	Y float64 `json:"y"`
 }

@@ -169,11 +169,11 @@ func (g GroundGenerator) Tilemap(params Params) Map {
 	}
 
 	size := len(g.Map) * len(g.Map[0])
-	data := make([]byte, 0, 4*size)
+	data := make([]byte, 0, 4*size) //nolint: gomnd
 
 	for i := 0; i < len(g.Map); i++ {
 		for j := 0; j < len(g.Map[i]); j++ {
-			raw := make([]byte, 4)
+			raw := make([]byte, 4) //nolint: gomnd
 			binary.LittleEndian.PutUint32(raw, uint32(g.Map[i][j]))
 			data = append(data, raw...)
 		}

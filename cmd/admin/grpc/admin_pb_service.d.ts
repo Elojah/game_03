@@ -4,6 +4,7 @@
 import * as github_com_elojah_game_03_cmd_admin_grpc_admin_pb from "../../../../../../github.com/elojah/game_03/cmd/admin/grpc/admin_pb";
 import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty_pb";
 import * as google_protobuf_wrappers_pb from "google-protobuf/google/protobuf/wrappers_pb";
+import * as github_com_elojah_game_03_pkg_tile_dto_set_pb from "../../../../../../github.com/elojah/game_03/pkg/tile/dto/set_pb";
 import {grpc} from "@improbable-eng/grpc-web";
 
 type AdminMigrateUp = {
@@ -24,6 +25,15 @@ type AdminCreateTilemap = {
   readonly responseType: typeof google_protobuf_wrappers_pb.StringValue;
 };
 
+type AdminCreateTileset = {
+  readonly methodName: string;
+  readonly service: typeof Admin;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof github_com_elojah_game_03_pkg_tile_dto_set_pb.CreateTilesetReq;
+  readonly responseType: typeof github_com_elojah_game_03_pkg_tile_dto_set_pb.CreateTilesetResp;
+};
+
 type AdminPing = {
   readonly methodName: string;
   readonly service: typeof Admin;
@@ -37,6 +47,7 @@ export class Admin {
   static readonly serviceName: string;
   static readonly MigrateUp: AdminMigrateUp;
   static readonly CreateTilemap: AdminCreateTilemap;
+  static readonly CreateTileset: AdminCreateTileset;
   static readonly Ping: AdminPing;
 }
 
@@ -89,6 +100,15 @@ export class AdminClient {
   createTilemap(
     requestMessage: google_protobuf_empty_pb.Empty,
     callback: (error: ServiceError|null, responseMessage: google_protobuf_wrappers_pb.StringValue|null) => void
+  ): UnaryResponse;
+  createTileset(
+    requestMessage: github_com_elojah_game_03_pkg_tile_dto_set_pb.CreateTilesetReq,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_tile_dto_set_pb.CreateTilesetResp|null) => void
+  ): UnaryResponse;
+  createTileset(
+    requestMessage: github_com_elojah_game_03_pkg_tile_dto_set_pb.CreateTilesetReq,
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_tile_dto_set_pb.CreateTilesetResp|null) => void
   ): UnaryResponse;
   ping(
     requestMessage: google_protobuf_empty_pb.Empty,

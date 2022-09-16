@@ -36,16 +36,16 @@ func NewMap() Map {
 		Width:            0,
 		Infinite:         false,
 		Layers:           nil,
-		NextLayerID:      2, // nolint:gomnd
+		NextLayerID:      2, //nolint: gomnd
 		NextObjectID:     1,
 		Orientation:      "orthogonal",
 		RenderOrder:      "right-down",
 		TiledVersion:     "custom",
-		TileHeight:       32, // nolint: gomnd
-		TileWidth:        32, // nolint: gomnd
+		TileHeight:       32, //nolint: gomnd
+		TileWidth:        32, //nolint: gomnd
 		Tilesets:         nil,
 		Type:             "map",
-		Version:          "custom",
+		Version:          "1.4",
 
 		HexSideLength:   0,
 		ParallaxOriginX: 0,
@@ -111,18 +111,18 @@ func NewLayer() Layer {
 		Visible:   true,
 		Type:      "tilelayer",
 
-		// Objects          []Object
-		// OffsetX          float64
-		// OffsetY          float64
-		// ParallaxX        float64
-		// ParallaxY        float64
-		// Properties       []Property
-		// RepeatX          bool
-		// RepeatY          bool
-		// StartX           int
-		// StartY           int
-		// TintColor        string
-		// TransparentColor string
+		Objects:          nil,
+		OffsetX:          0,
+		OffsetY:          0,
+		ParallaxX:        0,
+		ParallaxY:        0,
+		Properties:       nil,
+		RepeatX:          false,
+		RepeatY:          false,
+		StartX:           0,
+		StartY:           0,
+		TintColor:        "",
+		TransparentColor: "",
 	}
 }
 
@@ -167,4 +167,16 @@ type Text struct {
 	Underline  bool   `json:"underline"`
 	VAlign     string `json:"valign"`
 	Wrap       bool   `json:"wrap"`
+}
+
+type Point struct {
+	X float64 `json:"x"`
+	Y float64 `json:"y"`
+}
+
+type Property struct {
+	Name         string      `json:"name"`
+	Type         string      `json:"type"`
+	PropertyType string      `json:"propertytype"`
+	Value        interface{} `json:"value"`
 }
