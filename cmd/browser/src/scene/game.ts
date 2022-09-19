@@ -66,7 +66,7 @@ function interpolateGraphicEntity(ge: GraphicEntity) {
 type GraphicCell = {
 	Cell: Cell.Cell
 	Tilemap: Phaser.Tilemaps.Tilemap
-	Layer: Phaser.Tilemaps.TilemapLayer
+	Layer: Map<string, Phaser.Tilemaps.TilemapLayer>
 }
 
 type Controls = {
@@ -149,7 +149,7 @@ export class Game extends Scene {
 		this.Blank = {
 			Cell: new Cell.Cell,
 			Tilemap: m,
-			Layer: m.createBlankLayer('blank', ''),
+			Layer: new Map([['blank', m.createBlankLayer('blank', '')]]),
 		}
 	}
 	preload() { }
@@ -764,7 +764,7 @@ export class Game extends Scene {
 					this.Cells.set(o, {
 						Cell: c,
 						Tilemap: m,
-						Layer: m.createBlankLayer('blank', ''),
+						Layer: new Map([['blank', m.createBlankLayer('blank', '')]]),
 					})
 
 					let loadedTM: boolean = false, loadedTS: boolean = false
@@ -777,7 +777,6 @@ export class Game extends Scene {
 						// create new cell
 						const map = this.make.tilemap({ key: tm, width: this.World.getCellwidth(), height: this.World.getCellheight() })
 						const set = map.addTilesetImage(ts)
-						const layer = map.createLayer('Tile Layer 1', set, c.getX() * this.World.getCellwidth(), c.getY() * this.World.getCellheight())
 
 						const cc = this.Cells.get(o)
 						if (!cc) {
@@ -786,7 +785,11 @@ export class Game extends Scene {
 						}
 
 						cc.Tilemap = map
-						cc.Layer = layer
+
+						map.layers.map((l) => {
+							const layer = map.createLayer(l.name, set, c.getX() * this.World.getCellwidth(), c.getY() * this.World.getCellheight())
+							cc.Layer.set(l.name, layer)
+						})
 
 						// Loading reset
 						// Add safe concurrency for next 2 instructions

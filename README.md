@@ -1,8 +1,6 @@
 # game_03
 
-Development setup:
-
-Initial prep:
+Dev setup:
 
 ```sh
 $ cd cmd/browser && npm install
@@ -23,10 +21,11 @@ $ make browser
 $ make web && ./bin/game_03_web config/web/local.json
 ```
 
-Initial data:
+Data:
 
 ```sh
 $ ./scripts/create_default_animations.sh
+$ grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '' -plaintext localhost:8083 grpc.Admin/CreateTilemap
 ```
 
 ### TODO

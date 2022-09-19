@@ -3,29 +3,29 @@ package tile
 import "github.com/elojah/game_03/pkg/ulid"
 
 type Map struct {
-	BackgroundColor  string     `json:"backgroundcolor"`
-	Class            string     `json:"class"`
-	CompressionLevel int        `json:"compressionlevel"`
-	Height           int        `json:"height"`
-	HexSideLength    int        `json:"hexsidelength"`
-	Infinite         bool       `json:"infinite"`
-	Layers           []Layer    `json:"layers"`
-	NextLayerID      int        `json:"nextlayerid"`
-	NextObjectID     int        `json:"nextobjectid"`
-	Orientation      string     `json:"orientation"`
-	ParallaxOriginX  float64    `json:"parallaxoriginx"`
-	ParallaxOriginY  float64    `json:"parallaxoriginy"`
-	Properties       []Property `json:"properties"`
-	RenderOrder      string     `json:"renderorder"`
-	StaggerAxis      string     `json:"staggeraxis"`
-	StaggerIndex     string     `json:"staggerindex"`
-	TiledVersion     string     `json:"tiledversion"`
-	Tilesets         []Set      `json:"tilesets"`
-	TileHeight       int        `json:"tileheight"`
-	TileWidth        int        `json:"tilewidth"`
-	Type             string     `json:"type"`
-	Version          string     `json:"version"`
-	Width            int        `json:"width"`
+	BackgroundColor  string     `json:"backgroundcolor,omitempty"`
+	Class            string     `json:"class,omitempty"`
+	CompressionLevel int        `json:"compressionlevel,omitempty"`
+	Height           int        `json:"height,omitempty"`
+	HexSideLength    int        `json:"hexsidelength,omitempty"`
+	Infinite         bool       `json:"infinite,omitempty"`
+	Layers           []Layer    `json:"layers,omitempty"`
+	NextLayerID      int        `json:"nextlayerid,omitempty"`
+	NextObjectID     int        `json:"nextobjectid,omitempty"`
+	Orientation      string     `json:"orientation,omitempty"`
+	ParallaxOriginX  float64    `json:"parallaxoriginx,omitempty"`
+	ParallaxOriginY  float64    `json:"parallaxoriginy,omitempty"`
+	Properties       []Property `json:"properties,omitempty"`
+	RenderOrder      string     `json:"renderorder,omitempty"`
+	StaggerAxis      string     `json:"staggeraxis,omitempty"`
+	StaggerIndex     string     `json:"staggerindex,omitempty"`
+	TiledVersion     string     `json:"tiledversion,omitempty"`
+	Tilesets         []Set      `json:"tilesets,omitempty"`
+	TileHeight       int        `json:"tileheight,omitempty"`
+	TileWidth        int        `json:"tilewidth,omitempty"`
+	Type             string     `json:"type,omitempty"`
+	Version          string     `json:"version,omitempty"`
+	Width            int        `json:"width,omitempty"`
 }
 
 func NewMap() Map {
@@ -57,34 +57,34 @@ func NewMap() Map {
 }
 
 type Layer struct {
-	Chunks           []Chunk    `json:"chunks"`
-	Class            string     `json:"class"`
-	Compression      string     `json:"compression"`
-	Data             string     `json:"data"`
-	DrawOrder        string     `json:"draworder"`
-	Encoding         string     `json:"encoding"`
-	Height           int        `json:"height"`
-	ID               int        `json:"id"`
-	Image            string     `json:"image"`
-	Layers           []Layer    `json:"layers"`
-	Locked           bool       `json:"locked"`
-	Name             string     `json:"name"`
-	Objects          []Object   `json:"objects"`
-	OffsetX          float64    `json:"offsetx"`
-	OffsetY          float64    `json:"offsety"`
-	Opacity          float64    `json:"opacity"`
-	ParallaxX        float64    `json:"parallaxx"`
-	ParallaxY        float64    `json:"parallaxy"`
-	Properties       []Property `json:"properties"`
-	RepeatX          bool       `json:"repeatx"`
-	RepeatY          bool       `json:"repeaty"`
-	StartX           int        `json:"startx"`
-	StartY           int        `json:"starty"`
-	TintColor        string     `json:"tintcolor"`
-	TransparentColor string     `json:"transparentcolor"`
-	Type             string     `json:"type"`
-	Visible          bool       `json:"visible"`
-	Width            int        `json:"width"`
+	Chunks           []Chunk    `json:"chunks,omitempty"`
+	Class            string     `json:"class,omitempty"`
+	Compression      string     `json:"compression,omitempty"`
+	Data             string     `json:"data,omitempty"`
+	DrawOrder        string     `json:"draworder,omitempty"`
+	Encoding         string     `json:"encoding,omitempty"`
+	Height           int        `json:"height,omitempty"`
+	ID               int        `json:"id,omitempty"`
+	Image            string     `json:"image,omitempty"`
+	Layers           []Layer    `json:"layers,omitempty"`
+	Locked           bool       `json:"locked,omitempty"`
+	Name             string     `json:"name,omitempty"`
+	Objects          []Object   `json:"objects,omitempty"`
+	OffsetX          float64    `json:"offsetx,omitempty"`
+	OffsetY          float64    `json:"offsety,omitempty"`
+	Opacity          float64    `json:"opacity,omitempty"`
+	ParallaxX        float64    `json:"parallaxx,omitempty"`
+	ParallaxY        float64    `json:"parallaxy,omitempty"`
+	Properties       []Property `json:"properties,omitempty"`
+	RepeatX          bool       `json:"repeatx,omitempty"`
+	RepeatY          bool       `json:"repeaty,omitempty"`
+	StartX           int        `json:"startx,omitempty"`
+	StartY           int        `json:"starty,omitempty"`
+	TintColor        string     `json:"tintcolor,omitempty"`
+	TransparentColor string     `json:"transparentcolor,omitempty"`
+	Type             string     `json:"type,omitempty"`
+	Visible          bool       `json:"visible,omitempty"`
+	Width            int        `json:"width,omitempty"`
 	X                int        `json:"x"`
 	Y                int        `json:"y"`
 }
@@ -127,56 +127,56 @@ func NewLayer() Layer {
 }
 
 type Chunk struct {
-	Data   []uint32 `json:"data"`
-	Height int      `json:"height"`
-	Width  int      `json:"width"`
-	X      int      `json:"x"`
-	Y      int      `json:"y"`
+	Data   []uint32 `json:"data,omitempty"`
+	Height int      `json:"height,omitempty"`
+	Width  int      `json:"width,omitempty"`
+	X      int      `json:"x,omitempty"`
+	Y      int      `json:"y,omitempty"`
 }
 
 type Object struct {
-	Class      string     `json:"class"`
-	Ellipse    bool       `json:"ellipse"`
-	GID        int        `json:"gid"`
-	Height     float64    `json:"height"`
-	ID         int        `json:"id"`
-	Name       string     `json:"name"`
-	Point      bool       `json:"point"`
-	Polygon    []Point    `json:"polygon"`
-	Polyline   []Point    `json:"polyline"`
-	Properties []Property `json:"properties"`
-	Rotation   float64    `json:"rotation"`
-	Template   string     `json:"template"`
-	Text       Text       `json:"text"`
-	Visible    bool       `json:"visible"`
-	Width      float64    `json:"width"`
-	X          float64    `json:"x"`
-	Y          float64    `json:"y"`
+	Class      string     `json:"class,omitempty"`
+	Ellipse    bool       `json:"ellipse,omitempty"`
+	GID        int        `json:"gid,omitempty"`
+	Height     float64    `json:"height,omitempty"`
+	ID         int        `json:"id,omitempty"`
+	Name       string     `json:"name,omitempty"`
+	Point      bool       `json:"point,omitempty"`
+	Polygon    []Point    `json:"polygon,omitempty"`
+	Polyline   []Point    `json:"polyline,omitempty"`
+	Properties []Property `json:"properties,omitempty"`
+	Rotation   float64    `json:"rotation,omitempty"`
+	Template   string     `json:"template,omitempty"`
+	Text       Text       `json:"text,omitempty"`
+	Visible    bool       `json:"visible,omitempty"`
+	Width      float64    `json:"width,omitempty"`
+	X          float64    `json:"x,omitempty"`
+	Y          float64    `json:"y,omitempty"`
 }
 
 type Text struct {
-	Bold       bool   `json:"bold"`
-	Color      string `json:"color"`
-	FontFamily string `json:"fontfamily"`
-	HAlign     string `json:"halign"`
-	Italic     bool   `json:"italic"`
-	Kerning    bool   `json:"kerning"`
-	PixelSize  int    `json:"pixelsize"`
-	StrikeOut  bool   `json:"strikeout"`
-	Text       string `json:"text"`
-	Underline  bool   `json:"underline"`
-	VAlign     string `json:"valign"`
-	Wrap       bool   `json:"wrap"`
+	Bold       bool   `json:"bold,omitempty"`
+	Color      string `json:"color,omitempty"`
+	FontFamily string `json:"fontfamily,omitempty"`
+	HAlign     string `json:"halign,omitempty"`
+	Italic     bool   `json:"italic,omitempty"`
+	Kerning    bool   `json:"kerning,omitempty"`
+	PixelSize  int    `json:"pixelsize,omitempty"`
+	StrikeOut  bool   `json:"strikeout,omitempty"`
+	Text       string `json:"text,omitempty"`
+	Underline  bool   `json:"underline,omitempty"`
+	VAlign     string `json:"valign,omitempty"`
+	Wrap       bool   `json:"wrap,omitempty"`
 }
 
 type Point struct {
-	X float64 `json:"x"`
-	Y float64 `json:"y"`
+	X float64 `json:"x,omitempty"`
+	Y float64 `json:"y,omitempty"`
 }
 
 type Property struct {
-	Name         string      `json:"name"`
-	Type         string      `json:"type"`
-	PropertyType string      `json:"propertytype"`
-	Value        interface{} `json:"value"`
+	Name         string      `json:"name,omitempty"`
+	Type         string      `json:"type,omitempty"`
+	PropertyType string      `json:"propertytype,omitempty"`
+	Value        interface{} `json:"value,omitempty"`
 }
