@@ -15,6 +15,7 @@
 vendor/
 bin/
 cmd/browser/node_modules/
+cmd/browser/dist/bundle.js
 
 # Config private
 config/api/firebase.json

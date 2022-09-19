@@ -772,6 +772,7 @@ export class Game extends Scene {
 						const loadTS = (tsName: string) => {
 							sets.push(map.addTilesetImage(tsName))
 
+							console.log('loaded TS ', sets.length, '/', map.tilesets.length)
 							if (sets.length < map.tilesets.length) {
 								return
 							}
@@ -798,8 +799,9 @@ export class Game extends Scene {
 							if (this.textures.exists(ts.name)) {
 								loadTS(ts.name)
 							} else {
-								console.log('add listener on ', 'filecomplete-image-' + ts)
-								this.CellLoader.on('filecomplete-image-' + ts, () => {
+								this.CellLoader.image(ts.name, 'img/' + ts.name + '.png')
+								console.log('add listener on ', 'filecomplete-image-' + ts.name)
+								this.CellLoader.on('filecomplete-image-' + ts.name, () => {
 									console.log('image completed on ', o)
 									loadTS(ts.name)
 								})
