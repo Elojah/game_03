@@ -18,9 +18,8 @@ const (
 )
 
 var (
-	defaultTilemap = ulid.MustParse("01GDAQ5YJCZCKS1R9V7D4Q9T66")
+	defaultTilemap = ulid.MustParse("01GDB4TQD4WS8XNEW9MP5YT1C5")
 	// defaultTilemap = ulid.MustParse("01FG1V2RER0529MJTZ9WE5HJF3")
-	defaultTileset = ulid.MustParse("01FG1V2RERMABQRXEYKT8T1HYV")
 )
 
 // !TMP DATA FOR DEV WIP
@@ -59,7 +58,6 @@ func (h *handler) CreateRoom(ctx context.Context, req *room.R) (*room.R, error) 
 	for i, cl := range cells {
 		for j, c := range cl {
 			c.Tilemap = defaultTilemap
-			c.Tileset = defaultTileset
 			c.X = int64(j)
 			c.Y = int64(i)
 

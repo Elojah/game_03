@@ -18,11 +18,41 @@ func (h *handler) CreateTilemap(ctx context.Context, req *types.Empty) (*types.S
 	logger := log.With().Str("method", "create_tilemap").Logger()
 
 	g := tile.GroundGenerator{}
+	// params := tile.Params{
+	// 	Height:          3,
+	// 	Width:           3,
+	// 	CellHeight:      11,
+	// 	CellWidth:       20,
+	// 	WorldDensity:    0.9,
+	// 	PlatformDensity: 0.7,
+	// 	PlatformPadding: 0.9,
+	// 	SizeMin:         5,
+	// 	SizeMax:         15,
+	// 	Distortion:      0,
+	// 	PathMin:         0,
+	// 	PathMax:         0,
+	// 	PathDistorsion:  0,
+
+	// 	Set: tile.Set{
+	// 		Columns:     64,
+	// 		FirstGID:    1,
+	// 		Image:       "../img/01FG1V2RERMABQRXEYKT8T1HYV.png",
+	// 		ImageHeight: 1024,
+	// 		ImageWidth:  1024,
+	// 		Margin:      0,
+	// 		Name:        "01FG1V2RERMABQRXEYKT8T1HYV",
+	// 		Spacing:     0,
+	// 		TileCount:   4096,
+	// 		TileHeight:  16,
+	// 		TileWidth:   16,
+	// 	},
+	// }
+
 	params := tile.Params{
-		Height:          3,
-		Width:           3,
-		CellHeight:      11,
-		CellWidth:       20,
+		Height:          1,
+		Width:           1,
+		CellHeight:      200,
+		CellWidth:       200,
 		WorldDensity:    0.9,
 		PlatformDensity: 0.7,
 		PlatformPadding: 0.9,
@@ -34,17 +64,17 @@ func (h *handler) CreateTilemap(ctx context.Context, req *types.Empty) (*types.S
 		PathDistorsion:  0,
 
 		Set: tile.Set{
-			Columns:     64,
+			Columns:     1,
 			FirstGID:    1,
-			Image:       "../img/01FG1V2RERMABQRXEYKT8T1HYV.png",
-			ImageHeight: 1024,
-			ImageWidth:  1024,
+			Image:       "../img/01GDB3DDM9Q1R1XTSSNNB9CYJV.png",
+			ImageHeight: 32,
+			ImageWidth:  32,
 			Margin:      0,
-			Name:        "01FG1V2RERMABQRXEYKT8T1HYV",
+			Name:        "01GDB3DDM9Q1R1XTSSNNB9CYJV",
 			Spacing:     0,
-			TileCount:   4096,
-			TileHeight:  16,
-			TileWidth:   16,
+			TileCount:   1,
+			TileHeight:  1,
+			TileWidth:   1,
 		},
 	}
 
@@ -75,5 +105,5 @@ func (h *handler) CreateTilemap(ctx context.Context, req *types.Empty) (*types.S
 
 	logger.Info().Msg("success")
 
-	return &types.StringValue{}, nil
+	return &types.StringValue{Value: id.String()}, nil
 }

@@ -21,7 +21,6 @@ message Cell {
     bytes ID                     = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
     map<int32, bytes> Contiguous = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
     bytes Tilemap                = 3 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
-    bytes Tileset                = 4 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
-    int64 X                      = 5;
-    int64 Y                      = 6;
+    int64 X                      = 4;
+    int64 Y                      = 5;
 }

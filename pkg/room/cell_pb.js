@@ -361,9 +361,8 @@ proto.room.Cell.toObject = function(includeInstance, msg) {
     id: msg.getId_asB64(),
     contiguousMap: (f = msg.getContiguousMap()) ? f.toObject(includeInstance, undefined) : [],
     tilemap: msg.getTilemap_asB64(),
-    tileset: msg.getTileset_asB64(),
-    x: jspb.Message.getFieldWithDefault(msg, 5, 0),
-    y: jspb.Message.getFieldWithDefault(msg, 6, 0)
+    x: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    y: jspb.Message.getFieldWithDefault(msg, 5, 0)
   };
 
   if (includeInstance) {
@@ -415,14 +414,10 @@ proto.room.Cell.deserializeBinaryFromReader = function(msg, reader) {
       msg.setTilemap(value);
       break;
     case 4:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setTileset(value);
-      break;
-    case 5:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setX(value);
       break;
-    case 6:
+    case 5:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setY(value);
       break;
@@ -473,24 +468,17 @@ proto.room.Cell.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getTileset_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      4,
-      f
-    );
-  }
   f = message.getX();
   if (f !== 0) {
     writer.writeInt64(
-      5,
+      4,
       f
     );
   }
   f = message.getY();
   if (f !== 0) {
     writer.writeInt64(
-      6,
+      5,
       f
     );
   }
@@ -604,53 +592,11 @@ proto.room.Cell.prototype.setTilemap = function(value) {
 
 
 /**
- * optional bytes Tileset = 4;
- * @return {!(string|Uint8Array)}
- */
-proto.room.Cell.prototype.getTileset = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
-};
-
-
-/**
- * optional bytes Tileset = 4;
- * This is a type-conversion wrapper around `getTileset()`
- * @return {string}
- */
-proto.room.Cell.prototype.getTileset_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getTileset()));
-};
-
-
-/**
- * optional bytes Tileset = 4;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getTileset()`
- * @return {!Uint8Array}
- */
-proto.room.Cell.prototype.getTileset_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getTileset()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
- * @return {!proto.room.Cell} returns this
- */
-proto.room.Cell.prototype.setTileset = function(value) {
-  return jspb.Message.setProto3BytesField(this, 4, value);
-};
-
-
-/**
- * optional int64 X = 5;
+ * optional int64 X = 4;
  * @return {number}
  */
 proto.room.Cell.prototype.getX = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
 
@@ -659,16 +605,16 @@ proto.room.Cell.prototype.getX = function() {
  * @return {!proto.room.Cell} returns this
  */
 proto.room.Cell.prototype.setX = function(value) {
-  return jspb.Message.setProto3IntField(this, 5, value);
+  return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
 /**
- * optional int64 Y = 6;
+ * optional int64 Y = 5;
  * @return {number}
  */
 proto.room.Cell.prototype.getY = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 
 
@@ -677,7 +623,7 @@ proto.room.Cell.prototype.getY = function() {
  * @return {!proto.room.Cell} returns this
  */
 proto.room.Cell.prototype.setY = function(value) {
-  return jspb.Message.setProto3IntField(this, 6, value);
+  return jspb.Message.setProto3IntField(this, 5, value);
 };
 
 

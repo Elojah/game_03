@@ -97,20 +97,20 @@ func (g *GroundGenerator) Gen(params Params) {
 		g.Map[i] = make([]Field, params.Width*params.CellWidth)
 	}
 
-	nPlatforms := int64(float64(params.Height*params.Width) * params.WorldDensity)
+	nPlatforms := int64(float64(params.Height*params.CellHeight*params.Width*params.CellWidth) * params.WorldDensity)
 	platforms := make([]geometry.Vec2, 0, nPlatforms)
 
 	for i := 0; i < int(nPlatforms); i++ {
 		platforms = append(platforms, geometry.Vec2{
-			X: rand.Int63n(int64(params.Height * params.CellHeight)), // nolint: gosec
-			Y: rand.Int63n(int64(params.Width * params.CellWidth)),   // nolint: gosec
+			X: rand.Int63n(int64(params.Height * params.CellHeight)), //nolint: gosec
+			Y: rand.Int63n(int64(params.Width * params.CellWidth)),   //nolint: gosec
 		})
 	}
 
 	for _, p := range platforms {
 		pl := g.generatePlatform(
-			int64(params.SizeMin)+rand.Int63n(int64(params.SizeMax-params.SizeMin)), // nolint: gosec
-			int64(params.SizeMin)+rand.Int63n(int64(params.SizeMax-params.SizeMin)), // nolint: gosec
+			int64(params.SizeMin)+rand.Int63n(int64(params.SizeMax-params.SizeMin)), //nolint: gosec
+			int64(params.SizeMin)+rand.Int63n(int64(params.SizeMax-params.SizeMin)), //nolint: gosec
 			params.PlatformDensity,
 			params.PlatformPadding,
 		)
@@ -137,7 +137,7 @@ func (g GroundGenerator) generatePlatform(height int64, width int64, density flo
 		maxW := math.Min(float64(width), pad+float64(width))
 
 		for j := int64(minW); j < int64(maxW); j++ {
-			if n := rand.Float64(); n < density { // nolint: gosec
+			if n := rand.Float64(); n < density { //nolint: gosec
 				p[i][j] = Ground
 			} else {
 				p[i][j] = None
@@ -173,9 +173,8 @@ func (g GroundGenerator) Tilemap(params Params) Map {
 
 	for i := 0; i < len(g.Map); i++ {
 		for j := 0; j < len(g.Map[i]); j++ {
-			// data = binary.LittleEndian.AppendUint32(data, uint32(g.Map[i][j]))
-			// TODO remove this ending +1, debug only
-			data = binary.LittleEndian.AppendUint32(data, uint32(g.Map[i][j]+Field(i+j)))
+			data = binary.LittleEndian.AppendUint32(data, uint32(g.Map[i][j]))
+			// data = binary.LittleEndian.AppendUint32(data, uint32(g.Map[i][j]+Field(i+j)))
 		}
 	}
 

@@ -53,11 +53,6 @@ export class Cell extends jspb.Message {
   getTilemap_asB64(): string;
   setTilemap(value: Uint8Array | string): void;
 
-  getTileset(): Uint8Array | string;
-  getTileset_asU8(): Uint8Array;
-  getTileset_asB64(): string;
-  setTileset(value: Uint8Array | string): void;
-
   getX(): number;
   setX(value: number): void;
 
@@ -79,7 +74,6 @@ export namespace Cell {
     id: Uint8Array | string,
     contiguousMap: Array<[number, Uint8Array | string]>,
     tilemap: Uint8Array | string,
-    tileset: Uint8Array | string,
     x: number,
     y: number,
   }

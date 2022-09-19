@@ -129,7 +129,6 @@ CREATE TABLE main.cell (
     id              uuid PRIMARY KEY,
     contiguous      map<tinyint, uuid>,
     tilemap         uuid,
-    tileset         uuid,
     x               bigint,
     y               bigint
 );

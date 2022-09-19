@@ -356,8 +356,8 @@ export class Game extends Scene {
 				const c = cells.getCellsList()[0]
 				const contig = c.getContiguousMap() as jspb.Map<number, Uint8Array>
 
-				var newCellIDs: Uint8Array[] = []
-				var deletedCells: GraphicCell[] = []
+				let newCellIDs: Uint8Array[] = []
+				let deletedCells: GraphicCell[] = []
 
 				switch (o) {
 					case Orientation.None:
@@ -744,7 +744,6 @@ export class Game extends Scene {
 					}
 
 					const c = cellMap.get(ulid(contig.get(o)!))!
-
 					if (!c) {
 						// world border
 						// TO INVESTIGATE, shouldn't happen ?
@@ -753,70 +752,69 @@ export class Game extends Scene {
 					}
 
 					const tm = ulid(c.getTilemap_asU8())
-					const ts = ulid(c.getTileset_asU8())
-
-					this.CellLoader.image(ts, 'img/' + ts + '.png')
 					this.CellLoader.tilemapTiledJSON(tm, 'json/' + tm + '.json')
 
 					const m = this.make.tilemap()
-
-
 					this.Cells.set(o, {
 						Cell: c,
 						Tilemap: m,
 						Layer: new Map([['blank', m.createBlankLayer('blank', '')]]),
 					})
 
-					let loadedTM: boolean = false, loadedTS: boolean = false
-					const load = () => {
-						console.log('load ', o, loadedTM, loadedTS)
-						if (!loadedTM || !loadedTS) {
-							return
-						}
+					const loadTM = () => {
+						console.log('load_tilemap ', o)
 
 						// create new cell
 						const map = this.make.tilemap({ key: tm, width: this.World.getCellwidth(), height: this.World.getCellheight() })
-						const set = map.addTilesetImage(ts)
 
-						const cc = this.Cells.get(o)
-						if (!cc) {
-							// should never happen
-							return
+						let sets = new Array<Phaser.Tilemaps.Tileset>()
+
+						const loadTS = (tsName: string) => {
+							sets.push(map.addTilesetImage(tsName))
+
+							if (sets.length < map.tilesets.length) {
+								return
+							}
+
+							const cc = this.Cells.get(o)
+							if (!cc) {
+								// should never happen
+								return
+							}
+
+							cc.Tilemap = map
+
+							map.layers.map((l) => {
+								const layer = map.createLayer(l.name, sets, c.getX() * this.World.getCellwidth(), c.getY() * this.World.getCellheight())
+								cc.Layer.set(l.name, layer)
+							})
+
+							// Loading reset
+							// Add safe concurrency for next 2 instructions
+							resetLoad()
 						}
 
-						cc.Tilemap = map
-
-						map.layers.map((l) => {
-							const layer = map.createLayer(l.name, set, c.getX() * this.World.getCellwidth(), c.getY() * this.World.getCellheight())
-							cc.Layer.set(l.name, layer)
+						map.tilesets.map((ts) => {
+							if (this.textures.exists(ts.name)) {
+								loadTS(ts.name)
+							} else {
+								console.log('add listener on ', 'filecomplete-image-' + ts)
+								this.CellLoader.on('filecomplete-image-' + ts, () => {
+									console.log('image completed on ', o)
+									loadTS(ts.name)
+								})
+							}
 						})
-
-						// Loading reset
-						// Add safe concurrency for next 2 instructions
-						resetLoad()
 					}
 
 					// Check if files already been loaded
 					if (this.cache.tilemap.exists(tm)) {
-						loadedTM = true
-						load()
+						loadTM()
 					} else {
+						console.log('add listener on ', 'filecomplete-tilemapJSON-' + tm)
 						this.CellLoader.on('filecomplete-tilemapJSON-' + tm, () => {
-							console.log('json complete on ', o)
-							loadedTM = true
-							load()
-						})
-					}
-
-					if (this.textures.exists(ts)) {
-						loadedTS = true
-						load()
-					} else {
-						console.log('add listener on ', 'filecomplete-image-' + ts)
-						this.CellLoader.on('filecomplete-image-' + ts, () => {
-							console.log('image complete on ', o)
-							loadedTS = true
-							load()
+							console.log('json completed on ', o)
+							loadTM()
 						})
 					}
 				})
@@ -845,7 +843,7 @@ export class Game extends Scene {
 		// call list entities on current cell
 		return this.connectPC((message: EntityDTO.ListEntityResp) => {
 			// load all entities
-			var entityIDs: Uint8Array[] = []
+			let entityIDs: Uint8Array[] = []
 
 			message.getEntitiesList().forEach((entry: Entity.E) => {
 				const id = ulid(entry.getId_asU8())
