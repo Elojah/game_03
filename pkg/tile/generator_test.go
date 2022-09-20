@@ -9,15 +9,15 @@ import (
 func TestGenerator(t *testing.T) {
 	for _, p := range []tile.Params{
 		{
-			Height:          10,
-			Width:           50,
-			CellHeight:      10,
-			CellWidth:       10,
-			WorldDensity:    0.9,
-			PlatformDensity: 0.7,
+			Height:          1,
+			Width:           1,
+			CellHeight:      200,
+			CellWidth:       200,
+			WorldDensity:    0.05,
+			PlatformDensity: 0.1,
 			PlatformPadding: 0.9,
 			SizeMin:         5,
-			SizeMax:         15,
+			SizeMax:         20,
 		},
 	} {
 		t.Run(

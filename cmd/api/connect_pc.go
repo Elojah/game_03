@@ -29,7 +29,7 @@ type antsLogger struct {
 }
 
 func (l *antsLogger) Printf(format string, args ...interface{}) {
-	l.Logger.Info().Msgf(format, args)
+	l.Logger.Info().Msgf(format, args...)
 }
 
 func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) error { //nolint: gocognit

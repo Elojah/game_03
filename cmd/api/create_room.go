@@ -19,7 +19,7 @@ const (
 
 // var defaultTilemap = ulid.MustParse("01GDB4TQD4WS8XNEW9MP5YT1C5")
 
-var defaultTilemap = ulid.MustParse("01FG1V2RER0529MJTZ9WE5HJF3")
+var defaultTilemap = ulid.MustParse("01GDD7DSBXGZWGS98BCNKH4HKH")
 
 // !TMP DATA FOR DEV WIP
 
