@@ -116,6 +116,9 @@ export class Game extends Scene {
 	// Static blank cell for filling
 	Blank: GraphicCell
 
+	// Collide layer(s) ?
+	CollideLayers: Map<string, Phaser.Tilemaps.TilemapLayer>
+
 	constructor(config: string | Phaser.Types.Scenes.SettingsConfig) {
 		super(config);
 	}
@@ -142,6 +145,8 @@ export class Game extends Scene {
 		this.Animations = new Map()
 
 		this.SpriteSheets = new Map()
+
+		this.CollideLayers = new Map()
 
 		this.World = new World.World()
 
@@ -307,14 +312,6 @@ export class Game extends Scene {
 				return
 			}
 
-			// const e = this.Entities.get(value)
-
-			// if (!e) {
-			//     console.log('missing entity ', value)
-			//     return
-			// }
-
-
 			interpolateGraphicEntity(e)
 
 			const x = e.Sprite.x + ((e.Direction.x - e.Sprite.x) * e.Interpolation)
@@ -331,6 +328,10 @@ export class Game extends Scene {
 		if (animationID) {
 			this.Entity?.Sprite.play(animationID, true)
 		}
+
+		this.CollideLayers.forEach((l) => {
+			this.physics.collide(this.Entity.Sprite, l)
+		})
 
 		// this.EntityBufferRendering = []
 	}
@@ -754,11 +755,10 @@ export class Game extends Scene {
 					const tm = ulid(c.getTilemap_asU8())
 					this.CellLoader.tilemapTiledJSON(tm, 'json/' + tm + '.json')
 
-					const m = this.make.tilemap()
 					this.Cells.set(o, {
 						Cell: c,
-						Tilemap: m,
-						Layer: new Map([['blank', m.createBlankLayer('blank', '')]]),
+						Tilemap: this.Blank.Tilemap,
+						Layer: this.Blank.Layer,
 					})
 
 					const loadTM = () => {
@@ -785,8 +785,18 @@ export class Game extends Scene {
 
 							cc.Tilemap = map
 
+							interface properties {
+								name: string
+								value: boolean
+							}
+
 							map.layers.map((l) => {
 								const layer = map.createLayer(l.name, sets, c.getX() * this.World.getCellwidth(), c.getY() * this.World.getCellheight())
+								const props = layer.layer.properties as properties[]
+								if (props.find((prop) => { return prop.name == 'collides' && prop.value })) {
+									console.log('set collision on layer ', l.name)
+									this.CollideLayers.set(layer.name, layer.setCollisionByExclusion([], true))
+								}
 								cc.Layer.set(l.name, layer)
 							})
 
@@ -867,6 +877,8 @@ export class Game extends Scene {
 						// TODO: adjust x and y with cell position
 						Sprite: sprite
 					})
+
+					this.physics.add.sprite(entry.getX(), entry.getY(), sprite.texture.key)
 
 					if (id == ulid(this.Entity.E.getId_asU8())) {
 						this.Entity.Sprite = sprite

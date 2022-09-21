@@ -17,9 +17,7 @@ const (
 	cellHeight, cellWidth = 1080, 1920
 )
 
-// var defaultTilemap = ulid.MustParse("01GDB4TQD4WS8XNEW9MP5YT1C5")
-
-var defaultTilemap = ulid.MustParse("01GDD7DSBXGZWGS98BCNKH4HKH")
+var defaultTilemap = ulid.MustParse("01GDFSB5KK8ED978TNRYVPBBBV")
 
 // !TMP DATA FOR DEV WIP
 

@@ -35,6 +35,7 @@ type Field int8
 
 const (
 	None Field = iota
+	Void
 	Ground
 )
 
@@ -58,6 +59,8 @@ func (g GroundGenerator) Display() {
 		for j := 0; j < len(g.Map[i]); j++ {
 			switch g.Map[i][j] {
 			case None:
+				fmt.Print(" ")
+			case Void:
 				fmt.Print(" ")
 			case Ground:
 				fmt.Print("x")
@@ -140,7 +143,7 @@ func (g GroundGenerator) generatePlatform(height int64, width int64, density flo
 			if n := rand.Float64(); n < density { //nolint: gosec
 				p[i][j] = Ground
 			} else {
-				p[i][j] = None
+				p[i][j] = Void
 			}
 		}
 	}
@@ -153,14 +156,22 @@ func (g GroundGenerator) Tilemap(params Params) Map {
 
 	// Main layer
 	layer := NewLayer()
+	layer.ID = 1
 	layer.Height = int(params.Height * params.CellHeight)
 	layer.Width = int(params.Width * params.CellWidth)
-	layer.ID = 1
-	m.Layers = append(m.Layers, layer)
+
+	collideLayer := NewLayer()
+	collideLayer.ID = 2
+	collideLayer.Height = int(params.Height * params.CellHeight)
+	collideLayer.Width = int(params.Width * params.CellWidth)
+	collideLayer.Properties = append(collideLayer.Properties, Property{
+		Name:  "collides",
+		Value: true,
+	})
 
 	m.Height = int(params.Height * params.CellHeight)
 	m.Width = int(params.Width * params.CellWidth)
-	m.NextLayerID = 2
+	m.NextLayerID = 3
 	m.NextObjectID = 1
 	m.Tilesets = append(m.Tilesets, params.Set)
 
@@ -169,16 +180,26 @@ func (g GroundGenerator) Tilemap(params Params) Map {
 	}
 
 	size := len(g.Map) * len(g.Map[0])
-	data := make([]byte, 0, 4*size) //nolint: gomnd
+	data := make([]byte, 0, 4*size)        //nolint: gomnd
+	collideData := make([]byte, 0, 4*size) //nolint: gomnd
 
 	for i := 0; i < len(g.Map); i++ {
 		for j := 0; j < len(g.Map[i]); j++ {
-			// data = binary.LittleEndian.AppendUint32(data, uint32(g.Map[i][j]))
-			data = binary.LittleEndian.AppendUint32(data, uint32(g.Map[i][j]+1))
+			data = binary.LittleEndian.AppendUint32(data, uint32(g.Map[i][j]))
+			collideData = binary.LittleEndian.AppendUint32(data, func(f Field) uint32 {
+				if f == Void {
+					return 1
+				}
+
+				return 0
+			}(g.Map[i][j]))
 		}
 	}
 
-	m.Layers[0].Data = base64.StdEncoding.EncodeToString(data)
+	layer.Data = base64.StdEncoding.EncodeToString(data)
+	collideLayer.Data = base64.StdEncoding.EncodeToString(collideData)
+
+	m.Layers = append(m.Layers, layer, collideLayer)
 
 	return m
 }
