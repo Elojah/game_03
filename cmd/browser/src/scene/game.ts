@@ -21,6 +21,7 @@ import * as CellDTO from 'pkg/room/dto/cell_pb';
 
 import * as World from 'pkg/room/world_pb';
 import * as WorldDTO from 'pkg/room/dto/world_pb';
+import { Bodies, Body } from "matter";
 
 const entitySpriteDepth = 42
 
@@ -34,6 +35,11 @@ enum Orientation {
 	DownLeft,
 	Left,
 	UpLeft,
+}
+
+type BodyEntity = {
+	E: Entity.E
+	Body: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
 }
 
 type GraphicEntity = {
@@ -80,7 +86,7 @@ export class Game extends Scene {
 
 	// Self
 	PC: PC.PC;
-	Entity: GraphicEntity;
+	Entity: BodyEntity;
 	EntityID: string;
 	Cursors: Phaser.Types.Input.Keyboard.CursorKeys
 	// Controls: Controls;
@@ -116,9 +122,6 @@ export class Game extends Scene {
 	// Static blank cell for filling
 	Blank: GraphicCell
 
-	// Collide layer(s) ?
-	CollideLayers: Map<string, Phaser.Tilemaps.TilemapLayer>
-
 	constructor(config: string | Phaser.Types.Scenes.SettingsConfig) {
 		super(config);
 	}
@@ -127,9 +130,7 @@ export class Game extends Scene {
 		const e = pc.getEntity() as Entity.E;
 		this.Entity = {
 			E: e,
-			Direction: new Phaser.Geom.Point(e.getX(), e.getY()),
-			Interpolation: 0.00, // default speed
-			Sprite: this.add.sprite(e.getX(), e.getY(), ulid(e.getId_asU8()))
+			Body: this.physics.add.sprite(0, 0, ''),
 		}
 		this.EntityID = ulid(this.Entity.E.getId_asU8())
 
@@ -145,8 +146,6 @@ export class Game extends Scene {
 		this.Animations = new Map()
 
 		this.SpriteSheets = new Map()
-
-		this.CollideLayers = new Map()
 
 		this.World = new World.World()
 
@@ -212,34 +211,40 @@ export class Game extends Scene {
 			})
 	}
 
-	update(time: number, deltaTime: number) {
-
+	updateBodyEntity() {
 		// Controls + local anim update
 		let animationID = null
-		let deltaX: number = 0
-		let deltaY: number = 0
-		const speed: number = 2
+		const speed: number = 200
 
 		// Move entity
+		this.Entity.Body.body.setVelocity(0)
 		if (this.Cursors.up.isDown) {
-			deltaY = -speed
 			animationID = this.Animations.get(this.EntityID + ':' + 'up')
+			this.Entity.Body.body.setVelocityY(-speed)
 		} else if (this.Cursors.right.isDown) {
-			deltaX = speed
 			animationID = this.Animations.get(this.EntityID + ':' + 'right')
+			this.Entity.Body.body.setVelocityX(speed)
 		} else if (this.Cursors.down.isDown) {
-			deltaY = speed
 			animationID = this.Animations.get(this.EntityID + ':' + 'down')
+			this.Entity.Body.body.setVelocityY(speed)
 		} else if (this.Cursors.left.isDown) {
-			deltaX = -speed
 			animationID = this.Animations.get(this.EntityID + ':' + 'left')
+			this.Entity.Body.body.setVelocityX(-speed)
 		} else {
 			animationID = this.Animations.get(this.EntityID + ':' + 'idle')
 		}
 
+		if (animationID) {
+			this.Entity?.Body?.play(animationID, true)
+		}
+	}
+
+	update(time: number, deltaTime: number) {
+		this.updateBodyEntity()
+
 		let o = Orientation.None
-		const x = this.Entity.E.getX() + deltaX
-		const y = this.Entity.E.getY() + deltaY
+		const x = this.Entity.Body ? this.Entity.Body.body.x : 0
+		const y = this.Entity.Body ? this.Entity.Body.body.y : 0
 		const up = this.Border.get(Orientation.Up)!
 		const right = this.Border.get(Orientation.Right)!
 		const down = this.Border.get(Orientation.Down)!
@@ -285,19 +290,18 @@ export class Game extends Scene {
 				})
 			} else {
 				// don't move entity, out of world
-				deltaX = 0
-				deltaY = 0
 			}
 		}
 
-		if (deltaX != 0 || deltaY != 0) {
-			// Send new entity to server
-			this.EntityClient?.send(this.Entity.E)
-		}
+
+		// if (deltaX != 0 || deltaY != 0) {
+		// 	// Send new entity to server
+		// 	this.EntityClient?.send(this.Entity.E)
+		// }
 
 		// Move entity
-		this.Entity.E.setX(this.Entity.E.getX() + deltaX)
-		this.Entity.E.setY(this.Entity.E.getY() + deltaY)
+		this.Entity.E.setX(x)
+		this.Entity.E.setY(y)
 
 		// Swap buffers
 		// this.EntityBufferRendering = this.EntityBuffer
@@ -308,7 +312,7 @@ export class Game extends Scene {
 		this.Entities.forEach((e: GraphicEntity) => {
 
 			// self reconciliation
-			if (e.E.getId() == ulid(this.Entity.E.getId_asU8())) {
+			if (ulid(e.E.getId_asU8()) == ulid(this.Entity.E.getId_asU8())) {
 				return
 			}
 
@@ -319,18 +323,6 @@ export class Game extends Scene {
 			e?.Sprite.setX(x)
 			e?.Sprite.setY(y)
 			e?.Sprite.play(ulid(e.E.getAnimationid_asU8()), true)
-		})
-
-		// Move entity client side
-		// KEEP THIS AFTER OTHER ENTITY UPDATES or phaser weirdly stutters
-		this.Entity?.Sprite.setX(this.Entity.E.getX())
-		this.Entity?.Sprite.setY(this.Entity.E.getY())
-		if (animationID) {
-			this.Entity?.Sprite.play(animationID, true)
-		}
-
-		this.CollideLayers.forEach((l) => {
-			this.physics.collide(this.Entity.Sprite, l)
 		})
 
 		// this.EntityBufferRendering = []
@@ -795,7 +787,10 @@ export class Game extends Scene {
 								const props = layer.layer.properties as properties[]
 								if (props.find((prop) => { return prop.name == 'collides' && prop.value })) {
 									console.log('set collision on layer ', l.name)
-									this.CollideLayers.set(layer.name, layer.setCollisionByExclusion([], true))
+									layer.setCollisionByExclusion([], true)
+									if (this.Entity.Body) {
+										this.physics.collide(this.Entity.Body, layer)
+									}
 								}
 								cc.Layer.set(l.name, layer)
 							})
@@ -867,23 +862,32 @@ export class Game extends Scene {
 					// this.EntityBuffer.push(ulid(entry.getId_asU8()))
 				} else {
 					// create associated sprite
-					const sprite = this.add.sprite(entry.getX(), entry.getY(), ulid(entry.getId_asU8()))
-					sprite.setDepth(entitySpriteDepth)
-
-					this.Entities.set(id, {
-						E: entry,
-						Direction: new Phaser.Geom.Point(entry.getX(), entry.getY()),
-						Interpolation: 0.00, // default speed
-						// TODO: adjust x and y with cell position
-						Sprite: sprite
-					})
-
-					this.physics.add.sprite(entry.getX(), entry.getY(), sprite.texture.key)
-
 					if (id == ulid(this.Entity.E.getId_asU8())) {
-						this.Entity.Sprite = sprite
+						this.Entity.Body = this.physics.add.sprite(entry.getX(), entry.getY(), id)
+
 						// local player sprite loaded, start camera follow
-						this.cameras.main.startFollow(this.Entity.Sprite)
+						this.cameras.main.startFollow(this.Entity.Body)
+						this.Entity.Body.setDepth(entitySpriteDepth - 1)
+
+						this.Entities.set(id, {
+							E: entry,
+							Direction: new Phaser.Geom.Point(entry.getX(), entry.getY()),
+							Interpolation: 0.00, // default speed
+							// TODO: adjust x and y with cell position
+							Sprite: this.Entity.Body,
+						})
+
+					} else {
+						const sprite = this.add.sprite(entry.getX(), entry.getY(), id)
+						sprite.setDepth(entitySpriteDepth - 1)
+
+						this.Entities.set(id, {
+							E: entry,
+							Direction: new Phaser.Geom.Point(entry.getX(), entry.getY()),
+							Interpolation: 0.00, // default speed
+							// TODO: adjust x and y with cell position
+							Sprite: sprite,
+						})
 					}
 
 					// load entity animations

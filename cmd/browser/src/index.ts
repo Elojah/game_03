@@ -27,7 +27,8 @@ function main() {
 			createContainer: true
 		},
 		physics: {
-			default: 'arcade'
+			default: 'arcade',
+			arcade: { debug: true }
 		}
 	};
 
