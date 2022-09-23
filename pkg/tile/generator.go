@@ -96,8 +96,11 @@ func (g *GroundGenerator) Gen(params Params) {
 
 	g.Map = make([][]Field, params.Height*params.CellHeight)
 
-	for i := int64(0); i < int64(params.Height*params.CellHeight); i++ {
+	for i := uint64(0); i < params.Height*params.CellHeight; i++ {
 		g.Map[i] = make([]Field, params.Width*params.CellWidth)
+		for j := uint64(0); j < params.Width*params.CellWidth; j++ {
+			g.set(int64(i), int64(j), Void)
+		}
 	}
 
 	nPlatforms := int64(float64(params.Height*params.CellHeight*params.Width*params.CellWidth) * params.WorldDensity)
@@ -119,10 +122,7 @@ func (g *GroundGenerator) Gen(params Params) {
 		)
 		for i := int64(0); i < int64(len(pl)); i++ {
 			for j := int64(0); j < int64(len(pl[i])); j++ {
-				// override only if current spot is empty
-				if n, ok := g.get(i+p.X, j+p.Y); ok && n == None {
-					g.set(i+p.X, j+p.Y, pl[i][j])
-				}
+				g.set(i+p.X, j+p.Y, pl[i][j])
 			}
 		}
 	}
@@ -166,7 +166,7 @@ func (g GroundGenerator) Tilemap(params Params) Map {
 	collideLayer.Width = int(params.Width * params.CellWidth)
 	collideLayer.Properties = append(collideLayer.Properties, Property{
 		Name:  "collides",
-		Value: true,
+		Value: "true",
 	})
 
 	m.Height = int(params.Height * params.CellHeight)
@@ -186,7 +186,7 @@ func (g GroundGenerator) Tilemap(params Params) Map {
 	for i := 0; i < len(g.Map); i++ {
 		for j := 0; j < len(g.Map[i]); j++ {
 			data = binary.LittleEndian.AppendUint32(data, uint32(g.Map[i][j]))
-			collideData = binary.LittleEndian.AppendUint32(data, func(f Field) uint32 {
+			collideData = binary.LittleEndian.AppendUint32(collideData, func(f Field) uint32 {
 				if f == Void {
 					return 1
 				}

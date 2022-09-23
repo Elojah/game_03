@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	refreshRate   = 100 * time.Millisecond
+	refreshRate   = 500 * time.Millisecond
 	entitiesBatch = 50
 	nRoutines     = 20
 )

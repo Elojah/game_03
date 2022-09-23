@@ -21,7 +21,6 @@ import * as CellDTO from 'pkg/room/dto/cell_pb';
 
 import * as World from 'pkg/room/world_pb';
 import * as WorldDTO from 'pkg/room/dto/world_pb';
-import { Bodies, Body } from "matter";
 
 const entitySpriteDepth = 42
 
@@ -787,10 +786,15 @@ export class Game extends Scene {
 								const props = layer.layer.properties as properties[]
 								if (props.find((prop) => { return prop.name == 'collides' && prop.value })) {
 									console.log('set collision on layer ', l.name)
-									layer.setCollisionByExclusion([], true)
-									if (this.Entity.Body) {
-										this.physics.collide(this.Entity.Body, layer)
-									}
+									this.physics.add.collider(this.Entity.Body, layer.setCollisionByExclusion([-1]))
+
+									// DEBUG
+									layer.renderDebug(this.add.graphics(), {
+										tileColor: null, // Non-colliding tiles
+										collidingTileColor: new Phaser.Display.Color(211, 36, 255, 100), // Colliding tiles
+										faceColor: new Phaser.Display.Color(211, 36, 255, 255) // Colliding face edges
+									});
+
 								}
 								cc.Layer.set(l.name, layer)
 							})
@@ -863,7 +867,7 @@ export class Game extends Scene {
 				} else {
 					// create associated sprite
 					if (id == ulid(this.Entity.E.getId_asU8())) {
-						this.Entity.Body = this.physics.add.sprite(entry.getX(), entry.getY(), id)
+						this.Entity.Body = this.physics.add.sprite(entry.getX(), entry.getY(), id).setBounce(0.1)
 
 						// local player sprite loaded, start camera follow
 						this.cameras.main.startFollow(this.Entity.Body)
@@ -872,8 +876,7 @@ export class Game extends Scene {
 						this.Entities.set(id, {
 							E: entry,
 							Direction: new Phaser.Geom.Point(entry.getX(), entry.getY()),
-							Interpolation: 0.00, // default speed
-							// TODO: adjust x and y with cell position
+							Interpolation: 0.00,
 							Sprite: this.Entity.Body,
 						})
 
@@ -885,7 +888,6 @@ export class Game extends Scene {
 							E: entry,
 							Direction: new Phaser.Geom.Point(entry.getX(), entry.getY()),
 							Interpolation: 0.00, // default speed
-							// TODO: adjust x and y with cell position
 							Sprite: sprite,
 						})
 					}

@@ -51,13 +51,13 @@ func (h *handler) CreateTilemap(ctx context.Context, req *types.Empty) (*types.S
 	params := tile.Params{
 		Height:          1,
 		Width:           1,
-		CellHeight:      200,
-		CellWidth:       200,
+		CellHeight:      34,
+		CellWidth:       60,
 		WorldDensity:    0.01,
 		PlatformDensity: 0.9,
 		PlatformPadding: 0.9,
 		SizeMin:         5,
-		SizeMax:         20,
+		SizeMax:         10,
 		Distortion:      0,
 		PathMin:         0,
 		PathMax:         0,
@@ -80,6 +80,7 @@ func (h *handler) CreateTilemap(ctx context.Context, req *types.Empty) (*types.S
 
 	g.Gen(params)
 	m := g.Tilemap(params)
+	g.Display()
 
 	raw, err := json.Marshal(m)
 	if err != nil {
