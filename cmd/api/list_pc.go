@@ -8,7 +8,8 @@ import (
 	"github.com/elojah/game_03/pkg/entity/dto"
 	gerrors "github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/room"
-	"github.com/elojah/game_03/pkg/ulid"
+	gulid "github.com/elojah/game_03/pkg/ulid"
+	"github.com/oklog/ulid/v2"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -61,7 +62,7 @@ func (h *handler) ListPC(ctx context.Context, req *dto.ListPCReq) (*dto.ListPCRe
 	}
 
 	// #Fetch entities
-	entityIDs := make([]ulid.ID, 0, len(pcs))
+	entityIDs := make([]gulid.ID, 0, len(pcs))
 	for _, pc := range pcs {
 		entityIDs = append(entityIDs, pc.EntityID)
 	}
@@ -76,16 +77,16 @@ func (h *handler) ListPC(ctx context.Context, req *dto.ListPCReq) (*dto.ListPCRe
 		return &dto.ListPCResp{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
-	entsMap := make(map[ulid.ID]entity.E, len(ents))
+	entsMap := make(map[ulid.ULID]entity.E, len(ents))
 	for _, ent := range ents {
-		entsMap[ent.ID] = ent
+		entsMap[ent.ID.ULID()] = ent
 	}
 
 	// #Associate entities to PCs
 	result := dto.ListPCResp{PCs: make([]dto.PC, 0, len(pcs)), State: state}
 
 	for _, pc := range pcs {
-		ent, ok := entsMap[pc.EntityID]
+		ent, ok := entsMap[pc.EntityID.ULID()]
 		if !ok {
 			// should not happen
 			continue

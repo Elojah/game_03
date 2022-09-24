@@ -6,15 +6,15 @@ import (
 	"time"
 
 	"github.com/gocql/gocql"
-	"github.com/oklog/ulid"
+	"github.com/oklog/ulid/v2"
 )
 
 // ID is an alias of ulid.ULID.
-type ID ulid.ULID
+type ID []byte
 
 // NewID returns a new random ID.
 func NewID() ID {
-	return ID(ulid.MustNew(ulid.Timestamp(time.Now()), rand.Reader))
+	return ID(ulid.MustNew(ulid.Timestamp(time.Now()), rand.Reader).Bytes())
 }
 
 // MarshalCQL override marshalling to fit CQL UUID.
@@ -35,7 +35,7 @@ func NewIDs(n int) []ID {
 	ids := make([]ID, n)
 
 	for i := range ids {
-		ids[i] = ID(ulid.MustNew(t, rand.Reader))
+		ids[i] = ID(ulid.MustNew(t, rand.Reader).Bytes())
 	}
 
 	return ids
@@ -43,24 +43,28 @@ func NewIDs(n int) []ID {
 
 // NewTimeID returns a new random ID based on time t.
 func NewTimeID(t uint64) ID {
-	return ID(ulid.MustNew(t, rand.Reader))
+	return ID(ulid.MustNew(t, rand.Reader).Bytes())
 }
 
 // MustParse alias ulid.MustParse. Panics if s is invalid.
 func MustParse(s string) ID {
-	return ID(ulid.MustParse(s))
+	return ID(ulid.MustParse(s).Bytes())
 }
 
 // Parse alias ulid.Parse. Panics if s is invalid.
 func Parse(s string) (ID, error) {
 	id, err := ulid.Parse(s)
 
-	return ID(id), err
+	return ID(id.Bytes()), err
 }
 
 // Time returns ms time of ID.
 func (id ID) Time() uint64 {
-	return ulid.ULID(id).Time()
+	var ul ulid.ULID
+
+	copy(ul[:], id[0:16])
+
+	return ul.Time()
 }
 
 // IsZero returns if id is zero.
@@ -70,12 +74,25 @@ func (id ID) IsZero() bool {
 
 // Zero returns a zero id.
 func Zero() ID {
-	return ID{}
+	return make([]byte, 16) //nolint: gomnd
+}
+
+// Returns original type.
+func (id ID) ULID() ulid.ULID {
+	var ul ulid.ULID
+
+	copy(ul[:], id[0:16])
+
+	return ul
 }
 
 // String returns a human readable string ID.
 func (id ID) String() string {
-	return ulid.ULID(id).String()
+	var ul ulid.ULID
+
+	copy(ul[:], id[0:16])
+
+	return ul.String()
 }
 
 // Bytes returns id as byte slice for protobuf marshaling.
@@ -101,8 +118,12 @@ func (id *ID) Unmarshal(data []byte) error {
 		return ulid.ErrBufferSize
 	}
 
+	if len(*id) != 16 { //nolint: gomnd
+		*id = make([]byte, 16) //nolint: gomnd
+	}
+
 	for i := 0; i < 16; i++ {
-		id[i] = data[i]
+		(*id)[i] = data[i]
 	}
 
 	return nil
@@ -129,14 +150,23 @@ func (id *ID) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	*id = ID(u) //nolint: wsl
+	*id = ID(u.Bytes()) //nolint: wsl
 
 	return nil
 }
 
 // Compare only required if the compare option is set.
 func (id ID) Compare(other ID) int {
-	return ulid.ULID(id).Compare(ulid.ULID(other))
+	var ul, ulOther ulid.ULID
+
+	if len(other) != 16 { //nolint: gomnd
+		return -1
+	}
+
+	copy(ul[:], id[0:16])
+	copy(ulOther[:], other[0:16])
+
+	return ul.Compare(ulOther)
 }
 
 // Equal only required if the equal option is set.
@@ -146,7 +176,7 @@ func (id ID) Equal(other ID) bool {
 
 // NewPopulatedID only required if populate option is set.
 func NewPopulatedID(r randyID) *ID {
-	id := ID(ulid.MustNew(uint64(r.Uint32()), rand.Reader))
+	id := ID(ulid.MustNew(uint64(r.Uint32()), rand.Reader).Bytes())
 
 	return &id
 }

@@ -42,7 +42,7 @@ func (h *handler) UpdateEntity(stream ggrpc.API_UpdateEntityServer) error {
 			return stream.SendAndClose(&types.Empty{})
 		}
 
-		if ses.UserID != e.UserID {
+		if ses.UserID.Compare(e.UserID) != 0 {
 			err := errors.ErrInvalidCredentials{}
 			logger.Error().Err(err).Msg("invalid sender")
 

@@ -21,7 +21,7 @@ type StoreWorld interface {
 	FetchManyWorld(context.Context, FilterWorld) ([]World, []byte, error)
 }
 
-func (w World) NewCells() [][]Cell { // nolint: gocognit
+func (w World) NewCells() [][]Cell { //nolint: gocognit
 	// Create cells with ID
 	cells := make([][]Cell, w.Height)
 	for i := range cells {

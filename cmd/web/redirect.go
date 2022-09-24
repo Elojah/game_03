@@ -69,7 +69,7 @@ func (h handler) redirect(w http.ResponseWriter, r *http.Request) {
 			Value:    at.Value,
 			SameSite: http.SameSiteStrictMode,
 			Secure:   true,
-			MaxAge:   3600, // nolint: gomnd
+			MaxAge:   3600, //nolint: gomnd
 		})
 	}
 

@@ -9,7 +9,6 @@ type Map struct {
 	Height           int        `json:"height,omitempty"`
 	HexSideLength    int        `json:"hexsidelength,omitempty"`
 	Infinite         bool       `json:"infinite,omitempty"`
-	Layers           []Layer    `json:"layers,omitempty"`
 	NextLayerID      int        `json:"nextlayerid,omitempty"`
 	NextObjectID     int        `json:"nextobjectid,omitempty"`
 	Orientation      string     `json:"orientation,omitempty"`
@@ -20,17 +19,19 @@ type Map struct {
 	StaggerAxis      string     `json:"staggeraxis,omitempty"`
 	StaggerIndex     string     `json:"staggerindex,omitempty"`
 	TiledVersion     string     `json:"tiledversion,omitempty"`
-	Tilesets         []Set      `json:"tilesets,omitempty"`
 	TileHeight       int        `json:"tileheight,omitempty"`
 	TileWidth        int        `json:"tilewidth,omitempty"`
 	Type             string     `json:"type,omitempty"`
 	Version          string     `json:"version,omitempty"`
 	Width            int        `json:"width,omitempty"`
+
+	Tilesets []Set   `json:"tilesets,omitempty"`
+	Layers   []Layer `json:"layers,omitempty"`
 }
 
 func NewMap() Map {
 	return Map{
-		BackgroundColor:  "#000000",
+		BackgroundColor:  "#020202",
 		CompressionLevel: -1,
 		Height:           0,
 		Width:            0,

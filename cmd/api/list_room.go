@@ -6,8 +6,9 @@ import (
 	gerrors "github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/room"
 	"github.com/elojah/game_03/pkg/room/dto"
-	"github.com/elojah/game_03/pkg/ulid"
+	gulid "github.com/elojah/game_03/pkg/ulid"
 	"github.com/elojah/game_03/pkg/user"
+	"github.com/oklog/ulid/v2"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -58,7 +59,7 @@ func (h *handler) ListRoom(ctx context.Context, req *dto.ListRoomReq) (*dto.List
 	}
 
 	// #Populate rooms with owner
-	ownerIDs := make([]ulid.ID, 0, len(rooms))
+	ownerIDs := make([]gulid.ID, 0, len(rooms))
 
 	for _, r := range rooms {
 		ownerIDs = append(ownerIDs, r.OwnerID)
@@ -74,9 +75,9 @@ func (h *handler) ListRoom(ctx context.Context, req *dto.ListRoomReq) (*dto.List
 		return &dto.ListRoomResp{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
-	ownersMap := make(map[ulid.ID]user.U, len(owners))
+	ownersMap := make(map[ulid.ULID]user.U, len(owners))
 	for _, o := range owners {
-		ownersMap[o.ID] = o
+		ownersMap[o.ID.ULID()] = o
 	}
 
 	// #Populate response
@@ -88,7 +89,7 @@ func (h *handler) ListRoom(ctx context.Context, req *dto.ListRoomReq) (*dto.List
 	for _, r := range rooms {
 		result.Rooms = append(result.Rooms, dto.Room{
 			Room:  r,
-			Owner: ownersMap[r.OwnerID],
+			Owner: ownersMap[r.OwnerID.ULID()],
 		})
 	}
 

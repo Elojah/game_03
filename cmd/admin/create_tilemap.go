@@ -51,30 +51,30 @@ func (h *handler) CreateTilemap(ctx context.Context, req *types.Empty) (*types.S
 	params := tile.Params{
 		Height:          1,
 		Width:           1,
-		CellHeight:      34,
-		CellWidth:       60,
-		WorldDensity:    0.01,
-		PlatformDensity: 0.9,
-		PlatformPadding: 0.9,
-		SizeMin:         5,
-		SizeMax:         10,
+		CellHeight:      34,   //nolint: gomnd
+		CellWidth:       60,   //nolint: gomnd
+		WorldDensity:    0.02, //nolint: gomnd
+		PlatformDensity: 0.99, //nolint: gomnd
+		PlatformPadding: 0.99, //nolint: gomnd
+		SizeMin:         5,    //nolint: gomnd
+		SizeMax:         10,   //nolint: gomnd
 		Distortion:      0,
 		PathMin:         0,
 		PathMax:         0,
 		PathDistorsion:  0,
 
 		Set: tile.Set{
-			Columns:     2,
+			Columns:     2, //nolint: gomnd
 			FirstGID:    1,
 			Image:       "../img/01GDB3DDM9Q1R1XTSSNNB9CYJV.png",
-			ImageHeight: 32,
-			ImageWidth:  64,
+			ImageHeight: 32, //nolint: gomnd
+			ImageWidth:  64, //nolint: gomnd
 			Margin:      0,
 			Name:        "01GDB3DDM9Q1R1XTSSNNB9CYJV",
 			Spacing:     0,
-			TileCount:   2,
-			TileHeight:  32,
-			TileWidth:   32,
+			TileCount:   2,  //nolint: gomnd
+			TileHeight:  32, //nolint: gomnd
+			TileWidth:   32, //nolint: gomnd
 		},
 	}
 

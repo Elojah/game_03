@@ -146,7 +146,7 @@ func run(prog string, filename string) {
 
 func main() {
 	args := os.Args
-	if len(args) != 2 { // nolint: gomnd
+	if len(args) != 2 { //nolint: gomnd
 		fmt.Printf("Usage: ./%s configfile\n", args[0])
 
 		return

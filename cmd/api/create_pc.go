@@ -91,7 +91,7 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 
 	ans, _, err := h.entity.FetchManyAnimation(ctx, entity.FilterAnimation{
 		IDs:  defaultIDs,
-		Size: 5, // nolint: gomnd
+		Size: 5, //nolint: gomnd
 	})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to fetch many animation")
@@ -99,7 +99,7 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
-	if len(ans) != 5 { // nolint: gomnd
+	if len(ans) != 5 { //nolint: gomnd
 		err := gerrors.ErrMissingDefaultAnimations{EntityID: entityID.String()}
 
 		logger.Error().Err(err).Msg("failed to create pc")
@@ -132,7 +132,7 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 		X:           0,
 		Y:           0,
 		Rot:         0,
-		Radius:      10, // nolint: gomnd
+		Radius:      10, //nolint: gomnd
 		At:          time.Now().UnixNano(),
 		AnimationID: idle,
 		AnimationAt: 0,

@@ -11,13 +11,13 @@ func TestGenerator(t *testing.T) {
 		{
 			Height:          1,
 			Width:           1,
-			CellHeight:      20,
-			CellWidth:       15,
-			WorldDensity:    0.01,
+			CellHeight:      50,
+			CellWidth:       120,
+			WorldDensity:    0.02,
 			PlatformDensity: 1,
-			PlatformPadding: 0.8,
+			PlatformPadding: 0.9,
 			SizeMin:         5,
-			SizeMax:         10,
+			SizeMax:         20,
 		},
 	} {
 		t.Run(

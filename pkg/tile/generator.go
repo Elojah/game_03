@@ -61,9 +61,9 @@ func (g GroundGenerator) Display() {
 			case None:
 				fmt.Print(" ")
 			case Void:
-				fmt.Print(" ")
+				fmt.Print("-")
 			case Ground:
-				fmt.Print("x")
+				fmt.Print("#")
 			default:
 				fmt.Printf("%d", g.Map[i][j])
 			}
@@ -133,6 +133,10 @@ func (g GroundGenerator) generatePlatform(height int64, width int64, density flo
 
 	for i := int64(0); i < height; i++ {
 		p[i] = make([]Field, width)
+
+		for j := int64(0); j < width; j++ {
+			p[i][j] = Void
+		}
 
 		// adjust width padding
 		pad := (rand.Float64() * padding * float64(width)) - float64(width/2) //nolint: gosec, gomnd

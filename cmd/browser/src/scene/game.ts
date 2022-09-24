@@ -111,6 +111,7 @@ export class Game extends Scene {
 	EntityBufferRendering: Array<string>
 	// Grpc client to send entity updates to server
 	EntityClient: grpc.Client<Entity.E, Entity.E>
+	SyncTimer: number
 
 	// Others
 	Animations: Map<string, string>
@@ -291,12 +292,6 @@ export class Game extends Scene {
 				// don't move entity, out of world
 			}
 		}
-
-
-		// if (deltaX != 0 || deltaY != 0) {
-		// 	// Send new entity to server
-		// 	this.EntityClient?.send(this.Entity.E)
-		// }
 
 		// Move entity
 		this.Entity.E.setX(x)
@@ -867,7 +862,10 @@ export class Game extends Scene {
 				} else {
 					// create associated sprite
 					if (id == ulid(this.Entity.E.getId_asU8())) {
+						this.Entity.Body.destroy()
 						this.Entity.Body = this.physics.add.sprite(entry.getX(), entry.getY(), id).setBounce(0.1)
+						this.Entity.E.setX(entry.getX())
+						this.Entity.E.setY(entry.getY())
 
 						// local player sprite loaded, start camera follow
 						this.cameras.main.startFollow(this.Entity.Body)
@@ -880,6 +878,7 @@ export class Game extends Scene {
 							Sprite: this.Entity.Body,
 						})
 
+						this.syncEntity()
 					} else {
 						const sprite = this.add.sprite(entry.getX(), entry.getY(), id)
 						sprite.setDepth(entitySpriteDepth - 1)
@@ -975,18 +974,30 @@ export class Game extends Scene {
 		})
 	}
 
+	// Start local entity sync at regular intervals
+	async syncEntity() {
+		this.SyncTimer = window.setInterval(() => {
+			this.EntityClient.send(this.Entity.E)
+		}, 500)
+	}
+
+	// Stop local entity sync at regular intervals
+	async stopSyncEntity() {
+		clearInterval(this.SyncTimer)
+		this.EntityClient.finishSend()
+	}
+
 	// Connect server update
 	async connectUpdate() {
 		// call update entity
 		this.EntityClient = grpc.client(API.API.UpdateEntity, {
 			host: 'http://localhost:8081',
+			transport: grpc.WebsocketTransport(),
 		});
 
 		let md = new grpc.Metadata()
 		md.set('token', this.registry.get('token'))
 		this.EntityClient.start(md)
-		// TODO final cleaner/dc, is there a defer in ts ?
-		// this.EntityClient.finishSend()
 	}
 
 	// API PC

@@ -196,7 +196,9 @@ func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) err
 
 			// Convert contiguous cell ids
 			cellIDs := [9]ulid.ID{current.CellID}
+
 			for n, id := range ce.Contiguous {
+				id := id
 				cellIDs[n] = id
 			}
 
