@@ -59,7 +59,7 @@ func (h *handler) UpdateEntity(stream ggrpc.API_UpdateEntityServer) error {
 			return status.New(codes.Internal, err.Error()).Err()
 		}
 
-		logger = logger.With().Str("entity_id", e.ID.String()).Logger()
+		logger := logger.With().Str("entity_id", e.ID.String()).Logger()
 
 		if err := h.entity.Update(ctx, entity.Filter{
 			ID: e.ID,

@@ -33,3 +33,5 @@ $ grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '' -plai
 - Manage collision
 - Manage map creation
 - Add default animations as JSON in some file somewhere + add default animations with at createPC
+- Remove `Math.round()` in `game.ts` and set entity.X entity.Y as float64 to fit Phaser.Body x/y
+- Manage twitch loadFollow error when timeout (ez to reproduce...)

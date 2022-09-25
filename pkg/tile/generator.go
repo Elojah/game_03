@@ -190,7 +190,7 @@ func (g GroundGenerator) Tilemap(params Params) Map {
 	for i := 0; i < len(g.Map); i++ {
 		for j := 0; j < len(g.Map[i]); j++ {
 			data = binary.LittleEndian.AppendUint32(data, uint32(g.Map[i][j]))
-			collideData = binary.LittleEndian.AppendUint32(collideData, func(f Field) uint32 {
+			collideData = binary.LittleEndian.AppendUint32(data, func(f Field) uint32 {
 				if f == Void {
 					return 1
 				}
