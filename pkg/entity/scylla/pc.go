@@ -19,7 +19,7 @@ func (f filterPC) where() (string, []interface{}) {
 
 	if f.ID != nil {
 		clause = append(clause, `id = ?`)
-		args = append(args, *f.ID)
+		args = append(args, f.ID)
 	}
 
 	if len(f.IDs) > 0 {
@@ -29,12 +29,12 @@ func (f filterPC) where() (string, []interface{}) {
 
 	if f.UserID != nil {
 		clause = append(clause, `user_id = ?`)
-		args = append(args, *f.UserID)
+		args = append(args, f.UserID)
 	}
 
 	if f.WorldID != nil {
 		clause = append(clause, `world_id = ?`)
-		args = append(args, *f.WorldID)
+		args = append(args, f.WorldID)
 	}
 
 	b := strings.Builder{}

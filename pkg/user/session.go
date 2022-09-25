@@ -7,7 +7,7 @@ import (
 )
 
 type FilterSession struct {
-	ID *ulid.ID
+	ID ulid.ID
 }
 
 type CacheSession interface {

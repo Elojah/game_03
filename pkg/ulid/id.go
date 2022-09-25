@@ -9,8 +9,14 @@ import (
 	"github.com/oklog/ulid/v2"
 )
 
+const (
+	length = 16
+)
+
 // ID is an alias of ulid.ULID.
 type ID []byte
+
+var zero = make(ID, length)
 
 // NewID returns a new random ID.
 func NewID() ID {
@@ -19,7 +25,11 @@ func NewID() ID {
 
 // MarshalCQL override marshalling to fit CQL UUID.
 func (id ID) MarshalCQL(info gocql.TypeInfo) ([]byte, error) {
-	raw, err := gocql.UUIDFromBytes(id.Bytes())
+	if len(id) != length {
+		id = zero
+	}
+
+	raw, err := gocql.UUIDFromBytes(id)
 
 	return raw.Bytes(), err
 }
@@ -62,35 +72,51 @@ func Parse(s string) (ID, error) {
 func (id ID) Time() uint64 {
 	var ul ulid.ULID
 
-	copy(ul[:], id[0:16])
+	if len(id) != length {
+		return zero.Time()
+	}
+
+	copy(ul[:], id)
 
 	return ul.Time()
 }
 
-// IsZero returns if id is zero.
+// IsZero returns if ID is zero value or not.
 func (id ID) IsZero() bool {
-	return id.Time() == 0
+	return len(id) != length || id[0] == 0
 }
 
-// Zero returns a zero id.
-func Zero() ID {
-	return make([]byte, 16) //nolint: gomnd
-}
-
-// Returns original type.
+// ULID returns original type.
 func (id ID) ULID() ulid.ULID {
 	var ul ulid.ULID
 
-	copy(ul[:], id[0:16])
+	if len(id) != length {
+		return zero.ULID()
+	}
+
+	copy(ul[:], id)
 
 	return ul
+}
+
+// Copy returns a hard copy of bytes.
+func (id ID) Copy() ID {
+	cp := make(ID, length)
+
+	copy(cp[:], id)
+
+	return cp
 }
 
 // String returns a human readable string ID.
 func (id ID) String() string {
 	var ul ulid.ULID
 
-	copy(ul[:], id[0:16])
+	if len(id) != length {
+		return zero.String()
+	}
+
+	copy(ul[:], id)
 
 	return ul.String()
 }
@@ -102,36 +128,36 @@ func (id ID) Bytes() []byte {
 
 // Marshal never returns any error..
 func (id ID) Marshal() ([]byte, error) {
-	return id.Bytes(), nil
+	return id, nil
 }
 
 // MarshalTo never returns any error.
 func (id ID) MarshalTo(data []byte) (n int, err error) {
-	copy(data[0:16], id[:])
+	copy(data[0:length], id[:])
 
-	return 16, nil //nolint: gomnd
+	return len(id), nil
 }
 
 // Unmarshal never returns any error.
 func (id *ID) Unmarshal(data []byte) error {
-	if len(data) != 16 { //nolint: gomnd
+	if len(data) != length {
 		return ulid.ErrBufferSize
 	}
 
-	if len(*id) != 16 { //nolint: gomnd
-		*id = make([]byte, 16) //nolint: gomnd
+	if len(*id) != length {
+		*id = make(ID, length)
 	}
 
-	for i := 0; i < 16; i++ {
+	for i := 0; i < length; i++ {
 		(*id)[i] = data[i]
 	}
 
 	return nil
 }
 
-// Size always returns 16.
+// Size always returns length.
 func (id *ID) Size() int {
-	return 16 //nolint: gomnd
+	return length
 }
 
 // MarshalJSON returns id in human readable string format.
@@ -159,12 +185,12 @@ func (id *ID) UnmarshalJSON(data []byte) error {
 func (id ID) Compare(other ID) int {
 	var ul, ulOther ulid.ULID
 
-	if len(other) != 16 { //nolint: gomnd
+	if len(other) != length || len(id) != length {
 		return -1
 	}
 
-	copy(ul[:], id[0:16])
-	copy(ulOther[:], other[0:16])
+	copy(ul[:], id)
+	copy(ulOther[:], other[0:length])
 
 	return ul.Compare(ulOther)
 }

@@ -7,10 +7,10 @@ import (
 )
 
 type Filter struct {
-	ID  *ulid.ID
+	ID  ulid.ID
 	IDs []ulid.ID
 
-	CellID  *ulid.ID
+	CellID  ulid.ID
 	CellIDs []ulid.ID
 
 	State []byte
@@ -18,15 +18,15 @@ type Filter struct {
 }
 
 type Patch struct {
-	UserID      *ulid.ID
-	CellID      *ulid.ID
+	UserID      ulid.ID
+	CellID      ulid.ID
 	Name        *string
 	X           *int64
 	Y           *int64
 	Rot         *int32
 	Radius      *int32
 	At          *int64
-	AnimationID *ulid.ID
+	AnimationID ulid.ID
 	AnimationAt *int64
 }
 

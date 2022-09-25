@@ -30,7 +30,7 @@ func (h *handler) ListRoom(ctx context.Context, req *dto.ListRoomReq) (*dto.List
 	// #Fetch pcs
 	rus, state, err := h.room.FetchManyUser(ctx,
 		room.FilterUser{
-			UserID: &ses.UserID,
+			UserID: ses.UserID,
 			Size:   int(req.Size_),
 			State:  req.State,
 		},

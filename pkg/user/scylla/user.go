@@ -19,7 +19,7 @@ func (f filter) where() (string, []interface{}) {
 
 	if f.ID != nil {
 		clause = append(clause, `id = ?`)
-		args = append(args, *f.ID)
+		args = append(args, f.ID)
 	}
 
 	if len(f.IDs) > 0 {

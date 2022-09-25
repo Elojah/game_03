@@ -27,7 +27,7 @@ type FilterWorldCell struct {
 }
 
 type FilterCell struct {
-	ID  *ulid.ID
+	ID  ulid.ID
 	IDs []ulid.ID
 
 	State []byte

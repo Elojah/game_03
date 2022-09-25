@@ -42,6 +42,10 @@ func (h *handler) UpdateEntity(stream ggrpc.API_UpdateEntityServer) error {
 			return stream.SendAndClose(&types.Empty{})
 		}
 
+		if e == nil {
+			return status.New(codes.InvalidArgument, errors.ErrNullRequest{}.Error()).Err()
+		}
+
 		if ses.UserID.Compare(e.UserID) != 0 {
 			err := errors.ErrInvalidCredentials{}
 			logger.Error().Err(err).Msg("invalid sender")
@@ -55,18 +59,14 @@ func (h *handler) UpdateEntity(stream ggrpc.API_UpdateEntityServer) error {
 			return status.New(codes.Internal, err.Error()).Err()
 		}
 
-		if e == nil {
-			return status.New(codes.InvalidArgument, errors.ErrNullRequest{}.Error()).Err()
-		}
-
 		logger = logger.With().Str("entity_id", e.ID.String()).Logger()
 
 		if err := h.entity.Update(ctx, entity.Filter{
-			ID: &e.ID,
+			ID: e.ID,
 		}, entity.Patch{
 			X:      &e.X,
 			Y:      &e.Y,
-			CellID: &e.CellID,
+			CellID: e.CellID,
 		}); err != nil {
 			logger.Error().Err(err).Msg("failed to update entity")
 

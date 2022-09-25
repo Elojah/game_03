@@ -7,10 +7,10 @@ import (
 )
 
 type FilterPC struct {
-	ID      *ulid.ID
+	ID      ulid.ID
 	IDs     []ulid.ID
-	UserID  *ulid.ID
-	WorldID *ulid.ID
+	UserID  ulid.ID
+	WorldID ulid.ID
 
 	State []byte
 	Size  int
@@ -24,7 +24,7 @@ type StorePC interface {
 }
 
 type FilterPCConnect struct {
-	ID *ulid.ID
+	ID ulid.ID
 }
 
 type CachePCConnect interface {

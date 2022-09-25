@@ -178,9 +178,6 @@ export class Game extends Scene {
 
 		// Connect for entity send
 		this.connectUpdate()
-			.then(() => {
-				console.log('disconnect to server')
-			})
 
 		// Load world & cell sync
 		this.listWorld((() => {
@@ -294,8 +291,8 @@ export class Game extends Scene {
 		}
 
 		// Move entity
-		this.Entity.E.setX(x)
-		this.Entity.E.setY(y)
+		this.Entity.E.setX(Math.round(x))
+		this.Entity.E.setY(Math.round(y))
 
 		// Swap buffers
 		// this.EntityBufferRendering = this.EntityBuffer
@@ -975,20 +972,20 @@ export class Game extends Scene {
 	}
 
 	// Start local entity sync at regular intervals
-	async syncEntity() {
+	syncEntity() {
 		this.SyncTimer = window.setInterval(() => {
 			this.EntityClient.send(this.Entity.E)
 		}, 500)
 	}
 
 	// Stop local entity sync at regular intervals
-	async stopSyncEntity() {
+	stopSyncEntity() {
 		clearInterval(this.SyncTimer)
 		this.EntityClient.finishSend()
 	}
 
 	// Connect server update
-	async connectUpdate() {
+	connectUpdate() {
 		// call update entity
 		this.EntityClient = grpc.client(API.API.UpdateEntity, {
 			host: 'http://localhost:8081',
@@ -1016,7 +1013,7 @@ export class Game extends Scene {
 				},
 				onEnd: (code: grpc.Code, message: string | undefined, trailers: grpc.Metadata) => {
 					if (code !== grpc.Code.OK || !message) {
-						reject(message)
+						reject('connectPC:' + message)
 
 						return
 					}
@@ -1042,7 +1039,7 @@ export class Game extends Scene {
 				onEnd: res => {
 					const { status, statusMessage, headers, message, trailers } = res;
 					if (status !== grpc.Code.OK || !message) {
-						reject(res)
+						reject('listCell:' + res)
 
 						return
 					}
@@ -1068,7 +1065,7 @@ export class Game extends Scene {
 				onEnd: res => {
 					const { status, statusMessage, headers, message, trailers } = res;
 					if (status !== grpc.Code.OK || !message) {
-						reject(res)
+						reject('listEntity:' + res)
 
 						return
 					}
@@ -1094,7 +1091,7 @@ export class Game extends Scene {
 				onEnd: res => {
 					const { status, statusMessage, headers, message, trailers } = res;
 					if (status !== grpc.Code.OK || !message) {
-						reject(res)
+						reject('listAnimation:' + res)
 
 						return
 					}
@@ -1120,7 +1117,7 @@ export class Game extends Scene {
 				onEnd: res => {
 					const { status, statusMessage, headers, message, trailers } = res;
 					if (status !== grpc.Code.OK || !message) {
-						reject(res)
+						reject('listWorld:' + res)
 
 						return
 					}

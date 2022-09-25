@@ -15,9 +15,9 @@ const (
 )
 
 type FilterUser struct {
-	UserID  *ulid.ID
+	UserID  ulid.ID
 	UserIDs []ulid.ID
-	RoomID  *ulid.ID
+	RoomID  ulid.ID
 	RoomIDs []ulid.ID
 
 	State []byte

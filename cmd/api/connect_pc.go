@@ -48,7 +48,7 @@ func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) err
 
 	// #Check if connect PC already exists
 	if _, err := h.entity.FetchPCConnect(ctx, entity.FilterPCConnect{
-		ID: &req.ID,
+		ID: req.ID,
 	}); err != nil {
 		if !errors.As(err, &gerrors.ErrNotFound{}) {
 			logger.Error().Err(err).Msg("pc already connected")
@@ -65,10 +65,10 @@ func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) err
 
 	// #Fetch PC
 	pc, err := h.entity.FetchPC(ctx, entity.FilterPC{
-		ID:      &req.ID,
-		WorldID: &req.WorldID,
+		ID:      req.ID,
+		WorldID: req.WorldID,
 
-		UserID: &ses.UserID,
+		UserID: ses.UserID,
 	})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to fetch pc")
@@ -78,7 +78,7 @@ func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) err
 
 	// #Fetch entity backup from PC
 	e, err := h.entity.FetchBackup(ctx, entity.FilterBackup{
-		ID: &pc.EntityID,
+		ID: pc.EntityID,
 	})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to create entity")
@@ -105,7 +105,7 @@ func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) err
 
 		// #Fetch entity
 		e, err := h.entity.Fetch(ctx, entity.Filter{
-			ID: &id,
+			ID: id,
 		})
 		if err != nil {
 			logger.Error().Err(err).Msg("failed to fetch entity")
@@ -116,7 +116,7 @@ func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) err
 		// Insert backup entity
 		e.At = time.Now().UnixNano()
 		if err := h.entity.UpdateBackup(ctx, entity.Filter{
-			ID: &id,
+			ID: id,
 		}, e); err != nil {
 			logger.Error().Err(err).Msg("failed to update backup")
 
@@ -125,7 +125,7 @@ func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) err
 
 		// #Delete entity
 		if err := h.entity.Delete(ctx, entity.Filter{
-			ID: &id,
+			ID: id,
 		}); err != nil {
 			logger.Error().Err(err).Msg("failed to delete entity")
 
@@ -173,7 +173,7 @@ func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) err
 			// Fetch current entity
 			current, err := h.entity.Fetch(ctx,
 				entity.Filter{
-					ID: &e.ID,
+					ID: e.ID,
 				},
 			)
 			if err != nil {
@@ -185,7 +185,7 @@ func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) err
 			// Fetch current cell
 			ce, err := h.room.FetchCell(ctx,
 				room.FilterCell{
-					ID: &current.CellID,
+					ID: current.CellID,
 				},
 			)
 			if err != nil {
@@ -198,12 +198,15 @@ func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) err
 			cellIDs := [9]ulid.ID{current.CellID}
 
 			for n, id := range ce.Contiguous {
-				id := id
 				cellIDs[n] = id
 			}
 
 			for _, id := range cellIDs {
 				id := id
+
+				if id.IsZero() {
+					continue
+				}
 
 				p.Submit(func() {
 					var state []byte
@@ -211,7 +214,7 @@ func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) err
 					for {
 						entities, st, err := h.entity.FetchMany(ctx,
 							entity.Filter{
-								CellID: &id,
+								CellID: id,
 								State:  state,
 								Size:   entitiesBatch,
 							},

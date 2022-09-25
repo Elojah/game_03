@@ -19,7 +19,7 @@ func (f filterSession) where() (string, []interface{}) {
 
 	if f.ID != nil {
 		clause = append(clause, `id = ?`)
-		args = append(args, *f.ID)
+		args = append(args, f.ID)
 	}
 
 	b := strings.Builder{}

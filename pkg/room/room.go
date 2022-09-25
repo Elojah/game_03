@@ -7,9 +7,9 @@ import (
 )
 
 type Filter struct {
-	ID       *ulid.ID
+	ID       ulid.ID
 	IDs      []ulid.ID
-	OwnerID  *ulid.ID
+	OwnerID  ulid.ID
 	OwnerIDs []ulid.ID
 
 	State []byte

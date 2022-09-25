@@ -30,8 +30,8 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 
 	// #Check if user is room user
 	if _, err := h.room.FetchUser(ctx, room.FilterUser{
-		UserID: &ses.UserID,
-		RoomID: &req.RoomID,
+		UserID: ses.UserID,
+		RoomID: req.RoomID,
 	}); err != nil {
 		if errors.As(err, &gerrors.ErrNotFound{}) {
 			logger.Error().Err(err).Msg("missing room user")
@@ -46,7 +46,7 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 
 	// #Fetch room
 	ro, err := h.room.Fetch(ctx, room.Filter{
-		ID: &req.RoomID,
+		ID: req.RoomID,
 	})
 	if err != nil {
 		if errors.As(err, &gerrors.ErrNotFound{}) {

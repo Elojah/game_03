@@ -21,7 +21,7 @@ func (f filter) where() (string, []interface{}) {
 
 	if f.ID != nil {
 		clause = append(clause, `id = ?`)
-		args = append(args, *f.ID)
+		args = append(args, f.ID)
 	}
 
 	if len(f.IDs) > 0 {
@@ -31,7 +31,7 @@ func (f filter) where() (string, []interface{}) {
 
 	if f.CellID != nil {
 		clause = append(clause, `cell_id = ?`)
-		args = append(args, *f.CellID)
+		args = append(args, f.CellID)
 	}
 
 	if len(f.CellIDs) > 0 {
@@ -97,12 +97,12 @@ func (p patch) set() (string, []interface{}) {
 
 	if p.UserID != nil {
 		clause = append(clause, `user_id = ?`)
-		args = append(args, *p.UserID)
+		args = append(args, p.UserID)
 	}
 
 	if p.CellID != nil {
 		clause = append(clause, `cell_id = ?`)
-		args = append(args, *p.CellID)
+		args = append(args, p.CellID)
 	}
 
 	if p.Name != nil {
@@ -137,7 +137,7 @@ func (p patch) set() (string, []interface{}) {
 
 	if p.AnimationID != nil {
 		clause = append(clause, `animation_id = ?`)
-		args = append(args, *p.AnimationID)
+		args = append(args, p.AnimationID)
 	}
 
 	if p.AnimationAt != nil {

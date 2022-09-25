@@ -40,7 +40,7 @@ func (a App) Auth(ctx context.Context) (user.Session, error) {
 		return user.Session{}, errors.ErrInvalidCredentials{}
 	}
 
-	return a.StoreSession.FetchSession(ctx, user.FilterSession{ID: &id})
+	return a.StoreSession.FetchSession(ctx, user.FilterSession{ID: id})
 }
 
 func (a App) FetchSession(ctx context.Context, f user.FilterSession) (user.Session, error) {

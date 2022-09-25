@@ -15,7 +15,7 @@ type App interface {
 }
 
 type Filter struct {
-	ID       *ulid.ID
+	ID       ulid.ID
 	IDs      []ulid.ID
 	TwitchID *string
 

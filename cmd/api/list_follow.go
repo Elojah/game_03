@@ -26,7 +26,7 @@ func (h *handler) ListFollow(ctx context.Context, req *dto.ListFollowReq) (*dto.
 	}
 
 	// #Fetch user
-	u, err := h.user.Fetch(ctx, user.Filter{ID: &ses.UserID})
+	u, err := h.user.Fetch(ctx, user.Filter{ID: ses.UserID})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to fetch user")
 

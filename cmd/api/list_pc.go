@@ -31,7 +31,7 @@ func (h *handler) ListPC(ctx context.Context, req *dto.ListPCReq) (*dto.ListPCRe
 	// #Fetch rooms
 	r, err := h.room.Fetch(ctx,
 		room.Filter{
-			ID: &req.RoomID,
+			ID: req.RoomID,
 		},
 	)
 	if err != nil {
@@ -49,8 +49,8 @@ func (h *handler) ListPC(ctx context.Context, req *dto.ListPCReq) (*dto.ListPCRe
 	// #Fetch pcs
 	pcs, state, err := h.entity.FetchManyPC(ctx,
 		entity.FilterPC{
-			UserID:  &ses.UserID,
-			WorldID: &r.WorldID,
+			UserID:  ses.UserID,
+			WorldID: r.WorldID,
 			Size:    int(req.Size_),
 			State:   req.State,
 		},
