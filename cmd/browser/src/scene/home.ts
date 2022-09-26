@@ -79,6 +79,10 @@ export class Home extends Scene {
 			return req
 		})())
 			.then((follows: TwitchDTO.ListFollowResp) => {
+				if (follows.getFollowsList().length == 0) {
+					return
+				}
+
 				// update cursor
 				const flm = document.getElementById('follow-load-more')
 

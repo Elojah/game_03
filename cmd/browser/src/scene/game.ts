@@ -122,6 +122,9 @@ export class Game extends Scene {
 	// Static blank cell for filling
 	Blank: GraphicCell
 
+	// Collision layers
+	CollisionLayers: Map<string, Phaser.Tilemaps.TilemapLayer>
+
 	constructor(config: string | Phaser.Types.Scenes.SettingsConfig) {
 		super(config);
 	}
@@ -148,6 +151,8 @@ export class Game extends Scene {
 		this.SpriteSheets = new Map()
 
 		this.World = new World.World()
+
+		this.CollisionLayers = new Map()
 
 		const m = this.make.tilemap()
 		this.Blank = {
@@ -240,8 +245,8 @@ export class Game extends Scene {
 		this.updateBodyEntity()
 
 		let o = Orientation.None
-		const x = this.Entity.Body ? this.Entity.Body.body.x : 0
-		const y = this.Entity.Body ? this.Entity.Body.body.y : 0
+		const x = this.Entity.Body.body.x
+		const y = this.Entity.Body.body.y
 		const up = this.Border.get(Orientation.Up)!
 		const right = this.Border.get(Orientation.Right)!
 		const down = this.Border.get(Orientation.Down)!
@@ -778,15 +783,9 @@ export class Game extends Scene {
 								const props = layer.layer.properties as properties[]
 								if (props.find((prop) => { return prop.name == 'collides' && prop.value })) {
 									console.log('set collision on layer ', l.name)
-									this.physics.add.collider(this.Entity.Body, layer.setCollisionByExclusion([-1]))
-
-									// DEBUG
-									layer.renderDebug(this.add.graphics(), {
-										tileColor: null, // Non-colliding tiles
-										collidingTileColor: new Phaser.Display.Color(211, 36, 255, 100), // Colliding tiles
-										faceColor: new Phaser.Display.Color(211, 36, 255, 255) // Colliding face edges
-									});
-
+									const clayer = layer.setCollisionByExclusion([-1])
+									this.physics.add.collider(this.Entity.Body, clayer)
+									this.CollisionLayers.set(l.name, clayer)
 								}
 								cc.Layer.set(l.name, layer)
 							})
@@ -860,7 +859,12 @@ export class Game extends Scene {
 					// create associated sprite
 					if (id == ulid(this.Entity.E.getId_asU8())) {
 						this.Entity.Body.destroy()
-						this.Entity.Body = this.physics.add.sprite(entry.getX(), entry.getY(), id).setBounce(0.1)
+						this.Entity.Body = this.physics.add.sprite(entry.getX(), entry.getY(), id)
+						this.CollisionLayers.forEach((v) => {
+							this.physics.add.collider(this.Entity.Body, v)
+						})
+
+						console.log('set body from server info')
 						this.Entity.E.setX(entry.getX())
 						this.Entity.E.setY(entry.getY())
 
@@ -874,6 +878,7 @@ export class Game extends Scene {
 							Interpolation: 0.00,
 							Sprite: this.Entity.Body,
 						})
+
 
 						this.syncEntity()
 					} else {

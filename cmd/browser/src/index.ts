@@ -28,7 +28,10 @@ function main() {
 		},
 		physics: {
 			default: 'arcade',
-			arcade: { debug: true }
+			arcade: {
+				debug: true,
+				tileBias: 32
+			}
 		}
 	};
 
