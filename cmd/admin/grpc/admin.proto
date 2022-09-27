@@ -21,6 +21,7 @@ service Admin {
     // Map creation
     rpc CreateTilemap(google.protobuf.Empty) returns (google.protobuf.StringValue);
     rpc CreateTileset(dto.CreateTilesetReq) returns (dto.CreateTilesetResp);
+    rpc CreateWorld(google.protobuf.Empty) returns (google.protobuf.StringValue);
 
     // Ping
     rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);

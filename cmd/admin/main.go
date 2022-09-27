@@ -10,6 +10,8 @@ import (
 
 	admingrpc "github.com/elojah/game_03/cmd/admin/grpc"
 	migrateapp "github.com/elojah/game_03/pkg/migrate/app"
+	roomapp "github.com/elojah/game_03/pkg/room/app"
+	roomscylla "github.com/elojah/game_03/pkg/room/scylla"
 	ggrpc "github.com/elojah/go-grpc"
 	glog "github.com/elojah/go-log"
 	"github.com/elojah/go-scylla"
@@ -85,8 +87,18 @@ func run(prog string, filename string) {
 		Service: &scyllas,
 	}
 
+	roomStore := &roomscylla.Store{Service: scyllas}
+	roomApp := roomapp.App{
+		Store:          roomStore,
+		StoreCell:      roomStore,
+		StoreWorld:     roomStore,
+		StoreUser:      roomStore,
+		StoreWorldCell: roomStore,
+	}
+
 	h := handler{
 		migrate: &migrateApp,
+		room:    roomApp,
 	}
 
 	// init grpc api server

@@ -79,7 +79,7 @@ func (h *handler) CreateTilemap(ctx context.Context, req *types.Empty) (*types.S
 	}
 
 	g.Gen(params)
-	m := g.Tilemap(params)
+	m := g.Tilemap(params, 0, 0)
 	g.Display()
 
 	raw, err := json.Marshal(m)

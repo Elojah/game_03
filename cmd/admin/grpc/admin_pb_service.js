@@ -40,6 +40,15 @@ Admin.CreateTileset = {
   responseType: github_com_elojah_game_03_pkg_tile_dto_set_pb.CreateTilesetResp
 };
 
+Admin.CreateWorld = {
+  methodName: "CreateWorld",
+  service: Admin,
+  requestStream: false,
+  responseStream: false,
+  requestType: google_protobuf_empty_pb.Empty,
+  responseType: google_protobuf_wrappers_pb.StringValue
+};
+
 Admin.Ping = {
   methodName: "Ping",
   service: Admin,
@@ -123,6 +132,37 @@ AdminClient.prototype.createTileset = function createTileset(requestMessage, met
     callback = arguments[1];
   }
   var client = grpc.unary(Admin.CreateTileset, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AdminClient.prototype.createWorld = function createWorld(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(Admin.CreateWorld, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,

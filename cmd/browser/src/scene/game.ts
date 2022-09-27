@@ -325,6 +325,19 @@ export class Game extends Scene {
 	}
 
 
+	deleteCell(o: Orientation) {
+		const c = this.Cells.get(o)
+
+		// this.physics.world.colliders.remove(
+		// 	this.physics.world.colliders.getActive().find(function (i) {
+		// 		return i.name ==
+		// 	}) ?
+		// )
+
+		c?.Tilemap.destroy()
+		this.Cells.delete(o)
+	}
+
 	// Orientation o uses preload surrounded cells
 	// Orientation.None loads everything
 	async loadMap(o: Orientation) {
@@ -372,14 +385,14 @@ export class Game extends Scene {
 							Layer: this.Blank.Layer,
 						})
 
-						this.Cells.delete(Orientation.Up)
-						this.Cells.delete(Orientation.UpRight)
-						this.Cells.delete(Orientation.Right)
-						this.Cells.delete(Orientation.DownRight)
-						this.Cells.delete(Orientation.Down)
-						this.Cells.delete(Orientation.DownLeft)
-						this.Cells.delete(Orientation.Left)
-						this.Cells.delete(Orientation.UpLeft)
+						this.deleteCell(Orientation.Up)
+						this.deleteCell(Orientation.UpRight)
+						this.deleteCell(Orientation.Right)
+						this.deleteCell(Orientation.DownRight)
+						this.deleteCell(Orientation.Down)
+						this.deleteCell(Orientation.DownLeft)
+						this.deleteCell(Orientation.Left)
+						this.deleteCell(Orientation.UpLeft)
 						break;
 					case Orientation.Up:
 						// assign new cells to load
@@ -402,9 +415,9 @@ export class Game extends Scene {
 						this.Cells.set(Orientation.Left, this.Cells.get(Orientation.UpLeft)!)
 						this.Cells.set(Orientation.None, this.Cells.get(Orientation.Up)!)
 						this.Cells.set(Orientation.Right, this.Cells.get(Orientation.UpRight)!)
-						this.Cells.delete(Orientation.UpLeft)
-						this.Cells.delete(Orientation.Up)
-						this.Cells.delete(Orientation.UpRight)
+						this.deleteCell(Orientation.UpLeft)
+						this.deleteCell(Orientation.Up)
+						this.deleteCell(Orientation.UpRight)
 						break;
 					case Orientation.UpRight:
 						// assign new cells to load
@@ -429,11 +442,11 @@ export class Game extends Scene {
 						this.Cells.set(Orientation.DownLeft, this.Cells.get(Orientation.None)!)
 						this.Cells.set(Orientation.Down, this.Cells.get(Orientation.Right)!)
 						this.Cells.set(Orientation.None, this.Cells.get(Orientation.UpRight)!)
-						this.Cells.delete(Orientation.UpLeft)
-						this.Cells.delete(Orientation.Up)
-						this.Cells.delete(Orientation.UpRight)
-						this.Cells.delete(Orientation.Right)
-						this.Cells.delete(Orientation.DownRight)
+						this.deleteCell(Orientation.UpLeft)
+						this.deleteCell(Orientation.Up)
+						this.deleteCell(Orientation.UpRight)
+						this.deleteCell(Orientation.Right)
+						this.deleteCell(Orientation.DownRight)
 						break;
 					case Orientation.Right:
 						// assign new cells to load
@@ -456,9 +469,9 @@ export class Game extends Scene {
 						this.Cells.set(Orientation.Up, this.Cells.get(Orientation.UpRight)!)
 						this.Cells.set(Orientation.None, this.Cells.get(Orientation.Right)!)
 						this.Cells.set(Orientation.Down, this.Cells.get(Orientation.DownRight)!)
-						this.Cells.delete(Orientation.UpRight)
-						this.Cells.delete(Orientation.Right)
-						this.Cells.delete(Orientation.DownRight)
+						this.deleteCell(Orientation.UpRight)
+						this.deleteCell(Orientation.Right)
+						this.deleteCell(Orientation.DownRight)
 						break;
 					case Orientation.DownRight:
 						// assign new cells to load
@@ -483,11 +496,11 @@ export class Game extends Scene {
 						this.Cells.set(Orientation.UpLeft, this.Cells.get(Orientation.None)!)
 						this.Cells.set(Orientation.Up, this.Cells.get(Orientation.Right)!)
 						this.Cells.set(Orientation.None, this.Cells.get(Orientation.DownRight)!)
-						this.Cells.delete(Orientation.DownLeft)
-						this.Cells.delete(Orientation.Down)
-						this.Cells.delete(Orientation.DownRight)
-						this.Cells.delete(Orientation.Right)
-						this.Cells.delete(Orientation.UpRight)
+						this.deleteCell(Orientation.DownLeft)
+						this.deleteCell(Orientation.Down)
+						this.deleteCell(Orientation.DownRight)
+						this.deleteCell(Orientation.Right)
+						this.deleteCell(Orientation.UpRight)
 						break;
 					case Orientation.Down:
 						// assign new cells to load
@@ -510,9 +523,9 @@ export class Game extends Scene {
 						this.Cells.set(Orientation.Left, this.Cells.get(Orientation.DownLeft)!)
 						this.Cells.set(Orientation.None, this.Cells.get(Orientation.Down)!)
 						this.Cells.set(Orientation.Right, this.Cells.get(Orientation.DownRight)!)
-						this.Cells.delete(Orientation.DownLeft)
-						this.Cells.delete(Orientation.Down)
-						this.Cells.delete(Orientation.DownRight)
+						this.deleteCell(Orientation.DownLeft)
+						this.deleteCell(Orientation.Down)
+						this.deleteCell(Orientation.DownRight)
 						break;
 					case Orientation.DownLeft:
 						// assign new cells to load
@@ -537,11 +550,11 @@ export class Game extends Scene {
 						this.Cells.set(Orientation.UpRight, this.Cells.get(Orientation.None)!)
 						this.Cells.set(Orientation.Up, this.Cells.get(Orientation.Left)!)
 						this.Cells.set(Orientation.None, this.Cells.get(Orientation.DownLeft)!)
-						this.Cells.delete(Orientation.DownRight)
-						this.Cells.delete(Orientation.Down)
-						this.Cells.delete(Orientation.DownLeft)
-						this.Cells.delete(Orientation.Left)
-						this.Cells.delete(Orientation.UpLeft)
+						this.deleteCell(Orientation.DownRight)
+						this.deleteCell(Orientation.Down)
+						this.deleteCell(Orientation.DownLeft)
+						this.deleteCell(Orientation.Left)
+						this.deleteCell(Orientation.UpLeft)
 						break;
 					case Orientation.Left:
 						// assign new cells to load
@@ -564,9 +577,9 @@ export class Game extends Scene {
 						this.Cells.set(Orientation.Up, this.Cells.get(Orientation.UpLeft)!)
 						this.Cells.set(Orientation.None, this.Cells.get(Orientation.Left)!)
 						this.Cells.set(Orientation.Down, this.Cells.get(Orientation.DownLeft)!)
-						this.Cells.delete(Orientation.UpLeft)
-						this.Cells.delete(Orientation.Left)
-						this.Cells.delete(Orientation.DownLeft)
+						this.deleteCell(Orientation.UpLeft)
+						this.deleteCell(Orientation.Left)
+						this.deleteCell(Orientation.DownLeft)
 						break;
 					case Orientation.UpLeft:
 						// assign new cells to load
@@ -591,11 +604,11 @@ export class Game extends Scene {
 						this.Cells.set(Orientation.DownRight, this.Cells.get(Orientation.None)!)
 						this.Cells.set(Orientation.Down, this.Cells.get(Orientation.Left)!)
 						this.Cells.set(Orientation.None, this.Cells.get(Orientation.UpLeft)!)
-						this.Cells.delete(Orientation.UpRight)
-						this.Cells.delete(Orientation.Up)
-						this.Cells.delete(Orientation.UpLeft)
-						this.Cells.delete(Orientation.Left)
-						this.Cells.delete(Orientation.DownLeft)
+						this.deleteCell(Orientation.UpRight)
+						this.deleteCell(Orientation.Up)
+						this.deleteCell(Orientation.UpLeft)
+						this.deleteCell(Orientation.Left)
+						this.deleteCell(Orientation.DownLeft)
 						break;
 				}
 
@@ -780,6 +793,7 @@ export class Game extends Scene {
 
 							map.layers.map((l) => {
 								const layer = map.createLayer(l.name, sets, c.getX() * this.World.getCellwidth(), c.getY() * this.World.getCellheight())
+								console.log('created layer:', l.name, c.getX(), c.getY())
 								const props = layer.layer.properties as properties[]
 								if (props.find((prop) => { return prop.name == 'collides' && prop.value })) {
 									console.log('set collision on layer ', l.name)

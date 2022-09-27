@@ -12,12 +12,8 @@ import (
 )
 
 // TMP DATA FOR DEV WIP.
-const (
-	height, width         = 1, 1
-	cellHeight, cellWidth = 1088, 1920
-)
 
-var defaultTilemap = ulid.MustParse("01GDWJDC5JKKQBR2NWG3ADH8EP")
+var defaultWorldID = ulid.MustParse("01GDZH3Y6PRJ1RG6YSMPBANBYJ")
 
 // !TMP DATA FOR DEV WIP
 
@@ -34,52 +30,9 @@ func (h *handler) CreateRoom(ctx context.Context, req *room.R) (*room.R, error) 
 		return &room.R{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	}
 
-	// #Create world
-	w := room.World{
-		ID:         ulid.NewID(),
-		Height:     height,
-		Width:      width,
-		CellHeight: cellHeight,
-		CellWidth:  cellWidth,
-	}
-	if err := h.room.InsertWorld(ctx, w); err != nil {
-		logger.Error().Err(err).Msg("failed to create world")
-
-		return &room.R{}, status.New(codes.Internal, err.Error()).Err()
-	}
-
-	// #Create world cells
-	cells := w.NewCells()
-
-	// TODO: add goroutine pool
-	for i, cl := range cells {
-		for j, c := range cl {
-			c.Tilemap = defaultTilemap
-			c.X = int64(j)
-			c.Y = int64(i)
-
-			if err := h.room.InsertCell(ctx, c); err != nil {
-				logger.Error().Err(err).Msg("failed to create cell")
-
-				return &room.R{}, status.New(codes.Internal, err.Error()).Err()
-			}
-
-			if err := h.room.InsertWorldCell(ctx, room.WorldCell{
-				WorldID: w.ID,
-				CellID:  c.ID,
-				X:       c.X,
-				Y:       c.Y,
-			}); err != nil {
-				logger.Error().Err(err).Msg("failed to create world cell")
-
-				return &room.R{}, status.New(codes.Internal, err.Error()).Err()
-			}
-		}
-	}
-
 	// #Set new room values
 	req.ID = ulid.NewID()
-	req.WorldID = w.ID
+	req.WorldID = defaultWorldID
 	req.OwnerID = ses.UserID
 
 	// #Insert room

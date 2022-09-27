@@ -43,6 +43,11 @@ type GroundGenerator struct {
 	Map [][]Field
 }
 
+// Collides returns if a tile field collides. Should use map when list grows up.
+func (f Field) Collides() bool {
+	return f == Void
+}
+
 // Display prints map in terminal.
 // Debug only.
 func (g GroundGenerator) Display() {
@@ -155,26 +160,26 @@ func (g GroundGenerator) generatePlatform(height int64, width int64, density flo
 	return p
 }
 
-func (g GroundGenerator) Tilemap(params Params) Map {
+func (g GroundGenerator) Tilemap(params Params, x uint64, y uint64) Map {
 	m := NewMap()
 
 	// Main layer
 	layer := NewLayer()
 	layer.ID = 1
-	layer.Height = int(params.Height * params.CellHeight)
-	layer.Width = int(params.Width * params.CellWidth)
+	layer.Height = int(params.CellHeight)
+	layer.Width = int(params.CellWidth)
 
 	collideLayer := NewLayer()
 	collideLayer.ID = 2
-	collideLayer.Height = int(params.Height * params.CellHeight)
-	collideLayer.Width = int(params.Width * params.CellWidth)
+	collideLayer.Height = int(params.CellHeight)
+	collideLayer.Width = int(params.CellWidth)
 	collideLayer.Properties = append(collideLayer.Properties, Property{
 		Name:  "collides",
 		Value: "true",
 	})
 
-	m.Height = int(params.Height * params.CellHeight)
-	m.Width = int(params.Width * params.CellWidth)
+	m.Height = int(params.CellHeight)
+	m.Width = int(params.CellWidth)
 	m.NextLayerID = 3
 	m.NextObjectID = 1
 	m.Tilesets = append(m.Tilesets, params.Set)
@@ -183,20 +188,21 @@ func (g GroundGenerator) Tilemap(params Params) Map {
 		return m
 	}
 
-	size := len(g.Map) * len(g.Map[0])
+	size := params.CellHeight * params.CellWidth
 	data := make([]byte, 0, 4*size)        //nolint: gomnd
 	collideData := make([]byte, 0, 4*size) //nolint: gomnd
 
-	for i := 0; i < len(g.Map); i++ {
-		for j := 0; j < len(g.Map[i]); j++ {
-			data = binary.LittleEndian.AppendUint32(data, uint32(g.Map[i][j]))
+	for i := y * params.CellHeight; i < (y+1)*params.CellHeight; i++ {
+		for j := x * params.CellWidth; j < (x+1)*params.CellWidth; j++ {
+			f, _ := g.get(int64(i), int64(j))
+			data = binary.LittleEndian.AppendUint32(data, uint32(f))
 			collideData = binary.LittleEndian.AppendUint32(collideData, func(f Field) uint32 {
-				if f == Void {
+				if f.Collides() {
 					return 1
 				}
 
 				return 0
-			}(g.Map[i][j]))
+			}(f))
 		}
 	}
 

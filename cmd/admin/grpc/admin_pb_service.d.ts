@@ -34,6 +34,15 @@ type AdminCreateTileset = {
   readonly responseType: typeof github_com_elojah_game_03_pkg_tile_dto_set_pb.CreateTilesetResp;
 };
 
+type AdminCreateWorld = {
+  readonly methodName: string;
+  readonly service: typeof Admin;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof google_protobuf_empty_pb.Empty;
+  readonly responseType: typeof google_protobuf_wrappers_pb.StringValue;
+};
+
 type AdminPing = {
   readonly methodName: string;
   readonly service: typeof Admin;
@@ -48,6 +57,7 @@ export class Admin {
   static readonly MigrateUp: AdminMigrateUp;
   static readonly CreateTilemap: AdminCreateTilemap;
   static readonly CreateTileset: AdminCreateTileset;
+  static readonly CreateWorld: AdminCreateWorld;
   static readonly Ping: AdminPing;
 }
 
@@ -109,6 +119,15 @@ export class AdminClient {
   createTileset(
     requestMessage: github_com_elojah_game_03_pkg_tile_dto_set_pb.CreateTilesetReq,
     callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_tile_dto_set_pb.CreateTilesetResp|null) => void
+  ): UnaryResponse;
+  createWorld(
+    requestMessage: google_protobuf_empty_pb.Empty,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: google_protobuf_wrappers_pb.StringValue|null) => void
+  ): UnaryResponse;
+  createWorld(
+    requestMessage: google_protobuf_empty_pb.Empty,
+    callback: (error: ServiceError|null, responseMessage: google_protobuf_wrappers_pb.StringValue|null) => void
   ): UnaryResponse;
   ping(
     requestMessage: google_protobuf_empty_pb.Empty,
