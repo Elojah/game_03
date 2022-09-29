@@ -1,6 +1,8 @@
 import { Loader, Scene } from "phaser";
 import { grpc } from '@improbable-eng/grpc-web';
 
+import { Mutex, MutexInterface, Semaphore, SemaphoreInterface, withTimeout } from 'async-mutex';
+
 import * as jspb from "google-protobuf";
 
 import { ulid } from '../lib/ulid'
@@ -34,6 +36,12 @@ enum Orientation {
 	DownLeft,
 	Left,
 	UpLeft,
+}
+
+
+interface properties {
+	name: string
+	value: boolean
 }
 
 type BodyEntity = {
@@ -125,6 +133,12 @@ export class Game extends Scene {
 	// Collision layers
 	CollisionLayers: Map<string, Phaser.Tilemaps.TilemapLayer>
 
+	// Colliders
+	Colliders: Map<string, Phaser.Physics.Arcade.Collider[]>
+
+	// Start load pc mutex before map
+	LoadMapMutex: Mutex
+
 	constructor(config: string | Phaser.Types.Scenes.SettingsConfig) {
 		super(config);
 	}
@@ -153,6 +167,10 @@ export class Game extends Scene {
 		this.World = new World.World()
 
 		this.CollisionLayers = new Map()
+
+		this.Colliders = new Map()
+
+		this.LoadMapMutex = new Mutex()
 
 		const m = this.make.tilemap()
 		this.Blank = {
@@ -184,34 +202,39 @@ export class Game extends Scene {
 		// Connect for entity send
 		this.connectUpdate()
 
-		// Load world & cell sync
-		this.listWorld((() => {
-			const req = new WorldDTO.ListWorldReq()
-
-			req.setIdsList([this.PC.getWorldid_asU8()])
-
-			return req
-		})())
-			.then((ws: WorldDTO.ListWorldResp) => {
-				if (ws.getWorldsList().length != 1) {
-					console.log("failed to load world")
-				} else {
-					this.World = ws.getWorldsList()[0]
-				}
-			}).then(() => {
-				this.Loading = this.Entity.E.getCellid_asU8()
-				return this.loadMap(Orientation.None)
-			})
+		this.LoadMapMutex.waitForUnlock()
 			.then(() => {
-				this.load.start()
-				this.load.on('complete', () => {
-					console.log('load complete')
-				})
-			})
-			.catch((err) => {
-				console.log(err)
+
+				// Load world & cell sync
+				this.listWorld((() => {
+					const req = new WorldDTO.ListWorldReq()
+
+					req.setIdsList([this.PC.getWorldid_asU8()])
+
+					return req
+				})())
+					.then((ws: WorldDTO.ListWorldResp) => {
+						if (ws.getWorldsList().length != 1) {
+							console.log("failed to load world")
+						} else {
+							this.World = ws.getWorldsList()[0]
+						}
+					}).then(() => {
+						this.Loading = this.Entity.E.getCellid_asU8()
+						return this.loadMap(Orientation.None)
+					})
+					.then(() => {
+						this.load.start()
+						this.load.on('complete', () => {
+							console.log('load complete')
+						})
+					})
+					.catch((err) => {
+						console.log(err)
+					})
 			})
 	}
+
 
 	updateBodyEntity() {
 		// Controls + local anim update
@@ -324,17 +347,13 @@ export class Game extends Scene {
 		// this.EntityBufferRendering = []
 	}
 
+	deleteCells(o: Orientation) {
+		if (this.Cells.get(o)) {
+			this.Colliders.get(ulid(this.Cells.get(o)?.Cell.getId_asU8()!))?.map((v) => {
+				this.physics.world.removeCollider(v)
+			})
+		}
 
-	deleteCell(o: Orientation) {
-		const c = this.Cells.get(o)
-
-		// this.physics.world.colliders.remove(
-		// 	this.physics.world.colliders.getActive().find(function (i) {
-		// 		return i.name ==
-		// 	}) ?
-		// )
-
-		c?.Tilemap.destroy()
 		this.Cells.delete(o)
 	}
 
@@ -385,14 +404,14 @@ export class Game extends Scene {
 							Layer: this.Blank.Layer,
 						})
 
-						this.deleteCell(Orientation.Up)
-						this.deleteCell(Orientation.UpRight)
-						this.deleteCell(Orientation.Right)
-						this.deleteCell(Orientation.DownRight)
-						this.deleteCell(Orientation.Down)
-						this.deleteCell(Orientation.DownLeft)
-						this.deleteCell(Orientation.Left)
-						this.deleteCell(Orientation.UpLeft)
+						this.deleteCells(Orientation.Up)
+						this.deleteCells(Orientation.UpRight)
+						this.deleteCells(Orientation.Right)
+						this.deleteCells(Orientation.DownRight)
+						this.deleteCells(Orientation.Down)
+						this.deleteCells(Orientation.DownLeft)
+						this.deleteCells(Orientation.Left)
+						this.deleteCells(Orientation.UpLeft)
 						break;
 					case Orientation.Up:
 						// assign new cells to load
@@ -415,9 +434,9 @@ export class Game extends Scene {
 						this.Cells.set(Orientation.Left, this.Cells.get(Orientation.UpLeft)!)
 						this.Cells.set(Orientation.None, this.Cells.get(Orientation.Up)!)
 						this.Cells.set(Orientation.Right, this.Cells.get(Orientation.UpRight)!)
-						this.deleteCell(Orientation.UpLeft)
-						this.deleteCell(Orientation.Up)
-						this.deleteCell(Orientation.UpRight)
+						this.deleteCells(Orientation.UpLeft)
+						this.deleteCells(Orientation.Up)
+						this.deleteCells(Orientation.UpRight)
 						break;
 					case Orientation.UpRight:
 						// assign new cells to load
@@ -442,11 +461,11 @@ export class Game extends Scene {
 						this.Cells.set(Orientation.DownLeft, this.Cells.get(Orientation.None)!)
 						this.Cells.set(Orientation.Down, this.Cells.get(Orientation.Right)!)
 						this.Cells.set(Orientation.None, this.Cells.get(Orientation.UpRight)!)
-						this.deleteCell(Orientation.UpLeft)
-						this.deleteCell(Orientation.Up)
-						this.deleteCell(Orientation.UpRight)
-						this.deleteCell(Orientation.Right)
-						this.deleteCell(Orientation.DownRight)
+						this.deleteCells(Orientation.UpLeft)
+						this.deleteCells(Orientation.Up)
+						this.deleteCells(Orientation.UpRight)
+						this.deleteCells(Orientation.Right)
+						this.deleteCells(Orientation.DownRight)
 						break;
 					case Orientation.Right:
 						// assign new cells to load
@@ -469,9 +488,9 @@ export class Game extends Scene {
 						this.Cells.set(Orientation.Up, this.Cells.get(Orientation.UpRight)!)
 						this.Cells.set(Orientation.None, this.Cells.get(Orientation.Right)!)
 						this.Cells.set(Orientation.Down, this.Cells.get(Orientation.DownRight)!)
-						this.deleteCell(Orientation.UpRight)
-						this.deleteCell(Orientation.Right)
-						this.deleteCell(Orientation.DownRight)
+						this.deleteCells(Orientation.UpRight)
+						this.deleteCells(Orientation.Right)
+						this.deleteCells(Orientation.DownRight)
 						break;
 					case Orientation.DownRight:
 						// assign new cells to load
@@ -496,11 +515,11 @@ export class Game extends Scene {
 						this.Cells.set(Orientation.UpLeft, this.Cells.get(Orientation.None)!)
 						this.Cells.set(Orientation.Up, this.Cells.get(Orientation.Right)!)
 						this.Cells.set(Orientation.None, this.Cells.get(Orientation.DownRight)!)
-						this.deleteCell(Orientation.DownLeft)
-						this.deleteCell(Orientation.Down)
-						this.deleteCell(Orientation.DownRight)
-						this.deleteCell(Orientation.Right)
-						this.deleteCell(Orientation.UpRight)
+						this.deleteCells(Orientation.DownLeft)
+						this.deleteCells(Orientation.Down)
+						this.deleteCells(Orientation.DownRight)
+						this.deleteCells(Orientation.Right)
+						this.deleteCells(Orientation.UpRight)
 						break;
 					case Orientation.Down:
 						// assign new cells to load
@@ -523,9 +542,9 @@ export class Game extends Scene {
 						this.Cells.set(Orientation.Left, this.Cells.get(Orientation.DownLeft)!)
 						this.Cells.set(Orientation.None, this.Cells.get(Orientation.Down)!)
 						this.Cells.set(Orientation.Right, this.Cells.get(Orientation.DownRight)!)
-						this.deleteCell(Orientation.DownLeft)
-						this.deleteCell(Orientation.Down)
-						this.deleteCell(Orientation.DownRight)
+						this.deleteCells(Orientation.DownLeft)
+						this.deleteCells(Orientation.Down)
+						this.deleteCells(Orientation.DownRight)
 						break;
 					case Orientation.DownLeft:
 						// assign new cells to load
@@ -550,11 +569,11 @@ export class Game extends Scene {
 						this.Cells.set(Orientation.UpRight, this.Cells.get(Orientation.None)!)
 						this.Cells.set(Orientation.Up, this.Cells.get(Orientation.Left)!)
 						this.Cells.set(Orientation.None, this.Cells.get(Orientation.DownLeft)!)
-						this.deleteCell(Orientation.DownRight)
-						this.deleteCell(Orientation.Down)
-						this.deleteCell(Orientation.DownLeft)
-						this.deleteCell(Orientation.Left)
-						this.deleteCell(Orientation.UpLeft)
+						this.deleteCells(Orientation.DownRight)
+						this.deleteCells(Orientation.Down)
+						this.deleteCells(Orientation.DownLeft)
+						this.deleteCells(Orientation.Left)
+						this.deleteCells(Orientation.UpLeft)
 						break;
 					case Orientation.Left:
 						// assign new cells to load
@@ -577,9 +596,9 @@ export class Game extends Scene {
 						this.Cells.set(Orientation.Up, this.Cells.get(Orientation.UpLeft)!)
 						this.Cells.set(Orientation.None, this.Cells.get(Orientation.Left)!)
 						this.Cells.set(Orientation.Down, this.Cells.get(Orientation.DownLeft)!)
-						this.deleteCell(Orientation.UpLeft)
-						this.deleteCell(Orientation.Left)
-						this.deleteCell(Orientation.DownLeft)
+						this.deleteCells(Orientation.UpLeft)
+						this.deleteCells(Orientation.Left)
+						this.deleteCells(Orientation.DownLeft)
 						break;
 					case Orientation.UpLeft:
 						// assign new cells to load
@@ -604,11 +623,11 @@ export class Game extends Scene {
 						this.Cells.set(Orientation.DownRight, this.Cells.get(Orientation.None)!)
 						this.Cells.set(Orientation.Down, this.Cells.get(Orientation.Left)!)
 						this.Cells.set(Orientation.None, this.Cells.get(Orientation.UpLeft)!)
-						this.deleteCell(Orientation.UpRight)
-						this.deleteCell(Orientation.Up)
-						this.deleteCell(Orientation.UpLeft)
-						this.deleteCell(Orientation.Left)
-						this.deleteCell(Orientation.DownLeft)
+						this.deleteCells(Orientation.UpRight)
+						this.deleteCells(Orientation.Up)
+						this.deleteCells(Orientation.UpLeft)
+						this.deleteCells(Orientation.Left)
+						this.deleteCells(Orientation.DownLeft)
 						break;
 				}
 
@@ -784,12 +803,8 @@ export class Game extends Scene {
 								return
 							}
 
+							const id = ulid(cc.Cell.getId_asU8())
 							cc.Tilemap = map
-
-							interface properties {
-								name: string
-								value: boolean
-							}
 
 							map.layers.map((l) => {
 								const layer = map.createLayer(l.name, sets, c.getX() * this.World.getCellwidth(), c.getY() * this.World.getCellheight())
@@ -797,9 +812,15 @@ export class Game extends Scene {
 								const props = layer.layer.properties as properties[]
 								if (props.find((prop) => { return prop.name == 'collides' && prop.value })) {
 									console.log('set collision on layer ', l.name)
-									const clayer = layer.setCollisionByExclusion([-1])
-									this.physics.add.collider(this.Entity.Body, clayer)
-									this.CollisionLayers.set(l.name, clayer)
+									// this.CollisionLayers.set(l.name, clayer)
+									const collider = this.physics.add.collider(this.Entity.Body, layer.setCollisionByExclusion([-1]))
+									if (this.Colliders.has(id)) {
+										const cs = this.Colliders.get(id)!
+										cs.push(collider)
+										this.Colliders.set(id, cs)
+									} else {
+										this.Colliders.set(id, [collider])
+									}
 								}
 								cc.Layer.set(l.name, layer)
 							})
@@ -856,6 +877,7 @@ export class Game extends Scene {
 
 	// Connect
 	async connect() {
+		const release = await this.LoadMapMutex.acquire()
 		// call list entities on current cell
 		return this.connectPC((message: EntityDTO.ListEntityResp) => {
 			// load all entities
@@ -874,9 +896,6 @@ export class Game extends Scene {
 					if (id == ulid(this.Entity.E.getId_asU8())) {
 						this.Entity.Body.destroy()
 						this.Entity.Body = this.physics.add.sprite(entry.getX(), entry.getY(), id)
-						this.CollisionLayers.forEach((v) => {
-							this.physics.add.collider(this.Entity.Body, v)
-						})
 
 						console.log('set body from server info')
 						this.Entity.E.setX(entry.getX())
@@ -893,8 +912,8 @@ export class Game extends Scene {
 							Sprite: this.Entity.Body,
 						})
 
-
 						this.syncEntity()
+						release()
 					} else {
 						const sprite = this.add.sprite(entry.getX(), entry.getY(), id)
 						sprite.setDepth(entitySpriteDepth - 1)

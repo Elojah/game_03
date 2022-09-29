@@ -19,15 +19,15 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 	logger := log.With().Str("method", "create_world").Logger()
 
 	params := tile.Params{
-		Height:          32,    //nolint: gomnd
-		Width:           32,    //nolint: gomnd
-		CellHeight:      34,    //nolint: gomnd
-		CellWidth:       60,    //nolint: gomnd
-		WorldDensity:    0.015, //nolint: gomnd
-		PlatformDensity: 0.99,  //nolint: gomnd
-		PlatformPadding: 0.99,  //nolint: gomnd
-		SizeMin:         5,     //nolint: gomnd
-		SizeMax:         15,    //nolint: gomnd
+		Height:          32,   //nolint: gomnd
+		Width:           32,   //nolint: gomnd
+		CellHeight:      34,   //nolint: gomnd
+		CellWidth:       60,   //nolint: gomnd
+		WorldDensity:    0.2,  //nolint: gomnd
+		PlatformDensity: 0.99, //nolint: gomnd
+		PlatformPadding: 0.99, //nolint: gomnd
+		SizeMin:         2,    //nolint: gomnd
+		SizeMax:         30,   //nolint: gomnd
 		Distortion:      0,
 		PathMin:         0,
 		PathMax:         0,
