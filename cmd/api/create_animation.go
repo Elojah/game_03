@@ -39,7 +39,7 @@ func (h *handler) CreateAnimation(ctx context.Context, req *dto.CreateAnimationR
 	// 	return &types.Empty{}, status.New(codes.Internal, err.Error()).Err()
 	// }
 
-	// Re-arrange boject ids
+	// Parse ids
 	id, err := ulid.Parse(req.ID)
 	if err != nil {
 		logger.Error().Err(err).Msg("invalid ulid")
@@ -54,8 +54,16 @@ func (h *handler) CreateAnimation(ctx context.Context, req *dto.CreateAnimationR
 		return &types.Empty{}, status.New(codes.InvalidArgument, err.Error()).Err()
 	}
 
+	duplicateID, err := ulid.Parse(req.DuplicateID)
+	if err != nil {
+		logger.Error().Err(err).Msg("invalid ulid")
+
+		return &types.Empty{}, status.New(codes.InvalidArgument, err.Error()).Err()
+	}
+
 	req.Animation.ID = id
 	req.Animation.SheetID = sheetID
+	req.Animation.DuplicateID = duplicateID
 
 	// Create animation
 	if err := h.entity.InsertAnimation(ctx, req.Animation); err != nil {

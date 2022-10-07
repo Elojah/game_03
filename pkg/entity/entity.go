@@ -43,5 +43,6 @@ type App interface {
 	StoreAnimation
 	StoreBackup
 	StorePC
+	StoreNPC
 	CachePCConnect
 }

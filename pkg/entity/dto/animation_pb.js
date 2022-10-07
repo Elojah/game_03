@@ -668,7 +668,8 @@ proto.dto.CreateAnimationReq.toObject = function(includeInstance, msg) {
     animation: (f = msg.getAnimation()) && github_com_elojah_game_03_pkg_entity_animation_pb.Animation.toObject(includeInstance, f),
     id: jspb.Message.getFieldWithDefault(msg, 2, ""),
     entityid: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    sheetid: jspb.Message.getFieldWithDefault(msg, 4, "")
+    sheetid: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    duplicateid: jspb.Message.getFieldWithDefault(msg, 5, "")
   };
 
   if (includeInstance) {
@@ -721,6 +722,10 @@ proto.dto.CreateAnimationReq.deserializeBinaryFromReader = function(msg, reader)
     case 4:
       var value = /** @type {string} */ (reader.readString());
       msg.setSheetid(value);
+      break;
+    case 5:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setDuplicateid(value);
       break;
     default:
       reader.skipField();
@@ -777,6 +782,13 @@ proto.dto.CreateAnimationReq.serializeBinaryToWriter = function(message, writer)
   if (f.length > 0) {
     writer.writeString(
       4,
+      f
+    );
+  }
+  f = message.getDuplicateid();
+  if (f.length > 0) {
+    writer.writeString(
+      5,
       f
     );
   }
@@ -871,6 +883,24 @@ proto.dto.CreateAnimationReq.prototype.getSheetid = function() {
  */
 proto.dto.CreateAnimationReq.prototype.setSheetid = function(value) {
   return jspb.Message.setProto3StringField(this, 4, value);
+};
+
+
+/**
+ * optional string DuplicateID = 5;
+ * @return {string}
+ */
+proto.dto.CreateAnimationReq.prototype.getDuplicateid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.dto.CreateAnimationReq} returns this
+ */
+proto.dto.CreateAnimationReq.prototype.setDuplicateid = function(value) {
+  return jspb.Message.setProto3StringField(this, 5, value);
 };
 
 

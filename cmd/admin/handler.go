@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/elojah/game_03/pkg/entity"
 	"github.com/elojah/game_03/pkg/migrate"
 	"github.com/elojah/game_03/pkg/room"
 )
@@ -8,5 +9,6 @@ import (
 type handler struct {
 	migrate migrate.App
 
-	room room.App
+	room   room.App
+	entity entity.App
 }

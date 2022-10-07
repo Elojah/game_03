@@ -19,6 +19,11 @@ func (f filterAnimation) where() (string, []interface{}) {
 
 	var allowFiltering bool
 
+	if f.ID != nil {
+		clause = append(clause, `id = ?`)
+		args = append(args, f.ID)
+	}
+
 	if len(f.IDs) > 0 {
 		clause = append(clause, `id IN ?`)
 		args = append(args, f.IDs)
@@ -73,12 +78,12 @@ func (f filterAnimation) index() string {
 func (s Store) InsertAnimation(ctx context.Context, an entity.Animation) error {
 	q := s.Session.Query(
 		`INSERT INTO main.entity_animation (
-			id, entity_id, sheet_id,
+			id, entity_id, sheet_id, duplicate_id,
 			name,
 			start, end, rate,
 			frame_width, frame_height, frame_start, frame_end, frame_margin, frame_spacing
-		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-		an.ID, an.EntityID, an.SheetID,
+		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		an.ID, an.EntityID, an.SheetID, an.DuplicateID,
 		an.Name,
 		an.Start, an.End, an.Rate,
 		an.FrameWidth, an.FrameHeight, an.FrameStart, an.FrameEnd, an.FrameMargin, an.FrameSpacing,
@@ -96,7 +101,7 @@ func (s Store) InsertAnimation(ctx context.Context, an entity.Animation) error {
 func (s Store) FetchAnimation(ctx context.Context, f entity.FilterAnimation) (entity.Animation, error) {
 	b := strings.Builder{}
 	b.WriteString(`SELECT
-		id, entity_id, sheet_id,
+		id, entity_id, sheet_id, duplicate_id,
 		name,
 		start, end, rate,
 		frame_width, frame_height, frame_start, frame_end, frame_margin, frame_spacing
@@ -109,7 +114,7 @@ func (s Store) FetchAnimation(ctx context.Context, f entity.FilterAnimation) (en
 
 	var an entity.Animation
 	if err := q.Scan(
-		&an.ID, &an.EntityID, &an.SheetID,
+		&an.ID, &an.EntityID, &an.SheetID, &an.DuplicateID,
 		&an.Name,
 		&an.Start, &an.End, &an.Rate,
 		&an.FrameWidth, &an.FrameHeight, &an.FrameStart, &an.FrameEnd, &an.FrameMargin, &an.FrameSpacing,
@@ -131,7 +136,7 @@ func (s Store) FetchManyAnimation(ctx context.Context, f entity.FilterAnimation)
 
 	b := strings.Builder{}
 	b.WriteString(`SELECT
-		id, entity_id, sheet_id,
+		id, entity_id, sheet_id, duplicate_id,
 		name,
 		start, end, rate,
 		frame_width, frame_height, frame_start, frame_end, frame_margin, frame_spacing
@@ -158,7 +163,7 @@ func (s Store) FetchManyAnimation(ctx context.Context, f entity.FilterAnimation)
 
 	for ; scanner.Next(); i++ {
 		if err := scanner.Scan(
-			&ans[i].ID, &ans[i].EntityID, &ans[i].SheetID,
+			&ans[i].ID, &ans[i].EntityID, &ans[i].SheetID, &ans[i].DuplicateID,
 			&ans[i].Name,
 			&ans[i].Start, &ans[i].End, &ans[i].Rate,
 			&ans[i].FrameWidth, &ans[i].FrameHeight,

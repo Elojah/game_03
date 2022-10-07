@@ -77,6 +77,7 @@ CREATE TABLE main.entity_animation (
     id              uuid PRIMARY KEY,
     entity_id       uuid,
     sheet_id        uuid,
+	duplicate_id    uuid, -- id for client loading
     name            varchar,
     start           bigint,
     end             bigint,

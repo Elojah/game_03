@@ -29,4 +29,5 @@ message CreateAnimationReq {
     string ID                            = 2;
     string EntityID                      = 3;
     string SheetID                       = 4;
+    string DuplicateID                   = 5;
 }

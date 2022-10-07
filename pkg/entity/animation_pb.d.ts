@@ -20,6 +20,11 @@ export class Animation extends jspb.Message {
   getSheetid_asB64(): string;
   setSheetid(value: Uint8Array | string): void;
 
+  getDuplicateid(): Uint8Array | string;
+  getDuplicateid_asU8(): Uint8Array;
+  getDuplicateid_asB64(): string;
+  setDuplicateid(value: Uint8Array | string): void;
+
   getName(): string;
   setName(value: string): void;
 
@@ -65,6 +70,7 @@ export namespace Animation {
     id: Uint8Array | string,
     entityid: Uint8Array | string,
     sheetid: Uint8Array | string,
+    duplicateid: Uint8Array | string,
     name: string,
     start: number,
     end: number,

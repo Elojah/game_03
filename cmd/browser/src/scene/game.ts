@@ -47,27 +47,27 @@ interface properties {
 type BodyEntity = {
 	E: Entity.E
 	Body: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
+	Animations: Map<string, string>
 }
 
 type GraphicEntity = {
 	E: Entity.E
+	Animations: Map<string, string>
 	Direction: Phaser.Geom.Point
 	Interpolation: number
 	Sprite: Phaser.GameObjects.Sprite
 }
 
-function updateGraphicEntity(ge: GraphicEntity, e: Entity.E) {
+function updateGraphicEntity(ge: GraphicEntity, x: number, y: number) {
 	// update direction to last known position
-	if (ge.Direction.x != e.getX() || ge.Direction.y != e.getY()) {
+	if (ge.Direction.x != x || ge.Direction.y != y) {
 		// TODO update interpolation as speed to catch up latency
 		ge.Interpolation = 0
 	}
 
 	// TODO Add prediction/reconciliation ?
 
-	ge.Direction.setTo(e.getX(), e.getY())
-
-	ge.E = e
+	ge.Direction.setTo(x, y)
 }
 
 function interpolateGraphicEntity(ge: GraphicEntity) {
@@ -101,6 +101,7 @@ export class Game extends Scene {
 
 	// Cells & maps
 	Cells: Map<Orientation, GraphicCell>
+	CellsByID: Map<string, Orientation>
 	// Specific loader for cells
 	CellLoader: Phaser.Loader.LoaderPlugin
 	// Current world loaded
@@ -122,9 +123,6 @@ export class Game extends Scene {
 	EntityClient: grpc.Client<Entity.E, Entity.E>
 	SyncTimer: number
 
-	// Others
-	Animations: Map<string, string>
-
 	// Spritesheets already loaded
 	SpriteSheets: Map<string, integer>
 
@@ -143,10 +141,12 @@ export class Game extends Scene {
 		this.Entity = {
 			E: e,
 			Body: this.physics.add.sprite(0, 0, ''),
+			Animations: new Map()
 		}
 		this.EntityID = ulid(this.Entity.E.getId_asU8())
 
 		this.Cells = new Map()
+		this.CellsByID = new Map()
 		this.CellLoader = new Phaser.Loader.LoaderPlugin(this)
 		this.Border = new Map()
 
@@ -154,8 +154,6 @@ export class Game extends Scene {
 		this.EntityLoader = new Phaser.Loader.LoaderPlugin(this)
 		this.EntityBuffer = new Array<string>()
 		this.EntityBufferRendering = new Array<string>()
-
-		this.Animations = new Map()
 
 		this.SpriteSheets = new Map()
 
@@ -236,25 +234,39 @@ export class Game extends Scene {
 		// Move entity
 		this.Entity.Body.body.setVelocity(0)
 		if (this.Cursors.up.isDown) {
-			animationID = this.Animations.get(this.EntityID + ':' + 'up')
+			animationID = this.Entity.Animations.get('up')
 			this.Entity.Body.body.setVelocityY(-speed)
 		} else if (this.Cursors.right.isDown) {
-			animationID = this.Animations.get(this.EntityID + ':' + 'right')
+			animationID = this.Entity.Animations.get('right')
 			this.Entity.Body.body.setVelocityX(speed)
 		} else if (this.Cursors.down.isDown) {
-			animationID = this.Animations.get(this.EntityID + ':' + 'down')
+			animationID = this.Entity.Animations.get('down')
 			this.Entity.Body.body.setVelocityY(speed)
 		} else if (this.Cursors.left.isDown) {
-			animationID = this.Animations.get(this.EntityID + ':' + 'left')
+			animationID = this.Entity.Animations.get('left')
 			this.Entity.Body.body.setVelocityX(-speed)
 		} else {
-			animationID = this.Animations.get(this.EntityID + ':' + 'idle')
+			animationID = this.Entity.Animations.get('idle')
 		}
 
 		if (animationID) {
 			this.Entity?.Body?.play(animationID, true)
 		}
 	}
+
+	// positionServerToClient(ge: GraphicEntity): Phaser.Geom.Point {
+	// 	const id = ulid(ge.E.getCellid_asU8())
+
+	// 	this.Cells.get(id)
+	// 	// return
+	// }
+
+	// positionClientToServer(ge: GraphicEntity): Phaser.Geom.Point {
+	// 	const id = ulid(ge.E.getCellid_asU8())
+
+	// 	this.Cells.get(id)
+	// 	// return
+	// }
 
 	update(time: number, deltaTime: number) {
 		this.updateBodyEntity()
@@ -320,6 +332,7 @@ export class Game extends Scene {
 
 		// Entity queue update
 		// this.EntityBufferRendering.forEach((value: string) => {
+
 		this.Entities.forEach((e: GraphicEntity) => {
 
 			// self reconciliation
@@ -333,7 +346,10 @@ export class Game extends Scene {
 			const y = e.Sprite.y + ((e.Direction.y - e.Sprite.y) * e.Interpolation)
 			e?.Sprite.setX(x)
 			e?.Sprite.setY(y)
-			e?.Sprite.play(ulid(e.E.getAnimationid_asU8()), true)
+			const animationID = e.Animations.get(ulid(e.E.getAnimationid_asU8()))
+			if (animationID) {
+				e?.Sprite.play(animationID, true)
+			}
 		})
 
 		// this.EntityBufferRendering = []
@@ -623,6 +639,14 @@ export class Game extends Scene {
 
 				this.cleanCells(deletedCells).then(() => { console.log('finish to destroy unused tilemaps') })
 
+				// reassign cellsbyid with new cells
+				this.CellsByID.clear()
+				this.Cells.forEach((v, k) => {
+					if (v) {
+						this.CellsByID.set(ulid(v.Cell.getId_asU8()), k)
+					}
+				})
+
 				return this.listCell((() => {
 					const req = new CellDTO.ListCellReq()
 
@@ -764,6 +788,7 @@ export class Game extends Scene {
 						Layers: new Map(),
 						Colliders: new Map(),
 					})
+					this.CellsByID.set(ulid(c.getId_asU8()), o)
 
 					const loadTM = () => {
 						console.log('load_tilemap ', o)
@@ -870,8 +895,13 @@ export class Game extends Scene {
 
 				if (this.Entities.has(id)) {
 					// update state only
-					updateGraphicEntity(this.Entities.get(id)!, entry)
-					// this.Entities.get(id)!.E = entry
+					const x = entry.getX() + (this.Cells.get(this.CellsByID.get(ulid(entry.getCellid_asU8()))!)?.Cell.getX()! * this.World.getCellwidth())
+					const y = entry.getX() + (this.Cells.get(this.CellsByID.get(ulid(entry.getCellid_asU8()))!)?.Cell.getY()! * this.World.getCellheight())
+					updateGraphicEntity(this.Entities.get(id)!, x, y)
+					console.log(this.CellsByID.get(ulid(entry.getCellid_asU8()))!)
+					console.log(id, x, y)
+
+					this.Entities.get(id)!.E = entry
 					// this.EntityBuffer.push(ulid(entry.getId_asU8()))
 				} else {
 					// create associated sprite
@@ -889,6 +919,7 @@ export class Game extends Scene {
 
 						this.Entities.set(id, {
 							E: entry,
+							Animations: new Map(),
 							Direction: new Phaser.Geom.Point(entry.getX(), entry.getY()),
 							Interpolation: 0.00,
 							Sprite: this.Entity.Body,
@@ -902,6 +933,7 @@ export class Game extends Scene {
 
 						this.Entities.set(id, {
 							E: entry,
+							Animations: new Map(),
 							Direction: new Phaser.Geom.Point(entry.getX(), entry.getY()),
 							Interpolation: 0.00, // default speed
 							Sprite: sprite,
@@ -931,11 +963,19 @@ export class Game extends Scene {
 				.then((animations: AnimationDTO.ListAnimationResp) => {
 					// load all current animations
 					animations.getAnimationsList().forEach((an: Animation.Animation) => {
-						const animationID = ulid(an.getId_asU8())
+						const id = ulid(an.getId_asU8())
 						const sheetID = ulid(an.getSheetid_asU8())
+						const duplicateID = ulid(an.getDuplicateid_asU8())
+						const entityID = ulid(an.getEntityid_asU8())
+
+						if (entityID == ulid(this.Entity.E.getId_asU8())) {
+							this.Entity.Animations.set(an.getName(), duplicateID)
+						}
 
 						// return if already loaded
-						if (this.anims.exists(animationID)) {
+						if (this.anims.exists(duplicateID)) {
+							this.Entities.get(entityID)?.Animations.set(id, duplicateID)
+
 							// Play entity animation
 							// this.EntityBuffer.push(ulid(an.getEntityid_asU8()))
 
@@ -945,7 +985,7 @@ export class Game extends Scene {
 						const loadAnim = () => {
 							// Create animation
 							const newAnim = this.anims.create({
-								key: animationID,
+								key: duplicateID,
 								frames: this.anims.generateFrameNumbers(
 									sheetID,
 									{ start: an.getStart(), end: an.getEnd() },
@@ -954,15 +994,15 @@ export class Game extends Scene {
 								repeat: -1,
 							})
 							if (!newAnim) {
-								console.log('failed to load animation ' + animationID)
+								console.log('failed to load animation ' + duplicateID)
 
 								return
 							}
 
 							console.log('set animation:' + ulid(an.getEntityid_asU8()) + ":" + an.getName())
 
-							// Add animation to mapper
-							this.Animations.set(ulid(an.getEntityid_asU8()) + ":" + an.getName(), animationID)
+							// Add animation to entity animations
+							this.Entities.get(entityID)?.Animations.set(id, duplicateID)
 
 							// Play entity animation
 							// this.EntityBuffer.push(ulid(an.getEntityid_asU8()))

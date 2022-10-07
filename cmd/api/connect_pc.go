@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/elojah/game_03/cmd/api/grpc"
@@ -224,6 +225,15 @@ func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) err
 
 							return
 						}
+
+						fmt.Println(func() []string {
+							var ss []string
+							for _, e := range entities {
+								ss = append(ss, e.Name, e.ID.String())
+							}
+
+							return ss
+						}())
 
 						state = st
 

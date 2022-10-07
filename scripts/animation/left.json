@@ -1,17 +1,18 @@
 {
-    "ID": "01FM1YXHHEJE1CKG48CFSC8K3J",
-    "EntityID": "",
-    "SheetID": "01FG1V2REECYMF2MQHNE3589SE",
-    "Animation": {
-        "Name": "left",
-        "Start": 2,
-        "End": 3,
-        "Rate": 8,
-        "FrameWidth": 16,
-        "FrameHeight": 16,
-        "FrameStart": 0,
-        "FrameEnd": 263,
-        "FrameMargin": 4,
-        "FrameSpacing": 4
-    }
+	"ID": "01FM1YXHHEJE1CKG48CFSC8K3J",
+	"EntityID": "",
+	"SheetID": "01FG1V2REECYMF2MQHNE3589SE",
+	"DuplicateID": "01GEPXF2GGMPWRM67GWABE78AB",
+	"Animation": {
+		"Name": "left",
+		"Start": 2,
+		"End": 3,
+		"Rate": 8,
+		"FrameWidth": 16,
+		"FrameHeight": 16,
+		"FrameStart": 0,
+		"FrameEnd": 263,
+		"FrameMargin": 4,
+		"FrameSpacing": 4
+	}
 }

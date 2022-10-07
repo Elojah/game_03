@@ -131,6 +131,18 @@ func (g *GroundGenerator) Gen(params Params) {
 			}
 		}
 	}
+
+	// add border around all map
+	for i := int64(0); i < int64(len(g.Map)); i++ {
+		if i == 0 || i == int64(len(g.Map)-1) {
+			for j := int64(0); j < int64(len(g.Map[i])); j++ {
+				g.set(i, j, Ground)
+			}
+		} else {
+			g.set(i, 0, Ground)
+			g.set(i, int64(len(g.Map[i])-1), Ground)
+		}
+	}
 }
 
 func (g GroundGenerator) generatePlatform(height int64, width int64, density float64, padding float64) [][]Field {

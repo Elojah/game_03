@@ -12,6 +12,7 @@ type App struct {
 	entity.Store
 	entity.StoreAnimation
 	entity.StoreBackup
+	entity.StoreNPC
 	entity.StorePC
 	entity.CachePCConnect
 }

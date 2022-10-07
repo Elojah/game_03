@@ -9,6 +9,8 @@ import (
 	"time"
 
 	admingrpc "github.com/elojah/game_03/cmd/admin/grpc"
+	entityapp "github.com/elojah/game_03/pkg/entity/app"
+	entityscylla "github.com/elojah/game_03/pkg/entity/scylla"
 	migrateapp "github.com/elojah/game_03/pkg/migrate/app"
 	roomapp "github.com/elojah/game_03/pkg/room/app"
 	roomscylla "github.com/elojah/game_03/pkg/room/scylla"
@@ -96,9 +98,20 @@ func run(prog string, filename string) {
 		StoreWorldCell: roomStore,
 	}
 
+	entityStore := &entityscylla.Store{Service: scyllas}
+	entityApp := entityapp.App{
+		Store:          entityStore,
+		StoreAnimation: entityStore,
+		StoreBackup:    entityStore,
+		StorePC:        entityStore,
+		StoreNPC:       entityStore,
+		CachePCConnect: nil,
+	}
+
 	h := handler{
 		migrate: &migrateApp,
 		room:    roomApp,
+		entity:  entityApp,
 	}
 
 	// init grpc api server

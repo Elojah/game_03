@@ -90,6 +90,9 @@ export class CreateAnimationReq extends jspb.Message {
   getSheetid(): string;
   setSheetid(value: string): void;
 
+  getDuplicateid(): string;
+  setDuplicateid(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): CreateAnimationReq.AsObject;
   static toObject(includeInstance: boolean, msg: CreateAnimationReq): CreateAnimationReq.AsObject;
@@ -106,6 +109,7 @@ export namespace CreateAnimationReq {
     id: string,
     entityid: string,
     sheetid: string,
+    duplicateid: string,
   }
 }
 

@@ -145,7 +145,7 @@ export class Home extends Scene {
 					this.loadRoom(20, new Uint8Array)
 				})
 				.catch((err) => {
-					console.log('failed to create room')
+					console.log('failed to create room:', err)
 				})
 		})
 	}
