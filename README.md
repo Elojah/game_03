@@ -1,4 +1,5 @@
 # game_03
+---
 
 Dev setup:
 
@@ -24,14 +25,43 @@ $ make web && ./bin/game_03_web config/web/local.json
 Data:
 
 ```sh
-$ ./scripts/create_default_animations.sh
-$ grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '' -plaintext localhost:8083 grpc.Admin/CreateTilemap
+$ ./scripts/create_default_templates.sh
+$ grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '' -plaintext localhost:8083 grpc.Admin/CreateWorld
 ```
 
 ### TODO
+---
 
 - Manage collision
 - Manage map creation
 - Add default animations as JSON in some file somewhere + add default animations with at createPC
 - Remove `Math.round()` in `game.ts` and set entity.X entity.Y as float64 to fit Phaser.Body x/y
 - Manage twitch loadFollow error when timeout (ez to reproduce...)
+
+
+# FLOW
+---
+
+N.B: `CreateTilesheet` is optional when using local files in `cmd/browser/dist/`
+
+### scratch setup
+
+### Entity
+
+- `CreateTemplate`
+- `CreateTilesheet`
+- `CreateAnimation`
+
+### World
+
+- `CreateTilesheet`
+- `CreateWorld` (add a allow_entity_template list by name ?)
+
+### Room
+
+- `CreateRoom`
+
+### PC
+
+- `CreatePC` (using entity_template.name)
+- `ConnectPC`

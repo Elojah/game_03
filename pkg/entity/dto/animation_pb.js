@@ -667,9 +667,10 @@ proto.dto.CreateAnimationReq.toObject = function(includeInstance, msg) {
   var f, obj = {
     animation: (f = msg.getAnimation()) && github_com_elojah_game_03_pkg_entity_animation_pb.Animation.toObject(includeInstance, f),
     id: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    entityid: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    sheetid: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    duplicateid: jspb.Message.getFieldWithDefault(msg, 5, "")
+    sheetid: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    duplicateid: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    entityid: jspb.Message.getFieldWithDefault(msg, 5, ""),
+    entitytemplate: jspb.Message.getFieldWithDefault(msg, 6, "")
   };
 
   if (includeInstance) {
@@ -717,15 +718,19 @@ proto.dto.CreateAnimationReq.deserializeBinaryFromReader = function(msg, reader)
       break;
     case 3:
       var value = /** @type {string} */ (reader.readString());
-      msg.setEntityid(value);
+      msg.setSheetid(value);
       break;
     case 4:
       var value = /** @type {string} */ (reader.readString());
-      msg.setSheetid(value);
+      msg.setDuplicateid(value);
       break;
     case 5:
       var value = /** @type {string} */ (reader.readString());
-      msg.setDuplicateid(value);
+      msg.setEntityid(value);
+      break;
+    case 6:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setEntitytemplate(value);
       break;
     default:
       reader.skipField();
@@ -771,24 +776,31 @@ proto.dto.CreateAnimationReq.serializeBinaryToWriter = function(message, writer)
       f
     );
   }
-  f = message.getEntityid();
+  f = message.getSheetid();
   if (f.length > 0) {
     writer.writeString(
       3,
       f
     );
   }
-  f = message.getSheetid();
+  f = message.getDuplicateid();
   if (f.length > 0) {
     writer.writeString(
       4,
       f
     );
   }
-  f = message.getDuplicateid();
+  f = message.getEntityid();
   if (f.length > 0) {
     writer.writeString(
       5,
+      f
+    );
+  }
+  f = message.getEntitytemplate();
+  if (f.length > 0) {
+    writer.writeString(
+      6,
       f
     );
   }
@@ -851,10 +863,10 @@ proto.dto.CreateAnimationReq.prototype.setId = function(value) {
 
 
 /**
- * optional string EntityID = 3;
+ * optional string SheetID = 3;
  * @return {string}
  */
-proto.dto.CreateAnimationReq.prototype.getEntityid = function() {
+proto.dto.CreateAnimationReq.prototype.getSheetid = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
@@ -863,16 +875,16 @@ proto.dto.CreateAnimationReq.prototype.getEntityid = function() {
  * @param {string} value
  * @return {!proto.dto.CreateAnimationReq} returns this
  */
-proto.dto.CreateAnimationReq.prototype.setEntityid = function(value) {
+proto.dto.CreateAnimationReq.prototype.setSheetid = function(value) {
   return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
 /**
- * optional string SheetID = 4;
+ * optional string DuplicateID = 4;
  * @return {string}
  */
-proto.dto.CreateAnimationReq.prototype.getSheetid = function() {
+proto.dto.CreateAnimationReq.prototype.getDuplicateid = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
@@ -881,16 +893,16 @@ proto.dto.CreateAnimationReq.prototype.getSheetid = function() {
  * @param {string} value
  * @return {!proto.dto.CreateAnimationReq} returns this
  */
-proto.dto.CreateAnimationReq.prototype.setSheetid = function(value) {
+proto.dto.CreateAnimationReq.prototype.setDuplicateid = function(value) {
   return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 
 /**
- * optional string DuplicateID = 5;
+ * optional string EntityID = 5;
  * @return {string}
  */
-proto.dto.CreateAnimationReq.prototype.getDuplicateid = function() {
+proto.dto.CreateAnimationReq.prototype.getEntityid = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
@@ -899,8 +911,26 @@ proto.dto.CreateAnimationReq.prototype.getDuplicateid = function() {
  * @param {string} value
  * @return {!proto.dto.CreateAnimationReq} returns this
  */
-proto.dto.CreateAnimationReq.prototype.setDuplicateid = function(value) {
+proto.dto.CreateAnimationReq.prototype.setEntityid = function(value) {
   return jspb.Message.setProto3StringField(this, 5, value);
+};
+
+
+/**
+ * optional string EntityTemplate = 6;
+ * @return {string}
+ */
+proto.dto.CreateAnimationReq.prototype.getEntitytemplate = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.dto.CreateAnimationReq} returns this
+ */
+proto.dto.CreateAnimationReq.prototype.setEntitytemplate = function(value) {
+  return jspb.Message.setProto3StringField(this, 6, value);
 };
 
 

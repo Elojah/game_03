@@ -13,7 +13,7 @@ import (
 )
 
 func (h *handler) CreateTemplate(ctx context.Context, req *dto.CreateTemplateReq) (*entity.Template, error) {
-	logger := log.With().Str("method", "create_animation").Logger()
+	logger := log.With().Str("method", "create_template").Logger()
 
 	if req == nil {
 		return &entity.Template{}, status.New(codes.Internal, gerrors.ErrNullRequest{}.Error()).Err()
@@ -30,14 +30,14 @@ func (h *handler) CreateTemplate(ctx context.Context, req *dto.CreateTemplateReq
 		Name: req.Name,
 	}
 
-	// Create animation
+	// Create template
 	if err := h.entity.InsertTemplate(ctx, t); err != nil {
-		logger.Error().Err(err).Msg("failed to create animation")
+		logger.Error().Err(err).Msg("failed to create template")
 
 		return &entity.Template{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
 	logger.Info().Msg("success")
 
-	return &entity.Template{}, nil
+	return &t, nil
 }

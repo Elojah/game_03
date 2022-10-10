@@ -5,6 +5,10 @@ package dto;
 option (gogoproto.testgen_all)  = true;
 option (gogoproto.benchgen_all) = true;
 option (gogoproto.populate_all) = true;
+option (gogoproto.goproto_getters_all) = false;
+option (gogoproto.goproto_stringer_all) = false;
+option (gogoproto.goproto_unrecognized_all) = false;
+option (gogoproto.goproto_enum_prefix_all) = false;
 option (gogoproto.goproto_registration) = true;
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
@@ -27,7 +31,9 @@ message CreateAnimationReq {
     entity.Animation Animation           = 1 [(gogoproto.nullable) = false];
 
     string ID                            = 2;
-    string EntityID                      = 3;
-    string SheetID                       = 4;
-    string DuplicateID                   = 5;
+    string SheetID                       = 3;
+    string DuplicateID                   = 4;
+
+    string EntityID                      = 5;
+	string EntityTemplate                = 6;
 }

@@ -84,14 +84,17 @@ export class CreateAnimationReq extends jspb.Message {
   getId(): string;
   setId(value: string): void;
 
-  getEntityid(): string;
-  setEntityid(value: string): void;
-
   getSheetid(): string;
   setSheetid(value: string): void;
 
   getDuplicateid(): string;
   setDuplicateid(value: string): void;
+
+  getEntityid(): string;
+  setEntityid(value: string): void;
+
+  getEntitytemplate(): string;
+  setEntitytemplate(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): CreateAnimationReq.AsObject;
@@ -107,9 +110,10 @@ export namespace CreateAnimationReq {
   export type AsObject = {
     animation?: github_com_elojah_game_03_pkg_entity_animation_pb.Animation.AsObject,
     id: string,
-    entityid: string,
     sheetid: string,
     duplicateid: string,
+    entityid: string,
+    entitytemplate: string,
   }
 }
 
