@@ -6,7 +6,7 @@ import Container from '@mui/material/Container';
 
 import Copyright from './copyright';
 import Dashboard from './dashboard';
-import Friends from './friends';
+import PCs from './pcs';
 import Rooms from './rooms';
 
 import {
@@ -29,7 +29,7 @@ export default () => {
 				<Routes>
 					<Route index element={<Dashboard />} />
 					<Route path="rooms" element={<Rooms />} />
-					<Route path="friends" element={<Friends />} />
+					<Route path="pcs" element={<PCs />} />
 				</Routes>
 			</Container>
 			<Copyright sx={{ pt: 4 }} />

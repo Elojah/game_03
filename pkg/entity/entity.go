@@ -44,5 +44,6 @@ type App interface {
 	StoreBackup
 	StorePC
 	StoreNPC
+	StoreTemplate
 	CachePCConnect
 }

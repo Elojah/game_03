@@ -45,14 +45,6 @@ CREATE TABLE main.room_user (
 
 CREATE INDEX ON main.room_user(room_id);
 
-CREATE TABLE main.pc (
-    id              uuid,
-    user_id         uuid,
-    world_id        uuid,
-    entity_id       uuid,
-    PRIMARY KEY(user_id, world_id, id)
-);
-
 -- ENTITY MANAGEMENT
 -- -----------------
 
@@ -73,6 +65,21 @@ CREATE TABLE main.entity (
 
 CREATE INDEX ON main.entity(cell_id);
 
+-- must replicate main.entity fields
+CREATE TABLE main.entity_backup (
+    id              uuid PRIMARY KEY,
+    user_id         uuid,
+    cell_id         uuid,
+    name            varchar,
+    x               bigint,
+    y               bigint,
+    rot             smallint,
+    radius          smallint,
+    at              bigint,
+    animation_id    uuid,
+    animation_at    bigint
+);
+
 CREATE TABLE main.entity_animation (
     id              uuid PRIMARY KEY,
     entity_id       uuid,
@@ -92,19 +99,28 @@ CREATE TABLE main.entity_animation (
 
 CREATE INDEX ON main.entity_animation(entity_id);
 
--- must replicate main.entity fields
-CREATE TABLE main.entity_backup (
+CREATE TABLE main.entity_template (
     id              uuid PRIMARY KEY,
+    name            varchar
+);
+
+CREATE INDEX ON main.entity_template(name);
+
+-- CHARACTER
+
+CREATE TABLE main.pc (
+    id              uuid,
     user_id         uuid,
-    cell_id         uuid,
-    name            varchar,
-    x               bigint,
-    y               bigint,
-    rot             smallint,
-    radius          smallint,
-    at              bigint,
-    animation_id    uuid,
-    animation_at    bigint
+    world_id        uuid,
+    entity_id       uuid,
+    PRIMARY KEY(user_id, world_id, id)
+);
+
+CREATE TABLE main.npc (
+    id              uuid,
+    world_id        uuid,
+    entity_id       uuid,
+    PRIMARY KEY(world_id, id)
 );
 
 -- WORLD MANAGEMENT

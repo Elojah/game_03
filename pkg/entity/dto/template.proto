@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package dto;
+
+option (gogoproto.testgen_all)  = true;
+option (gogoproto.benchgen_all) = true;
+option (gogoproto.populate_all) = true;
+option (gogoproto.goproto_registration) = true;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+message CreateTemplateReq {
+    string Name                 = 1;
+}

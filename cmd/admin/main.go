@@ -105,6 +105,7 @@ func run(prog string, filename string) {
 		StoreBackup:    entityStore,
 		StorePC:        entityStore,
 		StoreNPC:       entityStore,
+		StoreTemplate:  entityStore,
 		CachePCConnect: nil,
 	}
 

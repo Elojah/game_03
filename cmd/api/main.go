@@ -135,6 +135,7 @@ func run(prog string, filename string) {
 		StoreAnimation: entityStore,
 		StoreBackup:    entityStore,
 		StorePC:        entityStore,
+		StoreTemplate:  entityStore,
 		CachePCConnect: entityCache,
 	}
 

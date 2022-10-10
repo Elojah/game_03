@@ -48,15 +48,6 @@ API.ListEntity = {
   responseType: github_com_elojah_game_03_pkg_entity_dto_entity_pb.ListEntityResp
 };
 
-API.CreateAnimation = {
-  methodName: "CreateAnimation",
-  service: API,
-  requestStream: false,
-  responseStream: false,
-  requestType: github_com_elojah_game_03_pkg_entity_dto_animation_pb.CreateAnimationReq,
-  responseType: google_protobuf_empty_pb.Empty
-};
-
 API.ListAnimation = {
   methodName: "ListAnimation",
   service: API,
@@ -239,37 +230,6 @@ APIClient.prototype.listEntity = function listEntity(requestMessage, metadata, c
     callback = arguments[1];
   }
   var client = grpc.unary(API.ListEntity, {
-    request: requestMessage,
-    host: this.serviceHost,
-    metadata: metadata,
-    transport: this.options.transport,
-    debug: this.options.debug,
-    onEnd: function (response) {
-      if (callback) {
-        if (response.status !== grpc.Code.OK) {
-          var err = new Error(response.statusMessage);
-          err.code = response.status;
-          err.metadata = response.trailers;
-          callback(err, null);
-        } else {
-          callback(null, response.message);
-        }
-      }
-    }
-  });
-  return {
-    cancel: function () {
-      callback = null;
-      client.close();
-    }
-  };
-};
-
-APIClient.prototype.createAnimation = function createAnimation(requestMessage, metadata, callback) {
-  if (arguments.length === 2) {
-    callback = arguments[1];
-  }
-  var client = grpc.unary(API.CreateAnimation, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,

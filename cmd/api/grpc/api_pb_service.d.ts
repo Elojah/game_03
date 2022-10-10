@@ -42,15 +42,6 @@ type APIListEntity = {
   readonly responseType: typeof github_com_elojah_game_03_pkg_entity_dto_entity_pb.ListEntityResp;
 };
 
-type APICreateAnimation = {
-  readonly methodName: string;
-  readonly service: typeof API;
-  readonly requestStream: false;
-  readonly responseStream: false;
-  readonly requestType: typeof github_com_elojah_game_03_pkg_entity_dto_animation_pb.CreateAnimationReq;
-  readonly responseType: typeof google_protobuf_empty_pb.Empty;
-};
-
 type APIListAnimation = {
   readonly methodName: string;
   readonly service: typeof API;
@@ -146,7 +137,6 @@ export class API {
   static readonly ConnectPC: APIConnectPC;
   static readonly UpdateEntity: APIUpdateEntity;
   static readonly ListEntity: APIListEntity;
-  static readonly CreateAnimation: APICreateAnimation;
   static readonly ListAnimation: APIListAnimation;
   static readonly CreatePC: APICreatePC;
   static readonly ListPC: APIListPC;
@@ -201,15 +191,6 @@ export class APIClient {
   listEntity(
     requestMessage: github_com_elojah_game_03_pkg_entity_dto_entity_pb.ListEntityReq,
     callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_entity_dto_entity_pb.ListEntityResp|null) => void
-  ): UnaryResponse;
-  createAnimation(
-    requestMessage: github_com_elojah_game_03_pkg_entity_dto_animation_pb.CreateAnimationReq,
-    metadata: grpc.Metadata,
-    callback: (error: ServiceError|null, responseMessage: google_protobuf_empty_pb.Empty|null) => void
-  ): UnaryResponse;
-  createAnimation(
-    requestMessage: github_com_elojah_game_03_pkg_entity_dto_animation_pb.CreateAnimationReq,
-    callback: (error: ServiceError|null, responseMessage: google_protobuf_empty_pb.Empty|null) => void
   ): UnaryResponse;
   listAnimation(
     requestMessage: github_com_elojah_game_03_pkg_entity_dto_animation_pb.ListAnimationReq,

@@ -13,15 +13,21 @@ import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
 
 import "github.com/elojah/game_03/pkg/tile/dto/set.proto";
+import "github.com/elojah/game_03/pkg/entity/template.proto";
+import "github.com/elojah/game_03/pkg/entity/dto/animation.proto";
+import "github.com/elojah/game_03/pkg/entity/dto/template.proto";
 
 service Admin {
     // DB migrations
     rpc MigrateUp(google.protobuf.StringValue) returns (google.protobuf.Empty);
 
     // Map creation
-    rpc CreateTilemap(google.protobuf.Empty) returns (google.protobuf.StringValue);
     rpc CreateTileset(dto.CreateTilesetReq) returns (dto.CreateTilesetResp);
     rpc CreateWorld(google.protobuf.Empty) returns (google.protobuf.StringValue);
+
+    // Entity
+	rpc CreateTemplate(dto.CreateTemplateReq) returns (entity.Template);
+    rpc CreateAnimation(dto.CreateAnimationReq) returns (google.protobuf.Empty);
 
     // Ping
     rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
