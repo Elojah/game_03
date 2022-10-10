@@ -49,7 +49,7 @@ module.exports = {
 	},
 	plugins: [
 		new Dotenv({
-			path: path.resolve(__dirname, '../../config/browser/.env'),
+			path: path.resolve(__dirname, '../../config/dashboard/.env'),
 		}),
 	],
 };

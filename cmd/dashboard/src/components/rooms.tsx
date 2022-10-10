@@ -10,20 +10,20 @@ import * as dtoentity from 'pkg/entity/dto/entity_pb';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import New_entity from './new_entity';
+import New_room from './new_room';
 
 export default () => {
 
-	// const [loadingEntities, toggleLoadingEntities] = useState(true)
+	// const [loadingRooms, toggleLoadingRooms] = useState(true)
 
-	// const [emptyEntities, toggleEmptyEntities] = useState(false)
+	// const [emptyRooms, toggleEmptyRooms] = useState(false)
 
-	// const listEntities = (req: dtoentity.ListEntityReq) => {
+	// const listRooms = (req: dtoentity.ListRoomReq) => {
 	// 	let md = new grpc.Metadata()
 	// 	md.set('token', getCookie('token')!)
 
-	// 	const prom = new Promise<dtoentity.ListEntityResp>((resolve, reject) => {
-	// 		grpc.unary(API.API.ListEntity, {
+	// 	const prom = new Promise<dtoentity.ListRoomResp>((resolve, reject) => {
+	// 		grpc.unary(API.API.ListRoom, {
 	// 			metadata: md,
 	// 			request: req,
 	// 			host: 'http://localhost:8081',
@@ -35,7 +35,7 @@ export default () => {
 	// 					return
 	// 				}
 
-	// 				resolve(message as dtoentity.ListEntityResp)
+	// 				resolve(message as dtoentity.ListRoomResp)
 	// 			}
 	// 		});
 	// 	})
@@ -43,15 +43,15 @@ export default () => {
 	// 	return prom
 	// }
 
-	// let entities = new dtoentity.ListEntityResp()
+	// let entities = new dtoentity.ListRoomResp()
 
-	// const refreshEntities = () => {
-	// 	const req = new dtoentity.ListEntityReq()
-	// 	toggleLoadingEntities(true)
-	// 	listEntities(req).then((result) => {
-	// 		console.log('found ', result.getEntitiesList().length, ' entities')
-	// 		toggleEmptyEntities((result.getEntitiesList().length == 0))
-	// 		toggleLoadingEntities(false)
+	// const refreshRooms = () => {
+	// 	const req = new dtoentity.ListRoomReq()
+	// 	toggleLoadingRooms(true)
+	// 	listRooms(req).then((result) => {
+	// 		console.log('found ', result.getRoomsList().length, ' entities')
+	// 		toggleEmptyRooms((result.getRoomsList().length == 0))
+	// 		toggleLoadingRooms(false)
 
 	// 		entities = result
 	// 	}).catch((err) => {
@@ -59,7 +59,7 @@ export default () => {
 	// 	})
 	// }
 
-	// useEffect(() => { refreshEntities() }, [])
+	// useEffect(() => { refreshRooms() }, [])
 
 	return (
 		<Grid container
@@ -69,17 +69,17 @@ export default () => {
 			justifyContent="center"
 			style={{ minHeight: '100vh' }}
 		>
-			{/* {loadingEntities &&
+			{/* {loadingRooms &&
 				<Grid item xs={3}>
 					<CircularProgress color='secondary' />
 				</Grid>
 			}
-			{!loadingEntities && emptyEntities &&
+			{!loadingRooms && emptyRooms &&
 				<Grid item xs={1}>
-					<New_entity success={refreshEntities} />
+					<New_room success={refreshRooms} />
 				</Grid>
 			}
-			{!loadingEntities && !emptyEntities &&
+			{!loadingRooms && !emptyRooms &&
 				<>{JSON.stringify(entities)}</>
 			} */}
 		</Grid>

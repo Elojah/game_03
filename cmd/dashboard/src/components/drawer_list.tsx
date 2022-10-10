@@ -22,23 +22,17 @@ export default () => {
 				</ListItemIcon>
 				<ListItemText primary="Dashboard" />
 			</ListItemButton>
-			<ListItemButton {...{ component: Link, to: "/entities" }}>
+			<ListItemButton {...{ component: Link, to: "/rooms" }}>
 				<ListItemIcon>
 					<DomainIcon />
 				</ListItemIcon>
 				<ListItemText primary="Entities" />
 			</ListItemButton>
-			<ListItemButton {...{ component: Link, to: "/assets" }}>
+			<ListItemButton {...{ component: Link, to: "/friends" }}>
 				<ListItemIcon>
 					<StorefrontIcon />
 				</ListItemIcon>
 				<ListItemText primary="Assets" />
-			</ListItemButton>
-			<ListItemButton {...{ component: Link, to: "/transactions" }}>
-				<ListItemIcon>
-					<AccountBalanceIcon />
-				</ListItemIcon>
-				<ListItemText primary="Transactions" />
 			</ListItemButton>
 		</>
 	);

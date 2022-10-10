@@ -6,9 +6,8 @@ import Container from '@mui/material/Container';
 
 import Copyright from './copyright';
 import Dashboard from './dashboard';
-import Assets from './assets';
-import Entities from './entities';
-import Transactions from './transactions';
+import Friends from './friends';
+import Rooms from './rooms';
 
 import {
 	Route,
@@ -29,9 +28,8 @@ export default () => {
 			<Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
 				<Routes>
 					<Route index element={<Dashboard />} />
-					<Route path="entities" element={<Entities />} />
-					<Route path="assets" element={<Assets />} />
-					<Route path="transactions" element={<Transactions />} />
+					<Route path="rooms" element={<Rooms />} />
+					<Route path="friends" element={<Friends />} />
 				</Routes>
 			</Container>
 			<Copyright sx={{ pt: 4 }} />

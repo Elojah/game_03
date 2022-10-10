@@ -16,13 +16,13 @@ type props = {
 	success: () => void
 }
 
-const NewEntity: React.FC<props> = ({ success }: props) => {
-	// const createEntity = (req: dtoentity.CreateEntityReq) => {
+const NewRoom: React.FC<props> = ({ success }: props) => {
+	// const createRoom = (req: dtoentity.CreateRoomReq) => {
 	// 	let md = new grpc.Metadata()
 	// 	md.set('token', getCookie('token')!)
 
 	// 	const prom = new Promise<entity.E>((resolve, reject) => {
-	// 		grpc.unary(API.API.CreateEntity, {
+	// 		grpc.unary(API.API.CreateRoom, {
 	// 			metadata: md,
 	// 			request: req,
 	// 			host: 'http://localhost:8081',
@@ -43,9 +43,9 @@ const NewEntity: React.FC<props> = ({ success }: props) => {
 	// }
 
 	// const onclick = () => {
-	// 	const req = new dtoentity.CreateEntityReq()
+	// 	const req = new dtoentity.CreateRoomReq()
 
-	// 	createEntity(req).then((result) => {
+	// 	createRoom(req).then((result) => {
 	// 		console.log('entity created')
 	// 		// refresh parent
 	// 		success()
@@ -55,11 +55,11 @@ const NewEntity: React.FC<props> = ({ success }: props) => {
 	return (
 		<>
 			<Typography variant="h6">Create new entity</Typography>
-			<IconButton color="primary" size='large' onClick={onclick}>
-				<AddCircleIcon />
-			</IconButton>
+			{/* <IconButton color="primary" size='large' onClick={onclick}> */}
+			{/* <AddCircleIcon /> */}
+			{/* </IconButton> */}
 		</>
 	);
 }
 
-export default NewEntity
+export default NewRoom
