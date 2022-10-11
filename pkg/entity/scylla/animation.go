@@ -29,6 +29,11 @@ func (f filterAnimation) where() (string, []interface{}) {
 		args = append(args, f.IDs)
 	}
 
+	if f.EntityID != nil {
+		clause = append(clause, `entity_id = ?`)
+		args = append(args, f.EntityID)
+	}
+
 	if len(f.EntityIDs) > 0 {
 		clause = append(clause, `entity_id IN ?`)
 		args = append(args, f.EntityIDs)
@@ -54,6 +59,10 @@ func (f filterAnimation) where() (string, []interface{}) {
 func (f filterAnimation) index() string {
 	var cols []string
 
+	if f.ID != nil {
+		cols = append(cols, f.ID.String())
+	}
+
 	if f.IDs != nil {
 		ss := make([]string, 0, len(f.IDs))
 		for _, id := range f.IDs {
@@ -61,6 +70,10 @@ func (f filterAnimation) index() string {
 		}
 
 		cols = append(cols, strings.Join(ss, "|"))
+	}
+
+	if f.EntityID != nil {
+		cols = append(cols, f.EntityID.String())
 	}
 
 	if f.EntityIDs != nil {

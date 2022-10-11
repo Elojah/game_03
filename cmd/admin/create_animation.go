@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"errors"
 
+	"github.com/elojah/game_03/pkg/entity"
 	"github.com/elojah/game_03/pkg/entity/dto"
 	gerrors "github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/ulid"
@@ -25,45 +27,62 @@ func (h *handler) CreateAnimation(ctx context.Context, req *dto.CreateAnimationR
 	// 	return &types.Empty{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	// }
 
-	// if _, err := h.entity.Fetch(ctx, entity.Filter{
-	// 	ID: &req.EntityID,
-	// }); err != nil {
-	// 	if errors.As(err, &gerrors.ErrNotFound{}) {
-	// 		logger.Error().Err(err).Msg("entity not found")
+	// entity.id has priority over entity.template name
+	if !req.Animation.EntityID.IsZero() {
+		if _, err := h.entity.Fetch(ctx, entity.Filter{
+			ID: req.Animation.EntityID,
+		}); err != nil {
+			if errors.As(err, &gerrors.ErrNotFound{}) {
+				logger.Error().Err(err).Msg("entity not found")
 
-	// 		return &types.Empty{}, status.New(codes.NotFound, err.Error()).Err()
-	// 	}
+				return &types.Empty{}, status.New(codes.NotFound, err.Error()).Err()
+			}
 
-	// 	logger.Error().Err(err).Msg("failed to fetch entity")
+			logger.Error().Err(err).Msg("failed to fetch entity")
 
-	// 	return &types.Empty{}, status.New(codes.Internal, err.Error()).Err()
-	// }
+			return &types.Empty{}, status.New(codes.Internal, err.Error()).Err()
+		}
+	} else if req.EntityTemplate != "" {
+		template, err := h.entity.FetchTemplate(ctx, entity.FilterTemplate{
+			Name: &req.EntityTemplate,
+		})
+		if err != nil {
+			if errors.As(err, &gerrors.ErrNotFound{}) {
+				logger.Error().Err(err).Msg("template not found")
 
-	// Parse ids
-	id, err := ulid.Parse(req.ID)
-	if err != nil {
-		logger.Error().Err(err).Msg("invalid ulid")
+				return &types.Empty{}, status.New(codes.NotFound, err.Error()).Err()
+			}
+
+			logger.Error().Err(err).Msg("failed to fetch template")
+
+			return &types.Empty{}, status.New(codes.Internal, err.Error()).Err()
+		}
+
+		req.Animation.EntityID = template.ID
+	} else {
+		err := gerrors.ErrMissingEntity{AnimationID: req.Animation.ID.String()}
+
+		logger.Error().Err(err).Msg("missing entity")
 
 		return &types.Empty{}, status.New(codes.InvalidArgument, err.Error()).Err()
 	}
 
-	sheetID, err := ulid.Parse(req.SheetID)
-	if err != nil {
-		logger.Error().Err(err).Msg("invalid ulid")
+	if req.SheetID.IsZero() {
+		err := gerrors.ErrMissingSheet{AnimationID: req.Animation.ID.String()}
+
+		logger.Error().Err(err).Msg("missing sheet")
 
 		return &types.Empty{}, status.New(codes.InvalidArgument, err.Error()).Err()
 	}
 
-	duplicateID, err := ulid.Parse(req.DuplicateID)
-	if err != nil {
-		logger.Error().Err(err).Msg("invalid ulid")
-
-		return &types.Empty{}, status.New(codes.InvalidArgument, err.Error()).Err()
+	// populate with default ids
+	if req.ID.IsZero() {
+		req.ID = ulid.NewID()
 	}
 
-	req.Animation.ID = id
-	req.Animation.SheetID = sheetID
-	req.Animation.DuplicateID = duplicateID
+	if req.DuplicateID.IsZero() {
+		req.DuplicateID = ulid.NewID()
+	}
 
 	// Create animation
 	if err := h.entity.InsertAnimation(ctx, req.Animation); err != nil {

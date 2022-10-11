@@ -15,6 +15,10 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+const (
+	maxAnimations = 100
+)
+
 func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.PC, error) {
 	logger := log.With().Str("method", "create_pc").Logger()
 
@@ -78,20 +82,18 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
-	entityID := ulid.NewID()
+	template, err := h.entity.FetchTemplate(ctx, entity.FilterTemplate{
+		Name: &req.EntityTemplate,
+	})
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to fetch template")
 
-	// #Insert default idle animation
-	defaultIDs := []ulid.ID{
-		ulid.MustParse("01FM1YY76G9879YJSZAFSGJ52Y"),
-		ulid.MustParse("01FM1YXHHEJE1CKG48CFSC8K3J"),
-		ulid.MustParse("01FKZ9H6BK0QC6TH7WAP70DK98"),
-		ulid.MustParse("01FKZ67HVD3MMPJV2DSRCJPTEN"),
-		ulid.MustParse("01FM1XM4G365AH6Y7YZ2KHDAP0"),
+		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
 	ans, _, err := h.entity.FetchManyAnimation(ctx, entity.FilterAnimation{
-		IDs:  defaultIDs,
-		Size: 5, //nolint: gomnd
+		EntityID: template.ID,
+		Size:     maxAnimations,
 	})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to fetch many animation")
@@ -99,13 +101,15 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
-	if len(ans) != 5 { //nolint: gomnd
-		err := gerrors.ErrMissingDefaultAnimations{EntityID: entityID.String()}
+	if len(ans) == 0 {
+		err := gerrors.ErrMissingDefaultAnimations{EntityID: template.ID.String()}
 
 		logger.Error().Err(err).Msg("failed to create pc")
 
 		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
 	}
+
+	entityID := ulid.NewID()
 
 	var idle ulid.ID
 
@@ -113,6 +117,7 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 		an.ID = ulid.NewID()
 		an.EntityID = entityID
 
+		// default animation name is always "idle"
 		if an.Name == "idle" {
 			idle = an.ID
 		}

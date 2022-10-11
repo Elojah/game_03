@@ -26,6 +26,7 @@ Data:
 
 ```sh
 $ ./scripts/create_default_templates.sh
+$ ./scripts/create_default_tilesheets.sh
 $ grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '' -plaintext localhost:8083 grpc.Admin/CreateWorld
 ```
 
@@ -42,7 +43,9 @@ $ grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '' -plai
 # FLOW
 ---
 
-N.B: `CreateTilesheet` is optional when using local files in `cmd/browser/dist/`
+Note: `CreateTilesheet` is optional when using local files in `cmd/browser/dist/`.
+
+Instead you can use `scripts/create_default_tilesheets.sh` once from current directory to "load" local `scripts/assets` into local browser.
 
 ### scratch setup
 

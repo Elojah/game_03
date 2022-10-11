@@ -22,6 +22,7 @@ message PC {
 
 message CreatePCReq {
     bytes RoomID           = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+	string EntityTemplate  = 2;
 }
 
 message ListPCReq {

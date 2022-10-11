@@ -9,6 +9,7 @@ import (
 type FilterAnimation struct {
 	ID        ulid.ID
 	IDs       []ulid.ID
+	EntityID  ulid.ID
 	EntityIDs []ulid.ID
 
 	State []byte

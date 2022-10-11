@@ -340,7 +340,8 @@ proto.dto.CreatePCReq.prototype.toObject = function(opt_includeInstance) {
  */
 proto.dto.CreatePCReq.toObject = function(includeInstance, msg) {
   var f, obj = {
-    roomid: msg.getRoomid_asB64()
+    roomid: msg.getRoomid_asB64(),
+    entitytemplate: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -381,6 +382,10 @@ proto.dto.CreatePCReq.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setRoomid(value);
       break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setEntitytemplate(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -414,6 +419,13 @@ proto.dto.CreatePCReq.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeBytes(
       1,
+      f
+    );
+  }
+  f = message.getEntitytemplate();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
       f
     );
   }
@@ -459,6 +471,24 @@ proto.dto.CreatePCReq.prototype.getRoomid_asU8 = function() {
  */
 proto.dto.CreatePCReq.prototype.setRoomid = function(value) {
   return jspb.Message.setProto3BytesField(this, 1, value);
+};
+
+
+/**
+ * optional string EntityTemplate = 2;
+ * @return {string}
+ */
+proto.dto.CreatePCReq.prototype.getEntitytemplate = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.dto.CreatePCReq} returns this
+ */
+proto.dto.CreatePCReq.prototype.setEntitytemplate = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 

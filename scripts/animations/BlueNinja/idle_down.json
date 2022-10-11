@@ -1,0 +1,18 @@
+{
+	"ID": "01GF3C5VDAF29VEMZVFTANR5D7",
+	"EntityTemplate": "BlueNinja",
+	"SheetID": "01GF16HSRMZ5HD82BSPTZ8YAAY",
+	"DuplicateID": "01GF3C6RE0N8MAE2W5XJ2HJVGS",
+	"Animation": {
+		"Name": "idle_up",
+		"Start": 0,
+		"End": 1,
+		"Rate": 1,
+		"FrameWidth": 16,
+		"FrameHeight": 16,
+		"FrameStart": 0,
+		"FrameEnd": 1,
+		"FrameMargin": 0,
+		"FrameSpacing": 0
+	}
+}

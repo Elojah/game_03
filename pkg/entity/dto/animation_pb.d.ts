@@ -81,18 +81,6 @@ export class CreateAnimationReq extends jspb.Message {
   getAnimation(): github_com_elojah_game_03_pkg_entity_animation_pb.Animation | undefined;
   setAnimation(value?: github_com_elojah_game_03_pkg_entity_animation_pb.Animation): void;
 
-  getId(): string;
-  setId(value: string): void;
-
-  getSheetid(): string;
-  setSheetid(value: string): void;
-
-  getDuplicateid(): string;
-  setDuplicateid(value: string): void;
-
-  getEntityid(): string;
-  setEntityid(value: string): void;
-
   getEntitytemplate(): string;
   setEntitytemplate(value: string): void;
 
@@ -109,10 +97,6 @@ export class CreateAnimationReq extends jspb.Message {
 export namespace CreateAnimationReq {
   export type AsObject = {
     animation?: github_com_elojah_game_03_pkg_entity_animation_pb.Animation.AsObject,
-    id: string,
-    sheetid: string,
-    duplicateid: string,
-    entityid: string,
     entitytemplate: string,
   }
 }

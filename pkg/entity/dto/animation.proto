@@ -28,12 +28,7 @@ message ListAnimationResp {
 }
 
 message CreateAnimationReq {
-    entity.Animation Animation           = 1 [(gogoproto.nullable) = false];
+    entity.Animation Animation           = 1 [(gogoproto.embed) = true, (gogoproto.nullable) = false];
 
-    string ID                            = 2;
-    string SheetID                       = 3;
-    string DuplicateID                   = 4;
-
-    string EntityID                      = 5;
 	string EntityTemplate                = 6;
 }

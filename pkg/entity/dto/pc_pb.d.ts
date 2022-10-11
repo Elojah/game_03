@@ -40,6 +40,9 @@ export class CreatePCReq extends jspb.Message {
   getRoomid_asB64(): string;
   setRoomid(value: Uint8Array | string): void;
 
+  getEntitytemplate(): string;
+  setEntitytemplate(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): CreatePCReq.AsObject;
   static toObject(includeInstance: boolean, msg: CreatePCReq): CreatePCReq.AsObject;
@@ -53,6 +56,7 @@ export class CreatePCReq extends jspb.Message {
 export namespace CreatePCReq {
   export type AsObject = {
     roomid: Uint8Array | string,
+    entitytemplate: string,
   }
 }
 
