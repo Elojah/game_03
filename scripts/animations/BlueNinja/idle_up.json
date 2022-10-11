@@ -3,8 +3,8 @@
 	"SheetID": "01GF16HSRMZ5HD82BSPTZ8YAAY",
 	"Animation": {
 		"Name": "idle_up",
-		"Start": 0,
-		"End": 1,
+		"Start": 1,
+		"End": 2,
 		"Rate": 1,
 		"FrameWidth": 16,
 		"FrameHeight": 16,
