@@ -1,15 +1,19 @@
 {
 	"EntityTemplate": "BlueNinja",
-	"SheetID": "01GF16HSRMZ5HD82BSPTZ8YAAY",
 	"Animation": {
+		"SheetID": "AYPCaOcU+WLUCXm2vo8pXg==",
 		"Name": "walk_down",
-		"Start": 1,
-		"End": 2,
+		"Sequence": [
+			0,
+			4,
+			8,
+			12
+		],
 		"Rate": 1,
 		"FrameWidth": 16,
 		"FrameHeight": 16,
 		"FrameStart": 0,
-		"FrameEnd": 1,
+		"FrameEnd": 27,
 		"FrameMargin": 0,
 		"FrameSpacing": 0
 	}

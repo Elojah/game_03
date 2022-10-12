@@ -26,7 +26,7 @@ goog.exportSymbol('proto.entity.Animation', null, global);
  * @constructor
  */
 proto.entity.Animation = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.entity.Animation.repeatedFields_, null);
 };
 goog.inherits(proto.entity.Animation, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -36,6 +36,13 @@ if (goog.DEBUG && !COMPILED) {
    */
   proto.entity.Animation.displayName = 'proto.entity.Animation';
 }
+
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.entity.Animation.repeatedFields_ = [8];
 
 
 
@@ -75,13 +82,14 @@ proto.entity.Animation.toObject = function(includeInstance, msg) {
     name: jspb.Message.getFieldWithDefault(msg, 5, ""),
     start: jspb.Message.getFieldWithDefault(msg, 6, 0),
     end: jspb.Message.getFieldWithDefault(msg, 7, 0),
-    rate: jspb.Message.getFieldWithDefault(msg, 8, 0),
-    framewidth: jspb.Message.getFieldWithDefault(msg, 9, 0),
-    frameheight: jspb.Message.getFieldWithDefault(msg, 10, 0),
-    framestart: jspb.Message.getFieldWithDefault(msg, 11, 0),
-    frameend: jspb.Message.getFieldWithDefault(msg, 12, 0),
-    framemargin: jspb.Message.getFieldWithDefault(msg, 13, 0),
-    framespacing: jspb.Message.getFieldWithDefault(msg, 14, 0)
+    sequenceList: (f = jspb.Message.getRepeatedField(msg, 8)) == null ? undefined : f,
+    rate: jspb.Message.getFieldWithDefault(msg, 9, 0),
+    framewidth: jspb.Message.getFieldWithDefault(msg, 10, 0),
+    frameheight: jspb.Message.getFieldWithDefault(msg, 11, 0),
+    framestart: jspb.Message.getFieldWithDefault(msg, 12, 0),
+    frameend: jspb.Message.getFieldWithDefault(msg, 13, 0),
+    framemargin: jspb.Message.getFieldWithDefault(msg, 14, 0),
+    framespacing: jspb.Message.getFieldWithDefault(msg, 15, 0)
   };
 
   if (includeInstance) {
@@ -147,30 +155,34 @@ proto.entity.Animation.deserializeBinaryFromReader = function(msg, reader) {
       msg.setEnd(value);
       break;
     case 8:
+      var value = /** @type {!Array<number>} */ (reader.readPackedInt64());
+      msg.setSequenceList(value);
+      break;
+    case 9:
       var value = /** @type {number} */ (reader.readInt32());
       msg.setRate(value);
       break;
-    case 9:
+    case 10:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setFramewidth(value);
       break;
-    case 10:
+    case 11:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setFrameheight(value);
       break;
-    case 11:
+    case 12:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setFramestart(value);
       break;
-    case 12:
+    case 13:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setFrameend(value);
       break;
-    case 13:
+    case 14:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setFramemargin(value);
       break;
-    case 14:
+    case 15:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setFramespacing(value);
       break;
@@ -252,52 +264,59 @@ proto.entity.Animation.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getSequenceList();
+  if (f.length > 0) {
+    writer.writePackedInt64(
+      8,
+      f
+    );
+  }
   f = message.getRate();
   if (f !== 0) {
     writer.writeInt32(
-      8,
+      9,
       f
     );
   }
   f = message.getFramewidth();
   if (f !== 0) {
     writer.writeInt64(
-      9,
+      10,
       f
     );
   }
   f = message.getFrameheight();
   if (f !== 0) {
     writer.writeInt64(
-      10,
+      11,
       f
     );
   }
   f = message.getFramestart();
   if (f !== 0) {
     writer.writeInt64(
-      11,
+      12,
       f
     );
   }
   f = message.getFrameend();
   if (f !== 0) {
     writer.writeInt64(
-      12,
+      13,
       f
     );
   }
   f = message.getFramemargin();
   if (f !== 0) {
     writer.writeInt64(
-      13,
+      14,
       f
     );
   }
   f = message.getFramespacing();
   if (f !== 0) {
     writer.writeInt64(
-      14,
+      15,
       f
     );
   }
@@ -527,28 +546,47 @@ proto.entity.Animation.prototype.setEnd = function(value) {
 
 
 /**
- * optional int32 Rate = 8;
- * @return {number}
+ * repeated int64 Sequence = 8;
+ * @return {!Array<number>}
  */
-proto.entity.Animation.prototype.getRate = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
+proto.entity.Animation.prototype.getSequenceList = function() {
+  return /** @type {!Array<number>} */ (jspb.Message.getRepeatedField(this, 8));
+};
+
+
+/**
+ * @param {!Array<number>} value
+ * @return {!proto.entity.Animation} returns this
+ */
+proto.entity.Animation.prototype.setSequenceList = function(value) {
+  return jspb.Message.setField(this, 8, value || []);
 };
 
 
 /**
  * @param {number} value
+ * @param {number=} opt_index
  * @return {!proto.entity.Animation} returns this
  */
-proto.entity.Animation.prototype.setRate = function(value) {
-  return jspb.Message.setProto3IntField(this, 8, value);
+proto.entity.Animation.prototype.addSequence = function(value, opt_index) {
+  return jspb.Message.addToRepeatedField(this, 8, value, opt_index);
 };
 
 
 /**
- * optional int64 FrameWidth = 9;
+ * Clears the list making it empty but non-null.
+ * @return {!proto.entity.Animation} returns this
+ */
+proto.entity.Animation.prototype.clearSequenceList = function() {
+  return this.setSequenceList([]);
+};
+
+
+/**
+ * optional int32 Rate = 9;
  * @return {number}
  */
-proto.entity.Animation.prototype.getFramewidth = function() {
+proto.entity.Animation.prototype.getRate = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 9, 0));
 };
 
@@ -557,16 +595,16 @@ proto.entity.Animation.prototype.getFramewidth = function() {
  * @param {number} value
  * @return {!proto.entity.Animation} returns this
  */
-proto.entity.Animation.prototype.setFramewidth = function(value) {
+proto.entity.Animation.prototype.setRate = function(value) {
   return jspb.Message.setProto3IntField(this, 9, value);
 };
 
 
 /**
- * optional int64 FrameHeight = 10;
+ * optional int64 FrameWidth = 10;
  * @return {number}
  */
-proto.entity.Animation.prototype.getFrameheight = function() {
+proto.entity.Animation.prototype.getFramewidth = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 10, 0));
 };
 
@@ -575,16 +613,16 @@ proto.entity.Animation.prototype.getFrameheight = function() {
  * @param {number} value
  * @return {!proto.entity.Animation} returns this
  */
-proto.entity.Animation.prototype.setFrameheight = function(value) {
+proto.entity.Animation.prototype.setFramewidth = function(value) {
   return jspb.Message.setProto3IntField(this, 10, value);
 };
 
 
 /**
- * optional int64 FrameStart = 11;
+ * optional int64 FrameHeight = 11;
  * @return {number}
  */
-proto.entity.Animation.prototype.getFramestart = function() {
+proto.entity.Animation.prototype.getFrameheight = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 11, 0));
 };
 
@@ -593,16 +631,16 @@ proto.entity.Animation.prototype.getFramestart = function() {
  * @param {number} value
  * @return {!proto.entity.Animation} returns this
  */
-proto.entity.Animation.prototype.setFramestart = function(value) {
+proto.entity.Animation.prototype.setFrameheight = function(value) {
   return jspb.Message.setProto3IntField(this, 11, value);
 };
 
 
 /**
- * optional int64 FrameEnd = 12;
+ * optional int64 FrameStart = 12;
  * @return {number}
  */
-proto.entity.Animation.prototype.getFrameend = function() {
+proto.entity.Animation.prototype.getFramestart = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 12, 0));
 };
 
@@ -611,16 +649,16 @@ proto.entity.Animation.prototype.getFrameend = function() {
  * @param {number} value
  * @return {!proto.entity.Animation} returns this
  */
-proto.entity.Animation.prototype.setFrameend = function(value) {
+proto.entity.Animation.prototype.setFramestart = function(value) {
   return jspb.Message.setProto3IntField(this, 12, value);
 };
 
 
 /**
- * optional int64 FrameMargin = 13;
+ * optional int64 FrameEnd = 13;
  * @return {number}
  */
-proto.entity.Animation.prototype.getFramemargin = function() {
+proto.entity.Animation.prototype.getFrameend = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 13, 0));
 };
 
@@ -629,16 +667,16 @@ proto.entity.Animation.prototype.getFramemargin = function() {
  * @param {number} value
  * @return {!proto.entity.Animation} returns this
  */
-proto.entity.Animation.prototype.setFramemargin = function(value) {
+proto.entity.Animation.prototype.setFrameend = function(value) {
   return jspb.Message.setProto3IntField(this, 13, value);
 };
 
 
 /**
- * optional int64 FrameSpacing = 14;
+ * optional int64 FrameMargin = 14;
  * @return {number}
  */
-proto.entity.Animation.prototype.getFramespacing = function() {
+proto.entity.Animation.prototype.getFramemargin = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 14, 0));
 };
 
@@ -647,8 +685,26 @@ proto.entity.Animation.prototype.getFramespacing = function() {
  * @param {number} value
  * @return {!proto.entity.Animation} returns this
  */
-proto.entity.Animation.prototype.setFramespacing = function(value) {
+proto.entity.Animation.prototype.setFramemargin = function(value) {
   return jspb.Message.setProto3IntField(this, 14, value);
+};
+
+
+/**
+ * optional int64 FrameSpacing = 15;
+ * @return {number}
+ */
+proto.entity.Animation.prototype.getFramespacing = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 15, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.entity.Animation} returns this
+ */
+proto.entity.Animation.prototype.setFramespacing = function(value) {
+  return jspb.Message.setProto3IntField(this, 15, value);
 };
 
 

@@ -88,6 +88,7 @@ CREATE TABLE main.entity_animation (
     name            varchar,
     start           bigint,
     end             bigint,
+    sequence        list<bigint>,
     rate            bigint,
     frame_width     bigint,
     frame_height    bigint,

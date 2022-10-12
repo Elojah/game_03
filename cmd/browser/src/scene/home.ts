@@ -237,6 +237,8 @@ export class Home extends Scene {
 						const req = new PCDTO.CreatePCReq()
 
 						req.setRoomid(roomID)
+						// TODO: make this client param
+						req.setEntitytemplate('BlueNinja')
 
 						return req
 					})())

@@ -13,7 +13,7 @@ import (
 
 // TMP DATA FOR DEV WIP.
 
-var defaultWorldID = ulid.MustParse("01GERY2PCNDSKA2SR22VC2ETA5")
+var defaultWorldID = ulid.MustParse("01GF5Y51ECWS2ZPS976E379FJF")
 
 // !TMP DATA FOR DEV WIP
 

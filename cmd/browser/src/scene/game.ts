@@ -984,11 +984,12 @@ export class Game extends Scene {
 
 						const loadAnim = () => {
 							// Create animation
+							const seq = an.getSequenceList().length > 0 ? { frames: an.getSequenceList() } : { start: an.getStart(), end: an.getEnd() };
 							const newAnim = this.anims.create({
 								key: duplicateID,
 								frames: this.anims.generateFrameNumbers(
 									sheetID,
-									{ start: an.getStart(), end: an.getEnd() },
+									seq,
 								),
 								frameRate: an.getRate(),
 								repeat: -1,

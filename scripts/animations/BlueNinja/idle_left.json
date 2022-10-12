@@ -1,7 +1,7 @@
 {
 	"EntityTemplate": "BlueNinja",
-	"SheetID": "01GF16HSRMZ5HD82BSPTZ8YAAY",
 	"Animation": {
+		"SheetID": "AYPCaOcU+WLUCXm2vo8pXg==",
 		"Name": "idle_left",
 		"Start": 2,
 		"End": 3,
@@ -9,7 +9,7 @@
 		"FrameWidth": 16,
 		"FrameHeight": 16,
 		"FrameStart": 0,
-		"FrameEnd": 1,
+		"FrameEnd": 27,
 		"FrameMargin": 0,
 		"FrameSpacing": 0
 	}

@@ -76,13 +76,13 @@ export namespace ListAnimationResp {
 }
 
 export class CreateAnimationReq extends jspb.Message {
+  getEntitytemplate(): string;
+  setEntitytemplate(value: string): void;
+
   hasAnimation(): boolean;
   clearAnimation(): void;
   getAnimation(): github_com_elojah_game_03_pkg_entity_animation_pb.Animation | undefined;
   setAnimation(value?: github_com_elojah_game_03_pkg_entity_animation_pb.Animation): void;
-
-  getEntitytemplate(): string;
-  setEntitytemplate(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): CreateAnimationReq.AsObject;
@@ -96,8 +96,8 @@ export class CreateAnimationReq extends jspb.Message {
 
 export namespace CreateAnimationReq {
   export type AsObject = {
-    animation?: github_com_elojah_game_03_pkg_entity_animation_pb.Animation.AsObject,
     entitytemplate: string,
+    animation?: github_com_elojah_game_03_pkg_entity_animation_pb.Animation.AsObject,
   }
 }
 

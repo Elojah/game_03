@@ -93,12 +93,12 @@ func (s Store) InsertAnimation(ctx context.Context, an entity.Animation) error {
 		`INSERT INTO main.entity_animation (
 			id, entity_id, sheet_id, duplicate_id,
 			name,
-			start, end, rate,
+			start, end, sequence, rate,
 			frame_width, frame_height, frame_start, frame_end, frame_margin, frame_spacing
-		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 		an.ID, an.EntityID, an.SheetID, an.DuplicateID,
 		an.Name,
-		an.Start, an.End, an.Rate,
+		an.Start, an.End, an.Sequence, an.Rate,
 		an.FrameWidth, an.FrameHeight, an.FrameStart, an.FrameEnd, an.FrameMargin, an.FrameSpacing,
 	).WithContext(ctx)
 
@@ -116,7 +116,7 @@ func (s Store) FetchAnimation(ctx context.Context, f entity.FilterAnimation) (en
 	b.WriteString(`SELECT
 		id, entity_id, sheet_id, duplicate_id,
 		name,
-		start, end, rate,
+		start, end, sequence, rate,
 		frame_width, frame_height, frame_start, frame_end, frame_margin, frame_spacing
 	FROM main.entity_animation `)
 
@@ -129,7 +129,7 @@ func (s Store) FetchAnimation(ctx context.Context, f entity.FilterAnimation) (en
 	if err := q.Scan(
 		&an.ID, &an.EntityID, &an.SheetID, &an.DuplicateID,
 		&an.Name,
-		&an.Start, &an.End, &an.Rate,
+		&an.Start, &an.End, &an.Sequence, &an.Rate,
 		&an.FrameWidth, &an.FrameHeight, &an.FrameStart, &an.FrameEnd, &an.FrameMargin, &an.FrameSpacing,
 	); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
@@ -151,7 +151,7 @@ func (s Store) FetchManyAnimation(ctx context.Context, f entity.FilterAnimation)
 	b.WriteString(`SELECT
 		id, entity_id, sheet_id, duplicate_id,
 		name,
-		start, end, rate,
+		start, end, sequence, rate,
 		frame_width, frame_height, frame_start, frame_end, frame_margin, frame_spacing
 	FROM main.entity_animation `)
 
@@ -178,7 +178,7 @@ func (s Store) FetchManyAnimation(ctx context.Context, f entity.FilterAnimation)
 		if err := scanner.Scan(
 			&ans[i].ID, &ans[i].EntityID, &ans[i].SheetID, &ans[i].DuplicateID,
 			&ans[i].Name,
-			&ans[i].Start, &ans[i].End, &ans[i].Rate,
+			&ans[i].Start, &ans[i].End, &ans[i].Sequence, &ans[i].Rate,
 			&ans[i].FrameWidth, &ans[i].FrameHeight,
 			&ans[i].FrameStart, &ans[i].FrameEnd,
 			&ans[i].FrameMargin, &ans[i].FrameSpacing,

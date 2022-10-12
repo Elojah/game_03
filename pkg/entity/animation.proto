@@ -14,21 +14,22 @@ option (gogoproto.goproto_registration) = true;
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 message Animation {
-    bytes ID           = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
-    bytes EntityID     = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
-    bytes SheetID      = 3 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
-    bytes DuplicateID  = 4 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    bytes ID                = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    bytes EntityID          = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    bytes SheetID           = 3 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    bytes DuplicateID       = 4 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
 
-    string Name        = 5;
+    string Name             = 5;
 
-    int64 Start        = 6;
-    int64 End          = 7;
-    int32 Rate         = 8;
+    int64 Start             = 6;
+    int64 End               = 7;
+	repeated int64 Sequence = 8;
+    int32 Rate              = 9;
 
-    int64 FrameWidth   = 9;
-    int64 FrameHeight  = 10;
-    int64 FrameStart   = 11;
-    int64 FrameEnd     = 12;
-    int64 FrameMargin  = 13;
-    int64 FrameSpacing = 14;
+    int64 FrameWidth        = 10;
+    int64 FrameHeight       = 11;
+    int64 FrameStart        = 12;
+    int64 FrameEnd          = 13;
+    int64 FrameMargin       = 14;
+    int64 FrameSpacing      = 15;
 }

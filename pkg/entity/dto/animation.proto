@@ -28,7 +28,6 @@ message ListAnimationResp {
 }
 
 message CreateAnimationReq {
-    entity.Animation Animation           = 1 [(gogoproto.embed) = true, (gogoproto.nullable) = false];
-
-	string EntityTemplate                = 6;
+	string EntityTemplate                = 1;
+    entity.Animation Animation           = 2 [(gogoproto.embed) = true, (gogoproto.nullable) = false];
 }

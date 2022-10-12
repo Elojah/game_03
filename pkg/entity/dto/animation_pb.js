@@ -665,8 +665,8 @@ proto.dto.CreateAnimationReq.prototype.toObject = function(opt_includeInstance) 
  */
 proto.dto.CreateAnimationReq.toObject = function(includeInstance, msg) {
   var f, obj = {
-    animation: (f = msg.getAnimation()) && github_com_elojah_game_03_pkg_entity_animation_pb.Animation.toObject(includeInstance, f),
-    entitytemplate: jspb.Message.getFieldWithDefault(msg, 6, "")
+    entitytemplate: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    animation: (f = msg.getAnimation()) && github_com_elojah_game_03_pkg_entity_animation_pb.Animation.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -704,13 +704,13 @@ proto.dto.CreateAnimationReq.deserializeBinaryFromReader = function(msg, reader)
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setEntitytemplate(value);
+      break;
+    case 2:
       var value = new github_com_elojah_game_03_pkg_entity_animation_pb.Animation;
       reader.readMessage(value,github_com_elojah_game_03_pkg_entity_animation_pb.Animation.deserializeBinaryFromReader);
       msg.setAnimation(value);
-      break;
-    case 6:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setEntitytemplate(value);
       break;
     default:
       reader.skipField();
@@ -741,31 +741,49 @@ proto.dto.CreateAnimationReq.prototype.serializeBinary = function() {
  */
 proto.dto.CreateAnimationReq.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getAnimation();
-  if (f != null) {
-    writer.writeMessage(
-      1,
-      f,
-      github_com_elojah_game_03_pkg_entity_animation_pb.Animation.serializeBinaryToWriter
-    );
-  }
   f = message.getEntitytemplate();
   if (f.length > 0) {
     writer.writeString(
-      6,
+      1,
       f
+    );
+  }
+  f = message.getAnimation();
+  if (f != null) {
+    writer.writeMessage(
+      2,
+      f,
+      github_com_elojah_game_03_pkg_entity_animation_pb.Animation.serializeBinaryToWriter
     );
   }
 };
 
 
 /**
- * optional entity.Animation Animation = 1;
+ * optional string EntityTemplate = 1;
+ * @return {string}
+ */
+proto.dto.CreateAnimationReq.prototype.getEntitytemplate = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.dto.CreateAnimationReq} returns this
+ */
+proto.dto.CreateAnimationReq.prototype.setEntitytemplate = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional entity.Animation Animation = 2;
  * @return {?proto.entity.Animation}
  */
 proto.dto.CreateAnimationReq.prototype.getAnimation = function() {
   return /** @type{?proto.entity.Animation} */ (
-    jspb.Message.getWrapperField(this, github_com_elojah_game_03_pkg_entity_animation_pb.Animation, 1));
+    jspb.Message.getWrapperField(this, github_com_elojah_game_03_pkg_entity_animation_pb.Animation, 2));
 };
 
 
@@ -774,7 +792,7 @@ proto.dto.CreateAnimationReq.prototype.getAnimation = function() {
  * @return {!proto.dto.CreateAnimationReq} returns this
 */
 proto.dto.CreateAnimationReq.prototype.setAnimation = function(value) {
-  return jspb.Message.setWrapperField(this, 1, value);
+  return jspb.Message.setWrapperField(this, 2, value);
 };
 
 
@@ -792,25 +810,7 @@ proto.dto.CreateAnimationReq.prototype.clearAnimation = function() {
  * @return {boolean}
  */
 proto.dto.CreateAnimationReq.prototype.hasAnimation = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * optional string EntityTemplate = 6;
- * @return {string}
- */
-proto.dto.CreateAnimationReq.prototype.getEntitytemplate = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.dto.CreateAnimationReq} returns this
- */
-proto.dto.CreateAnimationReq.prototype.setEntitytemplate = function(value) {
-  return jspb.Message.setProto3StringField(this, 6, value);
+  return jspb.Message.getField(this, 2) != null;
 };
 
 

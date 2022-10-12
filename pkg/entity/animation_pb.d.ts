@@ -34,6 +34,11 @@ export class Animation extends jspb.Message {
   getEnd(): number;
   setEnd(value: number): void;
 
+  clearSequenceList(): void;
+  getSequenceList(): Array<number>;
+  setSequenceList(value: Array<number>): void;
+  addSequence(value: number, index?: number): number;
+
   getRate(): number;
   setRate(value: number): void;
 
@@ -74,6 +79,7 @@ export namespace Animation {
     name: string,
     start: number,
     end: number,
+    sequenceList: Array<number>,
     rate: number,
     framewidth: number,
     frameheight: number,

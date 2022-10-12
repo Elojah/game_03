@@ -2,9 +2,13 @@
 	"EntityTemplate": "BlueNinja",
 	"Animation": {
 		"SheetID": "AYPCaOcU+WLUCXm2vo8pXg==",
-		"Name": "idle_right",
-		"Start": 3,
-		"End": 4,
+		"Name": "walk_left",
+		"Sequence": [
+			2,
+			6,
+			10,
+			14
+		],
 		"Rate": 1,
 		"FrameWidth": 16,
 		"FrameHeight": 16,
