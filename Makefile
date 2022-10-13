@@ -25,7 +25,6 @@ ADMIN             = admin
 AUTH              = auth
 WEB               = web
 BROWSER           = browser
-DASHBOARD         = dashboard
 
 # Static directory name for browser
 STATIC            = static
@@ -86,13 +85,6 @@ browser:  ## Build browser content
 	$Q cd cmd/$(BROWSER) && npx webpack --config webpack.config.js
 	$Q mkdir -p bin && rm -rf bin/$(STATIC) && mkdir -p bin/$(STATIC)
 	$Q yes | cp -rf cmd/$(BROWSER)/dist/. bin/$(STATIC)/
-
-.PHONY: dashboard
-dashboard:  ## Build dashboard content
-	$(info $(M) building bundle dashboard…) @
-	$Q cd cmd/$(DASHBOARD) && npx webpack --config webpack.config.js
-	$Q mkdir -p bin && rm -rf bin/$(STATIC) && mkdir -p bin/$(STATIC)
-	$Q yes | cp -rf cmd/$(DASHBOARD)/dist/. bin/$(STATIC)/
 
 # Proto lang
 .PHONY: proto-go proto-ts

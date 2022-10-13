@@ -48,6 +48,7 @@ type BodyEntity = {
 	E: Entity.E
 	Body: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
 	Animations: Map<string, string>
+	Orientation: Orientation
 }
 
 type GraphicEntity = {
@@ -141,7 +142,8 @@ export class Game extends Scene {
 		this.Entity = {
 			E: e,
 			Body: this.physics.add.sprite(0, 0, ''),
-			Animations: new Map()
+			Animations: new Map(),
+			Orientation: Orientation.Down
 		}
 		this.EntityID = ulid(this.Entity.E.getId_asU8())
 
@@ -234,19 +236,36 @@ export class Game extends Scene {
 		// Move entity
 		this.Entity.Body.body.setVelocity(0)
 		if (this.Cursors.up.isDown) {
-			animationID = this.Entity.Animations.get('up')
+			animationID = this.Entity.Animations.get('walk_up')
 			this.Entity.Body.body.setVelocityY(-speed)
+			this.Entity.Orientation = Orientation.Up
 		} else if (this.Cursors.right.isDown) {
-			animationID = this.Entity.Animations.get('right')
+			animationID = this.Entity.Animations.get('walk_right')
 			this.Entity.Body.body.setVelocityX(speed)
+			this.Entity.Orientation = Orientation.Right
 		} else if (this.Cursors.down.isDown) {
-			animationID = this.Entity.Animations.get('down')
+			animationID = this.Entity.Animations.get('walk_down')
 			this.Entity.Body.body.setVelocityY(speed)
+			this.Entity.Orientation = Orientation.Down
 		} else if (this.Cursors.left.isDown) {
-			animationID = this.Entity.Animations.get('left')
+			animationID = this.Entity.Animations.get('walk_left')
 			this.Entity.Body.body.setVelocityX(-speed)
+			this.Entity.Orientation = Orientation.Left
 		} else {
-			animationID = this.Entity.Animations.get('idle')
+			switch (this.Entity.Orientation) {
+				case Orientation.Up:
+					animationID = this.Entity.Animations.get('idle_up')
+					break
+				case Orientation.Right:
+					animationID = this.Entity.Animations.get('idle_right')
+					break
+				case Orientation.Down:
+					animationID = this.Entity.Animations.get('idle_down')
+					break
+				case Orientation.Left:
+					animationID = this.Entity.Animations.get('idle_left')
+					break
+			}
 		}
 
 		if (animationID) {

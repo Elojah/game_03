@@ -27,6 +27,7 @@ Data:
 ```sh
 $ ./scripts/create_default_templates.sh
 $ ./scripts/create_default_tilesheets.sh
+$ ./scripts/create_default_animations.sh
 $ grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '' -plaintext localhost:8083 grpc.Admin/CreateWorld
 ```
 
