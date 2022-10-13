@@ -14,7 +14,11 @@ type config struct {
 	Scylla scylla.Config `json:"scylla"`
 	GRPC   grpc.Config   `json:"grpc"`
 	Redis  redis.Config  `json:"redis"`
+
 	Twitch oauth2.Config `json:"twitch"`
+	Google oauth2.Config `json:"google"`
+
+	JWTSecret string `json:"jwt_secret"`
 }
 
 // Populate populates config object reading file and env.

@@ -15,8 +15,10 @@ type App interface {
 }
 
 type Filter struct {
-	ID       ulid.ID
-	IDs      []ulid.ID
+	ID  ulid.ID
+	IDs []ulid.ID
+
+	GoogleID *string
 	TwitchID *string
 
 	State []byte

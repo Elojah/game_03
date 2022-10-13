@@ -25,6 +25,8 @@ ADMIN             = admin
 AUTH              = auth
 WEB               = web
 BROWSER           = browser
+DASHBOARD         = dashboard
+WEB_DASHBOARD     = web_dashboard
 
 # Static directory name for browser
 STATIC            = static
@@ -79,12 +81,29 @@ web: ## Build web binary
 		-o ../../bin/$(PACKAGE)_$(WEB)_$(VERSION)
 	$Q yes | cp -rf bin/$(PACKAGE)_$(WEB)_$(VERSION) bin/$(PACKAGE)_$(WEB)
 
+.PHONY: web_dashboard
+web_dashboard: ## Build web_dashboard binary
+	$(info $(M) building executable web_dashboard…) @
+	$Q cd cmd/$(WEB_DASHBOARD) && $(GO) build \
+		-mod=readonly \
+		-tags release \
+		-ldflags '-X main.version=$(VERSION)' \
+		-o ../../bin/$(PACKAGE)_$(WEB_DASHBOARD)_$(VERSION)
+	$Q yes | cp -rf bin/$(PACKAGE)_$(WEB_DASHBOARD)_$(VERSION) bin/$(PACKAGE)_$(WEB_DASHBOARD)
+
 .PHONY: browser
 browser:  ## Build browser content
 	$(info $(M) building bundle browser…) @
 	$Q cd cmd/$(BROWSER) && npx webpack --config webpack.config.js
 	$Q mkdir -p bin && rm -rf bin/$(STATIC) && mkdir -p bin/$(STATIC)
 	$Q yes | cp -rf cmd/$(BROWSER)/dist/. bin/$(STATIC)/
+
+.PHONY: dashboard
+dashboard:  ## Build dashboard content
+	$(info $(M) building bundle dashboard…) @
+	$Q cd cmd/$(DASHBOARD) && npx webpack --config webpack.config.js
+	$Q mkdir -p bin && rm -rf bin/$(STATIC) && mkdir -p bin/$(STATIC)
+	$Q yes | cp -rf cmd/$(DASHBOARD)/dist/. bin/$(STATIC)/
 
 # Proto lang
 .PHONY: proto-go proto-ts
@@ -95,6 +114,7 @@ proto-go proto-ts: ## Regenerate protobuf files
 	$(info $(M) generate utils…) @
 	$Q $(GEN_PB_$(PB_LANG)) github.com/gogo/protobuf/gogoproto/gogo.proto
 	$(info $(M) generate domain…) @
+	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/cookie/keys.proto
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/entity/animation.proto
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/entity/entity.proto
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/entity/npc.proto

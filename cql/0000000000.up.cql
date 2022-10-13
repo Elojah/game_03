@@ -19,7 +19,7 @@ CREATE INDEX ON main.role(set_id);
 CREATE TABLE main.session (
     id              uuid PRIMARY KEY,
     user_id         uuid,
-    twitch_token    varchar
+    token           varchar
 );
 
 CREATE INDEX ON main.session(user_id);

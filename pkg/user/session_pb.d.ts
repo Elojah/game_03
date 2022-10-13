@@ -15,8 +15,8 @@ export class Session extends jspb.Message {
   getUserid_asB64(): string;
   setUserid(value: Uint8Array | string): void;
 
-  getTwitchtoken(): string;
-  setTwitchtoken(value: string): void;
+  getToken(): string;
+  setToken(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Session.AsObject;
@@ -32,7 +32,7 @@ export namespace Session {
   export type AsObject = {
     id: Uint8Array | string,
     userid: Uint8Array | string,
-    twitchtoken: string,
+    token: string,
   }
 }
 

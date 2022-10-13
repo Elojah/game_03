@@ -17,8 +17,11 @@ import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
 
 service Auth {
-    // Login
-    rpc Login(google.protobuf.StringValue) returns (google.protobuf.StringValue);
+    // Signin Twitch
+    rpc SigninTwitch(google.protobuf.StringValue) returns (google.protobuf.StringValue);
+
+	// Signin Google
+	rpc SigninGoogle(google.protobuf.StringValue) returns (google.protobuf.StringValue);
 
     // Ping
     rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);

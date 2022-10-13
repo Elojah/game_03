@@ -9,6 +9,9 @@ import (
 	"time"
 
 	admingrpc "github.com/elojah/game_03/cmd/admin/grpc"
+	"github.com/elojah/game_03/pkg/cookie"
+	cookieapp "github.com/elojah/game_03/pkg/cookie/app"
+	cookieredis "github.com/elojah/game_03/pkg/cookie/redis"
 	entityapp "github.com/elojah/game_03/pkg/entity/app"
 	entityscylla "github.com/elojah/game_03/pkg/entity/scylla"
 	migrateapp "github.com/elojah/game_03/pkg/migrate/app"
@@ -16,6 +19,7 @@ import (
 	roomscylla "github.com/elojah/game_03/pkg/room/scylla"
 	ggrpc "github.com/elojah/go-grpc"
 	glog "github.com/elojah/go-log"
+	"github.com/elojah/go-redis"
 	"github.com/elojah/go-scylla"
 	"github.com/hashicorp/go-multierror"
 	"github.com/rs/zerolog/log"
@@ -85,6 +89,35 @@ func run(prog string, filename string) {
 
 	cs = append(cs, &scyllas)
 
+	// init redis storage
+	rediss := redis.Service{}
+	if err := rediss.Dial(ctx, cfg.Redis); err != nil {
+		log.Error().Err(err).Msg("failed to dial redis")
+
+		return
+	}
+
+	cs = append(cs, &rediss)
+
+	cookieStore := &cookieredis.Store{Service: rediss}
+	cookieApp := &cookieapp.A{
+		StoreKeys: cookieStore,
+	}
+
+	// setup initial cookie keys
+	if err := cookieApp.Setup(ctx, cookie.NKeys); err != nil {
+		log.Error().Err(err).Msg("failed to setup cookie keys")
+
+		return
+	}
+
+	// sync local keys every 60 seconds
+	go func() {
+		if err := cookieApp.AutoSyncKeys(context.Background(), 60); err != nil { //nolint: gomnd
+			log.Error().Err(err).Msg("failed to auto sync keys")
+		}
+	}()
+
 	migrateApp := migrateapp.App{
 		Service: &scyllas,
 	}
@@ -111,6 +144,7 @@ func run(prog string, filename string) {
 
 	h := handler{
 		migrate: &migrateApp,
+		cookie:  cookieApp,
 		room:    roomApp,
 		entity:  entityApp,
 	}

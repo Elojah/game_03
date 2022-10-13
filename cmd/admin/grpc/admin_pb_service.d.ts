@@ -19,6 +19,24 @@ type AdminMigrateUp = {
   readonly responseType: typeof google_protobuf_empty_pb.Empty;
 };
 
+type AdminRotateCookieKeys = {
+  readonly methodName: string;
+  readonly service: typeof Admin;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof google_protobuf_empty_pb.Empty;
+  readonly responseType: typeof google_protobuf_empty_pb.Empty;
+};
+
+type AdminPing = {
+  readonly methodName: string;
+  readonly service: typeof Admin;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof google_protobuf_empty_pb.Empty;
+  readonly responseType: typeof google_protobuf_empty_pb.Empty;
+};
+
 type AdminCreateTileset = {
   readonly methodName: string;
   readonly service: typeof Admin;
@@ -55,23 +73,15 @@ type AdminCreateAnimation = {
   readonly responseType: typeof google_protobuf_empty_pb.Empty;
 };
 
-type AdminPing = {
-  readonly methodName: string;
-  readonly service: typeof Admin;
-  readonly requestStream: false;
-  readonly responseStream: false;
-  readonly requestType: typeof google_protobuf_empty_pb.Empty;
-  readonly responseType: typeof google_protobuf_empty_pb.Empty;
-};
-
 export class Admin {
   static readonly serviceName: string;
   static readonly MigrateUp: AdminMigrateUp;
+  static readonly RotateCookieKeys: AdminRotateCookieKeys;
+  static readonly Ping: AdminPing;
   static readonly CreateTileset: AdminCreateTileset;
   static readonly CreateWorld: AdminCreateWorld;
   static readonly CreateTemplate: AdminCreateTemplate;
   static readonly CreateAnimation: AdminCreateAnimation;
-  static readonly Ping: AdminPing;
 }
 
 export type ServiceError = { message: string, code: number; metadata: grpc.Metadata }
@@ -115,6 +125,24 @@ export class AdminClient {
     requestMessage: google_protobuf_wrappers_pb.StringValue,
     callback: (error: ServiceError|null, responseMessage: google_protobuf_empty_pb.Empty|null) => void
   ): UnaryResponse;
+  rotateCookieKeys(
+    requestMessage: google_protobuf_empty_pb.Empty,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: google_protobuf_empty_pb.Empty|null) => void
+  ): UnaryResponse;
+  rotateCookieKeys(
+    requestMessage: google_protobuf_empty_pb.Empty,
+    callback: (error: ServiceError|null, responseMessage: google_protobuf_empty_pb.Empty|null) => void
+  ): UnaryResponse;
+  ping(
+    requestMessage: google_protobuf_empty_pb.Empty,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: google_protobuf_empty_pb.Empty|null) => void
+  ): UnaryResponse;
+  ping(
+    requestMessage: google_protobuf_empty_pb.Empty,
+    callback: (error: ServiceError|null, responseMessage: google_protobuf_empty_pb.Empty|null) => void
+  ): UnaryResponse;
   createTileset(
     requestMessage: github_com_elojah_game_03_pkg_tile_dto_set_pb.CreateTilesetReq,
     metadata: grpc.Metadata,
@@ -149,15 +177,6 @@ export class AdminClient {
   ): UnaryResponse;
   createAnimation(
     requestMessage: github_com_elojah_game_03_pkg_entity_dto_animation_pb.CreateAnimationReq,
-    callback: (error: ServiceError|null, responseMessage: google_protobuf_empty_pb.Empty|null) => void
-  ): UnaryResponse;
-  ping(
-    requestMessage: google_protobuf_empty_pb.Empty,
-    metadata: grpc.Metadata,
-    callback: (error: ServiceError|null, responseMessage: google_protobuf_empty_pb.Empty|null) => void
-  ): UnaryResponse;
-  ping(
-    requestMessage: google_protobuf_empty_pb.Empty,
     callback: (error: ServiceError|null, responseMessage: google_protobuf_empty_pb.Empty|null) => void
   ): UnaryResponse;
 }

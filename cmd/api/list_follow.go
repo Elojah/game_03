@@ -38,7 +38,7 @@ func (h *handler) ListFollow(ctx context.Context, req *dto.ListFollowReq) (*dto.
 
 	cursor, err := h.twitch.GetFollows(ctx,
 		twitch.Auth{
-			Token:    ses.TwitchToken,
+			Token:    ses.Token,
 			ClientID: h.twitch.OAuth().ClientID,
 		},
 		twitch.FollowFilter{

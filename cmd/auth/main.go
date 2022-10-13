@@ -10,6 +10,7 @@ import (
 	"time"
 
 	authgrpc "github.com/elojah/game_03/cmd/auth/grpc"
+	googleapp "github.com/elojah/game_03/pkg/google/app"
 	twitchapp "github.com/elojah/game_03/pkg/twitch/app"
 	twitchhttp "github.com/elojah/game_03/pkg/twitch/http"
 	userapp "github.com/elojah/game_03/pkg/user/app"
@@ -92,12 +93,19 @@ func run(prog string, filename string) {
 		},
 	}
 	if err := twitchApp.Dial(ctx, cfg.Twitch); err != nil {
-		log.Error().Err(err).Msg("failed to dial twitch client")
+		log.Error().Err(err).Msg("failed to dial twitch app")
 
 		return
 	}
 
-	cs = append(cs, &twitchApp)
+	googleApp := googleapp.App{}
+	if err := googleApp.Dial(ctx, cfg.Google); err != nil {
+		log.Error().Err(err).Msg("failed to dial google app")
+
+		return
+	}
+
+	cs = append(cs, &googleApp)
 
 	userStore := &userscylla.Store{Service: scyllas}
 	userApp := userapp.App{

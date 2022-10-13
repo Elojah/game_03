@@ -6,7 +6,16 @@ import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty
 import * as google_protobuf_wrappers_pb from "google-protobuf/google/protobuf/wrappers_pb";
 import {grpc} from "@improbable-eng/grpc-web";
 
-type AuthLogin = {
+type AuthSigninTwitch = {
+  readonly methodName: string;
+  readonly service: typeof Auth;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof google_protobuf_wrappers_pb.StringValue;
+  readonly responseType: typeof google_protobuf_wrappers_pb.StringValue;
+};
+
+type AuthSigninGoogle = {
   readonly methodName: string;
   readonly service: typeof Auth;
   readonly requestStream: false;
@@ -26,7 +35,8 @@ type AuthPing = {
 
 export class Auth {
   static readonly serviceName: string;
-  static readonly Login: AuthLogin;
+  static readonly SigninTwitch: AuthSigninTwitch;
+  static readonly SigninGoogle: AuthSigninGoogle;
   static readonly Ping: AuthPing;
 }
 
@@ -62,12 +72,21 @@ export class AuthClient {
   readonly serviceHost: string;
 
   constructor(serviceHost: string, options?: grpc.RpcOptions);
-  login(
+  signinTwitch(
     requestMessage: google_protobuf_wrappers_pb.StringValue,
     metadata: grpc.Metadata,
     callback: (error: ServiceError|null, responseMessage: google_protobuf_wrappers_pb.StringValue|null) => void
   ): UnaryResponse;
-  login(
+  signinTwitch(
+    requestMessage: google_protobuf_wrappers_pb.StringValue,
+    callback: (error: ServiceError|null, responseMessage: google_protobuf_wrappers_pb.StringValue|null) => void
+  ): UnaryResponse;
+  signinGoogle(
+    requestMessage: google_protobuf_wrappers_pb.StringValue,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: google_protobuf_wrappers_pb.StringValue|null) => void
+  ): UnaryResponse;
+  signinGoogle(
     requestMessage: google_protobuf_wrappers_pb.StringValue,
     callback: (error: ServiceError|null, responseMessage: google_protobuf_wrappers_pb.StringValue|null) => void
   ): UnaryResponse;

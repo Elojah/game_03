@@ -70,7 +70,7 @@ proto.user.Session.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: msg.getId_asB64(),
     userid: msg.getUserid_asB64(),
-    twitchtoken: jspb.Message.getFieldWithDefault(msg, 3, "")
+    token: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -117,7 +117,7 @@ proto.user.Session.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 3:
       var value = /** @type {string} */ (reader.readString());
-      msg.setTwitchtoken(value);
+      msg.setToken(value);
       break;
     default:
       reader.skipField();
@@ -162,7 +162,7 @@ proto.user.Session.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getTwitchtoken();
+  f = message.getToken();
   if (f.length > 0) {
     writer.writeString(
       3,
@@ -257,10 +257,10 @@ proto.user.Session.prototype.setUserid = function(value) {
 
 
 /**
- * optional string TwitchToken = 3;
+ * optional string Token = 3;
  * @return {string}
  */
-proto.user.Session.prototype.getTwitchtoken = function() {
+proto.user.Session.prototype.getToken = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
@@ -269,7 +269,7 @@ proto.user.Session.prototype.getTwitchtoken = function() {
  * @param {string} value
  * @return {!proto.user.Session} returns this
  */
-proto.user.Session.prototype.setTwitchtoken = function(value) {
+proto.user.Session.prototype.setToken = function(value) {
   return jspb.Message.setProto3StringField(this, 3, value);
 };
 

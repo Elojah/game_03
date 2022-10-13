@@ -13,6 +13,9 @@ export class U extends jspb.Message {
   getTwitchid(): string;
   setTwitchid(value: string): void;
 
+  getGoogleid(): string;
+  setGoogleid(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): U.AsObject;
   static toObject(includeInstance: boolean, msg: U): U.AsObject;
@@ -27,6 +30,7 @@ export namespace U {
   export type AsObject = {
     id: Uint8Array | string,
     twitchid: string,
+    googleid: string,
   }
 }
 

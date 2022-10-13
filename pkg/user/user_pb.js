@@ -69,7 +69,8 @@ proto.user.U.prototype.toObject = function(opt_includeInstance) {
 proto.user.U.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: msg.getId_asB64(),
-    twitchid: jspb.Message.getFieldWithDefault(msg, 2, "")
+    twitchid: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    googleid: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -114,6 +115,10 @@ proto.user.U.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setTwitchid(value);
       break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setGoogleid(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -154,6 +159,13 @@ proto.user.U.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeString(
       2,
+      f
+    );
+  }
+  f = message.getGoogleid();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
       f
     );
   }
@@ -217,6 +229,24 @@ proto.user.U.prototype.getTwitchid = function() {
  */
 proto.user.U.prototype.setTwitchid = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional string GoogleID = 3;
+ * @return {string}
+ */
+proto.user.U.prototype.getGoogleid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.user.U} returns this
+ */
+proto.user.U.prototype.setGoogleid = function(value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
