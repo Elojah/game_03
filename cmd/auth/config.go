@@ -17,8 +17,6 @@ type config struct {
 
 	Twitch oauth2.Config `json:"twitch"`
 	Google oauth2.Config `json:"google"`
-
-	JWTSecret string `json:"jwt_secret"`
 }
 
 // Populate populates config object reading file and env.

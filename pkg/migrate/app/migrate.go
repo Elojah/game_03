@@ -12,10 +12,10 @@ type App struct {
 	*scylla.Service
 }
 
-func (a *App) Up(ctx context.Context, dir string) error {
+func (a App) Up(ctx context.Context, dir string) error {
 	return migrate.Migrate(ctx, a.Session, dir)
 }
 
-func (a *App) Down(context.Context, string) error {
+func (a App) Down(context.Context, string) error {
 	return errors.ErrNotImplemented{Version: "soontm"}
 }

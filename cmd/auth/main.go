@@ -116,7 +116,9 @@ func run(prog string, filename string) {
 	// init handler
 	h := handler{
 		twitch: twitchApp,
-		user:   userApp,
+		google: googleApp,
+
+		user: userApp,
 	}
 
 	// init grpc api server

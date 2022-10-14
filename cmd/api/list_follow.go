@@ -4,9 +4,7 @@ import (
 	"context"
 
 	gerrors "github.com/elojah/game_03/pkg/errors"
-	"github.com/elojah/game_03/pkg/twitch"
 	"github.com/elojah/game_03/pkg/twitch/dto"
-	"github.com/elojah/game_03/pkg/user"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -25,41 +23,43 @@ func (h *handler) ListFollow(ctx context.Context, req *dto.ListFollowReq) (*dto.
 		return &dto.ListFollowResp{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	}
 
-	// #Fetch complete user
-	uc, err := h.user.Fetch(ctx, user.Filter{ID: u.ID})
-	if err != nil {
-		logger.Error().Err(err).Msg("failed to fetch user")
+	_ = u
 
-		return &dto.ListFollowResp{}, status.New(codes.Internal, err.Error()).Err()
-	}
+	// 	// #Fetch complete user
+	// 	uc, err := h.user.Fetch(ctx, user.Filter{ID: u.ID})
+	// 	if err != nil {
+	// 		logger.Error().Err(err).Msg("failed to fetch user")
 
-	// #Fetch follows
+	// 		return &dto.ListFollowResp{}, status.New(codes.Internal, err.Error()).Err()
+	// 	}
+
+	// 	// #Fetch follows
 	var result dto.ListFollowResp
 
-	cursor, err := h.twitch.GetFollows(ctx,
-		twitch.Auth{
-			Token:    "", // u.Token, TODO: save twitch token to reuse here
-			ClientID: h.twitch.OAuth().ClientID,
-		},
-		twitch.FollowFilter{
-			FromID: &uc.TwitchID,
-			After:  &req.After,
-			First:  &req.First,
-		},
-		func(fo twitch.Follow) error {
-			result.Follows = append(result.Follows, fo)
+	// 	cursor, err := h.twitch.GetFollows(ctx,
+	// 		twitch.Auth{
+	// 			Token:    "", // u.Token, TODO: save twitch token to reuse here
+	// 			ClientID: h.twitch.OAuth().ClientID,
+	// 		},
+	// 		twitch.FollowFilter{
+	// 			FromID: &uc.TwitchID,
+	// 			After:  &req.After,
+	// 			First:  &req.First,
+	// 		},
+	// 		func(fo twitch.Follow) error {
+	// 			result.Follows = append(result.Follows, fo)
 
-			return nil
-		},
-	)
-	if err != nil {
-		logger.Error().Err(err).Msg("failed to fetch follows")
+	// 			return nil
+	// 		},
+	// 	)
+	// 	if err != nil {
+	// 		logger.Error().Err(err).Msg("failed to fetch follows")
 
-		return &dto.ListFollowResp{}, status.New(codes.Internal, err.Error()).Err()
-	}
+	// 		return &dto.ListFollowResp{}, status.New(codes.Internal, err.Error()).Err()
+	// 	}
 
-	result.Cursor = cursor.Cursor
-	result.Total = uint64(cursor.Total)
+	// 	result.Cursor = cursor.Cursor
+	// 	result.Total = uint64(cursor.Total)
 
 	logger.Info().Msg("success")
 

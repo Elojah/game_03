@@ -11,6 +11,4 @@ type handler struct {
 	google google.App
 
 	user user.App
-
-	secret string
 }

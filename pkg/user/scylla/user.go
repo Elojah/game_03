@@ -27,6 +27,11 @@ func (f filter) where() (string, []interface{}) {
 		args = append(args, f.IDs)
 	}
 
+	if f.GoogleID != nil {
+		clause = append(clause, `google_id = ?`)
+		args = append(args, *f.GoogleID)
+	}
+
 	if f.TwitchID != nil {
 		clause = append(clause, `twitch_id = ?`)
 		args = append(args, *f.TwitchID)
@@ -60,6 +65,10 @@ func (f filter) index() string {
 		cols = append(cols, strings.Join(ss, "|"))
 	}
 
+	if f.GoogleID != nil {
+		cols = append(cols, *f.GoogleID)
+	}
+
 	if f.TwitchID != nil {
 		cols = append(cols, *f.TwitchID)
 	}
@@ -69,8 +78,9 @@ func (f filter) index() string {
 
 func (s Store) Insert(ctx context.Context, u user.U) error {
 	q := s.Session.Query(
-		`INSERT INTO main.user (id, twitch_id) VALUES (?, ?)`,
+		`INSERT INTO main.user (id, google_id, twitch_id) VALUES (?, ?, ?)`,
 		u.ID,
+		u.GoogleID,
 		u.TwitchID,
 	).WithContext(ctx)
 
@@ -85,7 +95,7 @@ func (s Store) Insert(ctx context.Context, u user.U) error {
 
 func (s Store) Fetch(ctx context.Context, f user.Filter) (user.U, error) {
 	b := strings.Builder{}
-	b.WriteString(`SELECT id, twitch_id FROM main.user `)
+	b.WriteString(`SELECT id, google_id, twitch_id FROM main.user `)
 
 	clause, args := filter(f).where()
 	b.WriteString(clause)
@@ -93,7 +103,7 @@ func (s Store) Fetch(ctx context.Context, f user.Filter) (user.U, error) {
 	q := s.Session.Query(b.String(), args...).WithContext(ctx)
 
 	var u user.U
-	if err := q.Scan(&u.ID, &u.TwitchID); err != nil {
+	if err := q.Scan(&u.ID, &u.GoogleID, &u.TwitchID); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
 			return user.U{}, gerrors.ErrNotFound{Resource: "user", Index: filter(f).index()}
 		}
@@ -110,7 +120,7 @@ func (s Store) FetchMany(ctx context.Context, f user.Filter) ([]user.U, []byte, 
 	}
 
 	b := strings.Builder{}
-	b.WriteString(`SELECT id, twitch_id FROM main.user `)
+	b.WriteString(`SELECT id, google_id, twitch_id FROM main.user `)
 
 	clause, args := filter(f).where()
 	b.WriteString(clause)
@@ -134,6 +144,7 @@ func (s Store) FetchMany(ctx context.Context, f user.Filter) ([]user.U, []byte, 
 	for ; scanner.Next(); i++ {
 		if err := scanner.Scan(
 			&users[i].ID,
+			&users[i].GoogleID,
 			&users[i].TwitchID,
 		); err != nil {
 			return nil, nil, err

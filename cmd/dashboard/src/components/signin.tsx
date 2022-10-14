@@ -25,7 +25,7 @@ export default () => {
 }
 
 function GSigninSuccess(resp: CredentialResponse) {
-	fetch('http://localhost:8080/signin', {
+	fetch('http://localhost:8081/signin_google', {
 		method: 'POST',
 		body: resp.credential,
 	})

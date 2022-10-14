@@ -3,8 +3,11 @@
 
 CREATE TABLE main.user (
     id              uuid PRIMARY KEY,
+    google_id       varchar,
     twitch_id       varchar
 );
+
+CREATE INDEX ON main.user(google_id);
 
 CREATE INDEX ON main.user(twitch_id);
 

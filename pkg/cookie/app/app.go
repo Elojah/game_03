@@ -13,8 +13,6 @@ type A struct {
 	memKeys []cookie.Keys
 
 	cookie.StoreKeys
-
-	JWT string
 }
 
 // Initial keys setup
@@ -124,8 +122,4 @@ func (a *A) AutoSyncKeys(ctx context.Context, interval int64) error {
 	}
 
 	return nil
-}
-
-func (a *A) JWTSecret() string {
-	return a.JWT
 }

@@ -29,6 +29,7 @@ func (h handler) signinTwitch(w http.ResponseWriter, r *http.Request) {
 		Path:     "/",
 		Secure:   true,
 		HttpOnly: false,
+		SameSite: http.SameSiteDefaultMode,
 	})
 
 	logger.Info().Msg("success")

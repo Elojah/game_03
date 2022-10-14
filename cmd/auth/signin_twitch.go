@@ -3,14 +3,12 @@ package main
 import (
 	"context"
 	"errors"
-	"time"
 
 	gerrors "github.com/elojah/game_03/pkg/errors"
 	gtwitch "github.com/elojah/game_03/pkg/twitch"
 	"github.com/elojah/game_03/pkg/ulid"
 	"github.com/elojah/game_03/pkg/user"
 	"github.com/gogo/protobuf/types"
-	"github.com/golang-jwt/jwt/v4"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -64,29 +62,16 @@ func (h *handler) SigninTwitch(ctx context.Context, req *types.StringValue) (*ty
 			return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
 		}
 	}
+
 	// #Create JWT
-	claims := &user.Claims{
-		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer:    "spc",
-			Subject:   u.ID.String(),
-			Audience:  jwt.ClaimStrings{"log"},
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
-			NotBefore: jwt.NewNumericDate(time.Now()),
-			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			ID:        ulid.NewID().String(),
-		},
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-	ss, err := token.SignedString([]byte(h.secret))
+	jwt, err := h.user.CreateJWT(ctx, u)
 	if err != nil {
-		logger.Error().Err(err).Msg("failed to sign token")
+		logger.Error().Err(err).Msg("failed to create JWT")
 
 		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
 	logger.Info().Msg("success")
 
-	return &types.StringValue{Value: ss}, nil
+	return &types.StringValue{Value: jwt}, nil
 }

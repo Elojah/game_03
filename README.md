@@ -15,7 +15,7 @@ Setup:
 $ docker-compose up -d # wait ~10 sec for scylla to boot
 $ cat scripts/keyspace.sh | docker exec -i game_03_scylla cqlsh
 $ make admin && ./bin/game_03_admin config/admin/local.json
-$ grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '"cql"' -plaintext localhost:8083 grpc.Admin/MigrateUp
+$ grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '"cql"' -plaintext localhost:4282 grpc.Admin/MigrateUp
 $ make api && ./bin/game_03_api config/api/local.json
 $ make auth && ./bin/game_03_auth config/auth/local.json
 $ make client
@@ -28,7 +28,7 @@ Data:
 $ ./scripts/create_default_templates.sh
 $ ./scripts/create_default_tilesheets.sh
 $ ./scripts/create_default_animations.sh
-$ grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '' -plaintext localhost:8083 grpc.Admin/CreateWorld
+$ grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '' -plaintext localhost:4282 grpc.Admin/CreateWorld
 ```
 
 ### TODO
@@ -69,3 +69,12 @@ Instead you can use `scripts/create_default_tilesheets.sh` once from current dir
 
 - `CreatePC` (using entity_template.name)
 - `ConnectPC`
+
+
+## Dev local port assignments
+
+- `web` -> `8080`
+- `web_dashboard` -> `8081`
+- `api` -> `http:8082` `grpc:4280`
+- `auth` -> `4281`
+- `admin` -> `4282`

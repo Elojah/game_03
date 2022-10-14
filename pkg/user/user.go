@@ -11,8 +11,11 @@ type App interface {
 	StoreSession
 	CacheSession
 
-	Auth(ctx context.Context) (U, error)
-	AuthSession(ctx context.Context) (Session, error)
+	CreateJWT(context.Context, U) (string, error)
+	ReadJWT(context.Context, string) (U, error)
+
+	Auth(context.Context) (U, error)
+	AuthSession(context.Context) (Session, error)
 }
 
 type Filter struct {

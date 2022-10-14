@@ -18,6 +18,4 @@ type App interface {
 	ReadKeys(context.Context, FilterKeys) ([]Keys, error)
 	SyncKeys(context.Context, FilterKeys) error
 	AutoSyncKeys(context.Context, int64) error
-
-	JWTSecret() string
 }

@@ -3,12 +3,13 @@ package app
 import (
 	"context"
 	"strings"
+	"time"
 
 	"github.com/elojah/game_03/pkg/cookie"
 	"github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/ulid"
 	"github.com/elojah/game_03/pkg/user"
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v4"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -20,6 +21,72 @@ type App struct {
 	user.CacheSession
 
 	Cookie cookie.App
+
+	secret string
+}
+
+func (a App) CreateJWT(ctx context.Context, u user.U) (string, error) {
+	// #Create JWT
+	now := time.Now()
+	claims := &user.Claims{
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    "spc",
+			Subject:   u.ID.String(),
+			Audience:  jwt.ClaimStrings{"log"},
+			ExpiresAt: jwt.NewNumericDate(now.Add(time.Hour)),
+			NotBefore: jwt.NewNumericDate(now),
+			IssuedAt:  jwt.NewNumericDate(now),
+			ID:        ulid.NewID().String(),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	// use cookie rotation encoding to generate a rotating secret for JWT
+	secret, err := a.Cookie.Encode(ctx, "jwt", token.Raw)
+	if err != nil {
+		return "", err
+	}
+
+	ss, err := token.SignedString([]byte(secret))
+	if err != nil {
+		return "", err
+	}
+
+	return ss, nil
+}
+
+func (a App) ReadJWT(ctx context.Context, token string) (user.U, error) {
+	t, err := jwt.ParseWithClaims(token, &user.Claims{}, func(t *jwt.Token) (interface{}, error) {
+		secret, err := a.Cookie.Decode(ctx, "jwt", t.Raw)
+		if err != nil {
+			return "", err
+		}
+
+		return []byte(secret), nil
+	})
+	if err != nil {
+		return user.U{}, err
+	}
+
+	// check token validity
+	claims, ok := t.Claims.(*user.Claims)
+	if !ok {
+		return user.U{}, errors.ErrInvalidClaims{}
+	}
+
+	if err := claims.Valid(); err != nil {
+		return user.U{}, errors.ErrInvalidClaims{Err: err}
+	}
+
+	id, err := ulid.Parse(claims.Subject)
+	if err != nil {
+		return user.U{}, errors.ErrInvalidClaims{Err: err}
+	}
+
+	return user.U{
+		ID: id,
+	}, nil
 }
 
 func (a App) Auth(ctx context.Context) (user.U, error) {
@@ -46,31 +113,7 @@ func (a App) Auth(ctx context.Context) (user.U, error) {
 		return user.U{}, err
 	}
 
-	t, err := jwt.ParseWithClaims(s, &user.Claims{}, func(t *jwt.Token) (interface{}, error) {
-		return []byte(a.Cookie.JWTSecret()), nil
-	})
-	if err != nil {
-		return user.U{}, err
-	}
-
-	// check token validity
-	claims, ok := t.Claims.(*user.Claims)
-	if !ok {
-		return user.U{}, errors.ErrInvalidClaims{}
-	}
-
-	if err := claims.Valid(); err != nil {
-		return user.U{}, errors.ErrInvalidClaims{Err: err}
-	}
-
-	id, err := ulid.Parse(claims.Subject)
-	if err != nil {
-		return user.U{}, errors.ErrInvalidClaims{Err: err}
-	}
-
-	return user.U{
-		ID: id,
-	}, nil
+	return a.ReadJWT(ctx, s)
 }
 
 func (a App) AuthSession(ctx context.Context) (user.Session, error) {

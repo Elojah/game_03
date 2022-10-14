@@ -19,7 +19,6 @@ cmd/client/dist/bundle.js
 cmd/client/dist/json/*
 cmd/dashboard/node_modules/
 cmd/dashboard/dist/bundle.js
-cmd/dashboard/dist/json/*
 
 # Config private
 config/

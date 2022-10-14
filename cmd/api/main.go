@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -15,8 +14,6 @@ import (
 	entityscylla "github.com/elojah/game_03/pkg/entity/scylla"
 	roomapp "github.com/elojah/game_03/pkg/room/app"
 	roomscylla "github.com/elojah/game_03/pkg/room/scylla"
-	twitchapp "github.com/elojah/game_03/pkg/twitch/app"
-	twitchhttp "github.com/elojah/game_03/pkg/twitch/http"
 	userapp "github.com/elojah/game_03/pkg/user/app"
 	userredis "github.com/elojah/game_03/pkg/user/redis"
 	userscylla "github.com/elojah/game_03/pkg/user/scylla"
@@ -114,20 +111,6 @@ func run(prog string, filename string) {
 
 	cs = append(cs, &https)
 
-	// init domain
-	twitchApp := twitchapp.App{
-		Client: &twitchhttp.Client{
-			Client: http.DefaultClient,
-		},
-	}
-	if err := twitchApp.Dial(ctx, cfg.Twitch); err != nil {
-		log.Error().Err(err).Msg("failed to dial twitch client")
-
-		return
-	}
-
-	cs = append(cs, &twitchApp)
-
 	entityStore := &entityscylla.Store{Service: scyllas}
 	entityCache := &entityredis.Cache{Service: rediss}
 	entityApp := entityapp.App{
@@ -160,7 +143,6 @@ func run(prog string, filename string) {
 	h := handler{
 		entity: entityApp,
 		room:   roomApp,
-		twitch: twitchApp,
 		user:   userApp,
 	}
 
