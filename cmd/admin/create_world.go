@@ -152,7 +152,7 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 
 			id := ulid.NewID()
 
-			f, err := os.Create("cmd/browser/dist/json/" + id.String() + ".json")
+			f, err := os.Create("cmd/client/dist/json/" + id.String() + ".json")
 			if err != nil {
 				logger.Error().Err(err).Msg("failed to create file")
 

@@ -22,7 +22,7 @@ func (h *handler) ListRoom(ctx context.Context, req *dto.ListRoomReq) (*dto.List
 	}
 
 	// #Authenticate
-	ses, err := h.user.Auth(ctx)
+	u, err := h.user.Auth(ctx)
 	if err != nil {
 		return &dto.ListRoomResp{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	}
@@ -30,7 +30,7 @@ func (h *handler) ListRoom(ctx context.Context, req *dto.ListRoomReq) (*dto.List
 	// #Fetch pcs
 	rus, state, err := h.room.FetchManyUser(ctx,
 		room.FilterUser{
-			UserID: ses.UserID,
+			UserID: u.ID,
 			Size:   int(req.Size_),
 			State:  req.State,
 		},

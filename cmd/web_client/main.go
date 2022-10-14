@@ -95,15 +95,8 @@ func run(prog string, filename string) {
 		AuthClient: authgrpc.NewAuthClient(authclient.ClientConn),
 	}
 
-	if err := h.Dial(ctx, cfg.Web); err != nil {
-		log.Error().Err(err).Msg("failed to dial web")
+	_ = h
 
-		return
-	}
-
-	// login twitch redirect
-	https.Router.Path("/login").HandlerFunc(h.login)
-	https.Router.Path("/redirect").HandlerFunc(h.redirect)
 	// Serve static dir
 	https.Router.PathPrefix("/").Handler(http.FileServer(http.Dir(cfg.Web.Static)))
 

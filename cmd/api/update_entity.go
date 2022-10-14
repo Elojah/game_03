@@ -17,7 +17,7 @@ func (h *handler) UpdateEntity(stream ggrpc.API_UpdateEntityServer) error {
 	logger := log.With().Str("method", "update_entity").Logger()
 
 	// #Authenticate
-	ses, err := h.user.Auth(ctx)
+	ses, err := h.user.AuthSession(ctx)
 	if err != nil {
 		logger.Error().Err(err).Msg("unauthenticated sender")
 

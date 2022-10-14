@@ -4,9 +4,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/elojah/game_03/pkg/cookie"
 	"github.com/gogo/protobuf/types"
-	"github.com/gorilla/securecookie"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -14,7 +12,7 @@ import (
 
 const maxTokenLength = 32768
 
-func (h handler) signin(w http.ResponseWriter, r *http.Request) {
+func (h handler) signinGoogle(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	logger := log.With().Str("route", r.URL.EscapedPath()).Str("method", r.Method).Str("address", r.RemoteAddr).Logger()
@@ -36,12 +34,12 @@ func (h handler) signin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Signin with auth.
-	jwt, err := h.Signin(ctx, &types.StringValue{Value: string(raw)})
+	jwt, err := h.SigninGoogle(ctx, &types.StringValue{Value: string(raw)})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to signin")
 
 		if e, ok := status.FromError(err); ok {
-			switch e.Code() { // nolint: exhaustive
+			switch e.Code() { //nolint: exhaustive
 			case codes.Internal:
 				http.Error(w, e.Message(), http.StatusInternalServerError)
 			case codes.InvalidArgument:
@@ -57,25 +55,7 @@ func (h handler) signin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create JWT secure cookie.
-	ks, err := h.cookie.ReadKeys(ctx, cookie.FilterKeys{All: true})
-	if err != nil {
-		logger.Error().Err(err).Msg("failed to read cookie keys")
-		http.Error(w, "failed to read cookie keys", http.StatusInternalServerError)
-
-		return
-	}
-
-	if len(ks) == 0 {
-		logger.Error().Msg("cookie keys not found")
-		http.Error(w, "failed to read cookie keys", http.StatusInternalServerError)
-
-		return
-	}
-
-	ck, err := securecookie.New(
-		ks[len(ks)-1].Hash,
-		ks[len(ks)-1].Block,
-	).Encode("token", jwt.Value)
+	ck, err := h.cookie.Encode(ctx, "token", jwt.Value)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to encode token")
 		http.Error(w, "failed to encode token", http.StatusInternalServerError)

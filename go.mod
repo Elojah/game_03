@@ -13,10 +13,10 @@ require (
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/gocql/gocql v1.2.1
 	github.com/gogo/protobuf v1.3.2
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/golang/protobuf v1.5.2
 	github.com/gorilla/securecookie v1.1.1
-	github.com/gorilla/sessions v1.2.1
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/ilyakaznacheev/cleanenv v1.3.0
 	github.com/oklog/ulid/v2 v2.1.0

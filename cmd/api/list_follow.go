@@ -20,13 +20,13 @@ func (h *handler) ListFollow(ctx context.Context, req *dto.ListFollowReq) (*dto.
 	}
 
 	// #Authenticate
-	ses, err := h.user.Auth(ctx)
+	u, err := h.user.Auth(ctx)
 	if err != nil {
 		return &dto.ListFollowResp{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	}
 
-	// #Fetch user
-	u, err := h.user.Fetch(ctx, user.Filter{ID: ses.UserID})
+	// #Fetch complete user
+	uc, err := h.user.Fetch(ctx, user.Filter{ID: u.ID})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to fetch user")
 
@@ -38,11 +38,11 @@ func (h *handler) ListFollow(ctx context.Context, req *dto.ListFollowReq) (*dto.
 
 	cursor, err := h.twitch.GetFollows(ctx,
 		twitch.Auth{
-			Token:    ses.Token,
+			Token:    "", // u.Token, TODO: save twitch token to reuse here
 			ClientID: h.twitch.OAuth().ClientID,
 		},
 		twitch.FollowFilter{
-			FromID: &u.TwitchID,
+			FromID: &uc.TwitchID,
 			After:  &req.After,
 			First:  &req.First,
 		},

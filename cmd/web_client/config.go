@@ -6,13 +6,10 @@ import (
 	"github.com/elojah/go-grpc"
 	"github.com/elojah/go-http"
 	"github.com/ilyakaznacheev/cleanenv"
-	"golang.org/x/oauth2"
 )
 
 type web struct {
-	Static string        `json:"static"`
-	Secret string        `json:"secret"`
-	Twitch oauth2.Config `json:"twitch"`
+	Static string `json:"static"`
 }
 
 type config struct {

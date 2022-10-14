@@ -1,6 +1,6 @@
-import { Home } from "cmd/browser/src/scene/home";
-import { Login } from "cmd/browser/src/scene/login";
-import { Game } from "cmd/browser/src/scene/game";
+import { Home } from "cmd/client/src/scene/home";
+import { Login } from "cmd/client/src/scene/login";
+import { Game } from "cmd/client/src/scene/game";
 
 function main() {
 	const config: Phaser.Types.Core.GameConfig = {

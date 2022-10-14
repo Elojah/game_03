@@ -12,6 +12,9 @@ const (
 type App interface {
 	StoreKeys
 
+	Encode(context.Context, string, string) (string, error)
+	Decode(context.Context, string, string) (string, error)
+
 	ReadKeys(context.Context, FilterKeys) ([]Keys, error)
 	SyncKeys(context.Context, FilterKeys) error
 	AutoSyncKeys(context.Context, int64) error

@@ -11,7 +11,8 @@ type App interface {
 	StoreSession
 	CacheSession
 
-	Auth(ctx context.Context) (Session, error)
+	Auth(ctx context.Context) (U, error)
+	AuthSession(ctx context.Context) (Session, error)
 }
 
 type Filter struct {

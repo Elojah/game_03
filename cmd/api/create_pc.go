@@ -27,14 +27,14 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 	}
 
 	// #Authenticate
-	ses, err := h.user.Auth(ctx)
+	u, err := h.user.Auth(ctx)
 	if err != nil {
 		return &entity.PC{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	}
 
 	// #Check if user is room user
 	if _, err := h.room.FetchUser(ctx, room.FilterUser{
-		UserID: ses.UserID,
+		UserID: u.ID,
 		RoomID: req.RoomID,
 	}); err != nil {
 		if errors.As(err, &gerrors.ErrNotFound{}) {
@@ -132,7 +132,7 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 	// #Insert entity backup
 	bu := entity.Backup{
 		ID:          entityID,
-		UserID:      ses.UserID,
+		UserID:      u.ID,
 		CellID:      c.CellID,
 		X:           0,
 		Y:           0,
@@ -152,7 +152,7 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 	pc := entity.PC{
 		ID:       ulid.NewID(),
 		EntityID: bu.ID,
-		UserID:   ses.UserID,
+		UserID:   u.ID,
 		WorldID:  ro.WorldID,
 	}
 	if err := h.entity.InsertPC(ctx, pc); err != nil {

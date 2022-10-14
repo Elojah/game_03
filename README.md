@@ -4,7 +4,7 @@
 Dev setup:
 
 ```sh
-$ cd cmd/browser && npm install
+$ cd cmd/client && npm install
 $ GO111MODULE=off go get github.com/gogo/protobuf/proto
 $ go install github.com/gogo/protobuf/protoc-gen-gogoslick
 ```
@@ -18,8 +18,8 @@ $ make admin && ./bin/game_03_admin config/admin/local.json
 $ grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '"cql"' -plaintext localhost:8083 grpc.Admin/MigrateUp
 $ make api && ./bin/game_03_api config/api/local.json
 $ make auth && ./bin/game_03_auth config/auth/local.json
-$ make browser
-$ make web && ./bin/game_03_web config/web/local.json
+$ make client
+$ make web_client && ./bin/game_03_web config/web_client/local.json
 ```
 
 Data:
@@ -44,9 +44,9 @@ $ grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '' -plai
 # FLOW
 ---
 
-Note: `CreateTilesheet` is optional when using local files in `cmd/browser/dist/`.
+Note: `CreateTilesheet` is optional when using local files in `cmd/client/dist/`.
 
-Instead you can use `scripts/create_default_tilesheets.sh` once from current directory to "load" local `scripts/assets` into local browser.
+Instead you can use `scripts/create_default_tilesheets.sh` once from current directory to "load" local `scripts/assets` into local client.
 
 ### scratch setup
 

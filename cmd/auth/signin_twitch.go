@@ -3,19 +3,21 @@ package main
 import (
 	"context"
 	"errors"
+	"time"
 
 	gerrors "github.com/elojah/game_03/pkg/errors"
 	gtwitch "github.com/elojah/game_03/pkg/twitch"
 	"github.com/elojah/game_03/pkg/ulid"
 	"github.com/elojah/game_03/pkg/user"
 	"github.com/gogo/protobuf/types"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 func (h *handler) SigninTwitch(ctx context.Context, req *types.StringValue) (*types.StringValue, error) {
-	logger := log.With().Str("method", "login").Logger()
+	logger := log.With().Str("method", "signin_twitch").Logger()
 
 	if req == nil {
 		return &types.StringValue{}, status.New(codes.Internal, gerrors.ErrNullRequest{}.Error()).Err()
@@ -39,7 +41,7 @@ func (h *handler) SigninTwitch(ctx context.Context, req *types.StringValue) (*ty
 	); err != nil {
 		logger.Error().Err(err).Msg("failed to get users")
 
-		// return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
 	// #Check if user exist
@@ -62,20 +64,29 @@ func (h *handler) SigninTwitch(ctx context.Context, req *types.StringValue) (*ty
 			return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
 		}
 	}
-
-	// Create session
-	ses := user.Session{
-		ID:     ulid.NewID(),
-		UserID: u.ID,
-		Token:  req.Value,
+	// #Create JWT
+	claims := &user.Claims{
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    "spc",
+			Subject:   u.ID.String(),
+			Audience:  jwt.ClaimStrings{"log"},
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
+			NotBefore: jwt.NewNumericDate(time.Now()),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			ID:        ulid.NewID().String(),
+		},
 	}
-	if err := h.user.InsertSession(ctx, ses); err != nil {
-		logger.Error().Err(err).Msg("failed to create session")
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	ss, err := token.SignedString([]byte(h.secret))
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to sign token")
 
 		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
 	logger.Info().Msg("success")
 
-	return &types.StringValue{Value: ses.ID.String()}, nil
+	return &types.StringValue{Value: ss}, nil
 }

@@ -25,7 +25,7 @@ func (h *handler) CreateRoom(ctx context.Context, req *room.R) (*room.R, error) 
 	}
 
 	// #Authenticate
-	ses, err := h.user.Auth(ctx)
+	u, err := h.user.Auth(ctx)
 	if err != nil {
 		return &room.R{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	}
@@ -33,7 +33,7 @@ func (h *handler) CreateRoom(ctx context.Context, req *room.R) (*room.R, error) 
 	// #Set new room values
 	req.ID = ulid.NewID()
 	req.WorldID = defaultWorldID
-	req.OwnerID = ses.UserID
+	req.OwnerID = u.ID
 
 	// #Insert room
 	if err := h.room.Insert(ctx, *req); err != nil {
@@ -44,7 +44,7 @@ func (h *handler) CreateRoom(ctx context.Context, req *room.R) (*room.R, error) 
 
 	// #Insert room user
 	if err := h.room.InsertUser(ctx, room.User{
-		UserID: ses.UserID,
+		UserID: u.ID,
 		RoomID: req.ID,
 		Role:   int32(room.Owner),
 	}); err != nil {

@@ -100,7 +100,7 @@ func run(prog string, filename string) {
 
 	// sync local keys every 60 seconds
 	go func() {
-		if err := cookieApp.AutoSyncKeys(context.Background(), 60); err != nil { // nolint: gomnd
+		if err := cookieApp.AutoSyncKeys(context.Background(), 60); err != nil { //nolint: gomnd
 			log.Error().Err(err).Msg("failed to auto sync keys")
 		}
 	}()
@@ -120,7 +120,8 @@ func run(prog string, filename string) {
 	}
 
 	// serve static dir
-	https.Router.Path("/signin").HandlerFunc(h.signin)
+	https.Router.Path("/signin_google").HandlerFunc(h.signinGoogle)
+	https.Router.Path("/signin_twitch").HandlerFunc(h.signinTwitch)
 	https.Router.PathPrefix("/").Handler(http.FileServer(http.Dir(cfg.Web.Static)))
 
 	// serve http web
@@ -159,7 +160,7 @@ func run(prog string, filename string) {
 
 func main() {
 	args := os.Args
-	if len(args) != 2 { // nolint: gomnd
+	if len(args) != 2 { //nolint: gomnd
 		fmt.Printf("Usage: ./%s configfile\n", args[0])
 
 		return

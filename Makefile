@@ -23,23 +23,23 @@ GO_PACKAGE        = github.com/elojah/game_03
 API               = api
 ADMIN             = admin
 AUTH              = auth
-WEB               = web
-BROWSER           = browser
+WEB_CLIENT        = web_client
+CLIENT            = client
 DASHBOARD         = dashboard
 WEB_DASHBOARD     = web_dashboard
 
-# Static directory name for browser
+# Static directory name for client
 STATIC            = static
 
 GEN_PARENT_PATH    = $(GOPATH)/src
-PROTOC_GEN_TS      = $(DIR)/cmd/$(BROWSER)/node_modules/.bin/protoc-gen-ts
+PROTOC_GEN_TS      = $(DIR)/cmd/$(CLIENT)/node_modules/.bin/protoc-gen-ts
 GEN_PB_GO          = protoc -I=$(GEN_PARENT_PATH) --gogoslick_out=$(GOPATH)/src
 GEN_PB_TS          = protoc -I=$(GEN_PARENT_PATH) --plugin=protoc-gen-ts=$(PROTOC_GEN_TS) --js_out=import_style=commonjs,binary:$(GOPATH)/src --ts_out="service=grpc-web:$(GOPATH)/src"
 GEN_PB_SERVICE_GO  = protoc -I=$(GEN_PARENT_PATH) -I=$(GOPATH)/src --gogoslick_out=plugins=grpc,Mgoogle/protobuf/empty.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/wrappers.proto=github.com/gogo/protobuf/types:$(GOPATH)/src
-GEN_PB_SERVICE_TS  = protoc -I=$(GEN_PARENT_PATH) -I=$(GOPATH)/src --plugin=protoc-gen-ts=$(PROTOC_GEN_TS) --js_out=import_style=browser,binary:$(GOPATH)/src --ts_out=service=grpc-web:$(GOPATH)/src
+GEN_PB_SERVICE_TS  = protoc -I=$(GEN_PARENT_PATH) -I=$(GOPATH)/src --plugin=protoc-gen-ts=$(PROTOC_GEN_TS) --js_out=import_style=client,binary:$(GOPATH)/src --ts_out=service=grpc-web:$(GOPATH)/src
 
 .PHONY: all
-all: api admin auth web
+all: api admin auth client web_client dashboard web_dashboard
 
 .PHONY: api
 api:  ## Build api binary
@@ -71,15 +71,15 @@ auth:  ## Build auth binary
 		-o ../../bin/$(PACKAGE)_$(AUTH)_$(VERSION)
 	$Q cp bin/$(PACKAGE)_$(AUTH)_$(VERSION) bin/$(PACKAGE)_$(AUTH)
 
-.PHONY: web
-web: ## Build web binary
-	$(info $(M) building executable web…) @
-	$Q cd cmd/$(WEB) && $(GO) build \
+.PHONY: web_client
+web_client: ## Build web_client binary
+	$(info $(M) building executable web_client…) @
+	$Q cd cmd/$(WEB_CLIENT) && $(GO) build \
 		-mod=readonly \
 		-tags release \
 		-ldflags '-X main.version=$(VERSION)' \
-		-o ../../bin/$(PACKAGE)_$(WEB)_$(VERSION)
-	$Q yes | cp -rf bin/$(PACKAGE)_$(WEB)_$(VERSION) bin/$(PACKAGE)_$(WEB)
+		-o ../../bin/$(PACKAGE)_$(WEB_CLIENT)_$(VERSION)
+	$Q yes | cp -rf bin/$(PACKAGE)_$(WEB_CLIENT)_$(VERSION) bin/$(PACKAGE)_$(WEB_CLIENT)
 
 .PHONY: web_dashboard
 web_dashboard: ## Build web_dashboard binary
@@ -91,12 +91,12 @@ web_dashboard: ## Build web_dashboard binary
 		-o ../../bin/$(PACKAGE)_$(WEB_DASHBOARD)_$(VERSION)
 	$Q yes | cp -rf bin/$(PACKAGE)_$(WEB_DASHBOARD)_$(VERSION) bin/$(PACKAGE)_$(WEB_DASHBOARD)
 
-.PHONY: browser
-browser:  ## Build browser content
-	$(info $(M) building bundle browser…) @
-	$Q cd cmd/$(BROWSER) && npx webpack --config webpack.config.js
+.PHONY: client
+client:  ## Build client content
+	$(info $(M) building bundle client…) @
+	$Q cd cmd/$(CLIENT) && npx webpack --config webpack.config.js
 	$Q mkdir -p bin && rm -rf bin/$(STATIC) && mkdir -p bin/$(STATIC)
-	$Q yes | cp -rf cmd/$(BROWSER)/dist/. bin/$(STATIC)/
+	$Q yes | cp -rf cmd/$(CLIENT)/dist/. bin/$(STATIC)/
 
 .PHONY: dashboard
 dashboard:  ## Build dashboard content

@@ -23,7 +23,7 @@ func (h *handler) ListPC(ctx context.Context, req *dto.ListPCReq) (*dto.ListPCRe
 	}
 
 	// #Authenticate
-	ses, err := h.user.Auth(ctx)
+	u, err := h.user.Auth(ctx)
 	if err != nil {
 		return &dto.ListPCResp{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	}
@@ -49,7 +49,7 @@ func (h *handler) ListPC(ctx context.Context, req *dto.ListPCReq) (*dto.ListPCRe
 	// #Fetch pcs
 	pcs, state, err := h.entity.FetchManyPC(ctx,
 		entity.FilterPC{
-			UserID:  ses.UserID,
+			UserID:  u.ID,
 			WorldID: r.WorldID,
 			Size:    int(req.Size_),
 			State:   req.State,

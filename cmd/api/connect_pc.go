@@ -41,7 +41,7 @@ func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) err
 	}
 
 	// #Authenticate
-	ses, err := h.user.Auth(ctx)
+	ses, err := h.user.AuthSession(ctx)
 	if err != nil {
 		return status.New(codes.Unauthenticated, err.Error()).Err()
 	}

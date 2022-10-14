@@ -16,7 +16,7 @@ import (
 )
 
 func (h *handler) SigninGoogle(ctx context.Context, req *types.StringValue) (*types.StringValue, error) {
-	logger := log.With().Str("method", "signin").Logger()
+	logger := log.With().Str("method", "signin_google").Logger()
 
 	if req == nil {
 		logger.Error().Err(gerrors.ErrNullRequest{}).Msg("null request")
