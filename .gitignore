@@ -19,10 +19,7 @@ cmd/browser/dist/bundle.js
 cmd/browser/dist/json/*
 
 # Config private
-config/api/firebase.json
-config/api/prod.json
-config/web/local.json
-config/web/prod.json
+config/
 
 # VSCode
 .vscode/
