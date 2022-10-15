@@ -43,7 +43,7 @@ func (a App) CreateJWT(ctx context.Context, u user.U) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	// use cookie rotation encoding to generate a rotating secret for JWT
-	secret, err := a.Cookie.Encode(ctx, "jwt", token.Raw)
+	secret, err := a.Cookie.Encode(ctx, "jwt_secret", claims.RegisteredClaims.ID)
 	if err != nil {
 		return "", err
 	}
@@ -53,12 +53,22 @@ func (a App) CreateJWT(ctx context.Context, u user.U) (string, error) {
 		return "", err
 	}
 
-	return ss, nil
+	ck, err := a.Cookie.Encode(ctx, "token", ss)
+	if err != nil {
+		return "", err
+	}
+
+	return ck, nil
 }
 
 func (a App) ReadJWT(ctx context.Context, token string) (user.U, error) {
 	t, err := jwt.ParseWithClaims(token, &user.Claims{}, func(t *jwt.Token) (interface{}, error) {
-		secret, err := a.Cookie.Decode(ctx, "jwt", t.Raw)
+		claims, ok := t.Claims.(*user.Claims)
+		if !ok {
+			return user.U{}, errors.ErrInvalidClaims{}
+		}
+
+		secret, err := a.Cookie.Decode(ctx, "jwt_secret", claims.RegisteredClaims.ID)
 		if err != nil {
 			return "", err
 		}

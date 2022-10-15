@@ -9,8 +9,8 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import DomainIcon from '@mui/icons-material/Domain';
-import StorefrontIcon from '@mui/icons-material/Storefront';
+import StorageIcon from '@mui/icons-material/Storage';
+import PersonIcon from '@mui/icons-material/Person';
 
 export default () => {
 	return (
@@ -23,13 +23,13 @@ export default () => {
 			</ListItemButton>
 			<ListItemButton {...{ component: Link, to: "/rooms" }}>
 				<ListItemIcon>
-					<DomainIcon />
+					<StorageIcon />
 				</ListItemIcon>
 				<ListItemText primary="Rooms" />
 			</ListItemButton>
 			<ListItemButton {...{ component: Link, to: "/pcs" }}>
 				<ListItemIcon>
-					<StorefrontIcon />
+					<PersonIcon />
 				</ListItemIcon>
 				<ListItemText primary="Characters" />
 			</ListItemButton>

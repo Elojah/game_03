@@ -5,7 +5,7 @@ import { grpc } from '@improbable-eng/grpc-web';
 import { getCookie } from 'typescript-cookie'
 
 import API from 'cmd/api/grpc/api_pb_service';
-import * as dtoentity from 'pkg/entity/dto/entity_pb';
+import * as dtoroom from 'pkg/room/dto/room_pb';
 
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -14,52 +14,52 @@ import New_room from './new_room';
 
 export default () => {
 
-	// const [loadingRooms, toggleLoadingRooms] = useState(true)
+	const [loadingRooms, toggleLoadingRooms] = useState(true)
 
-	// const [emptyRooms, toggleEmptyRooms] = useState(false)
+	const [emptyRooms, toggleEmptyRooms] = useState(false)
 
-	// const listRooms = (req: dtoentity.ListRoomReq) => {
-	// 	let md = new grpc.Metadata()
-	// 	md.set('token', getCookie('token')!)
+	const listRooms = (req: dtoroom.ListRoomReq) => {
+		let md = new grpc.Metadata()
+		md.set('token', getCookie('token')!)
 
-	// 	const prom = new Promise<dtoentity.ListRoomResp>((resolve, reject) => {
-	// 		grpc.unary(API.API.ListRoom, {
-	// 			metadata: md,
-	// 			request: req,
-	// 			host: 'http://localhost:8081',
-	// 			onEnd: res => {
-	// 				const { status, statusMessage, headers, message, trailers } = res;
-	// 				if (status !== grpc.Code.OK || !message) {
-	// 					reject(res)
+		const prom = new Promise<dtoroom.ListRoomResp>((resolve, reject) => {
+			grpc.unary(API.API.ListRoom, {
+				metadata: md,
+				request: req,
+				host: 'http://localhost:8082',
+				onEnd: res => {
+					const { status, statusMessage, headers, message, trailers } = res;
+					if (status !== grpc.Code.OK || !message) {
+						reject(res)
 
-	// 					return
-	// 				}
+						return
+					}
 
-	// 				resolve(message as dtoentity.ListRoomResp)
-	// 			}
-	// 		});
-	// 	})
+					resolve(message as dtoroom.ListRoomResp)
+				}
+			});
+		})
 
-	// 	return prom
-	// }
+		return prom
+	}
 
-	// let entities = new dtoentity.ListRoomResp()
+	let rooms = new dtoroom.ListRoomResp()
 
-	// const refreshRooms = () => {
-	// 	const req = new dtoentity.ListRoomReq()
-	// 	toggleLoadingRooms(true)
-	// 	listRooms(req).then((result) => {
-	// 		console.log('found ', result.getRoomsList().length, ' entities')
-	// 		toggleEmptyRooms((result.getRoomsList().length == 0))
-	// 		toggleLoadingRooms(false)
+	const refreshRooms = () => {
+		const req = new dtoroom.ListRoomReq()
+		toggleLoadingRooms(true)
+		listRooms(req).then((result) => {
+			console.log('found ', result.getRoomsList().length, ' rooms')
+			toggleEmptyRooms((result.getRoomsList().length == 0))
+			toggleLoadingRooms(false)
 
-	// 		entities = result
-	// 	}).catch((err) => {
-	// 		console.log(err)
-	// 	})
-	// }
+			rooms = result
+		}).catch((err) => {
+			console.log(err)
+		})
+	}
 
-	// useEffect(() => { refreshRooms() }, [])
+	useEffect(() => { refreshRooms() }, [])
 
 	return (
 		<Grid container
@@ -69,7 +69,7 @@ export default () => {
 			justifyContent="center"
 			style={{ minHeight: '100vh' }}
 		>
-			{/* {loadingRooms &&
+			{loadingRooms &&
 				<Grid item xs={3}>
 					<CircularProgress color='secondary' />
 				</Grid>
@@ -80,8 +80,8 @@ export default () => {
 				</Grid>
 			}
 			{!loadingRooms && !emptyRooms &&
-				<>{JSON.stringify(entities)}</>
-			} */}
+				<>{JSON.stringify(rooms)}</>
+			}
 		</Grid>
 	);
 }

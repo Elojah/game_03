@@ -9,6 +9,8 @@ import (
 	"time"
 
 	apigrpc "github.com/elojah/game_03/cmd/api/grpc"
+	cookieapp "github.com/elojah/game_03/pkg/cookie/app"
+	cookieredis "github.com/elojah/game_03/pkg/cookie/redis"
 	entityapp "github.com/elojah/game_03/pkg/entity/app"
 	entityredis "github.com/elojah/game_03/pkg/entity/redis"
 	entityscylla "github.com/elojah/game_03/pkg/entity/scylla"
@@ -100,6 +102,11 @@ func run(prog string, filename string) {
 
 	cs = append(cs, &rediss)
 
+	cookieStore := &cookieredis.Store{Service: rediss}
+	cookieApp := &cookieapp.A{
+		StoreKeys: cookieStore,
+	}
+
 	// init http api server
 	https := ghttp.Service{}
 
@@ -137,6 +144,7 @@ func run(prog string, filename string) {
 		Store:        userStore,
 		StoreSession: userStore,
 		CacheSession: userCache,
+		Cookie:       cookieApp,
 	}
 
 	// init handler

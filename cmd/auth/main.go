@@ -10,6 +10,8 @@ import (
 	"time"
 
 	authgrpc "github.com/elojah/game_03/cmd/auth/grpc"
+	cookieapp "github.com/elojah/game_03/pkg/cookie/app"
+	cookieredis "github.com/elojah/game_03/pkg/cookie/redis"
 	googleapp "github.com/elojah/game_03/pkg/google/app"
 	twitchapp "github.com/elojah/game_03/pkg/twitch/app"
 	twitchhttp "github.com/elojah/game_03/pkg/twitch/http"
@@ -17,6 +19,7 @@ import (
 	userscylla "github.com/elojah/game_03/pkg/user/scylla"
 	ggrpc "github.com/elojah/go-grpc"
 	glog "github.com/elojah/go-log"
+	"github.com/elojah/go-redis"
 	"github.com/elojah/go-scylla"
 	"github.com/hashicorp/go-multierror"
 	"github.com/rs/zerolog/log"
@@ -86,6 +89,16 @@ func run(prog string, filename string) {
 
 	cs = append(cs, &scyllas)
 
+	// init redis storage
+	rediss := redis.Service{}
+	if err := rediss.Dial(ctx, cfg.Redis); err != nil {
+		log.Error().Err(err).Msg("failed to dial redis")
+
+		return
+	}
+
+	cs = append(cs, &rediss)
+
 	// init domain
 	twitchApp := twitchapp.App{
 		Client: &twitchhttp.Client{
@@ -107,10 +120,16 @@ func run(prog string, filename string) {
 
 	cs = append(cs, &googleApp)
 
+	cookieStore := &cookieredis.Store{Service: rediss}
+	cookieApp := &cookieapp.A{
+		StoreKeys: cookieStore,
+	}
+
 	userStore := &userscylla.Store{Service: scyllas}
 	userApp := userapp.App{
 		Store:        userStore,
 		StoreSession: userStore,
+		Cookie:       cookieApp,
 	}
 
 	// init handler

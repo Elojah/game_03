@@ -24,6 +24,8 @@ func (h *handler) ListRoom(ctx context.Context, req *dto.ListRoomReq) (*dto.List
 	// #Authenticate
 	u, err := h.user.Auth(ctx)
 	if err != nil {
+		logger.Error().Err(err).Msg("failed to authenticate")
+
 		return &dto.ListRoomResp{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	}
 

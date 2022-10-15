@@ -54,18 +54,9 @@ func (h handler) signinGoogle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Create JWT secure cookie.
-	ck, err := h.cookie.Encode(ctx, "token", jwt.Value)
-	if err != nil {
-		logger.Error().Err(err).Msg("failed to encode token")
-		http.Error(w, "failed to encode token", http.StatusInternalServerError)
-
-		return
-	}
-
 	http.SetCookie(w, &http.Cookie{
 		Name:     "token",
-		Value:    ck,
+		Value:    jwt.Value,
 		Path:     "/",
 		Secure:   true,
 		HttpOnly: false,
