@@ -5,8 +5,8 @@ import { grpc } from '@improbable-eng/grpc-web';
 import { getCookie } from 'typescript-cookie'
 
 import API from 'cmd/api/grpc/api_pb_service';
-import * as entity from 'pkg/entity/entity_pb';
-import * as dtoentity from 'pkg/entity/dto/entity_pb';
+import * as room from 'pkg/room/room_pb';
+import * as dtoroom from 'pkg/room/dto/room_pb';
 
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import IconButton from '@mui/material/IconButton';
@@ -17,48 +17,45 @@ type props = {
 }
 
 const NewRoom: React.FC<props> = ({ success }: props) => {
-	// const createRoom = (req: dtoentity.CreateRoomReq) => {
-	// 	let md = new grpc.Metadata()
-	// 	md.set('token', getCookie('token')!)
+	const createRoom = (req: room.R) => {
+		let md = new grpc.Metadata()
+		md.set('token', getCookie('token')!)
 
-	// 	const prom = new Promise<entity.E>((resolve, reject) => {
-	// 		grpc.unary(API.API.CreateRoom, {
-	// 			metadata: md,
-	// 			request: req,
-	// 			host: 'http://localhost:8081',
-	// 			onEnd: res => {
-	// 				const { status, statusMessage, headers, message, trailers } = res;
-	// 				if (status !== grpc.Code.OK || !message) {
-	// 					reject(res)
+		const prom = new Promise<room.R>((resolve, reject) => {
+			grpc.unary(API.API.CreateRoom, {
+				metadata: md,
+				request: req,
+				host: 'http://localhost:8081',
+				onEnd: res => {
+					const { status, statusMessage, headers, message, trailers } = res;
+					if (status !== grpc.Code.OK || !message) {
+						reject(res)
 
-	// 					return
-	// 				}
+						return
+					}
 
-	// 				resolve(message as entity.E)
-	// 			}
-	// 		});
-	// 	})
+					resolve(message as room.R)
+				}
+			});
+		})
 
-	// 	return prom
-	// }
+		return prom
+	}
 
-	// const onclick = () => {
-	// 	const req = new dtoentity.CreateRoomReq()
+	const onclick = () => {
+		const req = new room.R()
 
-	// 	createRoom(req).then((result) => {
-	// 		console.log('entity created')
-	// 		// refresh parent
-	// 		success()
-	// 	})
-	// }
+		createRoom(req).then((result) => {
+			console.log('room created')
+			// refresh parent
+			success()
+		})
+	}
 
 	return (
-		<>
-			<Typography variant="h6">Create new entity</Typography>
-			{/* <IconButton color="primary" size='large' onClick={onclick}> */}
-			{/* <AddCircleIcon /> */}
-			{/* </IconButton> */}
-		</>
+		<IconButton color="primary" size='large' onClick={onclick}>
+			<AddCircleIcon />
+		</IconButton>
 	);
 }
 

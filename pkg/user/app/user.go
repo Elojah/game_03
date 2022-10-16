@@ -21,8 +21,6 @@ type App struct {
 	user.CacheSession
 
 	Cookie cookie.App
-
-	secret string
 }
 
 func (a App) CreateJWT(ctx context.Context, u user.U) (string, error) {
@@ -30,7 +28,7 @@ func (a App) CreateJWT(ctx context.Context, u user.U) (string, error) {
 	id := ulid.NewID()
 
 	// use cookie rotation encoding to generate a rotating secret for JWT
-	secret, err := a.Cookie.Encode(ctx, "jwt_secret", id.String())
+	secret, err := a.Cookie.Encode(ctx, "jwt_secret", string(id.Bytes()))
 	if err != nil {
 		return "", err
 	}
@@ -50,7 +48,7 @@ func (a App) CreateJWT(ctx context.Context, u user.U) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	ss, err := token.SignedString([]byte(id.String()))
+	ss, err := token.SignedString(id.Bytes())
 	if err != nil {
 		return "", err
 	}

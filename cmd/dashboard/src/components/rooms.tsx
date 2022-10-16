@@ -7,16 +7,25 @@ import { getCookie } from 'typescript-cookie'
 import API from 'cmd/api/grpc/api_pb_service';
 import * as dtoroom from 'pkg/room/dto/room_pb';
 
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
+import { ulid } from '../lib/ulid'
+
 import CircularProgress from '@mui/material/CircularProgress';
-import New_room from './new_room';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
+import NewRoom from './new_room';
+import Searchbar from './searchbar';
 
 export default () => {
 
+	// API Room
 	const [loadingRooms, toggleLoadingRooms] = useState(true)
-
-	const [emptyRooms, toggleEmptyRooms] = useState(false)
 
 	const listRooms = (req: dtoroom.ListRoomReq) => {
 		let md = new grpc.Metadata()
@@ -50,7 +59,6 @@ export default () => {
 		toggleLoadingRooms(true)
 		listRooms(req).then((result) => {
 			console.log('found ', result.getRoomsList().length, ' rooms')
-			toggleEmptyRooms((result.getRoomsList().length == 0))
 			toggleLoadingRooms(false)
 
 			rooms = result
@@ -61,27 +69,113 @@ export default () => {
 
 	useEffect(() => { refreshRooms() }, [])
 
+	// Table Room
+	const [page, setPage] = React.useState(0);
+	const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+	const handleChangePage = (event: unknown, newPage: number) => {
+		setPage(newPage);
+	};
+
+	const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setRowsPerPage(+event.target.value);
+		setPage(0);
+	};
+
+
 	return (
-		<Grid container
-			spacing={0}
-			direction="column"
-			alignItems="center"
-			justifyContent="center"
-			style={{ minHeight: '100vh' }}
-		>
-			{loadingRooms &&
-				<Grid item xs={3}>
-					<CircularProgress color='secondary' />
-				</Grid>
-			}
-			{!loadingRooms && emptyRooms &&
+		<Paper sx={{ width: '100%', overflow: 'hidden' }}>
+			<Grid
+				container
+				spacing={0}
+				alignItems="center"
+				justifyContent="center"
+				style={{ minHeight: '10vh' }}
+			>
 				<Grid item xs={1}>
-					<New_room success={refreshRooms} />
+					<NewRoom success={refreshRooms} />
 				</Grid>
-			}
-			{!loadingRooms && !emptyRooms &&
-				<>{JSON.stringify(rooms)}</>
-			}
-		</Grid>
+				<Grid item xs={11}>
+					<Searchbar />
+				</Grid>
+			</Grid>
+			<TableContainer sx={{ maxHeight: 1080 }}>
+				<Table stickyHeader aria-label="sticky table">
+					<TableHead>
+						<TableRow>
+							<TableCell
+								key='id'
+								align='left'
+								style={{ minWidth: 20 }}
+							>
+								ID
+							</TableCell>
+							<TableCell
+								key='name'
+								align='left'
+								style={{ minWidth: 100 }}
+							>
+								Name
+							</TableCell>
+						</TableRow>
+					</TableHead>
+					<TableBody>
+						{loadingRooms &&
+							<TableRow hover role="checkbox" tabIndex={-1} key='loading'>
+								<TableCell
+									key='id_loading'
+									align='left'
+									style={{ minWidth: 20 }}
+								>
+									<CircularProgress color='secondary' />
+								</TableCell>
+								<TableCell
+									key='name_loading'
+									align='left'
+									style={{ minWidth: 20 }}
+								>
+									<CircularProgress color='secondary' />
+								</TableCell>
+							</TableRow>
+
+						}
+						{!loadingRooms && rooms.getRoomsList()
+							.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+							.map((room) => {
+								const id = ulid(room.getRoom()?.getId_asU8()!)
+								const name = room.getRoom()?.getName()
+								return (
+									<TableRow hover role="checkbox" tabIndex={-1} key={id}>
+										<TableCell
+											key={'id_' + id}
+											align='left'
+											style={{ minWidth: 20 }}
+										>
+											{id}
+										</TableCell>
+										<TableCell
+											key={'name_' + name}
+											align='left'
+											style={{ minWidth: 100 }}
+										>
+											{room.getRoom()?.getName()}
+										</TableCell>
+									</TableRow>
+								);
+							})
+						}
+					</TableBody>
+				</Table>
+			</TableContainer>
+			<TablePagination
+				rowsPerPageOptions={[10, 25, 100]}
+				component="div"
+				count={rooms.getRoomsList().length}
+				rowsPerPage={rowsPerPage}
+				page={page}
+				onPageChange={handleChangePage}
+				onRowsPerPageChange={handleChangeRowsPerPage}
+			/>
+		</Paper >
 	);
 }
