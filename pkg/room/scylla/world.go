@@ -28,11 +28,14 @@ func (f filterWorld) where() (string, []interface{}) {
 	}
 
 	b := strings.Builder{}
-	b.WriteString(" WHERE ")
 
 	if f.All {
-		b.WriteString("true")
-	} else if len(clause) == 0 {
+		return b.String(), []interface{}{}
+	}
+
+	b.WriteString(" WHERE ")
+
+	if len(clause) == 0 {
 		b.WriteString("false")
 	} else {
 		b.WriteString(strings.Join(clause, " AND "))

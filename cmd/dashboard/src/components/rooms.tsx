@@ -6,6 +6,7 @@ import { getCookie } from 'typescript-cookie'
 
 import API from 'cmd/api/grpc/api_pb_service';
 import * as dtoroom from 'pkg/room/dto/room_pb';
+import * as room from 'pkg/room/room_pb';
 
 import { ulid } from '../lib/ulid'
 
@@ -27,7 +28,7 @@ import Searchbar from './searchbar';
 export default () => {
 
 	// API Room
-	const [loadingRooms, toggleLoadingRooms] = useState(true)
+	const [rooms, setRooms] = useState<{ rooms: dtoroom.Room[], loaded: boolean }>({ rooms: [], loaded: false })
 
 	const listRooms = (req: dtoroom.ListRoomReq) => {
 		let md = new grpc.Metadata()
@@ -54,17 +55,14 @@ export default () => {
 		return prom
 	}
 
-	let rooms = new dtoroom.ListRoomResp()
-
 	const refreshRooms = () => {
 		const req = new dtoroom.ListRoomReq()
 		req.setSize(100)
-		toggleLoadingRooms(true)
+		setRooms({ rooms: [], loaded: false })
 		listRooms(req).then((result) => {
 			console.log('found ', result.getRoomsList().length, ' rooms')
-			toggleLoadingRooms(false)
 
-			rooms = result
+			setRooms({ rooms: result.getRoomsList(), loaded: true })
 		}).catch((err) => {
 			console.log(err)
 		})
@@ -100,7 +98,7 @@ export default () => {
 						<AddCircleIcon />
 					</IconButton>
 				</Grid>
-				<Grid item xs={11}>
+				<Grid item xs={10}>
 					<Searchbar />
 				</Grid>
 			</Grid>
@@ -124,19 +122,13 @@ export default () => {
 							</TableCell>
 						</TableRow>
 					</TableHead>
-					<TableBody>
-						{loadingRooms &&
+					<TableBody key='table_room'>
+						{!rooms.loaded &&
 							<TableRow hover role="checkbox" tabIndex={-1} key='loading'>
 								<TableCell
-									key='id_loading'
-									align='left'
-									style={{ minWidth: 20 }}
-								>
-									<CircularProgress color='secondary' />
-								</TableCell>
-								<TableCell
-									key='name_loading'
-									align='left'
+									colSpan={2}
+									key='loading'
+									align='center'
 									style={{ minWidth: 20 }}
 								>
 									<CircularProgress color='secondary' />
@@ -144,11 +136,13 @@ export default () => {
 							</TableRow>
 
 						}
-						{!loadingRooms && rooms.getRoomsList()
+						{rooms.loaded && rooms.rooms
 							.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 							.map((room) => {
 								const id = ulid(room.getRoom()?.getId_asU8()!)
 								const name = room.getRoom()?.getName()
+
+								console.log('display line room:', id)
 								return (
 									<TableRow hover role="checkbox" tabIndex={-1} key={id}>
 										<TableCell
@@ -163,7 +157,7 @@ export default () => {
 											align='left'
 											style={{ minWidth: 100 }}
 										>
-											{room.getRoom()?.getName()}
+											{name}
 										</TableCell>
 									</TableRow>
 								);
@@ -175,7 +169,7 @@ export default () => {
 			<TablePagination
 				rowsPerPageOptions={[10, 25, 100]}
 				component="div"
-				count={rooms.getRoomsList().length}
+				count={rooms.rooms.length}
 				rowsPerPage={rowsPerPage}
 				page={page}
 				onPageChange={handleChangePage}

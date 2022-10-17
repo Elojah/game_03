@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from "react-router-dom";
 
 import { grpc } from '@improbable-eng/grpc-web';
-
 import { getCookie } from 'typescript-cookie'
 
 import API from 'cmd/api/grpc/api_pb_service';
 import * as dtoworld from 'pkg/room/dto/world_pb';
 import * as room from 'pkg/room/room_pb';
+import * as world from 'pkg/room/world_pb';
 
-import { ulid } from '../lib/ulid'
+import { ulid, parse } from '../lib/ulid'
 
 import { Link, LinkProps } from 'react-router-dom';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -21,14 +22,16 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
+import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
+import AddIcon from '@mui/icons-material/Add';
 import Searchbar from './searchbar';
 import { ArrowBack } from '@mui/icons-material';
 
 export default () => {
 
 	// API Room
-	const [loadingWorld, toggleLoadingWorlds] = useState(true)
+	const [worlds, setWorlds] = useState<{ worlds: world.World[], loaded: boolean }>({ worlds: [], loaded: false })
 
 	const createRoom = (req: room.R) => {
 		let md = new grpc.Metadata()
@@ -81,24 +84,20 @@ export default () => {
 		return prom
 	}
 
-	let worlds = new dtoworld.ListWorldResp()
-
 	const refreshWorlds = () => {
 		const req = new dtoworld.ListWorldReq()
 		req.setAll(true)
 		req.setSize(100)
-		toggleLoadingWorlds(true)
+		setWorlds({ worlds: [], loaded: false })
+
 		listWorlds(req).then((result) => {
 			console.log('found ', result.getWorldsList().length, ' worlds')
-			toggleLoadingWorlds(false)
 
-			worlds = result
+			setWorlds({ worlds: result.getWorldsList(), loaded: true })
 		}).catch((err) => {
 			console.log(err)
 		})
 	}
-
-	useEffect(() => { refreshWorlds() }, [])
 
 	// Table World
 	const [page, setPage] = React.useState(0);
@@ -113,27 +112,67 @@ export default () => {
 		setPage(0);
 	};
 
+	const [selectedWorld, setselectedWorld] = React.useState(new Uint8Array);
+	const roomName = useRef('');
+
+	const checkCreateRoom = () => {
+		if (selectedWorld.length == 0) {
+			// TODO: display input error
+			return
+		}
+
+		const name = roomName.current
+		if (!name) {
+			// TODO: display input error
+			return
+		}
+
+		const req = new room.R()
+		req.setName(name)
+		req.setWorldid(selectedWorld)
+
+		createRoom(req).then((result) => {
+			console.log('room created', ulid(result.getId_asU8()))
+
+			useNavigate()('rooms')
+		}).catch((err) => {
+			console.log(err)
+		})
+	}
+
+	useEffect(() => { refreshWorlds() }, [])
 
 	return (
 		<Paper sx={{ width: '100%', overflow: 'hidden' }}>
 			<Grid
 				container
 				spacing={0}
-				alignItems="center"
-				justifyContent="center"
+				alignItems='center'
+				justifyContent='center'
 				style={{ minHeight: '10vh' }}
 			>
 				<Grid item xs={1}>
-					<IconButton color="primary" size='large' {...{ component: Link, to: "/rooms" }}>
+					<IconButton color='primary' size='large' {...{ component: Link, to: '/rooms' }}>
 						<ArrowBack />
 					</IconButton>
 				</Grid>
-				<Grid item xs={11}>
+				<Grid item xs={4}>
+					<TextField id='create-room-name' inputRef={roomName} label='Name' variant='standard'
+						placeholder='e.g: Battle for Rohan, etc.'
+						InputProps={{
+							endAdornment:
+								<IconButton color='secondary' size='large' onClick={() => { checkCreateRoom() }}>
+									<AddIcon />
+								</IconButton>
+						}}
+					/>
+				</Grid>
+				<Grid item xs={6}>
 					<Searchbar />
 				</Grid>
 			</Grid>
 			<TableContainer sx={{ maxHeight: 1080 }}>
-				<Table stickyHeader aria-label="sticky table">
+				<Table stickyHeader aria-label='sticky table'>
 					<TableHead>
 						<TableRow>
 							<TableCell
@@ -159,26 +198,13 @@ export default () => {
 							</TableCell>
 						</TableRow>
 					</TableHead>
-					<TableBody>
-						{loadingWorld &&
-							<TableRow hover role="checkbox" tabIndex={-1} key='loading'>
+					<TableBody key='table_world'>
+						{!worlds.loaded &&
+							<TableRow hover role='checkbox' tabIndex={-1} key='loading'>
 								<TableCell
-									key='id_loading'
-									align='left'
-									style={{ minWidth: 20 }}
-								>
-									<CircularProgress color='secondary' />
-								</TableCell>
-								<TableCell
-									key='height_loading'
-									align='left'
-									style={{ minWidth: 20 }}
-								>
-									<CircularProgress color='secondary' />
-								</TableCell>
-								<TableCell
-									key='width_loading'
-									align='left'
+									colSpan={3}
+									key='loading'
+									align='center'
 									style={{ minWidth: 20 }}
 								>
 									<CircularProgress color='secondary' />
@@ -186,30 +212,33 @@ export default () => {
 							</TableRow>
 
 						}
-						{!loadingWorld && worlds.getWorldsList()
+						{worlds.loaded && worlds.worlds
 							.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 							.map((world) => {
-								const id = ulid(world.getId_asU8()!)
+								const id = world.getId_asU8()
+								const sid = ulid(id)
 								const height = world.getHeight()
 								const width = world.getWidth()
+
+								console.log('display line world:', sid)
 								return (
-									<TableRow hover role="checkbox" tabIndex={-1} key={id}>
+									<TableRow hover role='checkbox' tabIndex={-1} key={sid} selected={selectedWorld == id} onClick={() => { setselectedWorld(id) }}>
 										<TableCell
-											key={'id_' + id}
+											key={'id_' + sid}
 											align='left'
 											style={{ minWidth: 20 }}
 										>
-											{id}
+											{sid}
 										</TableCell>
 										<TableCell
-											key={'height_' + id}
+											key={'height_' + sid}
 											align='left'
 											style={{ minWidth: 100 }}
 										>
 											{height}
 										</TableCell>
 										<TableCell
-											key={'width_' + id}
+											key={'width_' + sid}
 											align='left'
 											style={{ minWidth: 100 }}
 										>
@@ -224,8 +253,8 @@ export default () => {
 			</TableContainer>
 			<TablePagination
 				rowsPerPageOptions={[10, 25, 100]}
-				component="div"
-				count={worlds.getWorldsList().length}
+				component='div'
+				count={worlds.worlds.length}
 				rowsPerPage={rowsPerPage}
 				page={page}
 				onPageChange={handleChangePage}

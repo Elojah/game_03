@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 
 	gerrors "github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/room"
@@ -10,12 +11,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
-
-// TMP DATA FOR DEV WIP.
-
-var defaultWorldID = ulid.MustParse("01GF89A3E81XM00XD46JB4MRBP")
-
-// !TMP DATA FOR DEV WIP
 
 func (h *handler) CreateRoom(ctx context.Context, req *room.R) (*room.R, error) {
 	logger := log.With().Str("method", "create_room").Logger()
@@ -30,9 +25,24 @@ func (h *handler) CreateRoom(ctx context.Context, req *room.R) (*room.R, error) 
 		return &room.R{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	}
 
+	// #Check world_id
+	if _, err := h.room.FetchWorld(ctx, room.FilterWorld{
+		ID:   req.WorldID,
+		Size: 1,
+	}); err != nil {
+		if errors.As(err, &gerrors.ErrNotFound{}) {
+			logger.Error().Err(err).Msg("world not found")
+
+			return &room.R{}, status.New(codes.NotFound, err.Error()).Err()
+		}
+
+		logger.Error().Err(err).Msg("failed to fetch world")
+
+		return &room.R{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
 	// #Set new room values
 	req.ID = ulid.NewID()
-	req.WorldID = defaultWorldID
 	req.OwnerID = u.ID
 
 	// #Insert room
