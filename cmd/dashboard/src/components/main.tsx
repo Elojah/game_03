@@ -8,6 +8,7 @@ import Copyright from './copyright';
 import Dashboard from './dashboard';
 import PCs from './pcs';
 import Rooms from './rooms';
+import CreateRoom from './create_room';
 
 import {
 	Route,
@@ -29,6 +30,7 @@ export default () => {
 				<Routes>
 					<Route index element={<Dashboard />} />
 					<Route path="rooms" element={<Rooms />} />
+					<Route path="create_room" element={<CreateRoom />} />
 					<Route path="pcs" element={<PCs />} />
 				</Routes>
 			</Container>

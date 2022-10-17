@@ -10,6 +10,8 @@ type FilterWorld struct {
 	ID  ulid.ID
 	IDs []ulid.ID
 
+	All bool
+
 	State []byte
 	Size  int
 }

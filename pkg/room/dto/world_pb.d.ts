@@ -13,6 +13,17 @@ export class ListWorldReq extends jspb.Message {
   setIdsList(value: Array<Uint8Array | string>): void;
   addIds(value: Uint8Array | string, index?: number): Uint8Array | string;
 
+  getAll(): boolean;
+  setAll(value: boolean): void;
+
+  getSize(): number;
+  setSize(value: number): void;
+
+  getState(): Uint8Array | string;
+  getState_asU8(): Uint8Array;
+  getState_asB64(): string;
+  setState(value: Uint8Array | string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ListWorldReq.AsObject;
   static toObject(includeInstance: boolean, msg: ListWorldReq): ListWorldReq.AsObject;
@@ -26,6 +37,9 @@ export class ListWorldReq extends jspb.Message {
 export namespace ListWorldReq {
   export type AsObject = {
     idsList: Array<Uint8Array | string>,
+    all: boolean,
+    size: number,
+    state: Uint8Array | string,
   }
 }
 

@@ -30,7 +30,9 @@ func (f filterWorld) where() (string, []interface{}) {
 	b := strings.Builder{}
 	b.WriteString(" WHERE ")
 
-	if len(clause) == 0 {
+	if f.All {
+		b.WriteString("true")
+	} else if len(clause) == 0 {
 		b.WriteString("false")
 	} else {
 		b.WriteString(strings.Join(clause, " AND "))
@@ -44,6 +46,10 @@ func (f filterWorld) index() string {
 
 	if f.ID != nil {
 		cols = append(cols, f.ID.String())
+	}
+
+	if f.All {
+		cols = append(cols, "all")
 	}
 
 	return strings.Join(cols, " - ")

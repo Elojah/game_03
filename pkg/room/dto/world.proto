@@ -16,6 +16,10 @@ import "github.com/elojah/game_03/pkg/room/world.proto";
 
 message ListWorldReq {
     repeated bytes IDs          = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+	bool All                    = 2;
+
+	int64 Size                  = 3;
+    bytes State                 = 4;
 }
 
 message ListWorldResp {

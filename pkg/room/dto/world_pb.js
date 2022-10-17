@@ -99,7 +99,10 @@ proto.dto.ListWorldReq.prototype.toObject = function(opt_includeInstance) {
  */
 proto.dto.ListWorldReq.toObject = function(includeInstance, msg) {
   var f, obj = {
-    idsList: msg.getIdsList_asB64()
+    idsList: msg.getIdsList_asB64(),
+    all: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
+    size: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    state: msg.getState_asB64()
   };
 
   if (includeInstance) {
@@ -140,6 +143,18 @@ proto.dto.ListWorldReq.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.addIds(value);
       break;
+    case 2:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setAll(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setSize(value);
+      break;
+    case 4:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setState(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -173,6 +188,27 @@ proto.dto.ListWorldReq.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeRepeatedBytes(
       1,
+      f
+    );
+  }
+  f = message.getAll();
+  if (f) {
+    writer.writeBool(
+      2,
+      f
+    );
+  }
+  f = message.getSize();
+  if (f !== 0) {
+    writer.writeInt64(
+      3,
+      f
+    );
+  }
+  f = message.getState_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      4,
       f
     );
   }
@@ -237,6 +273,84 @@ proto.dto.ListWorldReq.prototype.addIds = function(value, opt_index) {
  */
 proto.dto.ListWorldReq.prototype.clearIdsList = function() {
   return this.setIdsList([]);
+};
+
+
+/**
+ * optional bool All = 2;
+ * @return {boolean}
+ */
+proto.dto.ListWorldReq.prototype.getAll = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 2, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.dto.ListWorldReq} returns this
+ */
+proto.dto.ListWorldReq.prototype.setAll = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 2, value);
+};
+
+
+/**
+ * optional int64 Size = 3;
+ * @return {number}
+ */
+proto.dto.ListWorldReq.prototype.getSize = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.dto.ListWorldReq} returns this
+ */
+proto.dto.ListWorldReq.prototype.setSize = function(value) {
+  return jspb.Message.setProto3IntField(this, 3, value);
+};
+
+
+/**
+ * optional bytes State = 4;
+ * @return {!(string|Uint8Array)}
+ */
+proto.dto.ListWorldReq.prototype.getState = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/**
+ * optional bytes State = 4;
+ * This is a type-conversion wrapper around `getState()`
+ * @return {string}
+ */
+proto.dto.ListWorldReq.prototype.getState_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getState()));
+};
+
+
+/**
+ * optional bytes State = 4;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getState()`
+ * @return {!Uint8Array}
+ */
+proto.dto.ListWorldReq.prototype.getState_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getState()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.dto.ListWorldReq} returns this
+ */
+proto.dto.ListWorldReq.prototype.setState = function(value) {
+  return jspb.Message.setProto3BytesField(this, 4, value);
 };
 
 

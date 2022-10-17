@@ -24,15 +24,12 @@ func (h *handler) ListWorld(ctx context.Context, req *dto.ListWorldReq) (*dto.Li
 		return &dto.ListWorldResp{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	}
 
-	if err := req.Check(); err != nil {
-		logger.Error().Err(err).Msg("request check failed")
-
-		return &dto.ListWorldResp{}, status.New(codes.InvalidArgument, err.Error()).Err()
-	}
-
 	ws, _, err := h.room.FetchManyWorld(ctx, room.FilterWorld{
-		IDs:  req.IDs,
-		Size: len(req.IDs),
+		IDs: req.IDs,
+		All: req.All,
+
+		Size:  int(req.Size_),
+		State: req.State,
 	})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to fetch world")
