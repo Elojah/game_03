@@ -24,6 +24,7 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
+import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
 import Searchbar from './searchbar';
 import { ArrowBack } from '@mui/icons-material';
@@ -155,9 +156,11 @@ export default () => {
 				style={{ minHeight: '10vh' }}
 			>
 				<Grid item xs={1}>
-					<IconButton color='primary' size='large' {...{ component: Link, to: '/rooms' }}>
-						<ArrowBack />
-					</IconButton>
+					<div onClick={() => { navigate(-1) }}>
+						<Button variant="contained" startIcon={<ArrowBack />} color='primary' size='large'>
+							Back
+						</Button>
+					</div>
 				</Grid>
 				<Grid item xs={4}>
 					<TextField id='create-room-name' inputRef={roomName} label='Name' variant='standard'

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { grpc } from '@improbable-eng/grpc-web';
 import { getCookie } from 'typescript-cookie'
@@ -16,6 +16,7 @@ import { ulid, parse } from '../lib/ulid'
 import { Link, LinkProps } from 'react-router-dom';
 import CircularProgress from '@mui/material/CircularProgress';
 import Paper from '@mui/material/Paper';
+import Avatar from '@mui/material/Avatar';
 import Grid from '@mui/material/Grid';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -26,15 +27,14 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
+import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
 import Searchbar from './searchbar';
 import { ArrowBack } from '@mui/icons-material';
+import { CardHeader } from '@mui/material';
 
-interface propCreatePC {
-	Room: room.R
-}
-
-export default (props: propCreatePC) => {
+export default () => {
+	const { roomID } = useParams()
 
 	const navigate = useNavigate()
 
@@ -137,12 +137,12 @@ export default (props: propCreatePC) => {
 
 		const req = new dtopc.CreatePCReq()
 		req.setEntitytemplate(selectedTemplate)
-		req.setRoomid(props.Room.getId_asU8())
+		req.setRoomid(parse(roomID!))
 
 		createPC(req).then((result) => {
 			console.log('pc created', ulid(result.getId_asU8()))
 
-			navigate('/pcs')
+			navigate('/rooms')
 		}).catch((err) => {
 			console.log(err)
 		})
@@ -160,9 +160,11 @@ export default (props: propCreatePC) => {
 				style={{ minHeight: '10vh' }}
 			>
 				<Grid item xs={1}>
-					<IconButton color='primary' size='large' {...{ component: Link, to: '/rooms' }}>
-						<ArrowBack />
-					</IconButton>
+					<div onClick={() => { navigate(-1) }}>
+						<Button variant="contained" startIcon={<ArrowBack />} color='primary' size='large'>
+							Back
+						</Button>
+					</div>
 				</Grid>
 				<Grid item xs={4}>
 					<TextField id='create-pc-name' inputRef={pcName} label='Name' variant='standard'
@@ -186,30 +188,16 @@ export default (props: propCreatePC) => {
 							<TableCell
 								key='id'
 								align='left'
-								style={{ minWidth: 20, width: '20%' }}
+								style={{ minWidth: 20, width: '10%' }}
 							>
 								ID
 							</TableCell>
 							<TableCell
 								key='name'
 								align='left'
-								style={{ minWidth: 20, width: '40%' }}
+								style={{ minWidth: 20, width: '50%' }}
 							>
 								Name
-							</TableCell>
-							<TableCell
-								key='height'
-								align='left'
-								style={{ minWidth: 20, width: '10%' }}
-							>
-								Height
-							</TableCell>
-							<TableCell
-								key='width'
-								align='left'
-								style={{ minWidth: 20, width: '10%' }}
-							>
-								Width
 							</TableCell>
 						</TableRow>
 					</TableHead>
@@ -217,7 +205,7 @@ export default (props: propCreatePC) => {
 						{!templates.loaded &&
 							<TableRow hover role='checkbox' tabIndex={-1} key='loading'>
 								<TableCell
-									colSpan={4}
+									colSpan={2}
 									key='loading'
 									align='center'
 									style={{ minWidth: 20 }}
@@ -233,39 +221,26 @@ export default (props: propCreatePC) => {
 								const id = template.getId_asU8()
 								const sid = ulid(id)
 								const name = template.getName()
-								const height = template.getHeight()
-								const width = template.getWidth()
 
-								console.log('display line template:', sid)
+								console.log('display line template:', sid, name)
 								return (
-									<TableRow hover role='checkbox' tabIndex={-1} key={sid} selected={selectedTemplate == id} onClick={() => { setselectedTemplate(id) }}>
+									<TableRow hover role='checkbox' tabIndex={-1} key={sid} selected={selectedTemplate == name} onClick={() => { setselectedTemplate(name) }}>
 										<TableCell
 											key={'id_' + sid}
 											align='left'
-											style={{ minWidth: 20, width: '20%' }}
+											style={{ minWidth: 20, width: '10%' }}
 										>
 											{sid}
 										</TableCell>
 										<TableCell
 											key={'name_' + sid}
 											align='left'
-											style={{ minWidth: 20, width: '40%' }}
+											style={{ minWidth: 20, width: '50%' }}
 										>
-											{name}
-										</TableCell>
-										<TableCell
-											key={'height_' + sid}
-											align='left'
-											style={{ minWidth: 20, width: '10%' }}
-										>
-											{height}
-										</TableCell>
-										<TableCell
-											key={'width_' + sid}
-											align='left'
-											style={{ minWidth: 20, width: '10%' }}
-										>
-											{width}
+											<CardHeader
+												avatar={<Avatar alt={name} src={'img/' + name + '.png'} />}
+												title={name}
+											/>
 										</TableCell>
 									</TableRow>
 								);

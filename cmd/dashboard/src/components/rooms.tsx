@@ -12,12 +12,7 @@ import { ulid } from '../lib/ulid'
 import { Link, LinkProps } from 'react-router-dom';
 import CircularProgress from '@mui/material/CircularProgress';
 import Paper from '@mui/material/Paper';
-import Collapse from '@mui/material/Collapse';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -26,7 +21,7 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import IconButton from '@mui/material/IconButton';
+import Button from '@mui/material/Button';
 import Searchbar from './searchbar';
 import RoomsRow from './rooms_row';
 
@@ -99,9 +94,9 @@ export default () => {
 				style={{ minHeight: '10vh' }}
 			>
 				<Grid item xs={1}>
-					<IconButton color="primary" size='large' {...{ component: Link, to: "/create_room" }}>
-						<AddCircleIcon />
-					</IconButton>
+					<Button variant="contained" startIcon={<AddCircleIcon />} color='primary' size='large'  {...{ component: Link, to: "/create_room" }}>
+						Create
+					</Button>
 				</Grid>
 				<Grid item xs={10}>
 					<Searchbar />

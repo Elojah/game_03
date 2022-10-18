@@ -12,7 +12,6 @@ import { ulid } from '../lib/ulid'
 
 import { Link, LinkProps } from 'react-router-dom';
 import CircularProgress from '@mui/material/CircularProgress';
-import Paper from '@mui/material/Paper';
 import Collapse from '@mui/material/Collapse';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -20,15 +19,13 @@ import Grid from '@mui/material/Grid';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Table from '@mui/material/Table';
+import TableHead from '@mui/material/TableHead';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import IconButton from '@mui/material/IconButton';
-import Searchbar from './searchbar';
+import Button from '@mui/material/Button';
 
 interface propRoomsRow {
 	Room: dtoroom.Room
@@ -91,7 +88,7 @@ export default (props: propRoomsRow) => {
 	console.log('display line room:', sid)
 	return (<>
 		<TableRow
-			hover role="checkbox" tabIndex={-1}
+			hover role='checkbox' tabIndex={-1}
 			key={'data_' + sid}
 			sx={{ '& > *': { borderBottom: 'unset' } }}
 		>
@@ -99,8 +96,8 @@ export default (props: propRoomsRow) => {
 				style={{ minWidth: 20, width: '5%' }}
 			>
 				<IconButton
-					aria-label="expand row"
-					size="small"
+					aria-label='expand row'
+					size='small'
 					onClick={() => setOpen(!open)}
 				>
 					{open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
@@ -125,15 +122,27 @@ export default (props: propRoomsRow) => {
 			key={'collapse_' + sid}
 		>
 			<TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-				<Collapse in={open} timeout="auto" unmountOnExit>
+				<Collapse in={open} timeout='auto' unmountOnExit>
 					<Box sx={{ margin: 1 }}>
-						<IconButton color="primary" size='large' {...{ component: Link, to: "/create_pc" }}>
-							<AddCircleIcon />
-						</IconButton>
-						<Typography variant="h6" gutterBottom component="div">
-							Characters
-						</Typography>
-						<Table size="small" aria-label="purchases">
+						<Grid
+							container
+							spacing={0}
+							alignItems="center"
+							justifyContent="center"
+							style={{ minHeight: '10vh' }}
+						>
+							<Grid item xs={2}>
+								<Button variant="contained" startIcon={<AddCircleIcon />} color='primary' size='large'   {...{ component: Link, to: '/rooms/' + sid + '/create_pc' }}>
+									Create
+								</Button>
+							</Grid>
+							<Grid item xs={9}>
+								<Typography variant='h6' gutterBottom component='div'>
+									Characters
+								</Typography>
+							</Grid>
+						</Grid>
+						<Table size='small' aria-label='purchases'>
 							<TableHead>
 								<TableRow>
 									<TableCell
@@ -154,7 +163,7 @@ export default (props: propRoomsRow) => {
 							</TableHead>
 							<TableBody>
 								{!pcs.loaded &&
-									<TableRow hover role="checkbox" tabIndex={-1}>
+									<TableRow hover role='checkbox' tabIndex={-1}>
 										<TableCell
 											colSpan={2}
 											align='center'
@@ -173,7 +182,7 @@ export default (props: propRoomsRow) => {
 
 										return (
 											<TableRow
-												hover role="checkbox" tabIndex={-1}
+												hover role='checkbox' tabIndex={-1}
 												key={'data_' + sid}
 											>
 												<TableCell

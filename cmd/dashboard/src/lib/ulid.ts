@@ -65,7 +65,7 @@ let dec = new Uint8Array([
 ])
 
 function parse(v: string): Uint8Array {
-	let result = new Uint8Array
+	let result = new Uint8Array(16)
 
 	let vb = new TextEncoder().encode(v)
 

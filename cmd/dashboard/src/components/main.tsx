@@ -9,6 +9,7 @@ import Dashboard from './dashboard';
 import PCs from './pcs';
 import Rooms from './rooms';
 import CreateRoom from './create_room';
+import CreatePC from './create_pc';
 
 import {
 	Route,
@@ -18,7 +19,7 @@ import {
 export default () => {
 	return (
 		<Box
-			component="main"
+			component='main'
 			sx={{
 				flexGrow: 1,
 				height: '100vh',
@@ -26,13 +27,13 @@ export default () => {
 			}}
 		>
 			<Toolbar />
-			<Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+			<Container maxWidth='xl' sx={{ mt: 4, mb: 4 }}>
 				<Routes>
 					<Route index element={<Dashboard />} />
-					<Route path="rooms" element={<Rooms />} />
-					<Route path="create_room" element={<CreateRoom />} />
-					<Route path="pcs" element={<PCs />} />
-					<Route path="create_pc" element={<CreatePC />} />
+					<Route path='/rooms' element={<Rooms />} />
+					<Route path='/create_room' element={<CreateRoom />} />
+					<Route path='/pcs' element={<PCs />} />
+					<Route path='/rooms/:roomID/create_pc' element={<CreatePC />} />
 				</Routes>
 			</Container>
 			<Copyright sx={{ pt: 4 }} />
