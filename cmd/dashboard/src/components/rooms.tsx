@@ -6,14 +6,18 @@ import { getCookie } from 'typescript-cookie'
 
 import API from 'cmd/api/grpc/api_pb_service';
 import * as dtoroom from 'pkg/room/dto/room_pb';
-import * as room from 'pkg/room/room_pb';
 
 import { ulid } from '../lib/ulid'
 
 import { Link, LinkProps } from 'react-router-dom';
 import CircularProgress from '@mui/material/CircularProgress';
 import Paper from '@mui/material/Paper';
+import Collapse from '@mui/material/Collapse';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -24,6 +28,7 @@ import TableRow from '@mui/material/TableRow';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import IconButton from '@mui/material/IconButton';
 import Searchbar from './searchbar';
+import RoomsRow from './rooms_row';
 
 export default () => {
 
@@ -68,7 +73,6 @@ export default () => {
 		})
 	}
 
-	useEffect(() => { refreshRooms() }, [])
 
 	// Table Room
 	const [page, setPage] = React.useState(0);
@@ -83,6 +87,7 @@ export default () => {
 		setPage(0);
 	};
 
+	useEffect(() => { refreshRooms() }, [])
 
 	return (
 		<Paper sx={{ width: '100%', overflow: 'hidden' }}>
@@ -107,16 +112,20 @@ export default () => {
 					<TableHead>
 						<TableRow>
 							<TableCell
+								key='collapse'
+								style={{ minWidth: 20, width: '5%' }}
+							/>
+							<TableCell
 								key='id'
 								align='left'
-								style={{ minWidth: 20 }}
+								style={{ minWidth: 20, width: '10%' }}
 							>
 								ID
 							</TableCell>
 							<TableCell
 								key='name'
 								align='left'
-								style={{ minWidth: 100 }}
+								style={{ minWidth: 100, width: '50%' }}
 							>
 								Name
 							</TableCell>
@@ -124,10 +133,9 @@ export default () => {
 					</TableHead>
 					<TableBody key='table_room'>
 						{!rooms.loaded &&
-							<TableRow hover role="checkbox" tabIndex={-1} key='loading'>
+							<TableRow hover role="checkbox" tabIndex={-1}>
 								<TableCell
-									colSpan={2}
-									key='loading'
+									colSpan={3}
 									align='center'
 									style={{ minWidth: 20 }}
 								>
@@ -139,28 +147,7 @@ export default () => {
 						{rooms.loaded && rooms.rooms
 							.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 							.map((room) => {
-								const id = ulid(room.getRoom()?.getId_asU8()!)
-								const name = room.getRoom()?.getName()
-
-								console.log('display line room:', id)
-								return (
-									<TableRow hover role="checkbox" tabIndex={-1} key={id}>
-										<TableCell
-											key={'id_' + id}
-											align='left'
-											style={{ minWidth: 20 }}
-										>
-											{id}
-										</TableCell>
-										<TableCell
-											key={'name_' + id}
-											align='left'
-											style={{ minWidth: 100 }}
-										>
-											{name}
-										</TableCell>
-									</TableRow>
-								);
+								return (<RoomsRow Room={room} key={ulid(room.getRoom()?.getId_asU8()!)} />)
 							})
 						}
 					</TableBody>

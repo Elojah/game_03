@@ -24,4 +24,5 @@ message ListWorldReq {
 
 message ListWorldResp {
     repeated room.World Worlds  = 1 [(gogoproto.nullable) = false];
+    bytes State                 = 2;
 }

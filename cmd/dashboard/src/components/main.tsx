@@ -32,6 +32,7 @@ export default () => {
 					<Route path="rooms" element={<Rooms />} />
 					<Route path="create_room" element={<CreateRoom />} />
 					<Route path="pcs" element={<PCs />} />
+					<Route path="create_pc" element={<CreatePC />} />
 				</Routes>
 			</Container>
 			<Copyright sx={{ pt: 4 }} />

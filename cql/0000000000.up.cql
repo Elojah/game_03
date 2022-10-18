@@ -132,6 +132,7 @@ CREATE TABLE main.npc (
 
 CREATE TABLE main.world (
     id              uuid PRIMARY KEY,
+    name            varchar,
     width           bigint,
     height          bigint,
     cell_width      bigint,

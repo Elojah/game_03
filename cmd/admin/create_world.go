@@ -50,9 +50,12 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 		},
 	}
 
+	id := ulid.NewID()
+
 	// #Create world
 	w := room.World{
-		ID:         ulid.NewID(),
+		ID:         id,
+		Name:       "template_" + id.String(),
 		Height:     int64(params.Height),
 		Width:      int64(params.Width),
 		CellHeight: int64(params.CellHeight) * 32, // TODO: figure out naming here cause it means different than above (x tile_size)

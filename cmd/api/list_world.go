@@ -24,7 +24,7 @@ func (h *handler) ListWorld(ctx context.Context, req *dto.ListWorldReq) (*dto.Li
 		return &dto.ListWorldResp{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	}
 
-	ws, _, err := h.room.FetchManyWorld(ctx, room.FilterWorld{
+	ws, state, err := h.room.FetchManyWorld(ctx, room.FilterWorld{
 		IDs: req.IDs,
 		All: req.All,
 
@@ -37,7 +37,7 @@ func (h *handler) ListWorld(ctx context.Context, req *dto.ListWorldReq) (*dto.Li
 		return &dto.ListWorldResp{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
-	result := dto.ListWorldResp{Worlds: ws}
+	result := dto.ListWorldResp{Worlds: ws, State: state}
 
 	logger.Info().Msg("success")
 

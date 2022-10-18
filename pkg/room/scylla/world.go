@@ -60,8 +60,9 @@ func (f filterWorld) index() string {
 
 func (s Store) InsertWorld(ctx context.Context, w room.World) error {
 	q := s.Session.Query(
-		`INSERT INTO main.world (id, height, width, cell_height, cell_width) VALUES (?, ?, ?, ?, ?)`,
+		`INSERT INTO main.world (id, name, height, width, cell_height, cell_width) VALUES (?, ?, ?, ?, ?, ?)`,
 		w.ID,
+		w.Name,
 		w.Height,
 		w.Width,
 		w.CellHeight,
@@ -79,7 +80,7 @@ func (s Store) InsertWorld(ctx context.Context, w room.World) error {
 
 func (s Store) FetchWorld(ctx context.Context, f room.FilterWorld) (room.World, error) {
 	b := strings.Builder{}
-	b.WriteString(`SELECT id, height, width, cell_height, cell_width FROM main.world `)
+	b.WriteString(`SELECT id, name, height, width, cell_height, cell_width FROM main.world `)
 
 	clause, args := filterWorld(f).where()
 	b.WriteString(clause)
@@ -87,7 +88,7 @@ func (s Store) FetchWorld(ctx context.Context, f room.FilterWorld) (room.World, 
 	q := s.Session.Query(b.String(), args...).WithContext(ctx)
 
 	var w room.World
-	if err := q.Scan(&w.ID, &w.Height, &w.Width, &w.CellHeight, &w.CellWidth); err != nil {
+	if err := q.Scan(&w.ID, &w.Name, &w.Height, &w.Width, &w.CellHeight, &w.CellWidth); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
 			return room.World{}, gerrors.ErrNotFound{Resource: "world", Index: filterWorld(f).index()}
 		}
@@ -105,7 +106,7 @@ func (s Store) FetchManyWorld(ctx context.Context, f room.FilterWorld) ([]room.W
 
 	b := strings.Builder{}
 	b.WriteString(`SELECT
-		id,
+		id, name,
 		width, height,
 		cell_width, cell_height
 	FROM main.world `)
@@ -131,7 +132,7 @@ func (s Store) FetchManyWorld(ctx context.Context, f room.FilterWorld) ([]room.W
 
 	for ; scanner.Next(); i++ {
 		if err := scanner.Scan(
-			&ws[i].ID,
+			&ws[i].ID, &ws[i].Name,
 			&ws[i].Width, &ws[i].Height,
 			&ws[i].CellWidth, &ws[i].CellHeight,
 		); err != nil {

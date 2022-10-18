@@ -38,6 +38,11 @@ func (f filterTemplate) where() (string, []interface{}) {
 	}
 
 	b := strings.Builder{}
+
+	if f.All {
+		return b.String(), []interface{}{}
+	}
+
 	b.WriteString(" WHERE ")
 
 	if len(clause) == 0 {
@@ -76,6 +81,10 @@ func (f filterTemplate) index() string {
 		}
 
 		cols = append(cols, strings.Join(ss, "|"))
+	}
+
+	if f.All {
+		cols = append(cols, "all")
 	}
 
 	return strings.Join(cols, " - ")

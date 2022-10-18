@@ -8,6 +8,7 @@ var github_com_elojah_game_03_pkg_entity_pc_pb = require("../../../../../../gith
 var github_com_elojah_game_03_pkg_entity_dto_entity_pb = require("../../../../../../github.com/elojah/game_03/pkg/entity/dto/entity_pb");
 var github_com_elojah_game_03_pkg_entity_dto_animation_pb = require("../../../../../../github.com/elojah/game_03/pkg/entity/dto/animation_pb");
 var github_com_elojah_game_03_pkg_entity_dto_pc_pb = require("../../../../../../github.com/elojah/game_03/pkg/entity/dto/pc_pb");
+var github_com_elojah_game_03_pkg_entity_dto_template_pb = require("../../../../../../github.com/elojah/game_03/pkg/entity/dto/template_pb");
 var github_com_elojah_game_03_pkg_room_room_pb = require("../../../../../../github.com/elojah/game_03/pkg/room/room_pb");
 var github_com_elojah_game_03_pkg_room_dto_cell_pb = require("../../../../../../github.com/elojah/game_03/pkg/room/dto/cell_pb");
 var github_com_elojah_game_03_pkg_room_dto_room_pb = require("../../../../../../github.com/elojah/game_03/pkg/room/dto/room_pb");
@@ -73,6 +74,15 @@ API.ListPC = {
   responseStream: false,
   requestType: github_com_elojah_game_03_pkg_entity_dto_pc_pb.ListPCReq,
   responseType: github_com_elojah_game_03_pkg_entity_dto_pc_pb.ListPCResp
+};
+
+API.ListTemplate = {
+  methodName: "ListTemplate",
+  service: API,
+  requestStream: false,
+  responseStream: false,
+  requestType: github_com_elojah_game_03_pkg_entity_dto_template_pb.ListTemplateReq,
+  responseType: github_com_elojah_game_03_pkg_entity_dto_template_pb.ListTemplateResp
 };
 
 API.CreateEntity = {
@@ -323,6 +333,37 @@ APIClient.prototype.listPC = function listPC(requestMessage, metadata, callback)
     callback = arguments[1];
   }
   var client = grpc.unary(API.ListPC, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+APIClient.prototype.listTemplate = function listTemplate(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(API.ListTemplate, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,

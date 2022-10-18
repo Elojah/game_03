@@ -4,7 +4,9 @@
 package dto
 
 import (
+	bytes "bytes"
 	fmt "fmt"
+	entity "github.com/elojah/game_03/pkg/entity"
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
 	golang_proto "github.com/golang/protobuf/proto"
@@ -63,9 +65,88 @@ func (m *CreateTemplateReq) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_CreateTemplateReq proto.InternalMessageInfo
 
+type ListTemplateReq struct {
+	All   bool   `protobuf:"varint,1,opt,name=All,proto3" json:"All,omitempty"`
+	Size_ int64  `protobuf:"varint,2,opt,name=Size,proto3" json:"Size,omitempty"`
+	State []byte `protobuf:"bytes,3,opt,name=State,proto3" json:"State,omitempty"`
+}
+
+func (m *ListTemplateReq) Reset()      { *m = ListTemplateReq{} }
+func (*ListTemplateReq) ProtoMessage() {}
+func (*ListTemplateReq) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a05e5996e911a713, []int{1}
+}
+func (m *ListTemplateReq) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *ListTemplateReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_ListTemplateReq.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *ListTemplateReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListTemplateReq.Merge(m, src)
+}
+func (m *ListTemplateReq) XXX_Size() int {
+	return m.Size()
+}
+func (m *ListTemplateReq) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListTemplateReq.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListTemplateReq proto.InternalMessageInfo
+
+type ListTemplateResp struct {
+	Templates []entity.Template `protobuf:"bytes,1,rep,name=Templates,proto3" json:"Templates"`
+	State     []byte            `protobuf:"bytes,2,opt,name=State,proto3" json:"State,omitempty"`
+}
+
+func (m *ListTemplateResp) Reset()      { *m = ListTemplateResp{} }
+func (*ListTemplateResp) ProtoMessage() {}
+func (*ListTemplateResp) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a05e5996e911a713, []int{2}
+}
+func (m *ListTemplateResp) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *ListTemplateResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_ListTemplateResp.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *ListTemplateResp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListTemplateResp.Merge(m, src)
+}
+func (m *ListTemplateResp) XXX_Size() int {
+	return m.Size()
+}
+func (m *ListTemplateResp) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListTemplateResp.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListTemplateResp proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*CreateTemplateReq)(nil), "dto.CreateTemplateReq")
 	golang_proto.RegisterType((*CreateTemplateReq)(nil), "dto.CreateTemplateReq")
+	proto.RegisterType((*ListTemplateReq)(nil), "dto.ListTemplateReq")
+	golang_proto.RegisterType((*ListTemplateReq)(nil), "dto.ListTemplateReq")
+	proto.RegisterType((*ListTemplateResp)(nil), "dto.ListTemplateResp")
+	golang_proto.RegisterType((*ListTemplateResp)(nil), "dto.ListTemplateResp")
 }
 
 func init() {
@@ -76,21 +157,28 @@ func init() {
 }
 
 var fileDescriptor_a05e5996e911a713 = []byte{
-	// 221 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x4c, 0x8d, 0xa1, 0x4e, 0x03, 0x41,
-	0x10, 0x86, 0x77, 0x02, 0x21, 0xe1, 0x1c, 0xa7, 0x08, 0xe2, 0x0f, 0xc1, 0x80, 0xa1, 0x4b, 0x52,
-	0x81, 0x07, 0x83, 0x42, 0x34, 0x78, 0xb2, 0x47, 0x87, 0x6d, 0xa1, 0xc7, 0x1c, 0xcd, 0x54, 0xe0,
-	0x78, 0x04, 0x1e, 0x83, 0x47, 0x40, 0x56, 0x56, 0x9e, 0xac, 0x64, 0x67, 0x0d, 0xb2, 0x12, 0x49,
-	0xb2, 0x20, 0x70, 0xdf, 0x97, 0xc9, 0x37, 0x7f, 0x75, 0x1e, 0xa7, 0x3a, 0x59, 0x34, 0x83, 0x3b,
-	0x69, 0x3d, 0xcf, 0xe4, 0x21, 0x4c, 0x7c, 0x0c, 0x2d, 0xdf, 0x9e, 0x0d, 0x7d, 0xf7, 0x18, 0x3d,
-	0x3f, 0xe9, 0x54, 0x5f, 0xfc, 0x58, 0xc5, 0x2b, 0xb7, 0xdd, 0x2c, 0x28, 0x0f, 0xba, 0xb9, 0xa8,
-	0xd4, 0x5b, 0x63, 0x95, 0x83, 0xd3, 0x7f, 0x75, 0x94, 0x28, 0xbe, 0xdc, 0x9a, 0xc5, 0x7d, 0xb1,
-	0x22, 0x85, 0x7e, 0x9b, 0xa3, 0xe3, 0x6a, 0xef, 0x72, 0xce, 0x41, 0xf9, 0xe6, 0xef, 0xd7, 0x88,
-	0x9f, 0xeb, 0xba, 0xda, 0xbe, 0x0e, 0x2d, 0xef, 0xd3, 0x21, 0x9d, 0xec, 0x8e, 0x0a, 0x5f, 0x5c,
-	0xad, 0x12, 0x5c, 0x9f, 0xe0, 0xd6, 0x09, 0x6e, 0x93, 0x40, 0xdf, 0x09, 0xf4, 0x6a, 0xa0, 0x77,
-	0x03, 0x7d, 0x18, 0x68, 0x69, 0xa0, 0x95, 0x81, 0x7a, 0x03, 0x7d, 0x1a, 0xe8, 0xcb, 0xe0, 0x36,
-	0x06, 0x7a, 0xcb, 0x70, 0xcb, 0x0c, 0xea, 0x33, 0xdc, 0x3a, 0xc3, 0x35, 0x3b, 0x65, 0x79, 0xf8,
-	0x13, 0x00, 0x00, 0xff, 0xff, 0x21, 0xc9, 0xb5, 0x56, 0xe8, 0x00, 0x00, 0x00,
+	// 324 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x90, 0xb1, 0x52, 0xf2, 0x40,
+	0x14, 0x85, 0xf7, 0x12, 0xfe, 0x7f, 0x64, 0x75, 0x46, 0xcc, 0x58, 0x64, 0x28, 0xae, 0x19, 0x1a,
+	0xd3, 0x98, 0x75, 0xc4, 0x19, 0x6b, 0xb1, 0xb1, 0x50, 0x8b, 0x60, 0xad, 0xb3, 0xc8, 0x1a, 0xa2,
+	0x89, 0x1b, 0x61, 0x29, 0xb4, 0xf2, 0x11, 0x7c, 0x0c, 0x1f, 0xc1, 0x92, 0x92, 0x92, 0x92, 0xca,
+	0x31, 0x9b, 0xc6, 0x92, 0xd2, 0xd2, 0x61, 0x91, 0x21, 0x74, 0x76, 0xe7, 0xdb, 0x7b, 0xce, 0xb9,
+	0x3b, 0x97, 0x1e, 0x85, 0x91, 0xea, 0x0e, 0xda, 0xfe, 0x8d, 0x4c, 0x98, 0x88, 0xe5, 0x1d, 0xef,
+	0xb2, 0x90, 0x27, 0xe2, 0x7a, 0xbf, 0xc1, 0xd2, 0xfb, 0x90, 0x89, 0x07, 0x15, 0xa9, 0x27, 0xd6,
+	0x51, 0x92, 0x29, 0x91, 0xa4, 0x31, 0x57, 0xc2, 0x4f, 0x7b, 0x52, 0x49, 0xdb, 0xea, 0x28, 0x59,
+	0xdb, 0x2b, 0xa4, 0x43, 0x19, 0x4a, 0x66, 0x66, 0xed, 0xc1, 0xad, 0x21, 0x03, 0x46, 0xcd, 0x33,
+	0xb5, 0xc6, 0x9f, 0x96, 0xad, 0x2e, 0xaa, 0xef, 0xd2, 0xad, 0x93, 0x9e, 0xe0, 0x4a, 0x5c, 0xfe,
+	0xbe, 0x07, 0xe2, 0xd1, 0xb6, 0x69, 0xf9, 0x82, 0x27, 0xc2, 0x01, 0x17, 0xbc, 0x4a, 0x60, 0x74,
+	0xfd, 0x9c, 0x6e, 0x9e, 0x45, 0x7d, 0x55, 0xb4, 0x55, 0xa9, 0x75, 0x1c, 0xc7, 0xc6, 0xb5, 0x16,
+	0xcc, 0xe4, 0x2c, 0xd8, 0x8a, 0x9e, 0x85, 0x53, 0x72, 0xc1, 0xb3, 0x02, 0xa3, 0xed, 0x6d, 0xfa,
+	0xaf, 0xa5, 0xb8, 0x12, 0x8e, 0xe5, 0x82, 0xb7, 0x11, 0xcc, 0xa1, 0x7e, 0x45, 0xab, 0xab, 0x75,
+	0xfd, 0xd4, 0x3e, 0xa4, 0x95, 0x05, 0xf7, 0x1d, 0x70, 0x2d, 0x6f, 0xfd, 0xa0, 0xea, 0xcf, 0xbf,
+	0xed, 0x2f, 0x06, 0xcd, 0xf2, 0xe8, 0x63, 0x87, 0x04, 0x4b, 0xe3, 0xb2, 0xbf, 0x54, 0xe8, 0x6f,
+	0x9e, 0x8e, 0x32, 0x24, 0xe3, 0x0c, 0xc9, 0x24, 0x43, 0x32, 0xcd, 0x10, 0xbe, 0x33, 0x84, 0x17,
+	0x8d, 0xf0, 0xa6, 0x11, 0xde, 0x35, 0xc2, 0x50, 0x23, 0x8c, 0x34, 0xc2, 0x58, 0x23, 0x7c, 0x6a,
+	0x84, 0x2f, 0x8d, 0x64, 0xaa, 0x11, 0x5e, 0x73, 0x24, 0xc3, 0x1c, 0x61, 0x9c, 0x23, 0x99, 0xe4,
+	0x48, 0xda, 0xff, 0xcd, 0xa1, 0x1a, 0x3f, 0x01, 0x00, 0x00, 0xff, 0xff, 0x0a, 0xe1, 0x2f, 0x48,
+	0xcc, 0x01, 0x00, 0x00,
 }
 
 func (this *CreateTemplateReq) Equal(that interface{}) bool {
@@ -117,6 +205,68 @@ func (this *CreateTemplateReq) Equal(that interface{}) bool {
 	}
 	return true
 }
+func (this *ListTemplateReq) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*ListTemplateReq)
+	if !ok {
+		that2, ok := that.(ListTemplateReq)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if this.All != that1.All {
+		return false
+	}
+	if this.Size_ != that1.Size_ {
+		return false
+	}
+	if !bytes.Equal(this.State, that1.State) {
+		return false
+	}
+	return true
+}
+func (this *ListTemplateResp) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*ListTemplateResp)
+	if !ok {
+		that2, ok := that.(ListTemplateResp)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if len(this.Templates) != len(that1.Templates) {
+		return false
+	}
+	for i := range this.Templates {
+		if !this.Templates[i].Equal(&that1.Templates[i]) {
+			return false
+		}
+	}
+	if !bytes.Equal(this.State, that1.State) {
+		return false
+	}
+	return true
+}
 func (this *CreateTemplateReq) GoString() string {
 	if this == nil {
 		return "nil"
@@ -124,6 +274,35 @@ func (this *CreateTemplateReq) GoString() string {
 	s := make([]string, 0, 5)
 	s = append(s, "&dto.CreateTemplateReq{")
 	s = append(s, "Name: "+fmt.Sprintf("%#v", this.Name)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *ListTemplateReq) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 7)
+	s = append(s, "&dto.ListTemplateReq{")
+	s = append(s, "All: "+fmt.Sprintf("%#v", this.All)+",\n")
+	s = append(s, "Size_: "+fmt.Sprintf("%#v", this.Size_)+",\n")
+	s = append(s, "State: "+fmt.Sprintf("%#v", this.State)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *ListTemplateResp) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 6)
+	s = append(s, "&dto.ListTemplateResp{")
+	if this.Templates != nil {
+		vs := make([]entity.Template, len(this.Templates))
+		for i := range vs {
+			vs[i] = this.Templates[i]
+		}
+		s = append(s, "Templates: "+fmt.Sprintf("%#v", vs)+",\n")
+	}
+	s = append(s, "State: "+fmt.Sprintf("%#v", this.State)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -165,6 +344,95 @@ func (m *CreateTemplateReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *ListTemplateReq) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *ListTemplateReq) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *ListTemplateReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.State) > 0 {
+		i -= len(m.State)
+		copy(dAtA[i:], m.State)
+		i = encodeVarintTemplate(dAtA, i, uint64(len(m.State)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if m.Size_ != 0 {
+		i = encodeVarintTemplate(dAtA, i, uint64(m.Size_))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.All {
+		i--
+		if m.All {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *ListTemplateResp) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *ListTemplateResp) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *ListTemplateResp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.State) > 0 {
+		i -= len(m.State)
+		copy(dAtA[i:], m.State)
+		i = encodeVarintTemplate(dAtA, i, uint64(len(m.State)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Templates) > 0 {
+		for iNdEx := len(m.Templates) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Templates[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintTemplate(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintTemplate(dAtA []byte, offset int, v uint64) int {
 	offset -= sovTemplate(v)
 	base := offset
@@ -179,6 +447,43 @@ func encodeVarintTemplate(dAtA []byte, offset int, v uint64) int {
 func NewPopulatedCreateTemplateReq(r randyTemplate, easy bool) *CreateTemplateReq {
 	this := &CreateTemplateReq{}
 	this.Name = string(randStringTemplate(r))
+	if !easy && r.Intn(10) != 0 {
+	}
+	return this
+}
+
+func NewPopulatedListTemplateReq(r randyTemplate, easy bool) *ListTemplateReq {
+	this := &ListTemplateReq{}
+	this.All = bool(bool(r.Intn(2) == 0))
+	this.Size_ = int64(r.Int63())
+	if r.Intn(2) == 0 {
+		this.Size_ *= -1
+	}
+	v1 := r.Intn(100)
+	this.State = make([]byte, v1)
+	for i := 0; i < v1; i++ {
+		this.State[i] = byte(r.Intn(256))
+	}
+	if !easy && r.Intn(10) != 0 {
+	}
+	return this
+}
+
+func NewPopulatedListTemplateResp(r randyTemplate, easy bool) *ListTemplateResp {
+	this := &ListTemplateResp{}
+	if r.Intn(5) != 0 {
+		v2 := r.Intn(5)
+		this.Templates = make([]entity.Template, v2)
+		for i := 0; i < v2; i++ {
+			v3 := entity.NewPopulatedTemplate(r, easy)
+			this.Templates[i] = *v3
+		}
+	}
+	v4 := r.Intn(100)
+	this.State = make([]byte, v4)
+	for i := 0; i < v4; i++ {
+		this.State[i] = byte(r.Intn(256))
+	}
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -203,9 +508,9 @@ func randUTF8RuneTemplate(r randyTemplate) rune {
 	return rune(ru + 61)
 }
 func randStringTemplate(r randyTemplate) string {
-	v1 := r.Intn(100)
-	tmps := make([]rune, v1)
-	for i := 0; i < v1; i++ {
+	v5 := r.Intn(100)
+	tmps := make([]rune, v5)
+	for i := 0; i < v5; i++ {
 		tmps[i] = randUTF8RuneTemplate(r)
 	}
 	return string(tmps)
@@ -227,11 +532,11 @@ func randFieldTemplate(dAtA []byte, r randyTemplate, fieldNumber int, wire int) 
 	switch wire {
 	case 0:
 		dAtA = encodeVarintPopulateTemplate(dAtA, uint64(key))
-		v2 := r.Int63()
+		v6 := r.Int63()
 		if r.Intn(2) == 0 {
-			v2 *= -1
+			v6 *= -1
 		}
-		dAtA = encodeVarintPopulateTemplate(dAtA, uint64(v2))
+		dAtA = encodeVarintPopulateTemplate(dAtA, uint64(v6))
 	case 1:
 		dAtA = encodeVarintPopulateTemplate(dAtA, uint64(key))
 		dAtA = append(dAtA, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
@@ -269,6 +574,44 @@ func (m *CreateTemplateReq) Size() (n int) {
 	return n
 }
 
+func (m *ListTemplateReq) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.All {
+		n += 2
+	}
+	if m.Size_ != 0 {
+		n += 1 + sovTemplate(uint64(m.Size_))
+	}
+	l = len(m.State)
+	if l > 0 {
+		n += 1 + l + sovTemplate(uint64(l))
+	}
+	return n
+}
+
+func (m *ListTemplateResp) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Templates) > 0 {
+		for _, e := range m.Templates {
+			l = e.Size()
+			n += 1 + l + sovTemplate(uint64(l))
+		}
+	}
+	l = len(m.State)
+	if l > 0 {
+		n += 1 + l + sovTemplate(uint64(l))
+	}
+	return n
+}
+
 func sovTemplate(x uint64) (n int) {
 	return (math_bits.Len64(x|1) + 6) / 7
 }
@@ -281,6 +624,34 @@ func (this *CreateTemplateReq) String() string {
 	}
 	s := strings.Join([]string{`&CreateTemplateReq{`,
 		`Name:` + fmt.Sprintf("%v", this.Name) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *ListTemplateReq) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&ListTemplateReq{`,
+		`All:` + fmt.Sprintf("%v", this.All) + `,`,
+		`Size_:` + fmt.Sprintf("%v", this.Size_) + `,`,
+		`State:` + fmt.Sprintf("%v", this.State) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *ListTemplateResp) String() string {
+	if this == nil {
+		return "nil"
+	}
+	repeatedStringForTemplates := "[]Template{"
+	for _, f := range this.Templates {
+		repeatedStringForTemplates += fmt.Sprintf("%v", f) + ","
+	}
+	repeatedStringForTemplates += "}"
+	s := strings.Join([]string{`&ListTemplateResp{`,
+		`Templates:` + repeatedStringForTemplates + `,`,
+		`State:` + fmt.Sprintf("%v", this.State) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -353,6 +724,247 @@ func (m *CreateTemplateReq) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Name = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTemplate(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTemplate
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ListTemplateReq) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTemplate
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ListTemplateReq: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ListTemplateReq: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field All", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTemplate
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.All = bool(v != 0)
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Size_", wireType)
+			}
+			m.Size_ = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTemplate
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Size_ |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field State", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTemplate
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthTemplate
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTemplate
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.State = append(m.State[:0], dAtA[iNdEx:postIndex]...)
+			if m.State == nil {
+				m.State = []byte{}
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTemplate(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTemplate
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ListTemplateResp) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTemplate
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ListTemplateResp: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ListTemplateResp: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Templates", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTemplate
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTemplate
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTemplate
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Templates = append(m.Templates, entity.Template{})
+			if err := m.Templates[len(m.Templates)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field State", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTemplate
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthTemplate
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTemplate
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.State = append(m.State[:0], dAtA[iNdEx:postIndex]...)
+			if m.State == nil {
+				m.State = []byte{}
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

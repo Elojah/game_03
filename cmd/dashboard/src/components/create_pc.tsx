@@ -5,9 +5,11 @@ import { grpc } from '@improbable-eng/grpc-web';
 import { getCookie } from 'typescript-cookie'
 
 import API from 'cmd/api/grpc/api_pb_service';
-import * as dtoworld from 'pkg/room/dto/world_pb';
+import * as dtotemplate from 'pkg/entity/dto/template_pb';
+import * as dtopc from 'pkg/entity/dto/pc_pb';
 import * as room from 'pkg/room/room_pb';
-import * as world from 'pkg/room/world_pb';
+import * as pc from 'pkg/entity/pc_pb';
+import * as template from 'pkg/entity/template_pb';
 
 import { ulid, parse } from '../lib/ulid'
 
@@ -28,19 +30,23 @@ import AddIcon from '@mui/icons-material/Add';
 import Searchbar from './searchbar';
 import { ArrowBack } from '@mui/icons-material';
 
-export default () => {
+interface propCreatePC {
+	Room: room.R
+}
+
+export default (props: propCreatePC) => {
 
 	const navigate = useNavigate()
 
 	// API Room
-	const [worlds, setWorlds] = useState<{ worlds: world.World[], loaded: boolean }>({ worlds: [], loaded: false })
+	const [templates, setTemplates] = useState<{ templates: template.Template[], loaded: boolean }>({ templates: [], loaded: false })
 
-	const createRoom = (req: room.R) => {
+	const createPC = (req: dtopc.CreatePCReq) => {
 		let md = new grpc.Metadata()
 		md.set('token', getCookie('token')!)
 
-		const prom = new Promise<room.R>((resolve, reject) => {
-			grpc.unary(API.API.CreateRoom, {
+		const prom = new Promise<pc.PC>((resolve, reject) => {
+			grpc.unary(API.API.CreatePC, {
 				metadata: md,
 				request: req,
 				host: 'http://localhost:8082',
@@ -52,7 +58,7 @@ export default () => {
 						return
 					}
 
-					resolve(message as room.R)
+					resolve(message as pc.PC)
 				}
 			});
 		})
@@ -60,13 +66,12 @@ export default () => {
 		return prom
 	}
 
-
-	const listWorlds = (req: dtoworld.ListWorldReq) => {
+	const listTemplates = (req: dtotemplate.ListTemplateReq) => {
 		let md = new grpc.Metadata()
 		md.set('token', getCookie('token')!)
 
-		const prom = new Promise<dtoworld.ListWorldResp>((resolve, reject) => {
-			grpc.unary(API.API.ListWorld, {
+		const prom = new Promise<dtotemplate.ListTemplateResp>((resolve, reject) => {
+			grpc.unary(API.API.ListTemplate, {
 				metadata: md,
 				request: req,
 				host: 'http://localhost:8082',
@@ -78,7 +83,7 @@ export default () => {
 						return
 					}
 
-					resolve(message as dtoworld.ListWorldResp)
+					resolve(message as dtotemplate.ListTemplateResp)
 				}
 			});
 		})
@@ -86,22 +91,22 @@ export default () => {
 		return prom
 	}
 
-	const refreshWorlds = () => {
-		const req = new dtoworld.ListWorldReq()
+	const refreshTemplates = () => {
+		const req = new dtotemplate.ListTemplateReq()
 		req.setAll(true)
 		req.setSize(100)
-		setWorlds({ worlds: [], loaded: false })
+		setTemplates({ templates: [], loaded: false })
 
-		listWorlds(req).then((result) => {
-			console.log('found ', result.getWorldsList().length, ' worlds')
+		listTemplates(req).then((result) => {
+			console.log('found ', result.getTemplatesList().length, ' templates')
 
-			setWorlds({ worlds: result.getWorldsList(), loaded: true })
+			setTemplates({ templates: result.getTemplatesList(), loaded: true })
 		}).catch((err) => {
 			console.log(err)
 		})
 	}
 
-	// Table World
+	// Table Template
 	const [page, setPage] = React.useState(0);
 	const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -114,36 +119,36 @@ export default () => {
 		setPage(0);
 	};
 
-	const [selectedWorld, setselectedWorld] = React.useState(new Uint8Array);
+	const [selectedTemplate, setselectedTemplate] = React.useState('');
 
-	const roomName = useRef<HTMLInputElement | null>(null);
+	const pcName = useRef<HTMLInputElement | null>(null);
 
-	const checkCreateRoom = () => {
-		if (selectedWorld.length == 0) {
+	const checkCreatePC = () => {
+		if (selectedTemplate.length == 0) {
 			// TODO: display input error
 			return
 		}
 
-		const name = roomName.current?.value
+		const name = pcName.current?.value
 		if (!name) {
 			// TODO: display input error
 			return
 		}
 
-		const req = new room.R()
-		req.setName(name)
-		req.setWorldid(selectedWorld)
+		const req = new dtopc.CreatePCReq()
+		req.setEntitytemplate(selectedTemplate)
+		req.setRoomid(props.Room.getId_asU8())
 
-		createRoom(req).then((result) => {
-			console.log('room created', ulid(result.getId_asU8()))
+		createPC(req).then((result) => {
+			console.log('pc created', ulid(result.getId_asU8()))
 
-			navigate('/rooms')
+			navigate('/pcs')
 		}).catch((err) => {
 			console.log(err)
 		})
 	}
 
-	useEffect(() => { refreshWorlds() }, [])
+	useEffect(() => { refreshTemplates() }, [])
 
 	return (
 		<Paper sx={{ width: '100%', overflow: 'hidden' }}>
@@ -160,11 +165,11 @@ export default () => {
 					</IconButton>
 				</Grid>
 				<Grid item xs={4}>
-					<TextField id='create-room-name' inputRef={roomName} label='Name' variant='standard'
-						placeholder='e.g: Battle for Rohan, etc.'
+					<TextField id='create-pc-name' inputRef={pcName} label='Name' variant='standard'
+						placeholder='e.g: Thylius, etc.'
 						InputProps={{
 							endAdornment:
-								<IconButton color='secondary' size='large' onClick={() => { checkCreateRoom() }}>
+								<IconButton color='secondary' size='large' onClick={() => { checkCreatePC() }}>
 									<AddIcon />
 								</IconButton>
 						}}
@@ -208,8 +213,8 @@ export default () => {
 							</TableCell>
 						</TableRow>
 					</TableHead>
-					<TableBody key='table_world'>
-						{!worlds.loaded &&
+					<TableBody key='table_template'>
+						{!templates.loaded &&
 							<TableRow hover role='checkbox' tabIndex={-1} key='loading'>
 								<TableCell
 									colSpan={4}
@@ -222,18 +227,18 @@ export default () => {
 							</TableRow>
 
 						}
-						{worlds.loaded && worlds.worlds
+						{templates.loaded && templates.templates
 							.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-							.map((world) => {
-								const id = world.getId_asU8()
+							.map((template) => {
+								const id = template.getId_asU8()
 								const sid = ulid(id)
-								const name = world.getName()
-								const height = world.getHeight()
-								const width = world.getWidth()
+								const name = template.getName()
+								const height = template.getHeight()
+								const width = template.getWidth()
 
-								console.log('display line world:', sid)
+								console.log('display line template:', sid)
 								return (
-									<TableRow hover role='checkbox' tabIndex={-1} key={sid} selected={selectedWorld == id} onClick={() => { setselectedWorld(id) }}>
+									<TableRow hover role='checkbox' tabIndex={-1} key={sid} selected={selectedTemplate == id} onClick={() => { setselectedTemplate(id) }}>
 										<TableCell
 											key={'id_' + sid}
 											align='left'
@@ -272,7 +277,7 @@ export default () => {
 			<TablePagination
 				rowsPerPageOptions={[10, 25, 100]}
 				component='div'
-				count={worlds.worlds.length}
+				count={templates.templates.length}
 				rowsPerPage={rowsPerPage}
 				page={page}
 				onPageChange={handleChangePage}

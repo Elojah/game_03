@@ -10,6 +10,9 @@ export class World extends jspb.Message {
   getId_asB64(): string;
   setId(value: Uint8Array | string): void;
 
+  getName(): string;
+  setName(value: string): void;
+
   getHeight(): number;
   setHeight(value: number): void;
 
@@ -35,6 +38,7 @@ export class World extends jspb.Message {
 export namespace World {
   export type AsObject = {
     id: Uint8Array | string,
+    name: string,
     height: number,
     width: number,
     cellheight: number,

@@ -12,6 +12,8 @@ type FilterTemplate struct {
 	Name  *string
 	Names []string
 
+	All bool
+
 	State []byte
 	Size  int
 }

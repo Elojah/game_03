@@ -69,10 +69,11 @@ proto.room.World.prototype.toObject = function(opt_includeInstance) {
 proto.room.World.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: msg.getId_asB64(),
-    height: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    width: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    cellheight: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    cellwidth: jspb.Message.getFieldWithDefault(msg, 5, 0)
+    name: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    height: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    width: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    cellheight: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    cellwidth: jspb.Message.getFieldWithDefault(msg, 6, 0)
   };
 
   if (includeInstance) {
@@ -114,18 +115,22 @@ proto.room.World.deserializeBinaryFromReader = function(msg, reader) {
       msg.setId(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setHeight(value);
+      var value = /** @type {string} */ (reader.readString());
+      msg.setName(value);
       break;
     case 3:
       var value = /** @type {number} */ (reader.readInt64());
-      msg.setWidth(value);
+      msg.setHeight(value);
       break;
     case 4:
       var value = /** @type {number} */ (reader.readInt64());
-      msg.setCellheight(value);
+      msg.setWidth(value);
       break;
     case 5:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setCellheight(value);
+      break;
+    case 6:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setCellwidth(value);
       break;
@@ -165,31 +170,38 @@ proto.room.World.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getHeight();
-  if (f !== 0) {
-    writer.writeInt64(
+  f = message.getName();
+  if (f.length > 0) {
+    writer.writeString(
       2,
       f
     );
   }
-  f = message.getWidth();
+  f = message.getHeight();
   if (f !== 0) {
     writer.writeInt64(
       3,
       f
     );
   }
-  f = message.getCellheight();
+  f = message.getWidth();
   if (f !== 0) {
     writer.writeInt64(
       4,
       f
     );
   }
-  f = message.getCellwidth();
+  f = message.getCellheight();
   if (f !== 0) {
     writer.writeInt64(
       5,
+      f
+    );
+  }
+  f = message.getCellwidth();
+  if (f !== 0) {
+    writer.writeInt64(
+      6,
       f
     );
   }
@@ -239,28 +251,28 @@ proto.room.World.prototype.setId = function(value) {
 
 
 /**
- * optional int64 Height = 2;
+ * optional string Name = 2;
+ * @return {string}
+ */
+proto.room.World.prototype.getName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.room.World} returns this
+ */
+proto.room.World.prototype.setName = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional int64 Height = 3;
  * @return {number}
  */
 proto.room.World.prototype.getHeight = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.room.World} returns this
- */
-proto.room.World.prototype.setHeight = function(value) {
-  return jspb.Message.setProto3IntField(this, 2, value);
-};
-
-
-/**
- * optional int64 Width = 3;
- * @return {number}
- */
-proto.room.World.prototype.getWidth = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
@@ -269,16 +281,16 @@ proto.room.World.prototype.getWidth = function() {
  * @param {number} value
  * @return {!proto.room.World} returns this
  */
-proto.room.World.prototype.setWidth = function(value) {
+proto.room.World.prototype.setHeight = function(value) {
   return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
 /**
- * optional int64 CellHeight = 4;
+ * optional int64 Width = 4;
  * @return {number}
  */
-proto.room.World.prototype.getCellheight = function() {
+proto.room.World.prototype.getWidth = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
@@ -287,16 +299,16 @@ proto.room.World.prototype.getCellheight = function() {
  * @param {number} value
  * @return {!proto.room.World} returns this
  */
-proto.room.World.prototype.setCellheight = function(value) {
+proto.room.World.prototype.setWidth = function(value) {
   return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
 /**
- * optional int64 CellWidth = 5;
+ * optional int64 CellHeight = 5;
  * @return {number}
  */
-proto.room.World.prototype.getCellwidth = function() {
+proto.room.World.prototype.getCellheight = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 
@@ -305,8 +317,26 @@ proto.room.World.prototype.getCellwidth = function() {
  * @param {number} value
  * @return {!proto.room.World} returns this
  */
-proto.room.World.prototype.setCellwidth = function(value) {
+proto.room.World.prototype.setCellheight = function(value) {
   return jspb.Message.setProto3IntField(this, 5, value);
+};
+
+
+/**
+ * optional int64 CellWidth = 6;
+ * @return {number}
+ */
+proto.room.World.prototype.getCellwidth = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.room.World} returns this
+ */
+proto.room.World.prototype.setCellwidth = function(value) {
+  return jspb.Message.setProto3IntField(this, 6, value);
 };
 
 

@@ -49,6 +49,11 @@ export class ListWorldResp extends jspb.Message {
   setWorldsList(value: Array<github_com_elojah_game_03_pkg_room_world_pb.World>): void;
   addWorlds(value?: github_com_elojah_game_03_pkg_room_world_pb.World, index?: number): github_com_elojah_game_03_pkg_room_world_pb.World;
 
+  getState(): Uint8Array | string;
+  getState_asU8(): Uint8Array;
+  getState_asB64(): string;
+  setState(value: Uint8Array | string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ListWorldResp.AsObject;
   static toObject(includeInstance: boolean, msg: ListWorldResp): ListWorldResp.AsObject;
@@ -62,6 +67,7 @@ export class ListWorldResp extends jspb.Message {
 export namespace ListWorldResp {
   export type AsObject = {
     worldsList: Array<github_com_elojah_game_03_pkg_room_world_pb.World.AsObject>,
+    state: Uint8Array | string,
   }
 }
 

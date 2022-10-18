@@ -394,7 +394,8 @@ proto.dto.ListWorldResp.prototype.toObject = function(opt_includeInstance) {
 proto.dto.ListWorldResp.toObject = function(includeInstance, msg) {
   var f, obj = {
     worldsList: jspb.Message.toObjectList(msg.getWorldsList(),
-    github_com_elojah_game_03_pkg_room_world_pb.World.toObject, includeInstance)
+    github_com_elojah_game_03_pkg_room_world_pb.World.toObject, includeInstance),
+    state: msg.getState_asB64()
   };
 
   if (includeInstance) {
@@ -436,6 +437,10 @@ proto.dto.ListWorldResp.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value,github_com_elojah_game_03_pkg_room_world_pb.World.deserializeBinaryFromReader);
       msg.addWorlds(value);
       break;
+    case 2:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setState(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -471,6 +476,13 @@ proto.dto.ListWorldResp.serializeBinaryToWriter = function(message, writer) {
       1,
       f,
       github_com_elojah_game_03_pkg_room_world_pb.World.serializeBinaryToWriter
+    );
+  }
+  f = message.getState_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      2,
+      f
     );
   }
 };
@@ -511,6 +523,48 @@ proto.dto.ListWorldResp.prototype.addWorlds = function(opt_value, opt_index) {
  */
 proto.dto.ListWorldResp.prototype.clearWorldsList = function() {
   return this.setWorldsList([]);
+};
+
+
+/**
+ * optional bytes State = 2;
+ * @return {!(string|Uint8Array)}
+ */
+proto.dto.ListWorldResp.prototype.getState = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * optional bytes State = 2;
+ * This is a type-conversion wrapper around `getState()`
+ * @return {string}
+ */
+proto.dto.ListWorldResp.prototype.getState_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getState()));
+};
+
+
+/**
+ * optional bytes State = 2;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getState()`
+ * @return {!Uint8Array}
+ */
+proto.dto.ListWorldResp.prototype.getState_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getState()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.dto.ListWorldResp} returns this
+ */
+proto.dto.ListWorldResp.prototype.setState = function(value) {
+  return jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 

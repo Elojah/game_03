@@ -15,8 +15,9 @@ import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 message World {
     bytes ID                   = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
-    int64 Height               = 2;
-    int64 Width                = 3;
-    int64 CellHeight           = 4;
-    int64 CellWidth            = 5;
+    string Name                = 2;
+    int64 Height               = 3;
+    int64 Width                = 4;
+    int64 CellHeight           = 5;
+    int64 CellWidth            = 6;
 }
