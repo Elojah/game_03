@@ -61,6 +61,7 @@ func (h handler) signinGoogle(w http.ResponseWriter, r *http.Request) {
 		Secure:   true,
 		HttpOnly: false,
 		SameSite: http.SameSiteDefaultMode,
+		Domain:   ".legacyfactory.com",
 	})
 
 	w.WriteHeader(http.StatusOK)

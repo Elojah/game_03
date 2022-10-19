@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/elojah/go-grpc v0.0.0-20220923151913-aded6fb6558f
 	github.com/elojah/go-grpcweb v0.0.0-20220923154857-84f3d2e4043f
-	github.com/elojah/go-http v0.0.0-20210928113357-410ee2c1f9cf
+	github.com/elojah/go-http v0.0.0-20221019185212-1cff766dd69e
 	github.com/elojah/go-log v0.0.0-20201121131125-8f1993f08a4b
 	github.com/elojah/go-redis v0.0.0-20201121123746-6614a554c9b4
 	github.com/elojah/go-scylla v0.0.0-20211020122449-c0687e5993d0

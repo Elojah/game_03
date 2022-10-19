@@ -1,5 +1,4 @@
-import { Home } from "cmd/client/src/scene/home";
-import { Login } from "cmd/client/src/scene/login";
+import { Loading } from "cmd/client/src/scene/loading";
 import { Game } from "cmd/client/src/scene/game";
 
 function main() {
@@ -37,16 +36,10 @@ function main() {
 
 	const g = new Phaser.Game(config)
 
-	g.scene.add('login', new Login({
-		key: 'login',
+	g.scene.add('loading', new Loading({
+		key: 'loading',
 		active: true,
 		visible: true,
-	}))
-
-	g.scene.add('home', new Home({
-		key: 'home',
-		active: false,
-		visible: false,
 	}))
 
 	g.scene.add('game', new Game({
@@ -55,7 +48,7 @@ function main() {
 		visible: false,
 	}))
 
-	g.scene.start('login')
+	g.scene.start('loading')
 };
 
 main();

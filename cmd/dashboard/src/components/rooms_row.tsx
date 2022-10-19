@@ -17,6 +17,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import GamesIcon from '@mui/icons-material/Games';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
@@ -50,7 +51,7 @@ export default (props: propRoomsRow) => {
 			grpc.unary(API.API.ListPC, {
 				metadata: md,
 				request: req,
-				host: 'http://localhost:8082',
+				host: 'https://api.legacyfactory.com:8082',
 				onEnd: res => {
 					const { status, statusMessage, headers, message, trailers } = res;
 					if (status !== grpc.Code.OK || !message) {
@@ -146,6 +147,9 @@ export default (props: propRoomsRow) => {
 							<TableHead>
 								<TableRow>
 									<TableCell
+										style={{ minWidth: 20, width: '20%' }}
+									/>
+									<TableCell
 										key='id'
 										align='left'
 										style={{ minWidth: 20, width: '10%' }}
@@ -165,7 +169,7 @@ export default (props: propRoomsRow) => {
 								{!pcs.loaded &&
 									<TableRow hover role='checkbox' tabIndex={-1}>
 										<TableCell
-											colSpan={2}
+											colSpan={3}
 											align='center'
 											style={{ minWidth: 20 }}
 										>
@@ -185,6 +189,13 @@ export default (props: propRoomsRow) => {
 												hover role='checkbox' tabIndex={-1}
 												key={'data_' + sid}
 											>
+												<TableCell
+													style={{ minWidth: 20, width: '20%' }}
+												>
+													<Button variant="contained" startIcon={<GamesIcon />} color='primary' size='large' href='http://localhost:8080' target='_blank' rel='noreferrer'>
+														Play
+													</Button>
+												</TableCell>
 												<TableCell
 													key={'id_' + sid}
 													align='left'

@@ -1,0 +1,5 @@
+127.0.0.1 client.legacyfactory.com
+127.0.0.1 dashboard.legacyfactory.com
+127.0.0.1 api.legacyfactory.com
+127.0.0.1 auth.legacyfactory.com
+127.0.0.1 admin.legacyfactory.com

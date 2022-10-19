@@ -44,7 +44,9 @@ func (cs closers) Close(ctx context.Context) error {
 	var result *multierror.Error
 
 	for _, c := range cs {
-		result = multierror.Append(result, c.Close(ctx))
+		if c != nil {
+			result = multierror.Append(result, c.Close(ctx))
+		}
 	}
 
 	return result.ErrorOrNil()

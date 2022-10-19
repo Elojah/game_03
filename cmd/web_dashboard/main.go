@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -38,7 +39,9 @@ func (cs closers) Close(ctx context.Context) error {
 	var result *multierror.Error
 
 	for _, c := range cs {
-		result = multierror.Append(result, c.Close(ctx))
+		if c != nil {
+			result = multierror.Append(result, c.Close(ctx))
+		}
 	}
 
 	return result.ErrorOrNil()
@@ -126,8 +129,13 @@ func run(prog string, filename string) {
 
 	// serve http web
 	go func() {
-		if err := https.Server.ListenAndServe(); err != nil {
-			log.Error().Err(err).Msg("failed to serve http")
+		if err := https.Server.ListenAndServeTLS(cfg.HTTP.Cert, cfg.HTTP.Key); err != nil {
+			if errors.Is(err, http.ErrServerClosed) {
+				log.Info().Msg("http server closed")
+			} else {
+				log.Error().Err(err).Msg("failed to serve http")
+			}
+
 		}
 	}()
 	log.Info().Msg("web dashboard up")

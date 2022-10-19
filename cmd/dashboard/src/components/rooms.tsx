@@ -38,7 +38,7 @@ export default () => {
 			grpc.unary(API.API.ListRoom, {
 				metadata: md,
 				request: req,
-				host: 'http://localhost:8082',
+				host: 'https://api.legacyfactory.com:8082',
 				onEnd: res => {
 					const { status, statusMessage, headers, message, trailers } = res;
 					if (status !== grpc.Code.OK || !message) {

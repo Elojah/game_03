@@ -69,6 +69,7 @@ func (h handler) redirectTwitch(w http.ResponseWriter, r *http.Request) {
 		Path:     "/",
 		Secure:   true,
 		HttpOnly: false,
+		Domain:   ".legacyfactory.com",
 	})
 
 	w.WriteHeader(http.StatusOK)
