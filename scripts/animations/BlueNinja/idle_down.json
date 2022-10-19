@@ -1,16 +1,1 @@
-{
-	"EntityTemplate": "BlueNinja",
-	"Animation": {
-		"SheetID": "AYPCaOcU+WLUCXm2vo8pXg==",
-		"Name": "idle_down",
-		"Start": 0,
-		"End": 1,
-		"Rate": 1,
-		"FrameWidth": 16,
-		"FrameHeight": 16,
-		"FrameStart": 0,
-		"FrameEnd": 27,
-		"FrameMargin": 0,
-		"FrameSpacing": 0
-	}
-}
+{"EntityTemplate":"BlueNinja","Animation":{"ID":"","EntityID":"","SheetID":"AYPCaOcU+WLUCXm2vo8pXg==","DuplicateID":"","Name":"idle_down","End":1,"Rate":1,"FrameWidth":16,"FrameHeight":16,"FrameEnd":27}}

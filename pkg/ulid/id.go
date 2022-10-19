@@ -2,6 +2,7 @@ package ulid
 
 import (
 	"crypto/rand"
+	"encoding/base64"
 	"encoding/json"
 	"time"
 
@@ -162,7 +163,7 @@ func (id *ID) Size() int {
 
 // MarshalJSON returns id in human readable string format.
 func (id ID) MarshalJSON() ([]byte, error) {
-	return json.Marshal(id.String())
+	return json.Marshal(base64.StdEncoding.EncodeToString(id))
 }
 
 // UnmarshalJSON unmarshals and valid data.
@@ -172,11 +173,11 @@ func (id *ID) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	u, err := ulid.Parse(s)
+	raw, err := base64.StdEncoding.DecodeString(s)
 	if err != nil {
 		return err
 	}
-	*id = ID(u.Bytes()) //nolint: wsl
+	*id = ID(raw) //nolint: wsl
 
 	return nil
 }
