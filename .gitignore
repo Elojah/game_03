@@ -17,8 +17,10 @@ bin/
 cmd/client/node_modules/
 cmd/client/dist/bundle.js
 cmd/client/dist/json/*
+cmd/client/dist/img/*
 cmd/dashboard/node_modules/
 cmd/dashboard/dist/bundle.js
+cmd/dashboard/dist/img/*
 
 # Config private
 config/
