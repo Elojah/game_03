@@ -197,7 +197,7 @@ func run(prog string, filename string) {
 
 	// serve grpcweb api
 	go func() {
-		if err := https.Server.ListenAndServeTLS(cfg.HTTP.Cert, cfg.HTTP.Key); err != nil {
+		if err := https.Server.ListenAndServeTLS("", ""); err != nil {
 			if errors.Is(err, http.ErrServerClosed) {
 				log.Info().Msg("http server closed")
 			} else {

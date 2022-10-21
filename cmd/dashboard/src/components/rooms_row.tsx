@@ -192,7 +192,7 @@ export default (props: propRoomsRow) => {
 												<TableCell
 													style={{ minWidth: 20, width: '20%' }}
 												>
-													<Button variant="contained" startIcon={<GamesIcon />} color='primary' size='large' href='http://localhost:8080' target='_blank' rel='noreferrer'>
+													<Button variant="contained" startIcon={<GamesIcon />} color='primary' size='large' href='https://client.legacyfactory.com:8080' target='_blank' rel='noreferrer'>
 														Play
 													</Button>
 												</TableCell>

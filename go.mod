@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/elojah/go-grpc v0.0.0-20220923151913-aded6fb6558f
 	github.com/elojah/go-grpcweb v0.0.0-20220923154857-84f3d2e4043f
-	github.com/elojah/go-http v0.0.0-20221019185212-1cff766dd69e
+	github.com/elojah/go-http v0.0.0-20221021094117-ce108391552b
 	github.com/elojah/go-log v0.0.0-20201121131125-8f1993f08a4b
 	github.com/elojah/go-redis v0.0.0-20201121123746-6614a554c9b4
 	github.com/elojah/go-scylla v0.0.0-20211020122449-c0687e5993d0
@@ -49,9 +49,10 @@ require (
 	github.com/rs/cors v1.8.2 // indirect
 	github.com/scylladb/go-reflectx v1.0.1 // indirect
 	go.opencensus.io v0.23.0 // indirect
-	golang.org/x/net v0.0.0-20220923203811-8be639271d50 // indirect
-	golang.org/x/sys v0.0.0-20220919091848-fb04ddd9f9c8 // indirect
-	golang.org/x/text v0.3.7 // indirect
+	golang.org/x/crypto v0.1.0 // indirect
+	golang.org/x/net v0.1.0 // indirect
+	golang.org/x/sys v0.1.0 // indirect
+	golang.org/x/text v0.4.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20220923205249-dd2d53f1fffc // indirect
 	google.golang.org/protobuf v1.28.1 // indirect

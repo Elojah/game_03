@@ -95,15 +95,15 @@ web_dashboard: ## Build web_dashboard binary
 client:  ## Build client content
 	$(info $(M) building bundle client…) @
 	$Q cd cmd/$(CLIENT) && npx webpack --config webpack.config.js
-	$Q mkdir -p bin && rm -rf bin/$(STATIC) && mkdir -p bin/$(STATIC)
-	$Q yes | cp -rf cmd/$(CLIENT)/dist/. bin/$(STATIC)/
+	$Q mkdir -p bin && rm -rf bin/$(STATIC) && mkdir -p bin/$(CLIENT)/$(STATIC)/
+	$Q yes | cp -rf cmd/$(CLIENT)/dist/. bin/$(CLIENT)/$(STATIC)/
 
 .PHONY: dashboard
 dashboard:  ## Build dashboard content
 	$(info $(M) building bundle dashboard…) @
 	$Q cd cmd/$(DASHBOARD) && npx webpack --config webpack.config.js
-	$Q mkdir -p bin && rm -rf bin/$(STATIC) && mkdir -p bin/$(STATIC)
-	$Q yes | cp -rf cmd/$(DASHBOARD)/dist/. bin/$(STATIC)/
+	$Q mkdir -p bin && rm -rf bin/$(STATIC) && mkdir -p bin/$(DASHBOARD)/$(STATIC)/
+	$Q yes | cp -rf cmd/$(DASHBOARD)/dist/. bin/$(DASHBOARD)/$(STATIC)/
 
 # Proto lang
 .PHONY: proto-go proto-ts

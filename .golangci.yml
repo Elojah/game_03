@@ -76,7 +76,6 @@ linters:
     - nolintlint
     - prealloc
     - exportloopref
-    - sqlclosecheck
     - stylecheck
     - testpackage
     - unconvert
