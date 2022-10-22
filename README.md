@@ -35,6 +35,7 @@ $ grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '' -plai
 ### TODO
 ---
 
+- Create dist/img/new_directory for "dynamic" (copied from `assets/`)
 - Manage map creation
 - Remove `Math.round()` in `game.ts` and set entity.X entity.Y as float64 to fit Phaser.Body x/y
 
