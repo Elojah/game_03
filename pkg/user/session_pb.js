@@ -70,7 +70,8 @@ proto.user.Session.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: msg.getId_asB64(),
     userid: msg.getUserid_asB64(),
-    token: jspb.Message.getFieldWithDefault(msg, 3, "")
+    pcid: msg.getPcid_asB64(),
+    worldid: msg.getWorldid_asB64()
   };
 
   if (includeInstance) {
@@ -116,8 +117,12 @@ proto.user.Session.deserializeBinaryFromReader = function(msg, reader) {
       msg.setUserid(value);
       break;
     case 3:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setToken(value);
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setPcid(value);
+      break;
+    case 4:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setWorldid(value);
       break;
     default:
       reader.skipField();
@@ -162,10 +167,17 @@ proto.user.Session.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getToken();
+  f = message.getPcid_asU8();
   if (f.length > 0) {
-    writer.writeString(
+    writer.writeBytes(
       3,
+      f
+    );
+  }
+  f = message.getWorldid_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      4,
       f
     );
   }
@@ -257,20 +269,86 @@ proto.user.Session.prototype.setUserid = function(value) {
 
 
 /**
- * optional string Token = 3;
- * @return {string}
+ * optional bytes PCID = 3;
+ * @return {!(string|Uint8Array)}
  */
-proto.user.Session.prototype.getToken = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+proto.user.Session.prototype.getPcid = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /**
- * @param {string} value
+ * optional bytes PCID = 3;
+ * This is a type-conversion wrapper around `getPcid()`
+ * @return {string}
+ */
+proto.user.Session.prototype.getPcid_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getPcid()));
+};
+
+
+/**
+ * optional bytes PCID = 3;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getPcid()`
+ * @return {!Uint8Array}
+ */
+proto.user.Session.prototype.getPcid_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getPcid()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
  * @return {!proto.user.Session} returns this
  */
-proto.user.Session.prototype.setToken = function(value) {
-  return jspb.Message.setProto3StringField(this, 3, value);
+proto.user.Session.prototype.setPcid = function(value) {
+  return jspb.Message.setProto3BytesField(this, 3, value);
+};
+
+
+/**
+ * optional bytes WorldID = 4;
+ * @return {!(string|Uint8Array)}
+ */
+proto.user.Session.prototype.getWorldid = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/**
+ * optional bytes WorldID = 4;
+ * This is a type-conversion wrapper around `getWorldid()`
+ * @return {string}
+ */
+proto.user.Session.prototype.getWorldid_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getWorldid()));
+};
+
+
+/**
+ * optional bytes WorldID = 4;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getWorldid()`
+ * @return {!Uint8Array}
+ */
+proto.user.Session.prototype.getWorldid_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getWorldid()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.user.Session} returns this
+ */
+proto.user.Session.prototype.setWorldid = function(value) {
+  return jspb.Message.setProto3BytesField(this, 4, value);
 };
 
 

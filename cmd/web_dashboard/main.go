@@ -122,9 +122,12 @@ func run(prog string, filename string) {
 		AuthClient: authgrpc.NewAuthClient(authclient.ClientConn),
 	}
 
-	// serve static dir
+	// auth
 	https.Router.Path("/signin_google").HandlerFunc(h.signinGoogle)
 	https.Router.Path("/signin_twitch").HandlerFunc(h.signinTwitch)
+	// api
+	https.Router.Path("/create_session").HandlerFunc(h.createSession)
+	// serve static dir
 	https.Router.PathPrefix("/").Handler(http.FileServer(http.Dir(cfg.Web.Static)))
 
 	// serve http web

@@ -151,6 +151,10 @@ func (a App) AuthSession(ctx context.Context) (user.Session, error) {
 	return a.StoreSession.FetchSession(ctx, user.FilterSession{ID: id})
 }
 
+func (a App) InsertSession(ctx context.Context, ses user.Session) error {
+	return a.StoreSession.InsertSession(ctx, ses)
+}
+
 func (a App) FetchSession(ctx context.Context, f user.FilterSession) (user.Session, error) {
 	return a.StoreSession.FetchSession(ctx, f)
 }

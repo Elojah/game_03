@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package grpc;
+package dto;
 
 option (gogoproto.testgen_all)  = true;
 option (gogoproto.benchgen_all) = true;
@@ -12,16 +12,8 @@ option (gogoproto.goproto_enum_prefix_all) = false;
 option (gogoproto.goproto_registration) = true;
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
-import "google/protobuf/empty.proto";
-import "google/protobuf/wrappers.proto";
 
-service Auth {
-    // Signin Twitch
-    rpc SigninTwitch(google.protobuf.StringValue) returns (google.protobuf.StringValue);
-
-	// Signin Google
-	rpc SigninGoogle(google.protobuf.StringValue) returns (google.protobuf.StringValue);
-
-    // Ping
-    rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
+message CreateSessionReq {
+    bytes PCID         = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    bytes RoomID       = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
 }

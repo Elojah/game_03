@@ -26,12 +26,17 @@ import "github.com/elojah/game_03/pkg/room/dto/cell.proto";
 import "github.com/elojah/game_03/pkg/room/dto/room.proto";
 import "github.com/elojah/game_03/pkg/room/dto/world.proto";
 import "github.com/elojah/game_03/pkg/twitch/dto/follow.proto";
+import "github.com/elojah/game_03/pkg/user/dto/session.proto";
+import "github.com/elojah/game_03/pkg/user/session.proto";
 
 
 service API {
     // STREAM LOOPS
     rpc ConnectPC(entity.PC) returns (stream dto.ListEntityResp);
     rpc UpdateEntity(stream entity.E) returns (google.protobuf.Empty);
+
+	// Session
+	rpc GetSession(dto.CreateSessionReq) returns (user.Session);
 
     // Entity
     rpc ListEntity(dto.ListEntityReq) returns (dto.ListEntityResp);

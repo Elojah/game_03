@@ -15,4 +15,6 @@ import * as github_com_elojah_game_03_pkg_room_dto_cell_pb from "../../../../../
 import * as github_com_elojah_game_03_pkg_room_dto_room_pb from "../../../../../../github.com/elojah/game_03/pkg/room/dto/room_pb";
 import * as github_com_elojah_game_03_pkg_room_dto_world_pb from "../../../../../../github.com/elojah/game_03/pkg/room/dto/world_pb";
 import * as github_com_elojah_game_03_pkg_twitch_dto_follow_pb from "../../../../../../github.com/elojah/game_03/pkg/twitch/dto/follow_pb";
+import * as github_com_elojah_game_03_pkg_user_dto_session_pb from "../../../../../../github.com/elojah/game_03/pkg/user/dto/session_pb";
+import * as github_com_elojah_game_03_pkg_user_session_pb from "../../../../../../github.com/elojah/game_03/pkg/user/session_pb";
 

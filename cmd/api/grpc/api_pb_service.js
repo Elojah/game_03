@@ -14,6 +14,8 @@ var github_com_elojah_game_03_pkg_room_dto_cell_pb = require("../../../../../../
 var github_com_elojah_game_03_pkg_room_dto_room_pb = require("../../../../../../github.com/elojah/game_03/pkg/room/dto/room_pb");
 var github_com_elojah_game_03_pkg_room_dto_world_pb = require("../../../../../../github.com/elojah/game_03/pkg/room/dto/world_pb");
 var github_com_elojah_game_03_pkg_twitch_dto_follow_pb = require("../../../../../../github.com/elojah/game_03/pkg/twitch/dto/follow_pb");
+var github_com_elojah_game_03_pkg_user_dto_session_pb = require("../../../../../../github.com/elojah/game_03/pkg/user/dto/session_pb");
+var github_com_elojah_game_03_pkg_user_session_pb = require("../../../../../../github.com/elojah/game_03/pkg/user/session_pb");
 var grpc = require("@improbable-eng/grpc-web").grpc;
 
 var API = (function () {
@@ -38,6 +40,15 @@ API.UpdateEntity = {
   responseStream: false,
   requestType: github_com_elojah_game_03_pkg_entity_entity_pb.E,
   responseType: google_protobuf_empty_pb.Empty
+};
+
+API.GetSession = {
+  methodName: "GetSession",
+  service: API,
+  requestStream: false,
+  responseStream: false,
+  requestType: github_com_elojah_game_03_pkg_user_dto_session_pb.CreateSessionReq,
+  responseType: github_com_elojah_game_03_pkg_user_session_pb.Session
 };
 
 API.ListEntity = {
@@ -230,6 +241,37 @@ APIClient.prototype.updateEntity = function updateEntity(metadata) {
     },
     cancel: function () {
       listeners = null;
+      client.close();
+    }
+  };
+};
+
+APIClient.prototype.getSession = function getSession(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(API.GetSession, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
       client.close();
     }
   };

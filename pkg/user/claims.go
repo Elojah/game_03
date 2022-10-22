@@ -6,4 +6,6 @@ import (
 
 type Claims struct {
 	jwt.RegisteredClaims
+
+	Session
 }
