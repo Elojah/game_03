@@ -42,8 +42,8 @@ API.UpdateEntity = {
   responseType: google_protobuf_empty_pb.Empty
 };
 
-API.GetSession = {
-  methodName: "GetSession",
+API.CreateSession = {
+  methodName: "CreateSession",
   service: API,
   requestStream: false,
   responseStream: false,
@@ -246,11 +246,11 @@ APIClient.prototype.updateEntity = function updateEntity(metadata) {
   };
 };
 
-APIClient.prototype.getSession = function getSession(requestMessage, metadata, callback) {
+APIClient.prototype.createSession = function createSession(requestMessage, metadata, callback) {
   if (arguments.length === 2) {
     callback = arguments[1];
   }
-  var client = grpc.unary(API.GetSession, {
+  var client = grpc.unary(API.CreateSession, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,

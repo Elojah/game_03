@@ -36,7 +36,7 @@ service API {
     rpc UpdateEntity(stream entity.E) returns (google.protobuf.Empty);
 
 	// Session
-	rpc GetSession(dto.CreateSessionReq) returns (user.Session);
+	rpc CreateSession(dto.CreateSessionReq) returns (user.Session);
 
     // Entity
     rpc ListEntity(dto.ListEntityReq) returns (dto.ListEntityResp);

@@ -36,7 +36,7 @@ type APIUpdateEntity = {
   readonly responseType: typeof google_protobuf_empty_pb.Empty;
 };
 
-type APIGetSession = {
+type APICreateSession = {
   readonly methodName: string;
   readonly service: typeof API;
   readonly requestStream: false;
@@ -157,7 +157,7 @@ export class API {
   static readonly serviceName: string;
   static readonly ConnectPC: APIConnectPC;
   static readonly UpdateEntity: APIUpdateEntity;
-  static readonly GetSession: APIGetSession;
+  static readonly CreateSession: APICreateSession;
   static readonly ListEntity: APIListEntity;
   static readonly ListAnimation: APIListAnimation;
   static readonly CreatePC: APICreatePC;
@@ -206,12 +206,12 @@ export class APIClient {
   constructor(serviceHost: string, options?: grpc.RpcOptions);
   connectPC(requestMessage: github_com_elojah_game_03_pkg_entity_pc_pb.PC, metadata?: grpc.Metadata): ResponseStream<github_com_elojah_game_03_pkg_entity_dto_entity_pb.ListEntityResp>;
   updateEntity(metadata?: grpc.Metadata): RequestStream<github_com_elojah_game_03_pkg_entity_entity_pb.E>;
-  getSession(
+  createSession(
     requestMessage: github_com_elojah_game_03_pkg_user_dto_session_pb.CreateSessionReq,
     metadata: grpc.Metadata,
     callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_user_session_pb.Session|null) => void
   ): UnaryResponse;
-  getSession(
+  createSession(
     requestMessage: github_com_elojah_game_03_pkg_user_dto_session_pb.CreateSessionReq,
     callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_user_session_pb.Session|null) => void
   ): UnaryResponse;
