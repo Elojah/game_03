@@ -15,15 +15,8 @@ export class Session extends jspb.Message {
   getUserid_asB64(): string;
   setUserid(value: Uint8Array | string): void;
 
-  getPcid(): Uint8Array | string;
-  getPcid_asU8(): Uint8Array;
-  getPcid_asB64(): string;
-  setPcid(value: Uint8Array | string): void;
-
-  getWorldid(): Uint8Array | string;
-  getWorldid_asU8(): Uint8Array;
-  getWorldid_asB64(): string;
-  setWorldid(value: Uint8Array | string): void;
+  getAt(): number;
+  setAt(value: number): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Session.AsObject;
@@ -39,8 +32,7 @@ export namespace Session {
   export type AsObject = {
     id: Uint8Array | string,
     userid: Uint8Array | string,
-    pcid: Uint8Array | string,
-    worldid: Uint8Array | string,
+    at: number,
   }
 }
 

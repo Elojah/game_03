@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/elojah/game_03/pkg/entity"
 	gerrors "github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/room"
-	"github.com/elojah/game_03/pkg/ulid"
 	"github.com/elojah/game_03/pkg/user"
 	"github.com/elojah/game_03/pkg/user/dto"
 	"github.com/rs/zerolog/log"
@@ -28,23 +28,6 @@ func (h *handler) CreateSession(ctx context.Context, req *dto.CreateSessionReq) 
 	u, err := h.user.Auth(ctx)
 	if err != nil {
 		return &user.Session{}, status.New(codes.Unauthenticated, err.Error()).Err()
-	}
-
-	// #Check if connect PC already exists
-	if _, err := h.entity.FetchPCConnect(ctx, entity.FilterPCConnect{
-		ID: req.PCID,
-	}); err != nil {
-		if !errors.As(err, &gerrors.ErrNotFound{}) {
-			logger.Error().Err(err).Msg("pc already connected")
-
-			return &user.Session{}, status.New(codes.FailedPrecondition, err.Error()).Err()
-		}
-	} else {
-		err := gerrors.ErrPCAlreadyConnected{ID: req.PCID.String()}
-
-		logger.Error().Err(err).Msg("failed to fetch pc connect")
-
-		return &user.Session{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
 	// #Fetch room
@@ -77,10 +60,9 @@ func (h *handler) CreateSession(ctx context.Context, req *dto.CreateSessionReq) 
 	}
 
 	ses := user.Session{
-		ID:      ulid.NewID(),
-		UserID:  u.ID,
-		PCID:    pc.ID,
-		WorldID: ro.WorldID,
+		ID:     pc.ID,
+		UserID: u.ID,
+		At:     time.Now().Unix(),
 	}
 
 	if err := h.user.InsertSession(ctx, ses); err != nil {

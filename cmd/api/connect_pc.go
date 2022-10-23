@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
 	"time"
 
 	"github.com/elojah/game_03/cmd/api/grpc"
@@ -44,23 +43,6 @@ func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) err
 	ses, err := h.user.AuthSession(ctx)
 	if err != nil {
 		return status.New(codes.Unauthenticated, err.Error()).Err()
-	}
-
-	// #Check if connect PC already exists
-	if _, err := h.entity.FetchPCConnect(ctx, entity.FilterPCConnect{
-		ID: req.ID,
-	}); err != nil {
-		if !errors.As(err, &gerrors.ErrNotFound{}) {
-			logger.Error().Err(err).Msg("pc already connected")
-
-			return status.New(codes.FailedPrecondition, err.Error()).Err()
-		}
-	} else {
-		err := gerrors.ErrPCAlreadyConnected{ID: req.ID.String()}
-
-		logger.Error().Err(err).Msg("failed to fetch pc connect")
-
-		return status.New(codes.Internal, err.Error()).Err()
 	}
 
 	// #Fetch PC
@@ -136,16 +118,6 @@ func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) err
 	}(pc.EntityID)
 
 	logger = logger.With().Str("entity_id", e.ID.String()).Logger()
-
-	// #Create connect PC
-	if err := h.entity.UpsertPCConnect(ctx, entity.PCConnect{
-		ID:          req.ID,
-		ConnectedAt: time.Now().Unix(),
-	}); err != nil {
-		logger.Error().Err(err).Msg("failed to create pc connect")
-
-		return status.New(codes.Internal, err.Error()).Err()
-	}
 
 	logger.Info().Msg("connected")
 

@@ -4,7 +4,7 @@ import { grpc } from '@improbable-eng/grpc-web';
 
 import { getCookie } from 'typescript-cookie'
 
-import API from 'cmd/api/grpc/api_pb_service';
+import { API } from 'cmd/api/grpc/api_pb_service';
 import * as session from 'pkg/user/session_pb';
 import * as dtoroom from 'pkg/room/dto/room_pb';
 import * as dtopc from 'pkg/entity/dto/pc_pb';
@@ -50,7 +50,7 @@ export default (props: propRoomsRow) => {
 		md.set('token', getCookie('token')!)
 
 		const prom = new Promise<dtopc.ListPCResp>((resolve, reject) => {
-			grpc.unary(API.API.ListPC, {
+			grpc.unary(API.ListPC, {
 				metadata: md,
 				request: req,
 				host: 'https://api.legacyfactory.com:8082',
@@ -69,44 +69,6 @@ export default (props: propRoomsRow) => {
 
 		return prom
 	}
-
-
-	const createSession = (req: dtosession.CreateSessionReq) => {
-		let md = new grpc.Metadata()
-		md.set('token', getCookie('token')!)
-
-		const prom = new Promise<session.Session>((resolve, reject) => {
-			grpc.unary(API.API.CreateSession, {
-				metadata: md,
-				request: req,
-				host: 'https://api.legacyfactory.com:8082',
-				onEnd: res => {
-					const { status, statusMessage, headers, message, trailers } = res;
-					if (status !== grpc.Code.OK || !message) {
-						reject(res)
-
-						return
-					}
-
-					resolve(message as session.Session)
-				}
-			});
-		})
-
-		return prom
-	}
-
-	const play = (pcID: Uint8Array) => {
-		const req = new dtosession.CreateSessionReq()
-		req.setRoomid(id)
-		req.setPcid(pcID)
-		createSession(req).then((result) => {
-			console.log('session created')
-		}).catch((err) => {
-			console.log(err)
-		})
-	}
-
 
 	const refreshPCs = () => {
 		const req = new dtopc.ListPCReq()
@@ -232,7 +194,7 @@ export default (props: propRoomsRow) => {
 												<TableCell
 													style={{ minWidth: 20, width: '20%' }}
 												>
-													<Button variant="contained" startIcon={<GamesIcon />} color='primary' size='large' href='https://client.legacyfactory.com:8080' target='_blank' rel='noreferrer'>
+													<Button variant="contained" startIcon={<GamesIcon />} color='primary' size='large' href={'https://client.legacyfactory.com:8080?pc_id=' + sid} target='_blank' rel='noreferrer'>
 														Play
 													</Button>
 												</TableCell>

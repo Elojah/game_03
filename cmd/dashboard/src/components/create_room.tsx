@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { grpc } from '@improbable-eng/grpc-web';
 import { getCookie } from 'typescript-cookie'
 
-import API from 'cmd/api/grpc/api_pb_service';
+import { API } from 'cmd/api/grpc/api_pb_service';
 import * as dtoworld from 'pkg/room/dto/world_pb';
 import * as room from 'pkg/room/room_pb';
 import * as world from 'pkg/room/world_pb';
@@ -41,7 +41,7 @@ export default () => {
 		md.set('token', getCookie('token')!)
 
 		const prom = new Promise<room.R>((resolve, reject) => {
-			grpc.unary(API.API.CreateRoom, {
+			grpc.unary(API.CreateRoom, {
 				metadata: md,
 				request: req,
 				host: 'https://api.legacyfactory.com:8082',
@@ -67,7 +67,7 @@ export default () => {
 		md.set('token', getCookie('token')!)
 
 		const prom = new Promise<dtoworld.ListWorldResp>((resolve, reject) => {
-			grpc.unary(API.API.ListWorld, {
+			grpc.unary(API.ListWorld, {
 				metadata: md,
 				request: req,
 				host: 'https://api.legacyfactory.com:8082',

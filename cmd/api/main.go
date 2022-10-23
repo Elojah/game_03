@@ -130,7 +130,6 @@ func run(prog string, filename string) {
 		StoreBackup:    entityStore,
 		StorePC:        entityStore,
 		StoreTemplate:  entityStore,
-		CachePCConnect: entityCache,
 	}
 
 	roomStore := &roomscylla.Store{Service: scyllas}

@@ -22,8 +22,7 @@ CREATE INDEX ON main.role(set_id);
 CREATE TABLE main.session (
     id              uuid PRIMARY KEY,
     user_id         uuid,
-    pc_id           uuid,
-    world_id        uuid
+    at              bigint
 );
 
 CREATE INDEX ON main.session(user_id);

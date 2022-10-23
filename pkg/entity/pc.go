@@ -22,13 +22,3 @@ type StorePC interface {
 	FetchManyPC(context.Context, FilterPC) ([]PC, []byte, error)
 	DeletePC(context.Context, FilterPC) error
 }
-
-type FilterPCConnect struct {
-	ID ulid.ID
-}
-
-type CachePCConnect interface {
-	UpsertPCConnect(context.Context, PCConnect) error
-	FetchPCConnect(context.Context, FilterPCConnect) (PCConnect, error)
-	DeletePCConnect(context.Context, FilterPCConnect) error
-}

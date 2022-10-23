@@ -45,5 +45,4 @@ type App interface {
 	StorePC
 	StoreNPC
 	StoreTemplate
-	CachePCConnect
 }

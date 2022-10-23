@@ -1,34 +1,35 @@
 {
-    "compilerOptions": {
-      "alwaysStrict": true,
-      "jsx": "react",
-      "noEmitOnError": true,
-      "noFallthroughCasesInSwitch": true,
-      "noImplicitAny": true,
-      "noImplicitReturns": true,
-      "removeComments": true,
-      "sourceMap": true,
-      "strictNullChecks": true,
-      "stripInternal": true,
-      "target": "esnext",
-
-      "strict": true,
-      "module": "esnext",
-      "moduleResolution": "node",
-      "resolveJsonModule": true,
-
-      "allowSyntheticDefaultImports": true,
-      "esModuleInterop": true,
-
-      "useDefineForClassFields": true,
-      "experimentalDecorators": true,
-
-
-      "baseUrl": ".",
-      "paths": {
-        "*": ["node_modules/*"],
-        "cmd/*": ["../../cmd/*"],
-        "pkg/*": ["../../pkg/*"]
-      }
-    },
+	"compilerOptions": {
+		"allowSyntheticDefaultImports": true,
+		"alwaysStrict": true,
+		"baseUrl": ".",
+		"esModuleInterop": true,
+		"experimentalDecorators": true,
+		"jsx": "react",
+		"module": "ESNext",
+		"moduleResolution": "node",
+		"noEmitOnError": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitAny": true,
+		"noImplicitReturns": true,
+		"removeComments": true,
+		"resolveJsonModule": true,
+		"sourceMap": true,
+		"strict": true,
+		"strictNullChecks": true,
+		"stripInternal": true,
+		"target": "ESNext",
+		"useDefineForClassFields": true,
+		"paths": {
+			"*": [
+				"node_modules/*"
+			],
+			"cmd/*": [
+				"../../cmd/*"
+			],
+			"pkg/*": [
+				"../../pkg/*"
+			]
+		}
+	},
 }

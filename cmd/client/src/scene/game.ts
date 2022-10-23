@@ -1,13 +1,13 @@
-import { Loader, Scene } from "phaser";
+import { Scene } from "phaser";
 import { grpc } from '@improbable-eng/grpc-web';
 
-import { Mutex, MutexInterface, Semaphore, SemaphoreInterface, withTimeout } from 'async-mutex';
+import { Mutex } from 'async-mutex';
 
 import * as jspb from "google-protobuf";
 
 import { ulid } from '../lib/ulid'
 
-import * as API from 'cmd/api/grpc/api_pb_service';
+import { API } from 'cmd/api/grpc/api_pb_service';
 
 import * as Animation from 'pkg/entity/animation_pb';
 import * as AnimationDTO from 'pkg/entity/dto/animation_pb';
@@ -1067,7 +1067,7 @@ export class Game extends Scene {
 	// Connect server update
 	connectUpdate() {
 		// call update entity
-		this.EntityClient = grpc.client(API.API.UpdateEntity, {
+		this.EntityClient = grpc.client(API.UpdateEntity, {
 			host: 'http://localhost:8081',
 			transport: grpc.WebsocketTransport(),
 		});
@@ -1084,7 +1084,7 @@ export class Game extends Scene {
 		md.set('token', this.registry.get('token'))
 
 		const prom = new Promise<string>((resolve, reject) => {
-			grpc.invoke(API.API.ConnectPC, {
+			grpc.invoke(API.ConnectPC, {
 				metadata: md,
 				request: req,
 				host: 'http://localhost:8081',
@@ -1112,7 +1112,7 @@ export class Game extends Scene {
 		md.set('token', this.registry.get('token'))
 
 		const prom = new Promise<CellDTO.ListCellResp>((resolve, reject) => {
-			grpc.unary(API.API.ListCell, {
+			grpc.unary(API.ListCell, {
 				metadata: md,
 				request: req,
 				host: 'http://localhost:8081',
@@ -1138,7 +1138,7 @@ export class Game extends Scene {
 		md.set('token', this.registry.get('token'))
 
 		const prom = new Promise<EntityDTO.ListEntityResp>((resolve, reject) => {
-			grpc.unary(API.API.ListEntity, {
+			grpc.unary(API.ListEntity, {
 				metadata: md,
 				request: req,
 				host: 'http://localhost:8081',
@@ -1164,7 +1164,7 @@ export class Game extends Scene {
 		md.set('token', this.registry.get('token'))
 
 		const prom = new Promise<AnimationDTO.ListAnimationResp>((resolve, reject) => {
-			grpc.unary(API.API.ListAnimation, {
+			grpc.unary(API.ListAnimation, {
 				metadata: md,
 				request: req,
 				host: 'http://localhost:8081',
@@ -1190,7 +1190,7 @@ export class Game extends Scene {
 		md.set('token', this.registry.get('token'))
 
 		const prom = new Promise<WorldDTO.ListWorldResp>((resolve, reject) => {
-			grpc.unary(API.API.ListWorld, {
+			grpc.unary(API.ListWorld, {
 				metadata: md,
 				request: req,
 				host: 'http://localhost:8081',

@@ -4,7 +4,7 @@ import { grpc } from '@improbable-eng/grpc-web';
 
 import { getCookie } from 'typescript-cookie'
 
-import API from 'cmd/api/grpc/api_pb_service';
+import { API } from 'cmd/api/grpc/api_pb_service';
 import * as dtoroom from 'pkg/room/dto/room_pb';
 
 import { ulid } from '../lib/ulid'
@@ -35,7 +35,7 @@ export default () => {
 		md.set('token', getCookie('token')!)
 
 		const prom = new Promise<dtoroom.ListRoomResp>((resolve, reject) => {
-			grpc.unary(API.API.ListRoom, {
+			grpc.unary(API.ListRoom, {
 				metadata: md,
 				request: req,
 				host: 'https://api.legacyfactory.com:8082',

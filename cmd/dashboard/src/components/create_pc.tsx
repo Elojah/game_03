@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { grpc } from '@improbable-eng/grpc-web';
 import { getCookie } from 'typescript-cookie'
 
-import API from 'cmd/api/grpc/api_pb_service';
+import { API } from 'cmd/api/grpc/api_pb_service';
 import * as dtotemplate from 'pkg/entity/dto/template_pb';
 import * as dtopc from 'pkg/entity/dto/pc_pb';
 import * as room from 'pkg/room/room_pb';
@@ -46,7 +46,7 @@ export default () => {
 		md.set('token', getCookie('token')!)
 
 		const prom = new Promise<pc.PC>((resolve, reject) => {
-			grpc.unary(API.API.CreatePC, {
+			grpc.unary(API.CreatePC, {
 				metadata: md,
 				request: req,
 				host: 'https://api.legacyfactory.com:8082',
@@ -71,7 +71,7 @@ export default () => {
 		md.set('token', getCookie('token')!)
 
 		const prom = new Promise<dtotemplate.ListTemplateResp>((resolve, reject) => {
-			grpc.unary(API.API.ListTemplate, {
+			grpc.unary(API.ListTemplate, {
 				metadata: md,
 				request: req,
 				host: 'https://api.legacyfactory.com:8082',

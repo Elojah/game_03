@@ -1,16 +1,17 @@
 {
-  "devDependencies": {
-    "@improbable-eng/grpc-web": "^0.13.0",
-    "google-protobuf": "^3.15.8",
-    "phaser": "^3.55.2",
-    "ts-loader": "^8.2.0",
-    "ts-protoc-gen": "^0.15.1-pre.a71b34e",
-    "typescript": "^4.4.4",
-    "webpack": "^5.59.0",
-    "webpack-cli": "^4.6.0"
-  },
-  "dependencies": {
-    "@types/google-protobuf": "^3.15.5",
-    "async-mutex": "^0.4.0"
-  }
+	"devDependencies": {
+		"@improbable-eng/grpc-web": "^0.13.0",
+		"google-protobuf": "^3.15.8",
+		"phaser": "^3.55.2",
+		"ts-loader": "^8.2.0",
+		"ts-protoc-gen": "^0.15.1-pre.a71b34e",
+		"typescript": "^4.4.4",
+		"typescript-cookie": "^1.0.4",
+		"webpack": "^5.59.0",
+		"webpack-cli": "^4.6.0"
+	},
+	"dependencies": {
+		"@types/google-protobuf": "^3.15.5",
+		"async-mutex": "^0.4.0"
+	}
 }
