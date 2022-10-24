@@ -13,5 +13,4 @@ type App struct {
 	entity.StoreNPC
 	entity.StorePC
 	entity.StoreTemplate
-	entity.CachePCConnect
 }

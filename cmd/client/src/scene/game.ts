@@ -1068,8 +1068,8 @@ export class Game extends Scene {
 	connectUpdate() {
 		// call update entity
 		this.EntityClient = grpc.client(API.UpdateEntity, {
-			host: 'http://localhost:8081',
-			transport: grpc.WebsocketTransport(),
+			host: 'https://api.legacyfactory.com:8082',
+			// transport: grpc.WebsocketTransport(),
 		});
 
 		let md = new grpc.Metadata()
@@ -1087,7 +1087,7 @@ export class Game extends Scene {
 			grpc.invoke(API.ConnectPC, {
 				metadata: md,
 				request: req,
-				host: 'http://localhost:8081',
+				host: 'https://api.legacyfactory.com:8082',
 				onMessage: (message: EntityDTO.ListEntityResp) => {
 					callback(message)
 				},
@@ -1115,7 +1115,7 @@ export class Game extends Scene {
 			grpc.unary(API.ListCell, {
 				metadata: md,
 				request: req,
-				host: 'http://localhost:8081',
+				host: 'https://api.legacyfactory.com:8082',
 				onEnd: res => {
 					const { status, statusMessage, headers, message, trailers } = res;
 					if (status !== grpc.Code.OK || !message) {
@@ -1141,7 +1141,7 @@ export class Game extends Scene {
 			grpc.unary(API.ListEntity, {
 				metadata: md,
 				request: req,
-				host: 'http://localhost:8081',
+				host: 'https://api.legacyfactory.com:8082',
 				onEnd: res => {
 					const { status, statusMessage, headers, message, trailers } = res;
 					if (status !== grpc.Code.OK || !message) {
@@ -1167,7 +1167,7 @@ export class Game extends Scene {
 			grpc.unary(API.ListAnimation, {
 				metadata: md,
 				request: req,
-				host: 'http://localhost:8081',
+				host: 'https://api.legacyfactory.com:8082',
 				onEnd: res => {
 					const { status, statusMessage, headers, message, trailers } = res;
 					if (status !== grpc.Code.OK || !message) {
@@ -1193,7 +1193,7 @@ export class Game extends Scene {
 			grpc.unary(API.ListWorld, {
 				metadata: md,
 				request: req,
-				host: 'http://localhost:8081',
+				host: 'https://api.legacyfactory.com:8082',
 				onEnd: res => {
 					const { status, statusMessage, headers, message, trailers } = res;
 					if (status !== grpc.Code.OK || !message) {

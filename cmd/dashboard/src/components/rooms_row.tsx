@@ -5,14 +5,12 @@ import { grpc } from '@improbable-eng/grpc-web';
 import { getCookie } from 'typescript-cookie'
 
 import { API } from 'cmd/api/grpc/api_pb_service';
-import * as session from 'pkg/user/session_pb';
-import * as dtoroom from 'pkg/room/dto/room_pb';
-import * as dtopc from 'pkg/entity/dto/pc_pb';
-import * as dtosession from 'pkg/user/dto/session_pb';
+import { Room } from 'pkg/room/dto/room_pb';
+import { ListPCReq, ListPCResp, PC } from 'pkg/entity/dto/pc_pb';
 
 import { ulid } from '../lib/ulid'
 
-import { Link, LinkProps } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import CircularProgress from '@mui/material/CircularProgress';
 import Collapse from '@mui/material/Collapse';
 import Box from '@mui/material/Box';
@@ -31,7 +29,7 @@ import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 
 interface propRoomsRow {
-	Room: dtoroom.Room
+	Room: Room
 }
 
 export default (props: propRoomsRow) => {
@@ -40,16 +38,18 @@ export default (props: propRoomsRow) => {
 	const id = room.getRoom()?.getId_asU8()!
 	const sid = ulid(id)
 	const name = room.getRoom()?.getName()
+	const worldID = room.getRoom()?.getWorldid_asU8()!
+	const sWorldID = ulid(worldID)
 
 
 	// API PC
-	const [pcs, setPCs] = useState<{ pcs: dtopc.PC[], loaded: boolean }>({ pcs: [], loaded: false })
+	const [pcs, setPCs] = useState<{ pcs: PC[], loaded: boolean }>({ pcs: [], loaded: false })
 
-	const listPCs = (req: dtopc.ListPCReq) => {
+	const listPCs = (req: ListPCReq) => {
 		let md = new grpc.Metadata()
 		md.set('token', getCookie('token')!)
 
-		const prom = new Promise<dtopc.ListPCResp>((resolve, reject) => {
+		const prom = new Promise<ListPCResp>((resolve, reject) => {
 			grpc.unary(API.ListPC, {
 				metadata: md,
 				request: req,
@@ -62,7 +62,7 @@ export default (props: propRoomsRow) => {
 						return
 					}
 
-					resolve(message as dtopc.ListPCResp)
+					resolve(message as ListPCResp)
 				}
 			});
 		})
@@ -71,7 +71,7 @@ export default (props: propRoomsRow) => {
 	}
 
 	const refreshPCs = () => {
-		const req = new dtopc.ListPCReq()
+		const req = new ListPCReq()
 		req.setRoomid(id)
 		req.setSize(100)
 		setPCs({ pcs: [], loaded: false })
@@ -194,7 +194,7 @@ export default (props: propRoomsRow) => {
 												<TableCell
 													style={{ minWidth: 20, width: '20%' }}
 												>
-													<Button variant="contained" startIcon={<GamesIcon />} color='primary' size='large' href={'https://client.legacyfactory.com:8080?pc_id=' + sid} target='_blank' rel='noreferrer'>
+													<Button variant="contained" startIcon={<GamesIcon />} color='primary' size='large' href={'https://client.legacyfactory.com:8080?world_id=' + sWorldID + '&pc_id=' + sid} target='_blank' rel='noreferrer'>
 														Play
 													</Button>
 												</TableCell>

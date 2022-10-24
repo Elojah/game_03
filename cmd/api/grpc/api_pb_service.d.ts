@@ -15,7 +15,6 @@ import * as github_com_elojah_game_03_pkg_room_dto_room_pb from "../../../../../
 import * as github_com_elojah_game_03_pkg_room_dto_world_pb from "../../../../../../github.com/elojah/game_03/pkg/room/dto/world_pb";
 import * as github_com_elojah_game_03_pkg_twitch_dto_follow_pb from "../../../../../../github.com/elojah/game_03/pkg/twitch/dto/follow_pb";
 import * as github_com_elojah_game_03_pkg_user_dto_session_pb from "../../../../../../github.com/elojah/game_03/pkg/user/dto/session_pb";
-import * as github_com_elojah_game_03_pkg_user_session_pb from "../../../../../../github.com/elojah/game_03/pkg/user/session_pb";
 import {grpc} from "@improbable-eng/grpc-web";
 
 type APIConnectPC = {
@@ -42,7 +41,7 @@ type APICreateSession = {
   readonly requestStream: false;
   readonly responseStream: false;
   readonly requestType: typeof github_com_elojah_game_03_pkg_user_dto_session_pb.CreateSessionReq;
-  readonly responseType: typeof github_com_elojah_game_03_pkg_user_session_pb.Session;
+  readonly responseType: typeof github_com_elojah_game_03_pkg_user_dto_session_pb.CreateSessionResp;
 };
 
 type APIListEntity = {
@@ -79,6 +78,15 @@ type APIListPC = {
   readonly responseStream: false;
   readonly requestType: typeof github_com_elojah_game_03_pkg_entity_dto_pc_pb.ListPCReq;
   readonly responseType: typeof github_com_elojah_game_03_pkg_entity_dto_pc_pb.ListPCResp;
+};
+
+type APIGetPC = {
+  readonly methodName: string;
+  readonly service: typeof API;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof github_com_elojah_game_03_pkg_entity_dto_pc_pb.GetPCReq;
+  readonly responseType: typeof github_com_elojah_game_03_pkg_entity_dto_pc_pb.PC;
 };
 
 type APIListTemplate = {
@@ -162,6 +170,7 @@ export class API {
   static readonly ListAnimation: APIListAnimation;
   static readonly CreatePC: APICreatePC;
   static readonly ListPC: APIListPC;
+  static readonly GetPC: APIGetPC;
   static readonly ListTemplate: APIListTemplate;
   static readonly CreateEntity: APICreateEntity;
   static readonly CreateRoom: APICreateRoom;
@@ -209,11 +218,11 @@ export class APIClient {
   createSession(
     requestMessage: github_com_elojah_game_03_pkg_user_dto_session_pb.CreateSessionReq,
     metadata: grpc.Metadata,
-    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_user_session_pb.Session|null) => void
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_user_dto_session_pb.CreateSessionResp|null) => void
   ): UnaryResponse;
   createSession(
     requestMessage: github_com_elojah_game_03_pkg_user_dto_session_pb.CreateSessionReq,
-    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_user_session_pb.Session|null) => void
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_user_dto_session_pb.CreateSessionResp|null) => void
   ): UnaryResponse;
   listEntity(
     requestMessage: github_com_elojah_game_03_pkg_entity_dto_entity_pb.ListEntityReq,
@@ -250,6 +259,15 @@ export class APIClient {
   listPC(
     requestMessage: github_com_elojah_game_03_pkg_entity_dto_pc_pb.ListPCReq,
     callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_entity_dto_pc_pb.ListPCResp|null) => void
+  ): UnaryResponse;
+  getPC(
+    requestMessage: github_com_elojah_game_03_pkg_entity_dto_pc_pb.GetPCReq,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_entity_dto_pc_pb.PC|null) => void
+  ): UnaryResponse;
+  getPC(
+    requestMessage: github_com_elojah_game_03_pkg_entity_dto_pc_pb.GetPCReq,
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_entity_dto_pc_pb.PC|null) => void
   ): UnaryResponse;
   listTemplate(
     requestMessage: github_com_elojah_game_03_pkg_entity_dto_template_pb.ListTemplateReq,

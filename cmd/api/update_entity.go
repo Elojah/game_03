@@ -42,22 +42,23 @@ func (h *handler) UpdateEntity(stream ggrpc.API_UpdateEntityServer) error {
 			return stream.SendAndClose(&types.Empty{})
 		}
 
-		if e == nil {
-			return status.New(codes.InvalidArgument, errors.ErrNullRequest{}.Error()).Err()
-		}
-
-		if ses.UserID.Compare(e.UserID) != 0 {
-			err := errors.ErrInvalidCredentials{}
-			logger.Error().Err(err).Msg("invalid sender")
-
-			return status.New(codes.PermissionDenied, err.Error()).Err()
-		}
-
 		if err != nil {
 			logger.Error().Err(err).Msg("failed to receive entity")
 
 			return status.New(codes.Internal, err.Error()).Err()
 		}
+
+		if e == nil {
+			return status.New(codes.InvalidArgument, errors.ErrNullRequest{}.Error()).Err()
+		}
+
+		_ = ses
+		// if ses.UserID.Compare(e.UserID) != 0 {
+		// 	err := errors.ErrInvalidCredentials{}
+		// 	logger.Error().Err(err).Msg("invalid sender")
+
+		// 	return status.New(codes.PermissionDenied, err.Error()).Err()
+		// }
 
 		logger := logger.With().Str("entity_id", e.ID.String()).Logger()
 

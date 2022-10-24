@@ -35,3 +35,8 @@ message ListPCResp {
     repeated PC PCs        = 1 [(gogoproto.nullable) = false];
     bytes State            = 2;
 }
+
+message GetPCReq {
+    bytes WorldID          = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    bytes ID               = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+}

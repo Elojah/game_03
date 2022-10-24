@@ -5,13 +5,12 @@ import { grpc } from '@improbable-eng/grpc-web';
 import { getCookie } from 'typescript-cookie'
 
 import { API } from 'cmd/api/grpc/api_pb_service';
-import * as dtoworld from 'pkg/room/dto/world_pb';
-import * as room from 'pkg/room/room_pb';
-import * as world from 'pkg/room/world_pb';
+import { ListWorldReq, ListWorldResp } from 'pkg/room/dto/world_pb';
+import { R } from 'pkg/room/room_pb';
+import { World } from 'pkg/room/world_pb';
 
-import { ulid, parse } from '../lib/ulid'
+import { ulid } from '../lib/ulid'
 
-import { Link, LinkProps } from 'react-router-dom';
 import CircularProgress from '@mui/material/CircularProgress';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
@@ -34,13 +33,13 @@ export default () => {
 	const navigate = useNavigate()
 
 	// API Room
-	const [worlds, setWorlds] = useState<{ worlds: world.World[], loaded: boolean }>({ worlds: [], loaded: false })
+	const [worlds, setWorlds] = useState<{ worlds: World[], loaded: boolean }>({ worlds: [], loaded: false })
 
-	const createRoom = (req: room.R) => {
+	const createRoom = (req: R) => {
 		let md = new grpc.Metadata()
 		md.set('token', getCookie('token')!)
 
-		const prom = new Promise<room.R>((resolve, reject) => {
+		const prom = new Promise<R>((resolve, reject) => {
 			grpc.unary(API.CreateRoom, {
 				metadata: md,
 				request: req,
@@ -53,7 +52,7 @@ export default () => {
 						return
 					}
 
-					resolve(message as room.R)
+					resolve(message as R)
 				}
 			});
 		})
@@ -62,11 +61,11 @@ export default () => {
 	}
 
 
-	const listWorlds = (req: dtoworld.ListWorldReq) => {
+	const listWorlds = (req: ListWorldReq) => {
 		let md = new grpc.Metadata()
 		md.set('token', getCookie('token')!)
 
-		const prom = new Promise<dtoworld.ListWorldResp>((resolve, reject) => {
+		const prom = new Promise<ListWorldResp>((resolve, reject) => {
 			grpc.unary(API.ListWorld, {
 				metadata: md,
 				request: req,
@@ -79,7 +78,7 @@ export default () => {
 						return
 					}
 
-					resolve(message as dtoworld.ListWorldResp)
+					resolve(message as ListWorldResp)
 				}
 			});
 		})
@@ -88,7 +87,7 @@ export default () => {
 	}
 
 	const refreshWorlds = () => {
-		const req = new dtoworld.ListWorldReq()
+		const req = new ListWorldReq()
 		req.setAll(true)
 		req.setSize(100)
 		setWorlds({ worlds: [], loaded: false })
@@ -131,7 +130,7 @@ export default () => {
 			return
 		}
 
-		const req = new room.R()
+		const req = new R()
 		req.setName(name)
 		req.setWorldid(selectedWorld)
 

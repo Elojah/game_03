@@ -15,5 +15,9 @@ import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 message CreateSessionReq {
     bytes PCID         = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
-    bytes RoomID       = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    bytes WorldID      = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+}
+
+message CreateSessionResp {
+    bytes Token        = 1;
 }

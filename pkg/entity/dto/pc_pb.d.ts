@@ -120,3 +120,31 @@ export namespace ListPCResp {
   }
 }
 
+export class GetPCReq extends jspb.Message {
+  getWorldid(): Uint8Array | string;
+  getWorldid_asU8(): Uint8Array;
+  getWorldid_asB64(): string;
+  setWorldid(value: Uint8Array | string): void;
+
+  getId(): Uint8Array | string;
+  getId_asU8(): Uint8Array;
+  getId_asB64(): string;
+  setId(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetPCReq.AsObject;
+  static toObject(includeInstance: boolean, msg: GetPCReq): GetPCReq.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: GetPCReq, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetPCReq;
+  static deserializeBinaryFromReader(message: GetPCReq, reader: jspb.BinaryReader): GetPCReq;
+}
+
+export namespace GetPCReq {
+  export type AsObject = {
+    worldid: Uint8Array | string,
+    id: Uint8Array | string,
+  }
+}
+

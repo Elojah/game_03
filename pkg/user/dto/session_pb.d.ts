@@ -10,10 +10,10 @@ export class CreateSessionReq extends jspb.Message {
   getPcid_asB64(): string;
   setPcid(value: Uint8Array | string): void;
 
-  getRoomid(): Uint8Array | string;
-  getRoomid_asU8(): Uint8Array;
-  getRoomid_asB64(): string;
-  setRoomid(value: Uint8Array | string): void;
+  getWorldid(): Uint8Array | string;
+  getWorldid_asU8(): Uint8Array;
+  getWorldid_asB64(): string;
+  setWorldid(value: Uint8Array | string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): CreateSessionReq.AsObject;
@@ -28,7 +28,29 @@ export class CreateSessionReq extends jspb.Message {
 export namespace CreateSessionReq {
   export type AsObject = {
     pcid: Uint8Array | string,
-    roomid: Uint8Array | string,
+    worldid: Uint8Array | string,
+  }
+}
+
+export class CreateSessionResp extends jspb.Message {
+  getToken(): Uint8Array | string;
+  getToken_asU8(): Uint8Array;
+  getToken_asB64(): string;
+  setToken(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): CreateSessionResp.AsObject;
+  static toObject(includeInstance: boolean, msg: CreateSessionResp): CreateSessionResp.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: CreateSessionResp, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CreateSessionResp;
+  static deserializeBinaryFromReader(message: CreateSessionResp, reader: jspb.BinaryReader): CreateSessionResp;
+}
+
+export namespace CreateSessionResp {
+  export type AsObject = {
+    token: Uint8Array | string,
   }
 }
 

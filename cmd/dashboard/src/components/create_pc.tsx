@@ -5,15 +5,13 @@ import { grpc } from '@improbable-eng/grpc-web';
 import { getCookie } from 'typescript-cookie'
 
 import { API } from 'cmd/api/grpc/api_pb_service';
-import * as dtotemplate from 'pkg/entity/dto/template_pb';
-import * as dtopc from 'pkg/entity/dto/pc_pb';
-import * as room from 'pkg/room/room_pb';
-import * as pc from 'pkg/entity/pc_pb';
-import * as template from 'pkg/entity/template_pb';
+import { ListTemplateReq, ListTemplateResp } from 'pkg/entity/dto/template_pb';
+import { CreatePCReq } from 'pkg/entity/dto/pc_pb';
+import { PC } from 'pkg/entity/pc_pb';
+import { Template } from 'pkg/entity/template_pb';
 
 import { ulid, parse } from '../lib/ulid'
 
-import { Link, LinkProps } from 'react-router-dom';
 import CircularProgress from '@mui/material/CircularProgress';
 import Paper from '@mui/material/Paper';
 import Avatar from '@mui/material/Avatar';
@@ -39,13 +37,13 @@ export default () => {
 	const navigate = useNavigate()
 
 	// API Room
-	const [templates, setTemplates] = useState<{ templates: template.Template[], loaded: boolean }>({ templates: [], loaded: false })
+	const [templates, setTemplates] = useState<{ templates: Template[], loaded: boolean }>({ templates: [], loaded: false })
 
-	const createPC = (req: dtopc.CreatePCReq) => {
+	const createPC = (req: CreatePCReq) => {
 		let md = new grpc.Metadata()
 		md.set('token', getCookie('token')!)
 
-		const prom = new Promise<pc.PC>((resolve, reject) => {
+		const prom = new Promise<PC>((resolve, reject) => {
 			grpc.unary(API.CreatePC, {
 				metadata: md,
 				request: req,
@@ -58,7 +56,7 @@ export default () => {
 						return
 					}
 
-					resolve(message as pc.PC)
+					resolve(message as PC)
 				}
 			});
 		})
@@ -66,11 +64,11 @@ export default () => {
 		return prom
 	}
 
-	const listTemplates = (req: dtotemplate.ListTemplateReq) => {
+	const listTemplates = (req: ListTemplateReq) => {
 		let md = new grpc.Metadata()
 		md.set('token', getCookie('token')!)
 
-		const prom = new Promise<dtotemplate.ListTemplateResp>((resolve, reject) => {
+		const prom = new Promise<ListTemplateResp>((resolve, reject) => {
 			grpc.unary(API.ListTemplate, {
 				metadata: md,
 				request: req,
@@ -83,7 +81,7 @@ export default () => {
 						return
 					}
 
-					resolve(message as dtotemplate.ListTemplateResp)
+					resolve(message as ListTemplateResp)
 				}
 			});
 		})
@@ -92,7 +90,7 @@ export default () => {
 	}
 
 	const refreshTemplates = () => {
-		const req = new dtotemplate.ListTemplateReq()
+		const req = new ListTemplateReq()
 		req.setAll(true)
 		req.setSize(100)
 		setTemplates({ templates: [], loaded: false })
@@ -135,7 +133,7 @@ export default () => {
 			return
 		}
 
-		const req = new dtopc.CreatePCReq()
+		const req = new CreatePCReq()
 		req.setEntitytemplate(selectedTemplate)
 		req.setRoomid(parse(roomID!))
 

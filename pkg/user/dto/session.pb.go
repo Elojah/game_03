@@ -4,6 +4,7 @@
 package dto
 
 import (
+	bytes "bytes"
 	fmt "fmt"
 	github_com_elojah_game_03_pkg_ulid "github.com/elojah/game_03/pkg/ulid"
 	_ "github.com/gogo/protobuf/gogoproto"
@@ -29,8 +30,8 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type CreateSessionReq struct {
-	PCID   github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,1,opt,name=PCID,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"PCID"`
-	RoomID github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,2,opt,name=RoomID,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"RoomID"`
+	PCID    github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,1,opt,name=PCID,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"PCID"`
+	WorldID github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,2,opt,name=WorldID,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"WorldID"`
 }
 
 func (m *CreateSessionReq) Reset()      { *m = CreateSessionReq{} }
@@ -65,9 +66,47 @@ func (m *CreateSessionReq) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_CreateSessionReq proto.InternalMessageInfo
 
+type CreateSessionResp struct {
+	Token []byte `protobuf:"bytes,1,opt,name=Token,proto3" json:"Token,omitempty"`
+}
+
+func (m *CreateSessionResp) Reset()      { *m = CreateSessionResp{} }
+func (*CreateSessionResp) ProtoMessage() {}
+func (*CreateSessionResp) Descriptor() ([]byte, []int) {
+	return fileDescriptor_17b86d0f39bf4cc0, []int{1}
+}
+func (m *CreateSessionResp) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *CreateSessionResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_CreateSessionResp.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *CreateSessionResp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateSessionResp.Merge(m, src)
+}
+func (m *CreateSessionResp) XXX_Size() int {
+	return m.Size()
+}
+func (m *CreateSessionResp) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateSessionResp.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CreateSessionResp proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*CreateSessionReq)(nil), "dto.CreateSessionReq")
 	golang_proto.RegisterType((*CreateSessionReq)(nil), "dto.CreateSessionReq")
+	proto.RegisterType((*CreateSessionResp)(nil), "dto.CreateSessionResp")
+	golang_proto.RegisterType((*CreateSessionResp)(nil), "dto.CreateSessionResp")
 }
 
 func init() {
@@ -78,24 +117,25 @@ func init() {
 }
 
 var fileDescriptor_17b86d0f39bf4cc0 = []byte{
-	// 258 bytes of a gzipped FileDescriptorProto
+	// 281 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x32, 0x49, 0xcf, 0x2c, 0xc9,
 	0x28, 0x4d, 0xd2, 0x4b, 0xce, 0xcf, 0xd5, 0x4f, 0xcd, 0xc9, 0xcf, 0x4a, 0xcc, 0xd0, 0x4f, 0x4f,
 	0xcc, 0x4d, 0x8d, 0x37, 0x30, 0xd6, 0x2f, 0xc8, 0x4e, 0xd7, 0x2f, 0x2d, 0x4e, 0x2d, 0xd2, 0x4f,
 	0x29, 0xc9, 0xd7, 0x2f, 0x4e, 0x2d, 0x2e, 0xce, 0xcc, 0xcf, 0xd3, 0x2b, 0x28, 0xca, 0x2f, 0xc9,
 	0x17, 0x62, 0x4e, 0x29, 0xc9, 0x97, 0xd2, 0x45, 0xd2, 0x9a, 0x9e, 0x9f, 0x9e, 0xaf, 0x0f, 0x96,
-	0x4b, 0x2a, 0x4d, 0x03, 0xf3, 0xc0, 0x1c, 0x30, 0x0b, 0xa2, 0x47, 0x69, 0x0e, 0x23, 0x97, 0x80,
+	0x4b, 0x2a, 0x4d, 0x03, 0xf3, 0xc0, 0x1c, 0x30, 0x0b, 0xa2, 0x47, 0x69, 0x1e, 0x23, 0x97, 0x80,
 	0x73, 0x51, 0x6a, 0x62, 0x49, 0x6a, 0x30, 0xc4, 0xac, 0xa0, 0xd4, 0x42, 0x21, 0x47, 0x2e, 0x96,
 	0x00, 0x67, 0x4f, 0x17, 0x09, 0x46, 0x05, 0x46, 0x0d, 0x1e, 0x27, 0xdd, 0x13, 0xf7, 0xe4, 0x19,
 	0x6e, 0xdd, 0x93, 0x57, 0x25, 0xe0, 0xa8, 0x9c, 0xcc, 0x14, 0x3d, 0x4f, 0x97, 0x20, 0xb0, 0x56,
-	0x21, 0x57, 0x2e, 0xb6, 0xa0, 0xfc, 0xfc, 0x5c, 0x4f, 0x17, 0x09, 0x26, 0x72, 0x0c, 0x81, 0x6a,
-	0x76, 0xf2, 0x38, 0xf1, 0x50, 0x8e, 0xe1, 0xc2, 0x43, 0x39, 0x86, 0x1b, 0x0f, 0xe5, 0x18, 0x3e,
-	0x3c, 0x94, 0x63, 0xfc, 0xf1, 0x50, 0x8e, 0xb1, 0xe1, 0x91, 0x1c, 0xe3, 0x8a, 0x47, 0x72, 0x8c,
-	0x3b, 0x1e, 0xc9, 0x31, 0x1e, 0x78, 0x24, 0xc7, 0x78, 0xe2, 0x91, 0x1c, 0xe3, 0x85, 0x47, 0x72,
-	0x8c, 0x0f, 0x1e, 0xc9, 0x31, 0xbe, 0x78, 0x24, 0xc7, 0xf0, 0xe1, 0x91, 0x1c, 0xe3, 0x84, 0xc7,
-	0x72, 0x0c, 0x07, 0x1e, 0xcb, 0x31, 0x5e, 0x78, 0x2c, 0xc7, 0x70, 0xe3, 0xb1, 0x1c, 0x43, 0x12,
-	0x1b, 0xd8, 0xbf, 0xc6, 0x80, 0x00, 0x00, 0x00, 0xff, 0xff, 0x9d, 0x40, 0xfd, 0x0f, 0x5b, 0x01,
-	0x00, 0x00,
+	0x21, 0x77, 0x2e, 0xf6, 0xf0, 0xfc, 0xa2, 0x9c, 0x14, 0x4f, 0x17, 0x09, 0x26, 0x72, 0x4c, 0x81,
+	0xe9, 0x56, 0xd2, 0xe4, 0x12, 0x44, 0x73, 0x5f, 0x71, 0x81, 0x90, 0x08, 0x17, 0x6b, 0x48, 0x7e,
+	0x76, 0x6a, 0x1e, 0xc4, 0x85, 0x41, 0x10, 0x8e, 0x93, 0xc7, 0x89, 0x87, 0x72, 0x0c, 0x17, 0x1e,
+	0xca, 0x31, 0xdc, 0x78, 0x28, 0xc7, 0xf0, 0xe1, 0xa1, 0x1c, 0xe3, 0x8f, 0x87, 0x72, 0x8c, 0x0d,
+	0x8f, 0xe4, 0x18, 0x57, 0x3c, 0x92, 0x63, 0xdc, 0xf1, 0x48, 0x8e, 0xf1, 0xc0, 0x23, 0x39, 0xc6,
+	0x13, 0x8f, 0xe4, 0x18, 0x2f, 0x3c, 0x92, 0x63, 0x7c, 0xf0, 0x48, 0x8e, 0xf1, 0xc5, 0x23, 0x39,
+	0x86, 0x0f, 0x8f, 0xe4, 0x18, 0x27, 0x3c, 0x96, 0x63, 0x38, 0xf0, 0x58, 0x8e, 0xf1, 0xc2, 0x63,
+	0x39, 0x86, 0x1b, 0x8f, 0xe5, 0x18, 0x92, 0xd8, 0xc0, 0x81, 0x63, 0x0c, 0x08, 0x00, 0x00, 0xff,
+	0xff, 0x6a, 0xc9, 0xee, 0xe6, 0x88, 0x01, 0x00, 0x00,
 }
 
 func (this *CreateSessionReq) Equal(that interface{}) bool {
@@ -120,7 +160,31 @@ func (this *CreateSessionReq) Equal(that interface{}) bool {
 	if !this.PCID.Equal(that1.PCID) {
 		return false
 	}
-	if !this.RoomID.Equal(that1.RoomID) {
+	if !this.WorldID.Equal(that1.WorldID) {
+		return false
+	}
+	return true
+}
+func (this *CreateSessionResp) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*CreateSessionResp)
+	if !ok {
+		that2, ok := that.(CreateSessionResp)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if !bytes.Equal(this.Token, that1.Token) {
 		return false
 	}
 	return true
@@ -132,7 +196,17 @@ func (this *CreateSessionReq) GoString() string {
 	s := make([]string, 0, 6)
 	s = append(s, "&dto.CreateSessionReq{")
 	s = append(s, "PCID: "+fmt.Sprintf("%#v", this.PCID)+",\n")
-	s = append(s, "RoomID: "+fmt.Sprintf("%#v", this.RoomID)+",\n")
+	s = append(s, "WorldID: "+fmt.Sprintf("%#v", this.WorldID)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *CreateSessionResp) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 5)
+	s = append(s, "&dto.CreateSessionResp{")
+	s = append(s, "Token: "+fmt.Sprintf("%#v", this.Token)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -165,9 +239,9 @@ func (m *CreateSessionReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	var l int
 	_ = l
 	{
-		size := m.RoomID.Size()
+		size := m.WorldID.Size()
 		i -= size
-		if _, err := m.RoomID.MarshalTo(dAtA[i:]); err != nil {
+		if _, err := m.WorldID.MarshalTo(dAtA[i:]); err != nil {
 			return 0, err
 		}
 		i = encodeVarintSession(dAtA, i, uint64(size))
@@ -187,6 +261,36 @@ func (m *CreateSessionReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *CreateSessionResp) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *CreateSessionResp) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *CreateSessionResp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Token) > 0 {
+		i -= len(m.Token)
+		copy(dAtA[i:], m.Token)
+		i = encodeVarintSession(dAtA, i, uint64(len(m.Token)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintSession(dAtA []byte, offset int, v uint64) int {
 	offset -= sovSession(v)
 	base := offset
@@ -203,7 +307,19 @@ func NewPopulatedCreateSessionReq(r randySession, easy bool) *CreateSessionReq {
 	v1 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
 	this.PCID = *v1
 	v2 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
-	this.RoomID = *v2
+	this.WorldID = *v2
+	if !easy && r.Intn(10) != 0 {
+	}
+	return this
+}
+
+func NewPopulatedCreateSessionResp(r randySession, easy bool) *CreateSessionResp {
+	this := &CreateSessionResp{}
+	v3 := r.Intn(100)
+	this.Token = make([]byte, v3)
+	for i := 0; i < v3; i++ {
+		this.Token[i] = byte(r.Intn(256))
+	}
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -228,9 +344,9 @@ func randUTF8RuneSession(r randySession) rune {
 	return rune(ru + 61)
 }
 func randStringSession(r randySession) string {
-	v3 := r.Intn(100)
-	tmps := make([]rune, v3)
-	for i := 0; i < v3; i++ {
+	v4 := r.Intn(100)
+	tmps := make([]rune, v4)
+	for i := 0; i < v4; i++ {
 		tmps[i] = randUTF8RuneSession(r)
 	}
 	return string(tmps)
@@ -252,11 +368,11 @@ func randFieldSession(dAtA []byte, r randySession, fieldNumber int, wire int) []
 	switch wire {
 	case 0:
 		dAtA = encodeVarintPopulateSession(dAtA, uint64(key))
-		v4 := r.Int63()
+		v5 := r.Int63()
 		if r.Intn(2) == 0 {
-			v4 *= -1
+			v5 *= -1
 		}
-		dAtA = encodeVarintPopulateSession(dAtA, uint64(v4))
+		dAtA = encodeVarintPopulateSession(dAtA, uint64(v5))
 	case 1:
 		dAtA = encodeVarintPopulateSession(dAtA, uint64(key))
 		dAtA = append(dAtA, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
@@ -289,8 +405,21 @@ func (m *CreateSessionReq) Size() (n int) {
 	_ = l
 	l = m.PCID.Size()
 	n += 1 + l + sovSession(uint64(l))
-	l = m.RoomID.Size()
+	l = m.WorldID.Size()
 	n += 1 + l + sovSession(uint64(l))
+	return n
+}
+
+func (m *CreateSessionResp) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Token)
+	if l > 0 {
+		n += 1 + l + sovSession(uint64(l))
+	}
 	return n
 }
 
@@ -306,7 +435,17 @@ func (this *CreateSessionReq) String() string {
 	}
 	s := strings.Join([]string{`&CreateSessionReq{`,
 		`PCID:` + fmt.Sprintf("%v", this.PCID) + `,`,
-		`RoomID:` + fmt.Sprintf("%v", this.RoomID) + `,`,
+		`WorldID:` + fmt.Sprintf("%v", this.WorldID) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *CreateSessionResp) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&CreateSessionResp{`,
+		`Token:` + fmt.Sprintf("%v", this.Token) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -383,7 +522,7 @@ func (m *CreateSessionReq) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RoomID", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field WorldID", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -410,8 +549,92 @@ func (m *CreateSessionReq) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.RoomID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.WorldID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipSession(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthSession
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *CreateSessionResp) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowSession
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: CreateSessionResp: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: CreateSessionResp: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Token", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowSession
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthSession
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthSession
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Token = append(m.Token[:0], dAtA[iNdEx:postIndex]...)
+			if m.Token == nil {
+				m.Token = []byte{}
 			}
 			iNdEx = postIndex
 		default:

@@ -5,11 +5,11 @@ import { grpc } from '@improbable-eng/grpc-web';
 import { getCookie } from 'typescript-cookie'
 
 import { API } from 'cmd/api/grpc/api_pb_service';
-import * as dtoroom from 'pkg/room/dto/room_pb';
+import { ListRoomReq, ListRoomResp, Room } from 'pkg/room/dto/room_pb';
 
 import { ulid } from '../lib/ulid'
 
-import { Link, LinkProps } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import CircularProgress from '@mui/material/CircularProgress';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
@@ -28,13 +28,13 @@ import RoomsRow from './rooms_row';
 export default () => {
 
 	// API Room
-	const [rooms, setRooms] = useState<{ rooms: dtoroom.Room[], loaded: boolean }>({ rooms: [], loaded: false })
+	const [rooms, setRooms] = useState<{ rooms: Room[], loaded: boolean }>({ rooms: [], loaded: false })
 
-	const listRooms = (req: dtoroom.ListRoomReq) => {
+	const listRooms = (req: ListRoomReq) => {
 		let md = new grpc.Metadata()
 		md.set('token', getCookie('token')!)
 
-		const prom = new Promise<dtoroom.ListRoomResp>((resolve, reject) => {
+		const prom = new Promise<ListRoomResp>((resolve, reject) => {
 			grpc.unary(API.ListRoom, {
 				metadata: md,
 				request: req,
@@ -47,7 +47,7 @@ export default () => {
 						return
 					}
 
-					resolve(message as dtoroom.ListRoomResp)
+					resolve(message as ListRoomResp)
 				}
 			});
 		})
@@ -56,7 +56,7 @@ export default () => {
 	}
 
 	const refreshRooms = () => {
-		const req = new dtoroom.ListRoomReq()
+		const req = new ListRoomReq()
 		req.setSize(100)
 		setRooms({ rooms: [], loaded: false })
 		listRooms(req).then((result) => {

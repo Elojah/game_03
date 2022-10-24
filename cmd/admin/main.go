@@ -141,7 +141,6 @@ func run(prog string, filename string) {
 		StorePC:        entityStore,
 		StoreNPC:       entityStore,
 		StoreTemplate:  entityStore,
-		CachePCConnect: nil,
 	}
 
 	h := handler{

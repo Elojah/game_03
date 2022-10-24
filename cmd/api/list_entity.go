@@ -19,7 +19,7 @@ func (h *handler) ListEntity(ctx context.Context, req *dto.ListEntityReq) (*dto.
 	}
 
 	// #Authenticate
-	_, err := h.user.Auth(ctx)
+	_, err := h.user.AuthSession(ctx)
 	if err != nil {
 		return &dto.ListEntityResp{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	}

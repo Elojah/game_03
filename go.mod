@@ -22,6 +22,7 @@ require (
 	github.com/panjf2000/ants/v2 v2.5.0
 	github.com/rs/zerolog v1.28.0
 	github.com/scylladb/gocqlx v1.5.0
+	github.com/xxtea/xxtea-go v0.0.0-20170828040851-35c4b17eecf6
 	golang.org/x/oauth2 v0.0.0-20220909003341-f21342109be1
 	google.golang.org/api v0.98.0
 	google.golang.org/grpc v1.49.0

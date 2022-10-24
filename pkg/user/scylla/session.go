@@ -46,11 +46,10 @@ func (f filterSession) index() string {
 
 func (s Store) InsertSession(ctx context.Context, ses user.Session) error {
 	q := s.Session.Query(
-		`INSERT INTO main.session (id, user_id, pc_id, world_id) VALUES (?, ?, ?)`,
+		`INSERT INTO main.session (id, user_id, at) VALUES (?, ?, ?)`,
 		ses.ID,
 		ses.UserID,
-		ses.PCID,
-		ses.WorldID,
+		ses.At,
 	).WithContext(ctx)
 
 	defer q.Release()
@@ -64,7 +63,7 @@ func (s Store) InsertSession(ctx context.Context, ses user.Session) error {
 
 func (s Store) FetchSession(ctx context.Context, f user.FilterSession) (user.Session, error) {
 	b := strings.Builder{}
-	b.WriteString(`SELECT id, user_id, pc_id, world_id FROM main.session `)
+	b.WriteString(`SELECT id, user_id, at FROM main.session `)
 
 	clause, args := filterSession(f).where()
 	b.WriteString(clause)
@@ -72,7 +71,7 @@ func (s Store) FetchSession(ctx context.Context, f user.FilterSession) (user.Ses
 	q := s.Session.Query(b.String(), args...).WithContext(ctx)
 
 	var ses user.Session
-	if err := q.Scan(&ses.ID, &ses.UserID, &ses.PCID, &ses.WorldID); err != nil {
+	if err := q.Scan(&ses.ID, &ses.UserID, &ses.At); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
 			return user.Session{}, gerrors.ErrNotFound{Resource: "session", Index: filterSession(f).index()}
 		}

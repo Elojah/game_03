@@ -19,7 +19,7 @@ func (h *handler) ListAnimation(ctx context.Context, req *dto.ListAnimationReq) 
 	}
 
 	// #Authenticate
-	_, err := h.user.Auth(ctx)
+	_, err := h.user.AuthSession(ctx)
 	if err != nil {
 		return &dto.ListAnimationResp{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	}

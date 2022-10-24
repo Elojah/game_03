@@ -15,7 +15,6 @@ var github_com_elojah_game_03_pkg_room_dto_room_pb = require("../../../../../../
 var github_com_elojah_game_03_pkg_room_dto_world_pb = require("../../../../../../github.com/elojah/game_03/pkg/room/dto/world_pb");
 var github_com_elojah_game_03_pkg_twitch_dto_follow_pb = require("../../../../../../github.com/elojah/game_03/pkg/twitch/dto/follow_pb");
 var github_com_elojah_game_03_pkg_user_dto_session_pb = require("../../../../../../github.com/elojah/game_03/pkg/user/dto/session_pb");
-var github_com_elojah_game_03_pkg_user_session_pb = require("../../../../../../github.com/elojah/game_03/pkg/user/session_pb");
 var grpc = require("@improbable-eng/grpc-web").grpc;
 
 var API = (function () {
@@ -48,7 +47,7 @@ API.CreateSession = {
   requestStream: false,
   responseStream: false,
   requestType: github_com_elojah_game_03_pkg_user_dto_session_pb.CreateSessionReq,
-  responseType: github_com_elojah_game_03_pkg_user_session_pb.Session
+  responseType: github_com_elojah_game_03_pkg_user_dto_session_pb.CreateSessionResp
 };
 
 API.ListEntity = {
@@ -85,6 +84,15 @@ API.ListPC = {
   responseStream: false,
   requestType: github_com_elojah_game_03_pkg_entity_dto_pc_pb.ListPCReq,
   responseType: github_com_elojah_game_03_pkg_entity_dto_pc_pb.ListPCResp
+};
+
+API.GetPC = {
+  methodName: "GetPC",
+  service: API,
+  requestStream: false,
+  responseStream: false,
+  requestType: github_com_elojah_game_03_pkg_entity_dto_pc_pb.GetPCReq,
+  responseType: github_com_elojah_game_03_pkg_entity_dto_pc_pb.PC
 };
 
 API.ListTemplate = {
@@ -375,6 +383,37 @@ APIClient.prototype.listPC = function listPC(requestMessage, metadata, callback)
     callback = arguments[1];
   }
   var client = grpc.unary(API.ListPC, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+APIClient.prototype.getPC = function getPC(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(API.GetPC, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,

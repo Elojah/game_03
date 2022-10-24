@@ -143,12 +143,13 @@ func (a App) AuthSession(ctx context.Context) (user.Session, error) {
 		return user.Session{}, errors.ErrMissingAuth{}
 	}
 
-	id, err := ulid.Parse(token)
-	if err != nil {
-		return user.Session{}, errors.ErrInvalidCredentials{}
+	var ses user.Session
+
+	if err := ses.Decrypt([]byte(token)); err != nil {
+		return user.Session{}, err
 	}
 
-	return a.StoreSession.FetchSession(ctx, user.FilterSession{ID: id})
+	return ses, nil
 }
 
 func (a App) InsertSession(ctx context.Context, ses user.Session) error {

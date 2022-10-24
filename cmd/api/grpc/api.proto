@@ -27,7 +27,6 @@ import "github.com/elojah/game_03/pkg/room/dto/room.proto";
 import "github.com/elojah/game_03/pkg/room/dto/world.proto";
 import "github.com/elojah/game_03/pkg/twitch/dto/follow.proto";
 import "github.com/elojah/game_03/pkg/user/dto/session.proto";
-import "github.com/elojah/game_03/pkg/user/session.proto";
 
 
 service API {
@@ -36,7 +35,7 @@ service API {
     rpc UpdateEntity(stream entity.E) returns (google.protobuf.Empty);
 
 	// Session
-	rpc CreateSession(dto.CreateSessionReq) returns (user.Session);
+	rpc CreateSession(dto.CreateSessionReq) returns (dto.CreateSessionResp);
 
     // Entity
     rpc ListEntity(dto.ListEntityReq) returns (dto.ListEntityResp);
@@ -47,6 +46,7 @@ service API {
     // PC
     rpc CreatePC(dto.CreatePCReq) returns (entity.PC);
     rpc ListPC(dto.ListPCReq) returns (dto.ListPCResp);
+    rpc GetPC(dto.GetPCReq) returns (dto.PC);
 
 	// Template
     rpc ListTemplate(dto.ListTemplateReq) returns (dto.ListTemplateResp);

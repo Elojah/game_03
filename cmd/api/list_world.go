@@ -19,9 +19,11 @@ func (h *handler) ListWorld(ctx context.Context, req *dto.ListWorldReq) (*dto.Li
 	}
 
 	// #Authenticate
-	_, err := h.user.Auth(ctx)
+	_, err := h.user.AuthSession(ctx)
 	if err != nil {
-		return &dto.ListWorldResp{}, status.New(codes.Unauthenticated, err.Error()).Err()
+		if _, err := h.user.Auth(ctx); err != nil {
+			return &dto.ListWorldResp{}, status.New(codes.Unauthenticated, err.Error()).Err()
+		}
 	}
 
 	ws, state, err := h.room.FetchManyWorld(ctx, room.FilterWorld{

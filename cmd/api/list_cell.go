@@ -24,7 +24,7 @@ func (h *handler) ListCell(ctx context.Context, req *dto.ListCellReq) (*dto.List
 	}
 
 	// #Authenticate
-	_, err := h.user.Auth(ctx)
+	_, err := h.user.AuthSession(ctx)
 	if err != nil {
 		return &dto.ListCellResp{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	}
