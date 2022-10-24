@@ -194,6 +194,8 @@ export class Game extends Scene {
 		// Connect for entity send
 		this.connectUpdate()
 
+		this.Loading = this.Entity.E.getCellid_asU8()
+
 		this.LoadMapMutex.waitForUnlock()
 			.then(() => {
 
@@ -202,6 +204,7 @@ export class Game extends Scene {
 					const req = new WorldDTO.ListWorldReq()
 
 					req.setIdsList([this.PC.getWorldid_asU8()])
+					req.setSize(1)
 
 					return req
 				})())
@@ -212,7 +215,6 @@ export class Game extends Scene {
 							this.World = ws.getWorldsList()[0]
 						}
 					}).then(() => {
-						this.Loading = this.Entity.E.getCellid_asU8()
 						return this.loadMap(Orientation.None)
 					})
 					.then(() => {
