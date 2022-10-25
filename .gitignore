@@ -17,10 +17,10 @@ bin/
 cmd/client/node_modules/
 cmd/client/dist/bundle.js
 cmd/client/dist/json/*
-cmd/client/dist/img/*
+cmd/client/dist/img/assets/*
 cmd/dashboard/node_modules/
 cmd/dashboard/dist/bundle.js
-cmd/dashboard/dist/img/*
+cmd/dashboard/dist/img/assets/*
 
 # Config private
 config/

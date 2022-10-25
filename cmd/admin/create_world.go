@@ -38,7 +38,7 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 		Set: tile.Set{
 			Columns:     2, //nolint: gomnd
 			FirstGID:    1,
-			Image:       "../img/01GDB3DDM9Q1R1XTSSNNB9CYJV.png",
+			Image:       "../img/assets/01GDB3DDM9Q1R1XTSSNNB9CYJV.png",
 			ImageHeight: 32, //nolint: gomnd
 			ImageWidth:  64, //nolint: gomnd
 			Margin:      0,

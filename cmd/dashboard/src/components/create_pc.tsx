@@ -236,7 +236,7 @@ export default () => {
 											style={{ minWidth: 20, width: '50%' }}
 										>
 											<CardHeader
-												avatar={<Avatar alt={name} src={'img/' + name + '.png'} />}
+												avatar={<Avatar alt={name} src={'img/assets/' + name + '.png'} />}
 												title={name}
 											/>
 										</TableCell>

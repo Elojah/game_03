@@ -855,7 +855,7 @@ export class Game extends Scene {
 							if (this.textures.exists(ts.name)) {
 								loadTS(ts.name)
 							} else {
-								this.CellLoader.image(ts.name, 'img/' + ts.name + '.png')
+								this.CellLoader.image(ts.name, 'img/assets/' + ts.name + '.png')
 								console.log('add listener on ', 'filecomplete-image-' + ts.name)
 								this.CellLoader.on('filecomplete-image-' + ts.name, () => {
 									console.log('image completed on ', o)
@@ -1032,7 +1032,7 @@ export class Game extends Scene {
 
 						if (!this.SpriteSheets.get(sheetID)) {
 							// load sprite sheet
-							this.EntityLoader.spritesheet(sheetID, 'img/' + sheetID + '.png', {
+							this.EntityLoader.spritesheet(sheetID, 'img/assets/' + sheetID + '.png', {
 								frameWidth: an.getFramewidth(),
 								frameHeight: an.getFrameheight(),
 								startFrame: an.getFramestart(),
