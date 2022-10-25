@@ -34,7 +34,7 @@ type Params struct {
 type Field int8
 
 const (
-	None Field = iota
+	Null Field = iota
 	Void
 	Ground
 )
@@ -63,7 +63,7 @@ func (g GroundGenerator) Display() {
 
 		for j := 0; j < len(g.Map[i]); j++ {
 			switch g.Map[i][j] {
-			case None:
+			case Null:
 				fmt.Print(" ")
 			case Void:
 				fmt.Print("-")
@@ -93,7 +93,7 @@ func (g *GroundGenerator) get(x, y int64) (Field, bool) {
 		return g.Map[x][y], true
 	}
 
-	return None, false
+	return Null, false
 }
 
 func (g *GroundGenerator) Gen(params Params) {

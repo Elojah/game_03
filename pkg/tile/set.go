@@ -22,7 +22,7 @@ type Set struct {
 	TileHeight       int             `json:"tileheight,omitempty"`
 	TileOffset       Offset          `json:"tileoffset,omitempty"`
 	TileRenderSize   string          `json:"tilerendersize,omitempty"`
-	Tiles            []T             `json:"tiles,omitempty"`
+	Tiles            []Tile          `json:"tiles,omitempty"`
 	TileWidth        int             `json:"tilewidth,omitempty"`
 	Transformations  Transformations `json:"transformations,omitempty"`
 	TransparentColor string          `json:"transparentcolor,omitempty"`
@@ -82,7 +82,7 @@ type Transformations struct {
 	PreferUntransformed bool `json:"preferuntransformed,omitempty"`
 }
 
-type T struct {
+type Tile struct {
 	Animation   []Frame    `json:"animation,omitempty"`
 	Class       string     `json:"class,omitempty"`
 	ID          int        `json:"id,omitempty"`
