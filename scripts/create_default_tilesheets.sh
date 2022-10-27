@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 cp -r ./scripts/assets/NinjaAdventure/Actor/Characters/BlueNinja/SpriteSheet.png cmd/client/dist/img/assets/01GF16HSRMZ5HD82BSPTZ8YAAY.png   # BlueNinja
 cp -r ./scripts/assets/NinjaAdventure/Actor/Characters/BlueNinja/Faceset.png cmd/client/dist/img/assets/BlueNinja.png                        # BlueNinja
 cp -r ./scripts/assets/NinjaAdventure/Actor/Characters/BlueNinja/Faceset.png cmd/dashboard/dist/img/assets/BlueNinja.png                     # BlueNinja

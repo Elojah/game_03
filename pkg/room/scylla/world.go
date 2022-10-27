@@ -12,10 +12,10 @@ import (
 
 type filterWorld room.FilterWorld
 
-func (f filterWorld) where() (string, []interface{}) {
+func (f filterWorld) where() (string, []any) {
 	var clause []string
 
-	var args []interface{}
+	var args []any
 
 	if f.ID != nil {
 		clause = append(clause, `id = ?`)
@@ -30,7 +30,7 @@ func (f filterWorld) where() (string, []interface{}) {
 	b := strings.Builder{}
 
 	if f.All {
-		return b.String(), []interface{}{}
+		return b.String(), []any{}
 	}
 
 	b.WriteString(" WHERE ")

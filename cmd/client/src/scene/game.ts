@@ -232,28 +232,32 @@ export class Game extends Scene {
 
 	updateBodyEntity() {
 		// Controls + local anim update
-		let animationID = null
 		const speed: number = 200
+		let animationID = null
+		this.Entity.Body.body.setVelocity(0)
 
 		// Move entity
-		this.Entity.Body.body.setVelocity(0)
 		if (this.Cursors.up.isDown) {
 			animationID = this.Entity.Animations.get('walk_up')
 			this.Entity.Body.body.setVelocityY(-speed)
 			this.Entity.Orientation = Orientation.Up
-		} else if (this.Cursors.right.isDown) {
-			animationID = this.Entity.Animations.get('walk_right')
-			this.Entity.Body.body.setVelocityX(speed)
-			this.Entity.Orientation = Orientation.Right
 		} else if (this.Cursors.down.isDown) {
 			animationID = this.Entity.Animations.get('walk_down')
 			this.Entity.Body.body.setVelocityY(speed)
 			this.Entity.Orientation = Orientation.Down
+		}
+
+		if (this.Cursors.right.isDown) {
+			animationID = this.Entity.Animations.get('walk_right')
+			this.Entity.Body.body.setVelocityX(speed)
+			this.Entity.Orientation = Orientation.Right
 		} else if (this.Cursors.left.isDown) {
 			animationID = this.Entity.Animations.get('walk_left')
 			this.Entity.Body.body.setVelocityX(-speed)
 			this.Entity.Orientation = Orientation.Left
-		} else {
+		}
+
+		if (!animationID) {
 			switch (this.Entity.Orientation) {
 				case Orientation.Up:
 					animationID = this.Entity.Animations.get('idle_up')
@@ -270,9 +274,7 @@ export class Game extends Scene {
 			}
 		}
 
-		if (animationID) {
-			this.Entity?.Body?.play(animationID, true)
-		}
+		this.Entity?.Body?.play(animationID!, true)
 	}
 
 	// positionServerToClient(ge: GraphicEntity): Phaser.Geom.Point {

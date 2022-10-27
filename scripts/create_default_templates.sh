@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '{"Name": "BlueNinja"}' -plaintext localhost:4282 grpc.Admin/CreateTemplate
 grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '{"Name": "BlueSamurai"}' -plaintext localhost:4282 grpc.Admin/CreateTemplate
 grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '{"Name": "Boy"}' -plaintext localhost:4282 grpc.Admin/CreateTemplate

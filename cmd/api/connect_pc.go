@@ -27,7 +27,7 @@ type antsLogger struct {
 	zerolog.Logger
 }
 
-func (l *antsLogger) Printf(format string, args ...interface{}) {
+func (l *antsLogger) Printf(format string, args ...any) {
 	l.Logger.Info().Msgf(format, args...)
 }
 

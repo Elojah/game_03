@@ -64,6 +64,29 @@ func NewSet() Set {
 	}
 }
 
+type Tile struct {
+	Animation   []Frame    `json:"animation,omitempty"`
+	Class       string     `json:"class,omitempty"`
+	ID          int        `json:"id,omitempty"`
+	Image       string     `json:"image,omitempty"`
+	ImageHeight int        `json:"imageheight,omitempty"`
+	ImageWidth  int        `json:"imagewidth,omitempty"`
+	X           int        `json:"x,omitempty"`
+	Y           int        `json:"y,omitempty"`
+	Width       int        `json:"width,omitempty"`
+	Height      int        `json:"height,omitempty"`
+	ObjectGroup Layer      `json:"objectgroup,omitempty"`
+	Probability float64    `json:"probability,omitempty"`
+	Properties  []Property `json:"properties,omitempty"`
+	Terrain     []Terrain  `json:"terrain,omitempty"`
+}
+
+type Terrain struct {
+	Name       string     `json:"name,omitempty"`
+	Properties []Property `json:"properties,omitempty"`
+	Tile       int        `json:"tile,omitempty"`
+}
+
 type Grid struct {
 	Height      int    `json:"height,omitempty"`
 	Orientation string `json:"orientation,omitempty"`
@@ -82,32 +105,9 @@ type Transformations struct {
 	PreferUntransformed bool `json:"preferuntransformed,omitempty"`
 }
 
-type Tile struct {
-	Animation   []Frame    `json:"animation,omitempty"`
-	Class       string     `json:"class,omitempty"`
-	ID          int        `json:"id,omitempty"`
-	Image       string     `json:"image,omitempty"`
-	ImageHeight int        `json:"imageheight,omitempty"`
-	ImageWidth  int        `json:"imagewidth,omitempty"`
-	X           int        `json:"x,omitempty"`
-	Y           int        `json:"y,omitempty"`
-	Width       int        `json:"width,omitempty"`
-	Height      int        `json:"height,omitempty"`
-	ObjectGroup Layer      `json:"objectgroup,omitempty"`
-	Probability float64    `json:"probability,omitempty"`
-	Properties  []Property `json:"properties,omitempty"`
-	Terrain     []Terrain  `json:"terrain,omitempty"`
-}
-
 type Frame struct {
 	Duration int `json:"duration,omitempty"`
 	TileID   int `json:"tileid,omitempty"`
-}
-
-type Terrain struct {
-	Name       string     `json:"name,omitempty"`
-	Properties []Property `json:"properties,omitempty"`
-	Tile       int        `json:"tile,omitempty"`
 }
 
 type WangSet struct {

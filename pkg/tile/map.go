@@ -176,8 +176,8 @@ type Point struct {
 }
 
 type Property struct {
-	Name         string      `json:"name,omitempty"`
-	Type         string      `json:"type,omitempty"`
-	PropertyType string      `json:"propertytype,omitempty"`
-	Value        interface{} `json:"value,omitempty"`
+	Name         string `json:"name,omitempty"`
+	Type         string `json:"type,omitempty"`
+	PropertyType string `json:"propertytype,omitempty"`
+	Value        any    `json:"value,omitempty"`
 }

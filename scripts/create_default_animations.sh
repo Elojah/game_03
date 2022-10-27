@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d @ -plaintext localhost:4282 grpc.Admin/CreateAnimation <scripts/animations/BlueNinja/idle_down.json
 grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d @ -plaintext localhost:4282 grpc.Admin/CreateAnimation <scripts/animations/BlueNinja/idle_left.json
 grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d @ -plaintext localhost:4282 grpc.Admin/CreateAnimation <scripts/animations/BlueNinja/idle_right.json

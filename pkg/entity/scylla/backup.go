@@ -12,10 +12,10 @@ import (
 
 type filterBackup entity.FilterBackup
 
-func (f filterBackup) where() (string, []interface{}) {
+func (f filterBackup) where() (string, []any) {
 	var clause []string
 
-	var args []interface{}
+	var args []any
 
 	if f.ID != nil {
 		clause = append(clause, `id = ?`)
@@ -121,7 +121,7 @@ func (s Store) UpdateBackup(ctx context.Context, f entity.FilterBackup, bu entit
 	clause, args := filterBackup(f).where()
 	b.WriteString(clause)
 
-	args = append([]interface{}{
+	args = append([]any{
 		bu.UserID, bu.CellID,
 		bu.Name,
 		bu.X, bu.Y, bu.Rot, bu.Radius,

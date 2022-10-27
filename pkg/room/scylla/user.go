@@ -12,10 +12,10 @@ import (
 
 type filterUser room.FilterUser
 
-func (f filterUser) where() (string, []interface{}) {
+func (f filterUser) where() (string, []any) {
 	var clause []string
 
-	var args []interface{}
+	var args []any
 
 	if f.UserID != nil {
 		clause = append(clause, `user_id = ?`)

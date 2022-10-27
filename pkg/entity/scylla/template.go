@@ -12,10 +12,10 @@ import (
 
 type filterTemplate entity.FilterTemplate
 
-func (f filterTemplate) where() (string, []interface{}) {
+func (f filterTemplate) where() (string, []any) {
 	var clause []string
 
-	var args []interface{}
+	var args []any
 
 	if f.ID != nil {
 		clause = append(clause, `id = ?`)
@@ -40,7 +40,7 @@ func (f filterTemplate) where() (string, []interface{}) {
 	b := strings.Builder{}
 
 	if f.All {
-		return b.String(), []interface{}{}
+		return b.String(), []any{}
 	}
 
 	b.WriteString(" WHERE ")

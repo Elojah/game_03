@@ -12,10 +12,10 @@ import (
 
 type filterAnimation entity.FilterAnimation
 
-func (f filterAnimation) where() (string, []interface{}) {
+func (f filterAnimation) where() (string, []any) {
 	var clause []string
 
-	var args []interface{}
+	var args []any
 
 	var allowFiltering bool
 

@@ -12,10 +12,10 @@ import (
 
 type filter user.Filter
 
-func (f filter) where() (string, []interface{}) {
+func (f filter) where() (string, []any) {
 	var clause []string
 
-	var args []interface{}
+	var args []any
 
 	if f.ID != nil {
 		clause = append(clause, `id = ?`)

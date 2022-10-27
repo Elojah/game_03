@@ -12,10 +12,10 @@ import (
 
 type filter entity.Filter
 
-func (f filter) where() (string, []interface{}) {
+func (f filter) where() (string, []any) {
 	var clause []string
 
-	var args []interface{}
+	var args []any
 
 	var allowFiltering bool
 
@@ -90,10 +90,10 @@ func (f filter) index() string {
 
 type patch entity.Patch
 
-func (p patch) set() (string, []interface{}) {
+func (p patch) set() (string, []any) {
 	var clause []string
 
-	var args []interface{}
+	var args []any
 
 	if p.UserID != nil {
 		clause = append(clause, `user_id = ?`)

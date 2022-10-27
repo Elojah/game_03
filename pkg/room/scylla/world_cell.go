@@ -13,10 +13,10 @@ import (
 
 type filterWorldCell room.FilterWorldCell
 
-func (f filterWorldCell) where() (string, []interface{}) {
+func (f filterWorldCell) where() (string, []any) {
 	var clause []string
 
-	var args []interface{}
+	var args []any
 
 	clause = append(clause, `world_id = ?`)
 	args = append(args, f.WorldID)

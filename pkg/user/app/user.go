@@ -67,7 +67,7 @@ func (a App) ReadJWT(ctx context.Context, token string) (user.U, error) {
 		return user.U{}, err
 	}
 
-	t, err := jwt.ParseWithClaims(ck, &user.Claims{}, func(t *jwt.Token) (interface{}, error) {
+	t, err := jwt.ParseWithClaims(ck, &user.Claims{}, func(t *jwt.Token) (any, error) {
 		claims, ok := t.Claims.(*user.Claims)
 		if !ok {
 			return user.U{}, errors.ErrInvalidClaims{}

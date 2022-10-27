@@ -12,10 +12,10 @@ import (
 
 type filterNPC entity.FilterNPC
 
-func (f filterNPC) where() (string, []interface{}) {
+func (f filterNPC) where() (string, []any) {
 	var clause []string
 
-	var args []interface{}
+	var args []any
 
 	if f.ID != nil {
 		clause = append(clause, `id = ?`)

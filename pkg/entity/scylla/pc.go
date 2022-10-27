@@ -12,10 +12,10 @@ import (
 
 type filterPC entity.FilterPC
 
-func (f filterPC) where() (string, []interface{}) {
+func (f filterPC) where() (string, []any) {
 	var clause []string
 
-	var args []interface{}
+	var args []any
 
 	if f.ID != nil {
 		clause = append(clause, `id = ?`)
