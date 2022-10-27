@@ -76,3 +76,38 @@ Instead you can use `scripts/create_default_tilesheets.sh` once from current dir
 - `api` -> `http:8082` `grpc:4280`
 - `auth` -> `4281`
 - `admin` -> `4282`
+
+
+
+### Unrelated
+---
+
+`sh template`
+
+```sh
+#!/usr/bin/env bash
+
+set -o errexit
+set -o nounset
+set -o pipefail
+if [[ "${TRACE-0}" == "1" ]]; then
+    set -o xtrace
+fi
+
+if [[ "${1-}" =~ ^-*h(elp)?$ ]]; then
+    echo 'Usage: ./script.sh arg-one arg-two
+
+This is an awesome bash script to make your life better.
+
+'
+    exit
+fi
+
+cd "$(dirname "$0")"
+
+main() {
+    echo do awesome stuff
+}
+
+main "$@"
+```
