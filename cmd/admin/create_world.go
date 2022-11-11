@@ -2,11 +2,10 @@ package main
 
 import (
 	"context"
-	"encoding/base64"
-	"encoding/binary"
 	"encoding/json"
 	"os"
 
+	"github.com/elojah/game_03/pkg/geometry"
 	"github.com/elojah/game_03/pkg/room"
 	"github.com/elojah/game_03/pkg/tile"
 	"github.com/elojah/game_03/pkg/ulid"
@@ -35,19 +34,19 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 		PathMax:         0,
 		PathDistorsion:  0,
 
-		Set: tile.Set{
-			Columns:     2, //nolint: gomnd
-			FirstGID:    1,
-			Image:       "../img/assets/01GDB3DDM9Q1R1XTSSNNB9CYJV.png",
-			ImageHeight: 32, //nolint: gomnd
-			ImageWidth:  64, //nolint: gomnd
-			Margin:      0,
-			Name:        "01GDB3DDM9Q1R1XTSSNNB9CYJV",
-			Spacing:     0,
-			TileCount:   2,  //nolint: gomnd
-			TileHeight:  32, //nolint: gomnd
-			TileWidth:   32, //nolint: gomnd
-		},
+		// Set: tile.Set{
+		// 	Columns:     2, //nolint: gomnd
+		// 	FirstGID:    1,
+		// 	Image:       "../img/assets/01GDB3DDM9Q1R1XTSSNNB9CYJV.png",
+		// 	ImageHeight: 32, //nolint: gomnd
+		// 	ImageWidth:  64, //nolint: gomnd
+		// 	Margin:      0,
+		// 	Name:        "01GDB3DDM9Q1R1XTSSNNB9CYJV",
+		// 	Spacing:     0,
+		// 	TileCount:   2,  //nolint: gomnd
+		// 	TileHeight:  32, //nolint: gomnd
+		// 	TileWidth:   32, //nolint: gomnd
+		// },
 	}
 
 	id := ulid.NewID()
@@ -72,8 +71,20 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 	// #Create world cells
 	cells := w.NewCells()
 
-	g := tile.GroundGenerator{}
-	g.Gen(params)
+	g, err := tile.NewWangtiles(w.CellHeight, w.CellWidth, tile.Corner)
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to generate wang tiles")
+
+		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
+	// TODO: tile set in parameter ?
+	ts, err := h.tile.FetchSet(ctx, tile.FilterSet{ID: ulid.MustParse("01GHE0TD8VC0HJHAEGTWN0AF44")})
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to fetch tileset")
+
+		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+	}
 
 	// an, err := h.entity.FetchAnimation(ctx, entity.FilterAnimation{
 	// 	ID: ulid.MustParse("01FM1YY76G9879YJSZAFSGJ52Y"),
@@ -89,62 +100,74 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 	// TODO: add goroutine pool
 	for i, cl := range cells {
 		for j, c := range cl {
-			m := g.Tilemap(params, uint64(i), uint64(j))
+			m, err := g.Tilemap(geometry.Rect{
+				Origin: geometry.Vec2{
+					X: int64(j) * int64(params.CellWidth),
+					Y: int64(i) * int64(params.CellHeight),
+				},
+				Width:  params.CellWidth,
+				Height: params.CellHeight,
+			}, ts)
+			if err != nil {
+				logger.Error().Err(err).Msg("failed to create tilemap")
+
+				return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+			}
 
 			// decode world data (ok to instant test parsing) to find first non collides spot for spawn
-			data, err := base64.StdEncoding.DecodeString(m.Layers[1].Data)
-			for i := 0; i < len(data); i += 4 {
-				n := binary.LittleEndian.Uint32(data[i : i+4])
-				if !tile.Field(n).Collides() {
-					// a := an
-					// a.ID = ulid.NewID()
-					// a.EntityID = ulid.NewID()
+			// data, err := base64.StdEncoding.DecodeString(m.Layers[1].Data)
+			// for i := 0; i < len(data); i += 4 {
+			// 	n := binary.LittleEndian.Uint32(data[i : i+4])
+			// 	if !tile.Field(n).Collides() {
+			// 		// a := an
+			// 		// a.ID = ulid.NewID()
+			// 		// a.EntityID = ulid.NewID()
 
-					// if err := h.entity.InsertAnimation(ctx, a); err != nil {
-					// 	logger.Error().Err(err).Msg("failed to create animation")
+			// 		// if err := h.entity.InsertAnimation(ctx, a); err != nil {
+			// 		// 	logger.Error().Err(err).Msg("failed to create animation")
 
-					// 	return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
-					// }
+			// 		// 	return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+			// 		// }
 
-					// e := entity.E{
-					// 	ID:          a.EntityID,
-					// 	UserID:      nil,
-					// 	CellID:      c.ID,
-					// 	Name:        fmt.Sprintf("spawn_%d_%d", i, j),
-					// 	X:           int64(i) % w.CellWidth,
-					// 	Y:           int64(i) / w.CellWidth,
-					// 	Rot:         0,
-					// 	Radius:      0,
-					// 	At:          now.Unix(),
-					// 	AnimationID: a.ID,
-					// 	AnimationAt: 0,
-					// }
+			// 		// e := entity.E{
+			// 		// 	ID:          a.EntityID,
+			// 		// 	UserID:      nil,
+			// 		// 	CellID:      c.ID,
+			// 		// 	Name:        fmt.Sprintf("spawn_%d_%d", i, j),
+			// 		// 	X:           int64(i) % w.CellWidth,
+			// 		// 	Y:           int64(i) / w.CellWidth,
+			// 		// 	Rot:         0,
+			// 		// 	Radius:      0,
+			// 		// 	At:          now.Unix(),
+			// 		// 	AnimationID: a.ID,
+			// 		// 	AnimationAt: 0,
+			// 		// }
 
-					// if err := h.entity.InsertNPC(ctx, entity.NPC{
-					// 	ID:       ulid.NewID(),
-					// 	WorldID:  w.ID,
-					// 	EntityID: e.ID,
-					// }); err != nil {
-					// 	logger.Error().Err(err).Msg("failed to create npc")
+			// 		// if err := h.entity.InsertNPC(ctx, entity.NPC{
+			// 		// 	ID:       ulid.NewID(),
+			// 		// 	WorldID:  w.ID,
+			// 		// 	EntityID: e.ID,
+			// 		// }); err != nil {
+			// 		// 	logger.Error().Err(err).Msg("failed to create npc")
 
-					// 	return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
-					// }
+			// 		// 	return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+			// 		// }
 
-					// if err := h.entity.InsertBackup(ctx, e); err != nil {
-					// 	logger.Error().Err(err).Msg("failed to create entity backup")
+			// 		// if err := h.entity.InsertBackup(ctx, e); err != nil {
+			// 		// 	logger.Error().Err(err).Msg("failed to create entity backup")
 
-					// 	return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
-					// }
+			// 		// 	return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+			// 		// }
 
-					// if err := h.entity.Insert(ctx, e); err != nil {
-					// 	logger.Error().Err(err).Msg("failed to create entity")
+			// 		// if err := h.entity.Insert(ctx, e); err != nil {
+			// 		// 	logger.Error().Err(err).Msg("failed to create entity")
 
-					// 	return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
-					// }
+			// 		// 	return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+			// 		// }
 
-					break
-				}
-			}
+			// 		break
+			// 	}
+			// }
 
 			raw, err := json.Marshal(m)
 			if err != nil {

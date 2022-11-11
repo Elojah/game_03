@@ -23,13 +23,21 @@ $ make client
 $ make web_client && ./bin/game_03_web config/web_client/local.json
 ```
 
-Data:
+Upload data:
 
 ```sh
+$ ./scripts/upload_default_images.sh
 $ ./scripts/create_default_templates.sh
-$ ./scripts/create_default_tilesheets.sh
+$ ./scripts/create_default_tilesets.sh
 $ ./scripts/create_default_animations.sh
 $ grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '' -plaintext localhost:4282 grpc.Admin/CreateWorld
+```
+
+Regenerate data from `assets/`:
+
+```sh
+$ go run ./scripts/write_animation/main.go 'assets/animations'
+$ go run ./scripts/write_tileset/main.go 'assets/external/Tilesets' 'assets/tilesets'
 ```
 
 ### TODO

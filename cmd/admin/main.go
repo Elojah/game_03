@@ -17,6 +17,8 @@ import (
 	migrateapp "github.com/elojah/game_03/pkg/migrate/app"
 	roomapp "github.com/elojah/game_03/pkg/room/app"
 	roomscylla "github.com/elojah/game_03/pkg/room/scylla"
+	tileapp "github.com/elojah/game_03/pkg/tile/app"
+	tilescylla "github.com/elojah/game_03/pkg/tile/scylla"
 	ggrpc "github.com/elojah/go-grpc"
 	glog "github.com/elojah/go-log"
 	"github.com/elojah/go-redis"
@@ -143,10 +145,16 @@ func run(prog string, filename string) {
 		StoreTemplate:  entityStore,
 	}
 
+	tileStore := &tilescylla.Store{Service: scyllas}
+	tileApp := tileapp.App{
+		StoreSet: tileStore,
+	}
+
 	h := handler{
 		migrate: &migrateApp,
 		cookie:  cookieApp,
 		room:    roomApp,
+		tile:    tileApp,
 		entity:  entityApp,
 	}
 

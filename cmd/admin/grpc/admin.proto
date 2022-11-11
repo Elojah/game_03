@@ -23,6 +23,7 @@ import "github.com/elojah/game_03/pkg/entity/dto/template.proto";
 
 service Admin {
 	// ### TECHNICAL ADMIN ###
+
     // DB migrations
     rpc MigrateUp(google.protobuf.StringValue) returns (google.protobuf.Empty);
 

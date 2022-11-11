@@ -28,3 +28,33 @@ export namespace Vec2 {
   }
 }
 
+export class Rect extends jspb.Message {
+  hasOrigin(): boolean;
+  clearOrigin(): void;
+  getOrigin(): Vec2 | undefined;
+  setOrigin(value?: Vec2): void;
+
+  getHeight(): number;
+  setHeight(value: number): void;
+
+  getWidth(): number;
+  setWidth(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): Rect.AsObject;
+  static toObject(includeInstance: boolean, msg: Rect): Rect.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: Rect, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Rect;
+  static deserializeBinaryFromReader(message: Rect, reader: jspb.BinaryReader): Rect;
+}
+
+export namespace Rect {
+  export type AsObject = {
+    origin?: Vec2.AsObject,
+    height: number,
+    width: number,
+  }
+}
+

@@ -90,7 +90,8 @@ proto.dto.CreateTilesetReq.prototype.toObject = function(opt_includeInstance) {
  */
 proto.dto.CreateTilesetReq.toObject = function(includeInstance, msg) {
   var f, obj = {
-    json: jspb.Message.getFieldWithDefault(msg, 1, "")
+    id: msg.getId_asB64(),
+    set: msg.getSet_asB64()
   };
 
   if (includeInstance) {
@@ -128,8 +129,12 @@ proto.dto.CreateTilesetReq.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setJson(value);
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setId(value);
+      break;
+    case 2:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setSet(value);
       break;
     default:
       reader.skipField();
@@ -160,10 +165,17 @@ proto.dto.CreateTilesetReq.prototype.serializeBinary = function() {
  */
 proto.dto.CreateTilesetReq.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getJson();
+  f = message.getId_asU8();
   if (f.length > 0) {
-    writer.writeString(
+    writer.writeBytes(
       1,
+      f
+    );
+  }
+  f = message.getSet_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      2,
       f
     );
   }
@@ -171,20 +183,86 @@ proto.dto.CreateTilesetReq.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional string JSON = 1;
- * @return {string}
+ * optional bytes ID = 1;
+ * @return {!(string|Uint8Array)}
  */
-proto.dto.CreateTilesetReq.prototype.getJson = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+proto.dto.CreateTilesetReq.prototype.getId = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
- * @param {string} value
+ * optional bytes ID = 1;
+ * This is a type-conversion wrapper around `getId()`
+ * @return {string}
+ */
+proto.dto.CreateTilesetReq.prototype.getId_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getId()));
+};
+
+
+/**
+ * optional bytes ID = 1;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getId()`
+ * @return {!Uint8Array}
+ */
+proto.dto.CreateTilesetReq.prototype.getId_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getId()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
  * @return {!proto.dto.CreateTilesetReq} returns this
  */
-proto.dto.CreateTilesetReq.prototype.setJson = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
+proto.dto.CreateTilesetReq.prototype.setId = function(value) {
+  return jspb.Message.setProto3BytesField(this, 1, value);
+};
+
+
+/**
+ * optional bytes Set = 2;
+ * @return {!(string|Uint8Array)}
+ */
+proto.dto.CreateTilesetReq.prototype.getSet = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * optional bytes Set = 2;
+ * This is a type-conversion wrapper around `getSet()`
+ * @return {string}
+ */
+proto.dto.CreateTilesetReq.prototype.getSet_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getSet()));
+};
+
+
+/**
+ * optional bytes Set = 2;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getSet()`
+ * @return {!Uint8Array}
+ */
+proto.dto.CreateTilesetReq.prototype.getSet_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getSet()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.dto.CreateTilesetReq} returns this
+ */
+proto.dto.CreateTilesetReq.prototype.setSet = function(value) {
+  return jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 

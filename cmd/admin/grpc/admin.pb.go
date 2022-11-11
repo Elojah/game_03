@@ -81,7 +81,6 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type AdminClient interface {
-	// ### TECHNICAL ADMIN ###
 	// DB migrations
 	MigrateUp(ctx context.Context, in *types.StringValue, opts ...grpc.CallOption) (*types.Empty, error)
 	// Cookie secure management
@@ -169,7 +168,6 @@ func (c *adminClient) CreateAnimation(ctx context.Context, in *dto1.CreateAnimat
 
 // AdminServer is the server API for Admin service.
 type AdminServer interface {
-	// ### TECHNICAL ADMIN ###
 	// DB migrations
 	MigrateUp(context.Context, *types.StringValue) (*types.Empty, error)
 	// Cookie secure management

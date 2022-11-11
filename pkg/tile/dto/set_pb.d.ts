@@ -5,8 +5,15 @@ import * as jspb from "google-protobuf";
 import * as github_com_gogo_protobuf_gogoproto_gogo_pb from "../../../../../../github.com/gogo/protobuf/gogoproto/gogo_pb";
 
 export class CreateTilesetReq extends jspb.Message {
-  getJson(): string;
-  setJson(value: string): void;
+  getId(): Uint8Array | string;
+  getId_asU8(): Uint8Array;
+  getId_asB64(): string;
+  setId(value: Uint8Array | string): void;
+
+  getSet(): Uint8Array | string;
+  getSet_asU8(): Uint8Array;
+  getSet_asB64(): string;
+  setSet(value: Uint8Array | string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): CreateTilesetReq.AsObject;
@@ -20,7 +27,8 @@ export class CreateTilesetReq extends jspb.Message {
 
 export namespace CreateTilesetReq {
   export type AsObject = {
-    json: string,
+    id: Uint8Array | string,
+    set: Uint8Array | string,
   }
 }
 

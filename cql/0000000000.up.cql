@@ -154,3 +154,11 @@ CREATE TABLE main.cell (
     x               bigint,
     y               bigint
 );
+
+-- TILESET
+-- -------
+
+CREATE TABLE main.tileset (
+    id              uuid PRIMARY KEY,
+	json            varchar
+);

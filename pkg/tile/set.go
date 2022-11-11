@@ -1,34 +1,55 @@
 package tile
 
+import (
+	"context"
+
+	"github.com/elojah/game_03/pkg/ulid"
+)
+
 type Set struct {
-	BackgroundColor  string          `json:"backgroundcolor,omitempty"`
-	Class            string          `json:"class,omitempty"`
-	Columns          int             `json:"columns,omitempty"`
-	FillMode         string          `json:"fillmode,omitempty"`
-	FirstGID         int             `json:"firstgid,omitempty"`
-	Grid             Grid            `json:"grid,omitempty"`
-	Image            string          `json:"image,omitempty"`
-	ImageHeight      int             `json:"imageheight,omitempty"`
-	ImageWidth       int             `json:"imagewidth,omitempty"`
-	Margin           int             `json:"margin"`
-	Name             string          `json:"name,omitempty"`
-	ObjectAlignment  string          `json:"objectalignment,omitempty"`
-	Properties       []Property      `json:"properties,omitempty"`
-	Source           string          `json:"source,omitempty"`
-	Spacing          int             `json:"spacing"`
-	Terrains         []Terrain       `json:"terrains,omitempty"`
-	TileCount        int             `json:"tilecount,omitempty"`
-	TiledVersion     string          `json:"tiledversion,omitempty"`
-	TileHeight       int             `json:"tileheight,omitempty"`
-	TileOffset       Offset          `json:"tileoffset,omitempty"`
-	TileRenderSize   string          `json:"tilerendersize,omitempty"`
-	Tiles            []Tile          `json:"tiles,omitempty"`
-	TileWidth        int             `json:"tilewidth,omitempty"`
-	Transformations  Transformations `json:"transformations,omitempty"`
-	TransparentColor string          `json:"transparentcolor,omitempty"`
-	Type             string          `json:"type,omitempty"`
-	Version          string          `json:"version,omitempty"`
-	WangSets         []WangSet       `json:"wangsets,omitempty"`
+	ID               ulid.ID         `json:"-" xml:"-"`
+	BackgroundColor  string          `json:"backgroundcolor,omitempty" xml:"backgroundcolor"`
+	Class            string          `json:"class,omitempty" xml:"class"`
+	Columns          int             `json:"columns,omitempty" xml:"columns,attr"`
+	FillMode         string          `json:"fillmode,omitempty" xml:"fillmode"`
+	FirstGID         int             `json:"firstgid,omitempty" xml:"firstgid"`
+	Grid             Grid            `json:"grid,omitempty" xml:"grid"`
+	Image            string          `json:"image,omitempty" xml:"image,attr"`
+	ImageHeight      int             `json:"imageheight,omitempty" xml:"imageheight,attr"`
+	ImageWidth       int             `json:"imagewidth,omitempty" xml:"imagewidth,attr"`
+	Margin           int             `json:"margin" xml:"margin"`
+	Name             string          `json:"name,omitempty" xml:"name,attr"`
+	ObjectAlignment  string          `json:"objectalignment,omitempty" xml:"objectalignment"`
+	Properties       []Property      `json:"properties,omitempty" xml:"properties"`
+	Source           string          `json:"source,omitempty" xml:"source"`
+	Spacing          int             `json:"spacing" xml:"spacing"`
+	Terrains         []Terrain       `json:"terrains,omitempty" xml:"terrains"`
+	TileCount        int             `json:"tilecount,omitempty" xml:"tilecount,attr"`
+	TiledVersion     string          `json:"tiledversion,omitempty" xml:"tiledversion,attr"`
+	TileHeight       int             `json:"tileheight,omitempty" xml:"tileheight,attr"`
+	TileOffset       Offset          `json:"tileoffset,omitempty" xml:"tileoffset,attr"`
+	TileRenderSize   string          `json:"tilerendersize,omitempty" xml:"tilerendersize"`
+	Tiles            []Tile          `json:"tiles,omitempty" xml:"tiles"`
+	TileWidth        int             `json:"tilewidth,omitempty" xml:"tilewidth,attr"`
+	Transformations  Transformations `json:"transformations,omitempty" xml:"transformations"`
+	TransparentColor string          `json:"transparentcolor,omitempty" xml:"transparentcolor"`
+	Type             string          `json:"type,omitempty" xml:"type,attr"`
+	Version          string          `json:"version,omitempty" xml:"version,attr"`
+	WangSets         []WangSet       `json:"wangsets,omitempty" xml:"wangsets>wangset"`
+}
+
+type FilterSet struct {
+	ID ulid.ID
+}
+
+type StoreSet interface {
+	InsertSet(context.Context, Set) error
+	FetchSet(context.Context, FilterSet) (Set, error)
+	DeleteSet(context.Context, FilterSet) error
+}
+
+type App interface {
+	StoreSet
 }
 
 func NewSet() Set {
@@ -111,27 +132,27 @@ type Frame struct {
 }
 
 type WangSet struct {
-	Class      string      `json:"class,omitempty"`
-	Colors     []WangColor `json:"colors,omitempty"`
-	Name       string      `json:"name,omitempty"`
-	Properties []Property  `json:"properties,omitempty"`
-	Tile       int         `json:"tile,omitempty"`
-	Type       string      `json:"type,omitempty"`
-	WangTiles  []WangTile  `json:"wangtiles,omitempty"`
+	Class      string      `json:"class,omitempty" xml:"class"`
+	Colors     []WangColor `json:"colors,omitempty" xml:"wangcolor"`
+	Name       string      `json:"name,omitempty" xml:"name,attr"`
+	Properties []Property  `json:"properties,omitempty" xml:"properties"`
+	Tile       int         `json:"tile,omitempty" xml:"tile,attr"`
+	Type       WangType    `json:"type,omitempty" xml:"type,attr"`
+	WangTiles  []WangTile  `json:"wangtiles,omitempty" xml:"wangtile"`
 }
 
 type WangColor struct {
 	Class       string     `json:"class,omitempty"`
-	Color       string     `json:"color,omitempty"`
-	Name        string     `json:"name,omitempty"`
-	Probability float64    `json:"probability,omitempty"`
-	Properties  []Property `json:"properties,omitempty"`
-	Tile        int        `json:"tile,omitempty"`
+	Color       string     `json:"color,omitempty" xml:"color,attr"`
+	Name        string     `json:"name,omitempty" xml:"name,attr"`
+	Probability float64    `json:"probability,omitempty" xml:"probability,attr"`
+	Properties  []Property `json:"properties,omitempty" xml:"properties"`
+	Tile        int        `json:"tile,omitempty" xml:"tile,attr"`
 }
 
 type WangTile struct {
-	TileID int    `json:"tileid,omitempty"`
-	WangID []byte `json:"wangid,omitempty"`
+	TileID int    `json:"tileid,omitempty" xml:"tileid,attr"`
+	WangID []byte `json:"wangid,omitempty" xml:"wangid,attr"`
 }
 
 type ObjectTemplate struct {

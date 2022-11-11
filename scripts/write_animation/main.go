@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io/fs"
 	"os"
 	"path/filepath"
 
@@ -173,7 +172,7 @@ var (
 func encodeULID(s string) string {
 	id, err := ulid.Parse(s)
 	if err != nil {
-		fmt.Println("failed to parse param", err)
+		fmt.Println("failed to parse id", err)
 
 		return ""
 	}
@@ -198,7 +197,7 @@ func run(prog string, param string) {
 			if err := os.WriteFile(
 				filepath.Join(param, name, ba.Name+".json"),
 				raw,
-				fs.FileMode(os.O_RDWR),
+				0o600, //nolint: gomnd
 			); err != nil {
 				fmt.Println("failed to create animation file", err)
 
@@ -211,7 +210,7 @@ func run(prog string, param string) {
 func main() {
 	args := os.Args
 	if len(args) != 2 { //nolint: gomnd
-		fmt.Printf("Usage: ./%s ulid\n", args[0])
+		fmt.Printf("Usage: ./%s directory\n", args[0])
 
 		return
 	}

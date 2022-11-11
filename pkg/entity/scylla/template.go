@@ -118,7 +118,7 @@ func (s Store) FetchTemplate(ctx context.Context, f entity.FilterTemplate) (enti
 	var t entity.Template
 	if err := q.Scan(&t.ID, &t.Name); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
-			return entity.Template{}, gerrors.ErrNotFound{Resource: "t", Index: filterTemplate(f).index()}
+			return entity.Template{}, gerrors.ErrNotFound{Resource: "template", Index: filterTemplate(f).index()}
 		}
 
 		return entity.Template{}, err

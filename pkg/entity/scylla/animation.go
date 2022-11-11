@@ -133,7 +133,7 @@ func (s Store) FetchAnimation(ctx context.Context, f entity.FilterAnimation) (en
 		&an.FrameWidth, &an.FrameHeight, &an.FrameStart, &an.FrameEnd, &an.FrameMargin, &an.FrameSpacing,
 	); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
-			return entity.Animation{}, gerrors.ErrNotFound{Resource: "an", Index: filterAnimation(f).index()}
+			return entity.Animation{}, gerrors.ErrNotFound{Resource: "animation", Index: filterAnimation(f).index()}
 		}
 
 		return entity.Animation{}, err

@@ -4,6 +4,7 @@
 package dto
 
 import (
+	bytes "bytes"
 	fmt "fmt"
 	github_com_elojah_game_03_pkg_ulid "github.com/elojah/game_03/pkg/ulid"
 	_ "github.com/gogo/protobuf/gogoproto"
@@ -29,7 +30,8 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type CreateTilesetReq struct {
-	JSON string `protobuf:"bytes,1,opt,name=JSON,proto3" json:"JSON,omitempty"`
+	ID  github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,1,opt,name=ID,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"ID"`
+	Set []byte                                `protobuf:"bytes,2,opt,name=Set,proto3" json:"Set,omitempty"`
 }
 
 func (m *CreateTilesetReq) Reset()      { *m = CreateTilesetReq{} }
@@ -115,24 +117,24 @@ func init() {
 }
 
 var fileDescriptor_3240545ed3d4d328 = []byte{
-	// 262 bytes of a gzipped FileDescriptorProto
+	// 265 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x32, 0x48, 0xcf, 0x2c, 0xc9,
 	0x28, 0x4d, 0xd2, 0x4b, 0xce, 0xcf, 0xd5, 0x4f, 0xcd, 0xc9, 0xcf, 0x4a, 0xcc, 0xd0, 0x4f, 0x4f,
 	0xcc, 0x4d, 0x8d, 0x37, 0x30, 0xd6, 0x2f, 0xc8, 0x4e, 0xd7, 0x2f, 0xc9, 0xcc, 0x49, 0xd5, 0x4f,
 	0x29, 0xc9, 0xd7, 0x2f, 0x4e, 0x2d, 0xd1, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x4e, 0x29,
 	0xc9, 0x97, 0xd2, 0x45, 0xd2, 0x96, 0x9e, 0x9f, 0x9e, 0xaf, 0x0f, 0x96, 0x4b, 0x2a, 0x4d, 0x03,
-	0xf3, 0xc0, 0x1c, 0x30, 0x0b, 0xa2, 0x47, 0x49, 0x8d, 0x4b, 0xc0, 0xb9, 0x28, 0x35, 0xb1, 0x24,
-	0x35, 0x24, 0x33, 0x27, 0xb5, 0x38, 0xb5, 0x24, 0x28, 0xb5, 0x50, 0x48, 0x88, 0x8b, 0xc5, 0x2b,
-	0xd8, 0xdf, 0x4f, 0x82, 0x51, 0x81, 0x51, 0x83, 0x33, 0x08, 0xcc, 0x56, 0x0a, 0xe2, 0x12, 0x44,
-	0x53, 0x57, 0x5c, 0x20, 0x64, 0xcb, 0xc5, 0xe4, 0xe9, 0x02, 0x56, 0xc6, 0xe3, 0xa4, 0x7b, 0xe2,
-	0x9e, 0x3c, 0xc3, 0xad, 0x7b, 0xf2, 0xaa, 0xf8, 0x9d, 0x5d, 0x9a, 0x93, 0x99, 0xa2, 0xe7, 0xe9,
-	0x12, 0xc4, 0xe4, 0xe9, 0xe2, 0xe4, 0x71, 0xe2, 0xa1, 0x1c, 0xc3, 0x85, 0x87, 0x72, 0x0c, 0x37,
-	0x1e, 0xca, 0x31, 0x7c, 0x78, 0x28, 0xc7, 0xf8, 0xe3, 0xa1, 0x1c, 0x63, 0xc3, 0x23, 0x39, 0xc6,
-	0x15, 0x8f, 0xe4, 0x18, 0x77, 0x3c, 0x92, 0x63, 0x3c, 0xf0, 0x48, 0x8e, 0xf1, 0xc4, 0x23, 0x39,
-	0xc6, 0x0b, 0x8f, 0xe4, 0x18, 0x1f, 0x3c, 0x92, 0x63, 0x7c, 0xf1, 0x48, 0x8e, 0xe1, 0xc3, 0x23,
-	0x39, 0xc6, 0x09, 0x8f, 0xe5, 0x18, 0x0e, 0x3c, 0x96, 0x63, 0xbc, 0xf0, 0x58, 0x8e, 0xe1, 0xc6,
-	0x63, 0x39, 0x86, 0x24, 0x36, 0xb0, 0x67, 0x8c, 0x01, 0x01, 0x00, 0x00, 0xff, 0xff, 0x80, 0xb6,
-	0x29, 0x4a, 0x34, 0x01, 0x00, 0x00,
+	0xf3, 0xc0, 0x1c, 0x30, 0x0b, 0xa2, 0x47, 0x29, 0x99, 0x4b, 0xc0, 0xb9, 0x28, 0x35, 0xb1, 0x24,
+	0x35, 0x24, 0x33, 0x27, 0xb5, 0x38, 0xb5, 0x24, 0x28, 0xb5, 0x50, 0xc8, 0x96, 0x8b, 0xc9, 0xd3,
+	0x45, 0x82, 0x51, 0x81, 0x51, 0x83, 0xc7, 0x49, 0xf7, 0xc4, 0x3d, 0x79, 0x86, 0x5b, 0xf7, 0xe4,
+	0x55, 0xf1, 0xbb, 0xa6, 0x34, 0x27, 0x33, 0x45, 0xcf, 0xd3, 0x25, 0x88, 0xc9, 0xd3, 0x45, 0x48,
+	0x80, 0x8b, 0x39, 0x38, 0xb5, 0x44, 0x82, 0x09, 0xa4, 0x3f, 0x08, 0xc4, 0x54, 0x0a, 0xe2, 0x12,
+	0x44, 0xb3, 0xa4, 0xb8, 0x80, 0x42, 0x5b, 0x9c, 0x3c, 0x4e, 0x3c, 0x94, 0x63, 0xb8, 0xf0, 0x50,
+	0x8e, 0xe1, 0xc6, 0x43, 0x39, 0x86, 0x0f, 0x0f, 0xe5, 0x18, 0x7f, 0x3c, 0x94, 0x63, 0x6c, 0x78,
+	0x24, 0xc7, 0xb8, 0xe2, 0x91, 0x1c, 0xe3, 0x8e, 0x47, 0x72, 0x8c, 0x07, 0x1e, 0xc9, 0x31, 0x9e,
+	0x78, 0x24, 0xc7, 0x78, 0xe1, 0x91, 0x1c, 0xe3, 0x83, 0x47, 0x72, 0x8c, 0x2f, 0x1e, 0xc9, 0x31,
+	0x7c, 0x78, 0x24, 0xc7, 0x38, 0xe1, 0xb1, 0x1c, 0xc3, 0x81, 0xc7, 0x72, 0x8c, 0x17, 0x1e, 0xcb,
+	0x31, 0xdc, 0x78, 0x2c, 0xc7, 0x90, 0xc4, 0x06, 0x0e, 0x09, 0x63, 0x40, 0x00, 0x00, 0x00, 0xff,
+	0xff, 0x3a, 0x10, 0xfb, 0xa2, 0x71, 0x01, 0x00, 0x00,
 }
 
 func (this *CreateTilesetReq) Equal(that interface{}) bool {
@@ -154,7 +156,10 @@ func (this *CreateTilesetReq) Equal(that interface{}) bool {
 	} else if this == nil {
 		return false
 	}
-	if this.JSON != that1.JSON {
+	if !this.ID.Equal(that1.ID) {
+		return false
+	}
+	if !bytes.Equal(this.Set, that1.Set) {
 		return false
 	}
 	return true
@@ -187,9 +192,10 @@ func (this *CreateTilesetReq) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 5)
+	s := make([]string, 0, 6)
 	s = append(s, "&dto.CreateTilesetReq{")
-	s = append(s, "JSON: "+fmt.Sprintf("%#v", this.JSON)+",\n")
+	s = append(s, "ID: "+fmt.Sprintf("%#v", this.ID)+",\n")
+	s = append(s, "Set: "+fmt.Sprintf("%#v", this.Set)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -231,13 +237,23 @@ func (m *CreateTilesetReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.JSON) > 0 {
-		i -= len(m.JSON)
-		copy(dAtA[i:], m.JSON)
-		i = encodeVarintSet(dAtA, i, uint64(len(m.JSON)))
+	if len(m.Set) > 0 {
+		i -= len(m.Set)
+		copy(dAtA[i:], m.Set)
+		i = encodeVarintSet(dAtA, i, uint64(len(m.Set)))
 		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x12
 	}
+	{
+		size := m.ID.Size()
+		i -= size
+		if _, err := m.ID.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintSet(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
 	return len(dAtA) - i, nil
 }
 
@@ -287,7 +303,13 @@ func encodeVarintSet(dAtA []byte, offset int, v uint64) int {
 }
 func NewPopulatedCreateTilesetReq(r randySet, easy bool) *CreateTilesetReq {
 	this := &CreateTilesetReq{}
-	this.JSON = string(randStringSet(r))
+	v1 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
+	this.ID = *v1
+	v2 := r.Intn(100)
+	this.Set = make([]byte, v2)
+	for i := 0; i < v2; i++ {
+		this.Set[i] = byte(r.Intn(256))
+	}
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -295,8 +317,8 @@ func NewPopulatedCreateTilesetReq(r randySet, easy bool) *CreateTilesetReq {
 
 func NewPopulatedCreateTilesetResp(r randySet, easy bool) *CreateTilesetResp {
 	this := &CreateTilesetResp{}
-	v1 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
-	this.ID = *v1
+	v3 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
+	this.ID = *v3
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -321,9 +343,9 @@ func randUTF8RuneSet(r randySet) rune {
 	return rune(ru + 61)
 }
 func randStringSet(r randySet) string {
-	v2 := r.Intn(100)
-	tmps := make([]rune, v2)
-	for i := 0; i < v2; i++ {
+	v4 := r.Intn(100)
+	tmps := make([]rune, v4)
+	for i := 0; i < v4; i++ {
 		tmps[i] = randUTF8RuneSet(r)
 	}
 	return string(tmps)
@@ -345,11 +367,11 @@ func randFieldSet(dAtA []byte, r randySet, fieldNumber int, wire int) []byte {
 	switch wire {
 	case 0:
 		dAtA = encodeVarintPopulateSet(dAtA, uint64(key))
-		v3 := r.Int63()
+		v5 := r.Int63()
 		if r.Intn(2) == 0 {
-			v3 *= -1
+			v5 *= -1
 		}
-		dAtA = encodeVarintPopulateSet(dAtA, uint64(v3))
+		dAtA = encodeVarintPopulateSet(dAtA, uint64(v5))
 	case 1:
 		dAtA = encodeVarintPopulateSet(dAtA, uint64(key))
 		dAtA = append(dAtA, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
@@ -380,7 +402,9 @@ func (m *CreateTilesetReq) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.JSON)
+	l = m.ID.Size()
+	n += 1 + l + sovSet(uint64(l))
+	l = len(m.Set)
 	if l > 0 {
 		n += 1 + l + sovSet(uint64(l))
 	}
@@ -409,7 +433,8 @@ func (this *CreateTilesetReq) String() string {
 		return "nil"
 	}
 	s := strings.Join([]string{`&CreateTilesetReq{`,
-		`JSON:` + fmt.Sprintf("%v", this.JSON) + `,`,
+		`ID:` + fmt.Sprintf("%v", this.ID) + `,`,
+		`Set:` + fmt.Sprintf("%v", this.Set) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -463,9 +488,9 @@ func (m *CreateTilesetReq) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field JSON", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
 			}
-			var stringLen uint64
+			var byteLen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowSet
@@ -475,23 +500,58 @@ func (m *CreateTilesetReq) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				byteLen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if byteLen < 0 {
 				return ErrInvalidLengthSet
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + byteLen
 			if postIndex < 0 {
 				return ErrInvalidLengthSet
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.JSON = string(dAtA[iNdEx:postIndex])
+			if err := m.ID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Set", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowSet
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthSet
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthSet
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Set = append(m.Set[:0], dAtA[iNdEx:postIndex]...)
+			if m.Set == nil {
+				m.Set = []byte{}
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

@@ -105,6 +105,15 @@ dashboard:  ## Build dashboard content
 	$Q mkdir -p bin && rm -rf bin/$(STATIC) && mkdir -p bin/$(DASHBOARD)/$(STATIC)/
 	$Q yes | cp -rf cmd/$(DASHBOARD)/dist/. bin/$(DASHBOARD)/$(STATIC)/
 
+.PHONY: init
+init:  ## Setup initial content
+	$(info $(M) setup initial content…) @
+	$Q ./scripts/upload_default_images.sh
+	$Q ./scripts/create_default_templates.sh
+	$Q ./scripts/create_default_tilesets.sh
+	$Q ./scripts/create_default_animations.sh
+	$Q grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '' -plaintext localhost:4282 grpc.Admin/CreateWorld
+
 # Proto lang
 .PHONY: proto-go proto-ts
 proto-go:    PB_LANG = GO

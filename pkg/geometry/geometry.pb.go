@@ -64,9 +64,49 @@ func (m *Vec2) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Vec2 proto.InternalMessageInfo
 
+type Rect struct {
+	Origin Vec2   `protobuf:"bytes,1,opt,name=Origin,proto3" json:"Origin"`
+	Height uint64 `protobuf:"varint,2,opt,name=Height,proto3" json:"Height,omitempty"`
+	Width  uint64 `protobuf:"varint,3,opt,name=Width,proto3" json:"Width,omitempty"`
+}
+
+func (m *Rect) Reset()      { *m = Rect{} }
+func (*Rect) ProtoMessage() {}
+func (*Rect) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6dc0e58235b9cb07, []int{1}
+}
+func (m *Rect) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *Rect) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_Rect.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *Rect) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Rect.Merge(m, src)
+}
+func (m *Rect) XXX_Size() int {
+	return m.Size()
+}
+func (m *Rect) XXX_DiscardUnknown() {
+	xxx_messageInfo_Rect.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Rect proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*Vec2)(nil), "geometry.Vec2")
 	golang_proto.RegisterType((*Vec2)(nil), "geometry.Vec2")
+	proto.RegisterType((*Rect)(nil), "geometry.Rect")
+	golang_proto.RegisterType((*Rect)(nil), "geometry.Rect")
 }
 
 func init() {
@@ -77,21 +117,25 @@ func init() {
 }
 
 var fileDescriptor_6dc0e58235b9cb07 = []byte{
-	// 210 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x32, 0x4d, 0xcf, 0x2c, 0xc9,
-	0x28, 0x4d, 0xd2, 0x4b, 0xce, 0xcf, 0xd5, 0x4f, 0xcd, 0xc9, 0xcf, 0x4a, 0xcc, 0xd0, 0x4f, 0x4f,
-	0xcc, 0x4d, 0x8d, 0x37, 0x30, 0xd6, 0x2f, 0xc8, 0x4e, 0xd7, 0x4f, 0x4f, 0xcd, 0xcf, 0x4d, 0x2d,
-	0x29, 0xaa, 0x84, 0x33, 0xf4, 0x0a, 0x8a, 0xf2, 0x4b, 0xf2, 0x85, 0x38, 0x60, 0x7c, 0x29, 0x5d,
-	0x24, 0x03, 0xd2, 0xf3, 0xd3, 0xf3, 0xf5, 0xc1, 0x0a, 0x92, 0x4a, 0xd3, 0xc0, 0x3c, 0x30, 0x07,
-	0xcc, 0x82, 0x68, 0x54, 0x52, 0xe2, 0x62, 0x09, 0x4b, 0x4d, 0x36, 0x12, 0xe2, 0xe1, 0x62, 0x8c,
-	0x90, 0x60, 0x54, 0x60, 0xd4, 0x60, 0x0e, 0x62, 0x8c, 0x00, 0xf1, 0x22, 0x25, 0x98, 0x20, 0xbc,
-	0x48, 0x27, 0x8f, 0x13, 0x0f, 0xe5, 0x18, 0x2e, 0x3c, 0x94, 0x63, 0xb8, 0xf1, 0x50, 0x8e, 0xe1,
-	0xc3, 0x43, 0x39, 0xc6, 0x1f, 0x0f, 0xe5, 0x18, 0x1b, 0x1e, 0xc9, 0x31, 0xae, 0x78, 0x24, 0xc7,
-	0xb8, 0xe3, 0x91, 0x1c, 0xe3, 0x81, 0x47, 0x72, 0x8c, 0x27, 0x1e, 0xc9, 0x31, 0x5e, 0x78, 0x24,
-	0xc7, 0xf8, 0xe0, 0x91, 0x1c, 0xe3, 0x8b, 0x47, 0x72, 0x0c, 0x1f, 0x1e, 0xc9, 0x31, 0x4e, 0x78,
-	0x2c, 0xc7, 0x70, 0xe0, 0xb1, 0x1c, 0xe3, 0x85, 0xc7, 0x72, 0x0c, 0x37, 0x1e, 0xcb, 0x31, 0x24,
-	0xb1, 0x81, 0x2d, 0x35, 0x06, 0x04, 0x00, 0x00, 0xff, 0xff, 0x3c, 0xe4, 0xfe, 0x98, 0xe6, 0x00,
-	0x00, 0x00,
+	// 276 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x4c, 0xcf, 0x31, 0x4e, 0xc3, 0x30,
+	0x18, 0x05, 0x60, 0xff, 0x34, 0x54, 0xc8, 0x20, 0x06, 0x0b, 0xa1, 0x88, 0xe1, 0x07, 0x65, 0x62,
+	0x80, 0x18, 0xb5, 0xe2, 0x02, 0x9d, 0xba, 0x21, 0x65, 0x80, 0x76, 0x42, 0x4d, 0x30, 0x8e, 0x81,
+	0xe0, 0x2a, 0x72, 0x07, 0x36, 0x8e, 0xc0, 0x31, 0x38, 0x02, 0x63, 0xc7, 0x8c, 0x19, 0x3b, 0x21,
+	0xec, 0x2c, 0x8c, 0x1d, 0x19, 0x51, 0x9d, 0x52, 0xb1, 0xbd, 0xcf, 0x7a, 0x7e, 0xb2, 0xe9, 0xa5,
+	0x54, 0x26, 0x9f, 0xa5, 0x71, 0xa6, 0x0b, 0x2e, 0x9e, 0xf4, 0xc3, 0x24, 0xe7, 0x72, 0x52, 0x88,
+	0xdb, 0x8b, 0x3e, 0x9f, 0x3e, 0x4a, 0x2e, 0x85, 0x2e, 0x84, 0x29, 0x5f, 0x36, 0x21, 0x9e, 0x96,
+	0xda, 0x68, 0xb6, 0xf3, 0xe7, 0xa3, 0xf3, 0x7f, 0x03, 0x52, 0x4b, 0xcd, 0x7d, 0x21, 0x9d, 0xdd,
+	0x7b, 0x79, 0xf8, 0xd4, 0x5e, 0x8c, 0x22, 0x1a, 0x5c, 0x8b, 0xac, 0xc7, 0xf6, 0x28, 0x8c, 0x42,
+	0x38, 0x81, 0xd3, 0x4e, 0x02, 0xa3, 0x95, 0xc6, 0xe1, 0x56, 0xab, 0x71, 0x94, 0xd2, 0x20, 0x11,
+	0x99, 0x61, 0x67, 0xb4, 0x7b, 0x55, 0x2a, 0xa9, 0x9e, 0x7d, 0x71, 0xb7, 0xb7, 0x1f, 0x6f, 0x5e,
+	0xb1, 0xda, 0x18, 0x04, 0xd5, 0xe7, 0x31, 0x49, 0xd6, 0x1d, 0x76, 0x48, 0xbb, 0x43, 0xa1, 0x64,
+	0x6e, 0xfc, 0x50, 0x90, 0xac, 0xc5, 0x0e, 0xe8, 0xf6, 0x8d, 0xba, 0x33, 0x79, 0xd8, 0xf1, 0xc7,
+	0x2d, 0x06, 0xc3, 0xca, 0x22, 0xa9, 0x2d, 0x92, 0x85, 0x45, 0xb2, 0xb4, 0x08, 0x3f, 0x16, 0xe1,
+	0xd5, 0x21, 0xbc, 0x3b, 0x84, 0x0f, 0x87, 0x30, 0x77, 0x08, 0x95, 0x43, 0xa8, 0x1d, 0xc2, 0x97,
+	0x43, 0xf8, 0x76, 0x48, 0x96, 0x0e, 0xe1, 0xad, 0x41, 0x32, 0x6f, 0x10, 0xea, 0x06, 0xc9, 0xa2,
+	0x41, 0x92, 0x76, 0xfd, 0xc7, 0xfa, 0xbf, 0x01, 0x00, 0x00, 0xff, 0xff, 0x48, 0xe7, 0xe6, 0x9a,
+	0x4a, 0x01, 0x00, 0x00,
 }
 
 func (this *Vec2) Equal(that interface{}) bool {
@@ -121,6 +165,36 @@ func (this *Vec2) Equal(that interface{}) bool {
 	}
 	return true
 }
+func (this *Rect) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*Rect)
+	if !ok {
+		that2, ok := that.(Rect)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if !this.Origin.Equal(&that1.Origin) {
+		return false
+	}
+	if this.Height != that1.Height {
+		return false
+	}
+	if this.Width != that1.Width {
+		return false
+	}
+	return true
+}
 func (this *Vec2) GoString() string {
 	if this == nil {
 		return "nil"
@@ -129,6 +203,18 @@ func (this *Vec2) GoString() string {
 	s = append(s, "&geometry.Vec2{")
 	s = append(s, "X: "+fmt.Sprintf("%#v", this.X)+",\n")
 	s = append(s, "Y: "+fmt.Sprintf("%#v", this.Y)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *Rect) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 7)
+	s = append(s, "&geometry.Rect{")
+	s = append(s, "Origin: "+strings.Replace(this.Origin.GoString(), `&`, ``, 1)+",\n")
+	s = append(s, "Height: "+fmt.Sprintf("%#v", this.Height)+",\n")
+	s = append(s, "Width: "+fmt.Sprintf("%#v", this.Width)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -173,6 +259,49 @@ func (m *Vec2) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *Rect) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Rect) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *Rect) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Width != 0 {
+		i = encodeVarintGeometry(dAtA, i, uint64(m.Width))
+		i--
+		dAtA[i] = 0x18
+	}
+	if m.Height != 0 {
+		i = encodeVarintGeometry(dAtA, i, uint64(m.Height))
+		i--
+		dAtA[i] = 0x10
+	}
+	{
+		size, err := m.Origin.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintGeometry(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintGeometry(dAtA []byte, offset int, v uint64) int {
 	offset -= sovGeometry(v)
 	base := offset
@@ -199,6 +328,17 @@ func NewPopulatedVec2(r randyGeometry, easy bool) *Vec2 {
 	return this
 }
 
+func NewPopulatedRect(r randyGeometry, easy bool) *Rect {
+	this := &Rect{}
+	v1 := NewPopulatedVec2(r, easy)
+	this.Origin = *v1
+	this.Height = uint64(uint64(r.Uint32()))
+	this.Width = uint64(uint64(r.Uint32()))
+	if !easy && r.Intn(10) != 0 {
+	}
+	return this
+}
+
 type randyGeometry interface {
 	Float32() float32
 	Float64() float64
@@ -218,9 +358,9 @@ func randUTF8RuneGeometry(r randyGeometry) rune {
 	return rune(ru + 61)
 }
 func randStringGeometry(r randyGeometry) string {
-	v1 := r.Intn(100)
-	tmps := make([]rune, v1)
-	for i := 0; i < v1; i++ {
+	v2 := r.Intn(100)
+	tmps := make([]rune, v2)
+	for i := 0; i < v2; i++ {
 		tmps[i] = randUTF8RuneGeometry(r)
 	}
 	return string(tmps)
@@ -242,11 +382,11 @@ func randFieldGeometry(dAtA []byte, r randyGeometry, fieldNumber int, wire int) 
 	switch wire {
 	case 0:
 		dAtA = encodeVarintPopulateGeometry(dAtA, uint64(key))
-		v2 := r.Int63()
+		v3 := r.Int63()
 		if r.Intn(2) == 0 {
-			v2 *= -1
+			v3 *= -1
 		}
-		dAtA = encodeVarintPopulateGeometry(dAtA, uint64(v2))
+		dAtA = encodeVarintPopulateGeometry(dAtA, uint64(v3))
 	case 1:
 		dAtA = encodeVarintPopulateGeometry(dAtA, uint64(key))
 		dAtA = append(dAtA, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
@@ -286,6 +426,23 @@ func (m *Vec2) Size() (n int) {
 	return n
 }
 
+func (m *Rect) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.Origin.Size()
+	n += 1 + l + sovGeometry(uint64(l))
+	if m.Height != 0 {
+		n += 1 + sovGeometry(uint64(m.Height))
+	}
+	if m.Width != 0 {
+		n += 1 + sovGeometry(uint64(m.Width))
+	}
+	return n
+}
+
 func sovGeometry(x uint64) (n int) {
 	return (math_bits.Len64(x|1) + 6) / 7
 }
@@ -299,6 +456,18 @@ func (this *Vec2) String() string {
 	s := strings.Join([]string{`&Vec2{`,
 		`X:` + fmt.Sprintf("%v", this.X) + `,`,
 		`Y:` + fmt.Sprintf("%v", this.Y) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *Rect) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&Rect{`,
+		`Origin:` + strings.Replace(strings.Replace(this.Origin.String(), "Vec2", "Vec2", 1), `&`, ``, 1) + `,`,
+		`Height:` + fmt.Sprintf("%v", this.Height) + `,`,
+		`Width:` + fmt.Sprintf("%v", this.Width) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -374,6 +543,127 @@ func (m *Vec2) Unmarshal(dAtA []byte) error {
 				b := dAtA[iNdEx]
 				iNdEx++
 				m.Y |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipGeometry(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthGeometry
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *Rect) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowGeometry
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Rect: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Rect: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Origin", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGeometry
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGeometry
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGeometry
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Origin.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Height", wireType)
+			}
+			m.Height = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGeometry
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Height |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Width", wireType)
+			}
+			m.Width = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGeometry
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Width |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
