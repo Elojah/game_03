@@ -274,7 +274,9 @@ export class Game extends Scene {
 			}
 		}
 
-		this.Entity?.Body?.play(animationID!, true)
+		if (animationID) {
+			this.Entity?.Body?.play(animationID, true)
+		}
 	}
 
 	// positionServerToClient(ge: GraphicEntity): Phaser.Geom.Point {
