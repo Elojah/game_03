@@ -116,7 +116,7 @@ func run(prog string, filename string) {
 			}
 		}
 	}()
-	log.Info().Msg("web up")
+	log.Info().Msg("web_client up")
 
 	// listen for signals
 	c := make(chan os.Signal, 1)

@@ -12,7 +12,7 @@ type Set struct {
 	Class            string          `json:"class,omitempty" xml:"class"`
 	Columns          int             `json:"columns,omitempty" xml:"columns,attr"`
 	FillMode         string          `json:"fillmode,omitempty" xml:"fillmode"`
-	FirstGID         int             `json:"firstgid,omitempty" xml:"firstgid"`
+	FirstGID         int             `json:"firstgid,omitempty" xml:"firstgid,attr"`
 	Grid             Grid            `json:"grid,omitempty" xml:"grid"`
 	Image            string          `json:"image,omitempty" xml:"image,attr"`
 	ImageHeight      int             `json:"imageheight,omitempty" xml:"imageheight,attr"`

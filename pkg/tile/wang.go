@@ -214,7 +214,7 @@ func (wg wangtiles) Tilemap(r geometry.Rect, ts Set) (Map, error) {
 
 			if !ok {
 				// return Map{}, errors.ErrMissingWangSet{ID: ts.ID.String()}
-				id = 1
+				id = 0
 			}
 
 			// collideData = binary.LittleEndian.AppendUint32(collideData, func(f Field) wangid {
