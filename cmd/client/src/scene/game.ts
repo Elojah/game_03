@@ -826,7 +826,12 @@ export class Game extends Scene {
 						const loadTS = (tsName: string) => {
 							const ts = map.addTilesetImage(tsName)
 
-							sets.push(ts!)
+							if (!ts) {
+								console.log('failed to add tileset image ' + tsName)
+								return
+							}
+
+							sets.push(ts)
 
 							console.log('loaded TS ', sets.length, '/', map.tilesets.length)
 							if (sets.length < map.tilesets.length) {
