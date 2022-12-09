@@ -38,6 +38,12 @@ type Set struct {
 	WangSets         []WangSet       `json:"wangsets,omitempty" xml:"wangsets>wangset"`
 }
 
+func (s Set) CleanCopy() Set {
+	s.WangSets = nil
+
+	return s
+}
+
 type FilterSet struct {
 	ID ulid.ID
 }

@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"encoding/xml"
+	"encoding/json"
 
 	gerrors "github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/tile"
@@ -21,7 +21,7 @@ func (h *handler) CreateTileset(ctx context.Context, req *dto.CreateTilesetReq) 
 
 	var ts tile.Set
 
-	if err := xml.Unmarshal(req.Set, &ts); err != nil {
+	if err := json.Unmarshal(req.Set, &ts); err != nil {
 		logger.Error().Err(err).Msg("failed to unmarshal set")
 
 		return &dto.CreateTilesetResp{}, status.New(codes.InvalidArgument, err.Error()).Err()

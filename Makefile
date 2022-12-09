@@ -192,13 +192,13 @@ test:
 .PHONY: clean
 clean:
 	$(info $(M) cleaning binaries…) @
-	$Q rm -rf bin/$(PACKAGE)_$(API)_*
-	$Q rm -rf bin/$(PACKAGE)_$(ADMIN)_*
-	$Q rm -rf bin/$(PACKAGE)_$(AUTH)_*
-	$Q rm -rf bin/$(PACKAGE)_$(WEB_CLIENT)_*
-	$Q rm -rf bin/$(PACKAGE)_$(CLIENT)_*
-	$Q rm -rf bin/$(PACKAGE)_$(WEB_DASHBOARD)_*
-	$Q rm -rf bin/$(PACKAGE)_$(DASHBOARD)_*
+	$Q rm -rf bin/$(PACKAGE)_$(API)*
+	$Q rm -rf bin/$(PACKAGE)_$(ADMIN)*
+	$Q rm -rf bin/$(PACKAGE)_$(AUTH)*
+	$Q rm -rf bin/$(PACKAGE)_$(WEB_CLIENT)*
+	$Q rm -rf bin/$(PACKAGE)_$(CLIENT)*
+	$Q rm -rf bin/$(PACKAGE)_$(WEB_DASHBOARD)*
+	$Q rm -rf bin/$(PACKAGE)_$(DASHBOARD)*
 	$Q rm -rf bin/$(CLIENT)/$(STATIC)
 	$Q rm -rf bin/$(DASHBOARD)/$(STATIC)
 
@@ -207,6 +207,7 @@ clean:
 clean-assets:
 	$(info $(M) cleaning assets…) @
 	$Q rm -rf cmd/$(CLIENT)/img/assets
+	$Q rm -rf cmd/$(CLIENT)/json/assets
 	$Q rm -rf cmd/$(DASHBOARD)/img/assets
 
 ## Helpers

@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/elojah/game_03/pkg/tile"
 	"github.com/elojah/game_03/pkg/tile/dto"
 	"github.com/elojah/game_03/pkg/ulid"
 )
@@ -18,16 +19,30 @@ var tilesetSheets = map[string]dto.CreateTilesetReq{
 
 func run(prog string, input string, output string) {
 	for name, req := range tilesetSheets {
-		xml, err := os.ReadFile(filepath.Join(input, req.ID.String()+".xml"))
+		f, err := os.ReadFile(filepath.Join(input, req.ID.String()+".json"))
 		if err != nil {
 			fmt.Println("failed to read tileset file", err)
 
 			return
 		}
 
-		req.Set = xml
+		var ts tile.Set
+		if err := json.Unmarshal(f, &ts); err != nil {
+			fmt.Println("failed to unmarshal tileset", err)
 
-		raw, err := json.Marshal(req)
+			return
+		}
+
+		raw, err := json.Marshal(ts)
+		if err != nil {
+			fmt.Println("failed to marshal tileset", err)
+
+			return
+		}
+
+		req.Set = raw
+
+		raw, err = json.Marshal(req)
 		if err != nil {
 			fmt.Println("failed to marshal JSON", err)
 

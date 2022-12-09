@@ -3,8 +3,6 @@ package tile
 import (
 	"encoding/base64"
 	"encoding/binary"
-	"math/rand"
-	"strings"
 
 	"github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/geometry"
@@ -26,38 +24,16 @@ type wangid uint8
 // wangtiles represents wangtiles id for tilemap data generation.
 type wangtiles [][]wangid
 
-// grid represents underlying generation structure to create correct wangtiles map.
-type grid [][]bool
-
-// bit structure for fast random node generation (1 or 0).
-type bit struct {
-	n         int64
-	remaining int64
-}
-
-// rand return 1 or 0.
-func (b *bit) rand() bool {
-	if b.remaining <= 0 {
-		b.n = rand.Int63() //nolint: gosec
-		b.remaining = 63
-	}
-
-	b.remaining--
-
-	if b.n&(1<<(b.remaining+1)) > 0 {
-		return true
-	}
-
-	return false
-}
-
 func newWangID(wang string) wangid {
 	result := wangid(0)
 
-	ss := strings.Split(wang, ",")
+	// don't support wang tiles with edge/corner indications != 8
+	if len(wang) != 8 { //nolint: gomnd
+		return result
+	}
 
-	for i := 0; i < 8 && i < len(ss); i++ {
-		if ss[i] == "1" {
+	for i, b := range []byte(wang) {
+		if b == 1 {
 			result |= (1 << (7 - i)) //nolint: gomnd
 		}
 	}
@@ -73,32 +49,6 @@ func newWangIDsMap(wts []WangTile) map[wangid]int {
 	}
 
 	return result
-}
-
-func newGrid(height int64, width int64, t WangType) grid {
-	b := bit{}
-
-	g := make(grid, (2*height)+1) //nolint: gomnd
-	for i := range g {
-		g[i] = make([]bool, (2*width)+1) //nolint: gomnd
-
-		for j := range g[i] {
-			if (t == Corner && (i%2 == 1 || j%2 == 1)) ||
-				(t == Edge && (i%2 == 0 || j%2 == 0)) {
-				// force unwanted nodes to be set false
-				g[i][j] = false
-			} else if i == 0 || j == 0 ||
-				i == len(g)-1 || j == len(g[i])-1 {
-				// force map borders to be set true
-				g[i][j] = true
-			} else {
-				// set random node
-				g[i][j] = b.rand()
-			}
-		}
-	}
-
-	return g
 }
 
 // wangid returns wangid with set byte.
@@ -158,7 +108,7 @@ func (g grid) wangid(i int, j int) wangid {
 
 // NewWangtiles generates a wangid wangtiles.
 func NewWangtiles(height int64, width int64, t WangType) (wangtiles, error) {
-	g := newGrid(height, width, t)
+	g := newRandGrid(height, width, t)
 
 	wg := make(wangtiles, height)
 	for i := range wg {
@@ -194,7 +144,7 @@ func (wg wangtiles) Tilemap(r geometry.Rect, ts Set) (Map, error) {
 	m.Width = int(r.Width)
 	m.NextLayerID = 2
 	m.NextObjectID = 1
-	m.Tilesets = append(m.Tilesets, ts)
+	m.Tilesets = append(m.Tilesets, ts.CleanCopy())
 
 	// Main layer
 	layer := NewLayer()

@@ -80,8 +80,8 @@ function interpolateGraphicEntity(ge: GraphicEntity) {
 type GraphicCell = {
 	Cell: Cell.Cell
 	Tilemap: Phaser.Tilemaps.Tilemap
-	Layers: Map<string, Phaser.Tilemaps.TilemapLayer>
 	Colliders: Map<string, Phaser.Physics.Arcade.Collider>
+	Layers: Map<string, Phaser.Tilemaps.TilemapLayer | null>
 }
 
 type Controls = {
@@ -167,7 +167,7 @@ export class Game extends Scene {
 		this.Blank = {
 			Cell: new Cell.Cell,
 			Tilemap: m,
-			Layers: new Map([['blank', m.createBlankLayer('blank', '')]]),
+			Layers: new Map(),
 			Colliders: new Map()
 		}
 	}
@@ -183,7 +183,7 @@ export class Game extends Scene {
 		// this.Controls.Left = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A)
 		// this.Controls.Right = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D)
 
-		this.Cursors = this.input.keyboard.createCursorKeys();
+		this.Cursors = this.input.keyboard!.createCursorKeys();
 
 		// Connect for entity sync
 		this.connect()
@@ -805,7 +805,7 @@ export class Game extends Scene {
 					}
 
 					const tm = ulid(c.getTilemap_asU8())
-					this.CellLoader.tilemapTiledJSON(tm, 'json/' + tm + '.json')
+					this.CellLoader.tilemapTiledJSON(tm, 'json/assets/' + tm + '.json')
 
 					this.Cells.set(o, {
 						Cell: c,
@@ -824,7 +824,9 @@ export class Game extends Scene {
 						let sets = new Array<Phaser.Tilemaps.Tileset>()
 
 						const loadTS = (tsName: string) => {
-							sets.push(map.addTilesetImage(tsName))
+							const ts = map.addTilesetImage(tsName)
+
+							sets.push(ts!)
 
 							console.log('loaded TS ', sets.length, '/', map.tilesets.length)
 							if (sets.length < map.tilesets.length) {
@@ -841,6 +843,14 @@ export class Game extends Scene {
 
 							map.layers.map((l) => {
 								const layer = map.createLayer(l.name, sets, c.getX() * this.World.getCellwidth(), c.getY() * this.World.getCellheight())
+								if (!layer) {
+									console.log('failed to create layer:', l.name, c.getX(), c.getY())
+									return
+								}
+
+								// TODO: required or not ?
+								layer.setPipeline('main')
+
 								console.log('created layer:', l.name, c.getX(), c.getY())
 								const props = layer.layer.properties as properties[]
 								if (props.find((prop) => { return prop.name == 'collides' && prop.value })) {

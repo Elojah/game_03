@@ -33,7 +33,7 @@ $ ./scripts/create_default_animations.sh
 $ grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '' -plaintext localhost:4282 grpc.Admin/CreateWorld
 ```
 
-Regenerate data from `assets/`:
+Regenerate local data from `assets/external` to `assets/`:
 
 ```sh
 $ go run ./scripts/write_animation/main.go 'assets/animations'
