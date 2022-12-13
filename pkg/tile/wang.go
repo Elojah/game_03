@@ -174,6 +174,7 @@ func (wg wangtiles) Tilemap(r geometry.Rect, ts Set) (Map, error) {
 
 			// 	return 0
 			// }(f))
+
 			data = binary.LittleEndian.AppendUint32(data, uint32(id))
 		}
 	}

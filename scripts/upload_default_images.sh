@@ -126,4 +126,4 @@ cp -r ./assets/external/Characters/Woman/Faceset.png cmd/client/dist/img/assets/
 cp -r ./assets/external/Characters/Woman/Faceset.png cmd/dashboard/dist/img/assets/Woman.png                             # Woman
 
 # Map
-cp -r ./assets/external/Tilesets/01GHE0TD8VC0HJHAEGTWN0AF44.png cmd/client/dist/img/assets/01GHE0TD8VC0HJHAEGTWN0AF44.png # RuinWall
+cp -r ./assets/external/Tilesets/01GHE0TD8VC0HJHAEGTWN0AF44.png cmd/client/dist/img/assets/01GHE0TD8VC0HJHAEGTWN0AF44.png # RuinsWall

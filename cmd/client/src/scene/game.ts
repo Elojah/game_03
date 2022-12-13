@@ -334,7 +334,7 @@ export class Game extends Scene {
 			const id = this.Cells.get(o)?.Cell.getId_asU8()
 			this.Loading = id
 
-			console.log('loading new direction:', o, o.toString(), id)
+			console.log('loading new direction:', o, id)
 
 			if (id) {
 				this.Entity.E.setCellid(id)
@@ -847,16 +847,19 @@ export class Game extends Scene {
 							cc.Tilemap = map
 
 							map.layers.map((l) => {
-								const layer = map.createLayer(l.name, sets, c.getX() * this.World.getCellwidth(), c.getY() * this.World.getCellheight())
+								const x = c.getX() * this.World.getCellwidth()
+								const y = c.getY() * this.World.getCellheight()
+
+								const layer = map.createLayer(l.name, sets, x, y)
 								if (!layer) {
-									console.log('failed to create layer:', l.name, c.getX(), c.getY())
+									console.log('failed to create layer:', l.name, x, y)
 									return
 								}
 
 								// TODO: required or not ?
 								layer.setPipeline('main')
 
-								console.log('created layer:', l.name, c.getX(), c.getY())
+								console.log('created layer:', l.name, x, y)
 								const props = layer.layer.properties as properties[]
 								if (props.find((prop) => { return prop.name == 'collides' && prop.value })) {
 									const collider = this.physics.add.collider(this.Entity.Body, layer.setCollisionByExclusion([-1]))
@@ -938,8 +941,8 @@ export class Game extends Scene {
 					const x = entry.getX() + (this.Cells.get(this.CellsByID.get(ulid(entry.getCellid_asU8()))!)?.Cell.getX()! * this.World.getCellwidth())
 					const y = entry.getX() + (this.Cells.get(this.CellsByID.get(ulid(entry.getCellid_asU8()))!)?.Cell.getY()! * this.World.getCellheight())
 					updateGraphicEntity(this.Entities.get(id)!, x, y)
-					console.log(this.CellsByID.get(ulid(entry.getCellid_asU8()))!)
-					console.log(id, x, y)
+					// console.log(this.CellsByID.get(ulid(entry.getCellid_asU8()))!)
+					// console.log(id, x, y)
 
 					this.Entities.get(id)!.E = entry
 					// this.EntityBuffer.push(ulid(entry.getId_asU8()))

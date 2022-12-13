@@ -13,7 +13,7 @@ type Set struct {
 	Columns          int             `json:"columns,omitempty" xml:"columns,attr"`
 	FillMode         string          `json:"fillmode,omitempty" xml:"fillmode"`
 	FirstGID         int             `json:"firstgid,omitempty" xml:"firstgid,attr"`
-	Grid             Grid            `json:"grid,omitempty" xml:"grid"`
+	Grid             Grid            `json:"-" xml:"grid"`
 	Image            string          `json:"image,omitempty" xml:"image,attr"`
 	ImageHeight      int             `json:"imageheight,omitempty" xml:"imageheight,attr"`
 	ImageWidth       int             `json:"imagewidth,omitempty" xml:"imagewidth,attr"`
@@ -27,11 +27,11 @@ type Set struct {
 	TileCount        int             `json:"tilecount,omitempty" xml:"tilecount,attr"`
 	TiledVersion     string          `json:"tiledversion,omitempty" xml:"tiledversion,attr"`
 	TileHeight       int             `json:"tileheight,omitempty" xml:"tileheight,attr"`
-	TileOffset       Offset          `json:"tileoffset,omitempty" xml:"tileoffset,attr"`
+	TileOffset       Offset          `json:"-" xml:"tileoffset,attr"`
 	TileRenderSize   string          `json:"tilerendersize,omitempty" xml:"tilerendersize"`
 	Tiles            []Tile          `json:"tiles,omitempty" xml:"tiles"`
 	TileWidth        int             `json:"tilewidth,omitempty" xml:"tilewidth,attr"`
-	Transformations  Transformations `json:"transformations,omitempty" xml:"transformations"`
+	Transformations  Transformations `json:"-" xml:"transformations"`
 	TransparentColor string          `json:"transparentcolor,omitempty" xml:"transparentcolor"`
 	Type             string          `json:"type,omitempty" xml:"type,attr"`
 	Version          string          `json:"version,omitempty" xml:"version,attr"`
