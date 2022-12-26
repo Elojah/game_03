@@ -1,0 +1,244 @@
+{
+	"version": "1.5",
+	"tiledversion": "1.7.2",
+	"name": "01GHE0TD8VC0HJHAEGTWN0AF44",
+	"tilewidth": 32,
+	"tileheight": 32,
+	"tilecount": 70,
+	"columns": 10,
+	"image": "../img/assets/01GHE0TD8VC0HJHAEGTWN0AF44.png",
+	"imagewidth": 320,
+	"imageheight": 224,
+	"firstgid": 1,
+	"wangsets": [
+		{
+			"name": "wall",
+			"type": "corner",
+			"tile": 1,
+			"colors": [],
+			"wangtiles": [
+				{
+					"tileid": 2,
+					"wangid": [
+						0,
+						0,
+						0,
+						1,
+						0,
+						0,
+						0,
+						0
+					]
+				},
+				{
+					"tileid": 3,
+					"wangid": [
+						0,
+						0,
+						0,
+						1,
+						0,
+						1,
+						0,
+						0
+					]
+				},
+				{
+					"tileid": 4,
+					"wangid": [
+						0,
+						0,
+						0,
+						0,
+						0,
+						1,
+						0,
+						0
+					]
+				},
+				{
+					"tileid": 11,
+					"wangid": [
+						0,
+						0,
+						0,
+						1,
+						0,
+						0,
+						0,
+						0
+					]
+				},
+				{
+					"tileid": 12,
+					"wangid": [
+						0,
+						1,
+						0,
+						1,
+						0,
+						1,
+						0,
+						0
+					]
+				},
+				{
+					"tileid": 14,
+					"wangid": [
+						0,
+						0,
+						0,
+						1,
+						0,
+						1,
+						0,
+						1
+					]
+				},
+				{
+					"tileid": 15,
+					"wangid": [
+						0,
+						0,
+						0,
+						0,
+						0,
+						1,
+						0,
+						0
+					]
+				},
+				{
+					"tileid": 21,
+					"wangid": [
+						0,
+						1,
+						0,
+						1,
+						0,
+						0,
+						0,
+						0
+					]
+				},
+				{
+					"tileid": 23,
+					"wangid": [
+						0,
+						1,
+						0,
+						1,
+						0,
+						1,
+						0,
+						1
+					]
+				},
+				{
+					"tileid": 25,
+					"wangid": [
+						0,
+						0,
+						0,
+						0,
+						0,
+						1,
+						0,
+						1
+					]
+				},
+				{
+					"tileid": 31,
+					"wangid": [
+						0,
+						1,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0
+					]
+				},
+				{
+					"tileid": 32,
+					"wangid": [
+						0,
+						1,
+						0,
+						1,
+						0,
+						0,
+						0,
+						1
+					]
+				},
+				{
+					"tileid": 34,
+					"wangid": [
+						0,
+						1,
+						0,
+						0,
+						0,
+						1,
+						0,
+						1
+					]
+				},
+				{
+					"tileid": 35,
+					"wangid": [
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						1
+					]
+				},
+				{
+					"tileid": 42,
+					"wangid": [
+						0,
+						1,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0
+					]
+				},
+				{
+					"tileid": 43,
+					"wangid": [
+						0,
+						1,
+						0,
+						0,
+						0,
+						0,
+						0,
+						1
+					]
+				},
+				{
+					"tileid": 44,
+					"wangid": [
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						1
+					]
+				}
+			]
+		}
+	]
+}

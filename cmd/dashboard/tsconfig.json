@@ -6,6 +6,9 @@
 		"esModuleInterop": true,
 		"experimentalDecorators": true,
 		"jsx": "react",
+		"lib": [
+			"dom"
+		],
 		"module": "ESNext",
 		"moduleResolution": "node",
 		"noEmitOnError": true,

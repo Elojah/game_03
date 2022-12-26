@@ -15,6 +15,9 @@ var tilesetSheets = map[string]dto.CreateTilesetReq{
 	"RuinsWall": {
 		ID: ulid.MustParse("01GHE0TD8VC0HJHAEGTWN0AF44"),
 	},
+	"RuinsGrass": {
+		ID: ulid.MustParse("01GMAP5JY8YRHZJ45TRWZA8VHM"),
+	},
 }
 
 func run(prog string, input string, output string) {

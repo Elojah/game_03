@@ -163,6 +163,7 @@ func (wg wangtiles) Tilemap(r geometry.Rect, ts Set) (Map, error) {
 			id, ok := wm[wg[i][j]]
 
 			if !ok {
+				// TODO: should be an error if wang set is complete ?
 				// return Map{}, errors.ErrMissingWangSet{ID: ts.ID.String()}
 				id = 0
 			}

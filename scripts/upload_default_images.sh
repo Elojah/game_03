@@ -127,3 +127,4 @@ cp -r ./assets/external/Characters/Woman/Faceset.png cmd/dashboard/dist/img/asse
 
 # Map
 cp -r ./assets/external/Tilesets/01GHE0TD8VC0HJHAEGTWN0AF44.png cmd/client/dist/img/assets/01GHE0TD8VC0HJHAEGTWN0AF44.png # RuinsWall
+cp -r ./assets/external/Tilesets/01GHE0TD8VC0HJHAEGTWN0AF44.png cmd/client/dist/img/assets/01GMAP5JY8YRHZJ45TRWZA8VHM.png # RuinsGrass

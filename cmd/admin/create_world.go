@@ -79,7 +79,8 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 	}
 
 	// TODO: tile set in parameter ?
-	ts, err := h.tile.FetchSet(ctx, tile.FilterSet{ID: ulid.MustParse("01GHE0TD8VC0HJHAEGTWN0AF44")})
+	// ts, err := h.tile.FetchSet(ctx, tile.FilterSet{ID: ulid.MustParse("01GHE0TD8VC0HJHAEGTWN0AF44")})
+	ts, err := h.tile.FetchSet(ctx, tile.FilterSet{ID: ulid.MustParse("01GMAP5JY8YRHZJ45TRWZA8VHM")})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to fetch tileset")
 
