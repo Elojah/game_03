@@ -255,6 +255,6 @@ func TestGenerate(t *testing.T) {
 			},
 		},
 	} {
-		fmt.Println(generate(d.ws, 5, 5))
+		fmt.Println(generate(d.ws, 100, 100))
 	}
 }

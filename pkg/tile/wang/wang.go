@@ -2,6 +2,8 @@ package wang
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 
 	gtile "github.com/elojah/game_03/pkg/tile"
 )
@@ -18,6 +20,20 @@ const (
 type id int
 
 type color byte
+
+// string method for debug purpose.
+func (cs colors) string() string {
+	b := strings.Builder{}
+	b.WriteByte('_')
+
+	for _, c := range cs {
+		b.WriteString(strconv.Itoa(int(c)))
+	}
+
+	b.WriteByte('_')
+
+	return b.String()
+}
 
 type colors string
 
@@ -55,10 +71,10 @@ func generate(w gtile.WangSet, height int64, width int64) [][]id { //nolint: goc
 		}
 
 		t := tile{
-			top:   colors(wt.WangID[7] + wt.WangID[0] + wt.WangID[1]),
-			right: colors(wt.WangID[1] + wt.WangID[2] + wt.WangID[3]),
-			down:  colors(wt.WangID[3] + wt.WangID[4] + wt.WangID[5]),
-			left:  colors(wt.WangID[5] + wt.WangID[6] + wt.WangID[7]),
+			top:   colors([]byte{wt.WangID[7], wt.WangID[0], wt.WangID[1]}), // left to right
+			right: colors([]byte{wt.WangID[1], wt.WangID[2], wt.WangID[3]}), // top to down
+			down:  colors([]byte{wt.WangID[5], wt.WangID[4], wt.WangID[3]}), // left to right
+			left:  colors([]byte{wt.WangID[7], wt.WangID[6], wt.WangID[5]}), // top to down
 		}
 
 		// add tiles to general usage tiles struct
