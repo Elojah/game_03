@@ -8,6 +8,7 @@ import (
 	"github.com/elojah/game_03/pkg/geometry"
 	"github.com/elojah/game_03/pkg/room"
 	"github.com/elojah/game_03/pkg/tile"
+	"github.com/elojah/game_03/pkg/tile/wang"
 	"github.com/elojah/game_03/pkg/ulid"
 	"github.com/gogo/protobuf/types"
 	"github.com/rs/zerolog/log"
@@ -71,13 +72,6 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 	// #Create world cells
 	cells := w.NewCells()
 
-	g, err := tile.NewWangtiles(w.CellHeight, w.CellWidth, tile.Corner)
-	if err != nil {
-		logger.Error().Err(err).Msg("failed to generate wang tiles")
-
-		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
-	}
-
 	// TODO: tile set in parameter ?
 	// ts, err := h.tile.FetchSet(ctx, tile.FilterSet{ID: ulid.MustParse("01GHE0TD8VC0HJHAEGTWN0AF44")})
 	ts, err := h.tile.FetchSet(ctx, tile.FilterSet{ID: ulid.MustParse("01GMAP5JY8YRHZJ45TRWZA8VHM")})
@@ -86,6 +80,10 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 
 		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
 	}
+
+	var g wang.Grid
+
+	g.Generate(ts.WangSets[0], int64(params.CellHeight*params.Height), int64(params.CellWidth*params.Width))
 
 	// an, err := h.entity.FetchAnimation(ctx, entity.FilterAnimation{
 	// 	ID: ulid.MustParse("01FM1YY76G9879YJSZAFSGJ52Y"),

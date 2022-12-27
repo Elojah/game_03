@@ -1,10 +1,14 @@
 package wang
 
 import (
+	"encoding/base64"
+	"encoding/binary"
 	"fmt"
 	"strconv"
 	"strings"
 
+	"github.com/elojah/game_03/pkg/errors"
+	"github.com/elojah/game_03/pkg/geometry"
 	gtile "github.com/elojah/game_03/pkg/tile"
 )
 
@@ -55,7 +59,51 @@ type orientedTile map[colors]map[id]struct{}
 
 type orientedTiles map[edge]orientedTile
 
-func generate(w gtile.WangSet, height int64, width int64) [][]id { //nolint: gocognit
+type Grid [][]id
+
+func (g Grid) Tilemap(r geometry.Rect, ts gtile.Set) (gtile.Map, error) {
+	if r.Origin.Y < 0 || r.Origin.Y+int64(r.Height) > int64(len(g)) ||
+		r.Origin.X < 0 || r.Origin.X+int64(r.Width) > int64(len(g[r.Origin.Y])) {
+		return gtile.Map{}, errors.ErrInvalidDimension{}
+	}
+
+	m := gtile.NewMap()
+
+	m.Height = int(r.Height)
+	m.Width = int(r.Width)
+	m.NextLayerID = 2
+	m.NextObjectID = 1
+	m.Tilesets = append(m.Tilesets, ts.CleanCopy())
+
+	// Main layer
+	layer := gtile.NewLayer()
+	layer.ID = 1
+	layer.Height = m.Height
+	layer.Width = m.Width
+
+	size := layer.Height * layer.Width
+	data := make([]byte, 0, 4*size) //nolint: gomnd
+
+	for i := r.Origin.Y; i < r.Origin.Y+int64(r.Height); i++ {
+		for j := r.Origin.X; j < r.Origin.X+int64(r.Width); j++ {
+			// collideData = binary.LittleEndian.AppendUint32(collideData, func(f Field) wangid {
+			// 	if f.Collides() {
+			// 		return 1
+			// 	}
+			// 	return 0
+			// }(f))
+			data = binary.LittleEndian.AppendUint32(data, uint32(g[i][j]))
+		}
+	}
+
+	layer.Data = base64.StdEncoding.EncodeToString(data)
+
+	m.Layers = append(m.Layers, layer)
+
+	return m, nil
+}
+
+func (g *Grid) Generate(w gtile.WangSet, height int64, width int64) { //nolint: gocognit
 	ts := make(tiles, len(w.WangTiles))
 	ot := orientedTiles{
 		top:   make(orientedTile),
@@ -106,9 +154,9 @@ func generate(w gtile.WangSet, height int64, width int64) [][]id { //nolint: goc
 		}
 	}
 
-	g := make([][]id, height)
-	for i := range g {
-		g[i] = make([]id, width)
+	result := make(Grid, height)
+	for i := range result {
+		result[i] = make([]id, width)
 	}
 
 	for i := int64(0); i < height; i++ {
@@ -117,11 +165,10 @@ func generate(w gtile.WangSet, height int64, width int64) [][]id { //nolint: goc
 
 			// set only top & left constraints for usual top left run
 			if i > 0 {
-				t, ok := ts[g[i-1][j]]
+				t, ok := ts[result[i-1][j]]
 
 				if !ok {
 					// should never happen, it means we set an invalid id tile in a previous loop
-					fmt.Println("FAILED I with: ", i-1, j, g[i-1][j])
 					continue
 				}
 
@@ -129,11 +176,10 @@ func generate(w gtile.WangSet, height int64, width int64) [][]id { //nolint: goc
 			}
 
 			if j > 0 {
-				t, ok := ts[g[i][j-1]]
+				t, ok := ts[result[i][j-1]]
 
 				if !ok {
 					// should never happen, it means we set an invalid id tile in a previous loop
-					fmt.Println("FAILED J with: ", i, j-1, g[i][j-1])
 					continue
 				}
 
@@ -142,7 +188,7 @@ func generate(w gtile.WangSet, height int64, width int64) [][]id { //nolint: goc
 
 			if len(constraints) == 0 {
 				// no constraints (first tile to put), put random one
-				g[i][j] = ts.rand()
+				result[i][j] = ts.rand()
 
 				continue
 			}
@@ -157,7 +203,7 @@ func generate(w gtile.WangSet, height int64, width int64) [][]id { //nolint: goc
 					// constraint color not found, return invalid index
 					fmt.Println("single constraint not found")
 
-					g[i][j] = 0
+					result[i][j] = 0
 
 					break
 				}
@@ -186,12 +232,12 @@ func generate(w gtile.WangSet, height int64, width int64) [][]id { //nolint: goc
 
 			for k := range candidates {
 				// set first in loop using random map access from golang specification
-				g[i][j] = k
+				result[i][j] = k
 
 				break
 			}
 		}
 	}
 
-	return g
+	*g = result
 }
