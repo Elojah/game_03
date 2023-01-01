@@ -12,6 +12,12 @@ import (
 	gtile "github.com/elojah/game_03/pkg/tile"
 )
 
+// const (
+// 	Corner = "corner"
+// 	Edge   = "edge"
+// 	All    = "all"
+// )
+
 type edge uint8
 
 const (
@@ -71,15 +77,21 @@ func (g Grid) Tilemap(r geometry.Rect, ts gtile.Set) (gtile.Map, error) {
 
 	m.Height = int(r.Height)
 	m.Width = int(r.Width)
-	m.NextLayerID = 2
+	m.NextLayerID = 3
 	m.NextObjectID = 1
 	m.Tilesets = append(m.Tilesets, ts.CleanCopy())
 
-	// Main layer
+	// main layer
 	layer := gtile.NewLayer()
 	layer.ID = 1
 	layer.Height = m.Height
 	layer.Width = m.Width
+
+	// collision layer
+	clayer := gtile.NewLayer()
+	clayer.ID = 2
+	clayer.Height = m.Height
+	clayer.Width = m.Width
 
 	size := layer.Height * layer.Width
 	data := make([]byte, 0, 4*size) //nolint: gomnd

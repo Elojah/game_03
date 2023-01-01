@@ -20,35 +20,10 @@ import (
 func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.StringValue, error) {
 	logger := log.With().Str("method", "create_world").Logger()
 
-	params := tile.Params{
-		Height:          32,   //nolint: gomnd
-		Width:           32,   //nolint: gomnd
-		CellHeight:      34,   //nolint: gomnd
-		CellWidth:       60,   //nolint: gomnd
-		WorldDensity:    0.2,  //nolint: gomnd
-		PlatformDensity: 0.99, //nolint: gomnd
-		PlatformPadding: 0.99, //nolint: gomnd
-		SizeMin:         2,    //nolint: gomnd
-		SizeMax:         30,   //nolint: gomnd
-		Distortion:      0,
-		PathMin:         0,
-		PathMax:         0,
-		PathDistorsion:  0,
-
-		// Set: tile.Set{
-		// 	Columns:     2, //nolint: gomnd
-		// 	FirstGID:    1,
-		// 	Image:       "../img/assets/01GDB3DDM9Q1R1XTSSNNB9CYJV.png",
-		// 	ImageHeight: 32, //nolint: gomnd
-		// 	ImageWidth:  64, //nolint: gomnd
-		// 	Margin:      0,
-		// 	Name:        "01GDB3DDM9Q1R1XTSSNNB9CYJV",
-		// 	Spacing:     0,
-		// 	TileCount:   2,  //nolint: gomnd
-		// 	TileHeight:  32, //nolint: gomnd
-		// 	TileWidth:   32, //nolint: gomnd
-		// },
-	}
+	height := int64(32)     //nolint: gomnd
+	width := int64(32)      //nolint: gomnd
+	cellHeight := int64(34) //nolint: gomnd
+	cellWidth := int64(60)  //nolint: gomnd
 
 	id := ulid.NewID()
 
@@ -56,10 +31,10 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 	w := room.World{
 		ID:         id,
 		Name:       "template_" + id.String(),
-		Height:     int64(params.Height),
-		Width:      int64(params.Width),
-		CellHeight: int64(params.CellHeight) * 32, // TODO: figure out naming here cause it means different than above (x tile_size)
-		CellWidth:  int64(params.CellWidth) * 32,  // TODO: figure out naming here cause it means different than above (x tile_size)
+		Height:     height,
+		Width:      width,
+		CellHeight: cellHeight * 32, // TODO: figure out naming here cause it means different than above (x tile_size)
+		CellWidth:  cellWidth * 32,  // TODO: figure out naming here cause it means different than above (x tile_size)
 	}
 	if err := h.room.InsertWorld(ctx, w); err != nil {
 		logger.Error().Err(err).Msg("failed to create world")
@@ -83,7 +58,7 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 
 	var g wang.Grid
 
-	g.Generate(ts.WangSets[0], int64(params.CellHeight*params.Height), int64(params.CellWidth*params.Width))
+	g.Generate(ts.WangSets[0], cellHeight*height, cellWidth*width)
 
 	// an, err := h.entity.FetchAnimation(ctx, entity.FilterAnimation{
 	// 	ID: ulid.MustParse("01FM1YY76G9879YJSZAFSGJ52Y"),
@@ -101,11 +76,11 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 		for j, c := range cl {
 			m, err := g.Tilemap(geometry.Rect{
 				Origin: geometry.Vec2{
-					X: int64(j) * int64(params.CellWidth),
-					Y: int64(i) * int64(params.CellHeight),
+					X: int64(j) * cellWidth,
+					Y: int64(i) * cellHeight,
 				},
-				Width:  params.CellWidth,
-				Height: params.CellHeight,
+				Width:  uint64(cellWidth),
+				Height: uint64(cellHeight),
 			}, ts)
 			if err != nil {
 				logger.Error().Err(err).Msg("failed to create tilemap")

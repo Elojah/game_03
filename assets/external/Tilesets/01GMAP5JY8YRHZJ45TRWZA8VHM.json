@@ -19,22 +19,42 @@
 				{
 					"class": "void",
 					"name": "void-0",
-					"color": "#000000"
+					"color": "#000000",
+					"property": {
+						"name": "collide",
+						"type": "bool",
+						"value": false
+					}
 				},
 				{
 					"class": "grass",
 					"name": "grass-1",
-					"color": "#00FF00"
+					"color": "#00FF00",
+					"property": {
+						"name": "collide",
+						"type": "bool",
+						"value": false
+					}
 				},
 				{
 					"class": "wall",
 					"name": "wall-2",
-					"color": "#FF0000"
+					"color": "#FF0000",
+					"property": {
+						"name": "collide",
+						"type": "bool",
+						"value": false
+					}
 				},
 				{
 					"class": "fence",
 					"name": "fence-3",
-					"color": "#0000FF"
+					"color": "#0000FF",
+					"property": {
+						"name": "collide",
+						"type": "bool",
+						"value": false
+					}
 				}
 			],
 			"wangtiles": [

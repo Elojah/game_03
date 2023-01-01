@@ -143,7 +143,7 @@ type WangSet struct {
 	Name       string      `json:"name,omitempty" xml:"name,attr"`
 	Properties []Property  `json:"properties,omitempty" xml:"properties"`
 	Tile       int         `json:"tile,omitempty" xml:"tile,attr"`
-	Type       WangType    `json:"type,omitempty" xml:"type,attr"`
+	Type       string      `json:"type,omitempty" xml:"type,attr"`
 	WangTiles  []WangTile  `json:"wangtiles,omitempty" xml:"wangtile"`
 }
 

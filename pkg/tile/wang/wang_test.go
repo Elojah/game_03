@@ -1,6 +1,7 @@
 package wang
 
 import (
+	"fmt"
 	"testing"
 
 	gtile "github.com/elojah/game_03/pkg/tile"
@@ -255,6 +256,11 @@ func TestGenerate(t *testing.T) {
 		},
 	} {
 		_ = d
-		// fmt.Println(generate(d.ws, 100, 100))
+
+		var g Grid
+
+		g.Generate(d.ws, 5, 5)
+
+		fmt.Println(g)
 	}
 }
