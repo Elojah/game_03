@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"os"
 
+	"github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/geometry"
 	"github.com/elojah/game_03/pkg/room"
 	"github.com/elojah/game_03/pkg/tile"
@@ -48,10 +49,25 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 	cells := w.NewCells()
 
 	// TODO: tile set in parameter ?
-	// ts, err := h.tile.FetchSet(ctx, tile.FilterSet{ID: ulid.MustParse("01GHE0TD8VC0HJHAEGTWN0AF44")})
-	ts, err := h.tile.FetchSet(ctx, tile.FilterSet{ID: ulid.MustParse("01GMAP5JY8YRHZJ45TRWZA8VHM")})
+	tsID := ulid.MustParse("01GMAP5JY8YRHZJ45TRWZA8VHM")
+
+	ts, err := h.tile.FetchSet(ctx, tile.FilterSet{ID: tsID})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to fetch tileset")
+
+		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
+	if len(ts.WangSets) == 0 {
+		err := errors.ErrMissingWangSet{ID: tsID.String()}
+		logger.Error().Err(err).Msg("missing wangset in tileset")
+
+		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
+	if len(ts.Tiles) == 0 {
+		err := errors.ErrMissingCollisionLayer{ID: tsID.String()}
+		logger.Error().Err(err).Msg("missing collision layer in tileset")
 
 		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
 	}
@@ -59,6 +75,8 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 	var g wang.Grid
 
 	g.Generate(ts.WangSets[0], cellHeight*height, cellWidth*width)
+
+	collisions := tile.ObjectsByGID(ts.Tiles[0].ObjectGroup.Objects)
 
 	// an, err := h.entity.FetchAnimation(ctx, entity.FilterAnimation{
 	// 	ID: ulid.MustParse("01FM1YY76G9879YJSZAFSGJ52Y"),
@@ -81,7 +99,7 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 				},
 				Width:  uint64(cellWidth),
 				Height: uint64(cellHeight),
-			}, ts)
+			}, ts, collisions)
 			if err != nil {
 				logger.Error().Err(err).Msg("failed to create tilemap")
 

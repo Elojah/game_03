@@ -65,58 +65,10 @@ type orientedTile map[colors]map[id]struct{}
 
 type orientedTiles map[edge]orientedTile
 
-type Grid [][]id
+type wangtiles []gtile.WangTile
 
-func (g Grid) Tilemap(r geometry.Rect, ts gtile.Set) (gtile.Map, error) {
-	if r.Origin.Y < 0 || r.Origin.Y+int64(r.Height) > int64(len(g)) ||
-		r.Origin.X < 0 || r.Origin.X+int64(r.Width) > int64(len(g[r.Origin.Y])) {
-		return gtile.Map{}, errors.ErrInvalidDimension{}
-	}
-
-	m := gtile.NewMap()
-
-	m.Height = int(r.Height)
-	m.Width = int(r.Width)
-	m.NextLayerID = 3
-	m.NextObjectID = 1
-	m.Tilesets = append(m.Tilesets, ts.CleanCopy())
-
-	// main layer
-	layer := gtile.NewLayer()
-	layer.ID = 1
-	layer.Height = m.Height
-	layer.Width = m.Width
-
-	// collision layer
-	clayer := gtile.NewLayer()
-	clayer.ID = 2
-	clayer.Height = m.Height
-	clayer.Width = m.Width
-
-	size := layer.Height * layer.Width
-	data := make([]byte, 0, 4*size) //nolint: gomnd
-
-	for i := r.Origin.Y; i < r.Origin.Y+int64(r.Height); i++ {
-		for j := r.Origin.X; j < r.Origin.X+int64(r.Width); j++ {
-			// collideData = binary.LittleEndian.AppendUint32(collideData, func(f Field) wangid {
-			// 	if f.Collides() {
-			// 		return 1
-			// 	}
-			// 	return 0
-			// }(f))
-			data = binary.LittleEndian.AppendUint32(data, uint32(g[i][j]))
-		}
-	}
-
-	layer.Data = base64.StdEncoding.EncodeToString(data)
-
-	m.Layers = append(m.Layers, layer)
-
-	return m, nil
-}
-
-func (g *Grid) Generate(w gtile.WangSet, height int64, width int64) { //nolint: gocognit
-	ts := make(tiles, len(w.WangTiles))
+func (ws wangtiles) oriented() (tiles, orientedTiles) {
+	ts := make(tiles, len(ws))
 	ot := orientedTiles{
 		top:   make(orientedTile),
 		right: make(orientedTile),
@@ -124,7 +76,7 @@ func (g *Grid) Generate(w gtile.WangSet, height int64, width int64) { //nolint: 
 		left:  make(orientedTile),
 	}
 
-	for _, wt := range w.WangTiles {
+	for _, wt := range ws {
 		// discard wang tiles with missing information
 		if len(wt.WangID) < 8 { //nolint: gomnd
 			continue
@@ -165,6 +117,74 @@ func (g *Grid) Generate(w gtile.WangSet, height int64, width int64) { //nolint: 
 			ot[left][t[left]][id(wt.TileID)] = struct{}{}
 		}
 	}
+
+	return ts, ot
+}
+
+type Grid [][]id
+
+func (g Grid) Tilemap(r geometry.Rect, ts gtile.Set, collisions map[int][]gtile.Object) (gtile.Map, error) {
+	if r.Origin.Y < 0 || r.Origin.Y+int64(r.Height) > int64(len(g)) ||
+		r.Origin.X < 0 || r.Origin.X+int64(r.Width) > int64(len(g[r.Origin.Y])) {
+		return gtile.Map{}, errors.ErrInvalidDimension{}
+	}
+
+	m := gtile.NewMap()
+
+	m.Height = int(r.Height)
+	m.Width = int(r.Width)
+	m.Tilesets = append(m.Tilesets, ts.CleanCopy())
+
+	// main layer
+	layer := gtile.NewLayer()
+	layer.ID = 1
+	layer.Height = m.Height
+	layer.Width = m.Width
+
+	// collision layer
+	clayer := gtile.NewLayer()
+	clayer.ID = 2
+	clayer.Type = "objectlayer"
+	clayer.Properties = append(clayer.Properties, gtile.Property{Name: "collides", Type: "bool", Value: true})
+	clayer.Visible = false
+	clayer.Height = m.Height
+	clayer.Width = m.Width
+
+	size := layer.Height * layer.Width
+	data := make([]byte, 0, 4*size) //nolint: gomnd
+
+	var relativeI, relativeJ int
+
+	for i := r.Origin.Y; i < r.Origin.Y+int64(r.Height); i++ {
+		for j := r.Origin.X; j < r.Origin.X+int64(r.Width); j++ {
+			data = binary.LittleEndian.AppendUint32(data, uint32(g[i][j]))
+
+			// add collide object to clayer
+			if objects, ok := collisions[int(g[i][j])]; ok {
+				for _, o := range objects {
+					o := o
+					o.X += float64(relativeJ * ts.TileWidth)
+					o.Y += float64(relativeI * ts.TileHeight)
+					clayer.Objects = append(clayer.Objects, o)
+				}
+			}
+			relativeJ++
+		}
+		relativeI++
+	}
+
+	layer.Data = base64.StdEncoding.EncodeToString(data)
+
+	m.Layers = append(m.Layers, layer, clayer)
+
+	m.NextLayerID = 3
+	m.NextObjectID = 1
+
+	return m, nil
+}
+
+func (g *Grid) Generate(w gtile.WangSet, height int64, width int64) { //nolint: gocognit
+	ts, ot := wangtiles(w.WangTiles).oriented()
 
 	result := make(Grid, height)
 	for i := range result {
@@ -213,7 +233,8 @@ func (g *Grid) Generate(w gtile.WangSet, height int64, width int64) { //nolint: 
 				c, ok := ot[o][constraint]
 				if !ok {
 					// constraint color not found, return invalid index
-					fmt.Println("single constraint not found")
+					// TODO: error case ? ignore and set 0 ? warning ?
+					// fmt.Println("single constraint not found")
 
 					result[i][j] = 0
 
@@ -239,6 +260,7 @@ func (g *Grid) Generate(w gtile.WangSet, height int64, width int64) { //nolint: 
 			}
 
 			if len(candidates) == 0 {
+				// TODO: error case ? ignore and set 0 ? warning ?
 				fmt.Println("constraints not found")
 			}
 

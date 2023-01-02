@@ -10,6 +10,836 @@
 	"imagewidth": 1152,
 	"imageheight": 448,
 	"firstgid": 1,
+	"tiles": [
+		{
+			"id": 1,
+			"class": "collision",
+			"objectgroup": {
+				"visible": false,
+				"objects": [
+					{
+						"id": 1,
+						"gid": 38,
+						"class": "collision",
+						"x": 10,
+						"y": 14,
+						"width": 16,
+						"height": 18
+					},
+					{
+						"id": 2,
+						"gid": 38,
+						"class": "collision",
+						"x": 10,
+						"y": 14,
+						"width": 22,
+						"height": 17
+					},
+					{
+						"id": 3,
+						"gid": 39,
+						"class": "collision",
+						"x": 0,
+						"y": 14,
+						"width": 32,
+						"height": 17
+					},
+					{
+						"id": 4,
+						"gid": 40,
+						"class": "collision",
+						"x": 0,
+						"y": 14,
+						"width": 21,
+						"height": 17
+					},
+					{
+						"id": 5,
+						"gid": 40,
+						"class": "collision",
+						"x": 5,
+						"y": 14,
+						"width": 16,
+						"height": 18
+					},
+					{
+						"id": 6,
+						"gid": 42,
+						"class": "collision",
+						"x": 0,
+						"y": 0,
+						"width": 22,
+						"height": 31
+					},
+					{
+						"id": 7,
+						"gid": 42,
+						"class": "collision",
+						"x": 0,
+						"y": 0,
+						"width": 32,
+						"height": 23
+					},
+					{
+						"id": 8,
+						"gid": 42,
+						"class": "collision",
+						"x": 6,
+						"y": 0,
+						"width": 16,
+						"height": 32
+					},
+					{
+						"id": 9,
+						"gid": 43,
+						"class": "collision",
+						"x": 0,
+						"y": 0,
+						"width": 32,
+						"height": 23
+					},
+					{
+						"id": 10,
+						"gid": 43,
+						"class": "collision",
+						"x": 10,
+						"y": 0,
+						"width": 22,
+						"height": 31
+					},
+					{
+						"id": 11,
+						"gid": 43,
+						"class": "collision",
+						"x": 10,
+						"y": 0,
+						"width": 16,
+						"height": 32
+					},
+					{
+						"id": 12,
+						"gid": 44,
+						"class": "collision",
+						"x": 0,
+						"y": 0,
+						"width": 20,
+						"height": 31
+					},
+					{
+						"id": 13,
+						"gid": 44,
+						"class": "collision",
+						"x": 6,
+						"y": 14,
+						"width": 16,
+						"height": 18
+					},
+					{
+						"id": 14,
+						"gid": 45,
+						"class": "collision",
+						"x": 0,
+						"y": 0,
+						"width": 21,
+						"height": 31
+					},
+					{
+						"id": 15,
+						"gid": 45,
+						"class": "collision",
+						"x": 5,
+						"y": 0,
+						"width": 16,
+						"height": 32
+					},
+					{
+						"id": 16,
+						"gid": 73,
+						"class": "collision",
+						"x": 10,
+						"y": 14,
+						"width": 22,
+						"height": 18
+					},
+					{
+						"id": 17,
+						"gid": 74,
+						"class": "collision",
+						"x": 10,
+						"y": 0,
+						"width": 16,
+						"height": 31
+					},
+					{
+						"id": 18,
+						"gid": 74,
+						"class": "collision",
+						"x": 0,
+						"y": 14,
+						"width": 26,
+						"height": 17
+					},
+					{
+						"id": 19,
+						"gid": 76,
+						"class": "collision",
+						"x": 5,
+						"y": 0,
+						"width": 16,
+						"height": 31
+					},
+					{
+						"id": 20,
+						"gid": 76,
+						"class": "collision",
+						"x": 5,
+						"y": 14,
+						"width": 27,
+						"height": 17
+					},
+					{
+						"id": 21,
+						"gid": 77,
+						"class": "collision",
+						"x": 0,
+						"y": 14,
+						"width": 22,
+						"height": 17
+					},
+					{
+						"id": 22,
+						"gid": 77,
+						"class": "collision",
+						"x": 6,
+						"y": 14,
+						"width": 16,
+						"height": 18
+					},
+					{
+						"id": 23,
+						"gid": 78,
+						"class": "collision",
+						"x": 0,
+						"y": 0,
+						"width": 32,
+						"height": 23
+					},
+					{
+						"id": 24,
+						"gid": 78,
+						"class": "collision",
+						"x": 0,
+						"y": 0,
+						"width": 21,
+						"height": 31
+					},
+					{
+						"id": 25,
+						"gid": 78,
+						"class": "collision",
+						"x": 5,
+						"y": 0,
+						"width": 16,
+						"height": 32
+					},
+					{
+						"id": 26,
+						"gid": 79,
+						"class": "collision",
+						"x": 0,
+						"y": 0,
+						"width": 32,
+						"height": 23
+					},
+					{
+						"id": 27,
+						"gid": 79,
+						"class": "collision",
+						"x": 10,
+						"y": 0,
+						"width": 16,
+						"height": 32
+					},
+					{
+						"id": 28,
+						"gid": 79,
+						"class": "collision",
+						"x": 10,
+						"y": 0,
+						"width": 22,
+						"height": 31
+					},
+					{
+						"id": 29,
+						"gid": 80,
+						"class": "collision",
+						"x": 12,
+						"y": 0,
+						"width": 20,
+						"height": 31
+					},
+					{
+						"id": 30,
+						"gid": 80,
+						"class": "collision",
+						"x": 10,
+						"y": 14,
+						"width": 16,
+						"height": 18
+					},
+					{
+						"id": 31,
+						"gid": 81,
+						"class": "collision",
+						"x": 12,
+						"y": 0,
+						"width": 20,
+						"height": 31
+					},
+					{
+						"id": 32,
+						"gid": 81,
+						"class": "collision",
+						"x": 10,
+						"y": 14,
+						"width": 16,
+						"height": 18
+					},
+					{
+						"id": 33,
+						"gid": 109,
+						"class": "collision",
+						"x": 10,
+						"y": 0,
+						"width": 16,
+						"height": 32
+					},
+					{
+						"id": 34,
+						"gid": 113,
+						"class": "collision",
+						"x": 6,
+						"y": 0,
+						"width": 16,
+						"height": 32
+					},
+					{
+						"id": 35,
+						"gid": 114,
+						"class": "collision",
+						"x": 0,
+						"y": 0,
+						"width": 26,
+						"height": 31
+					},
+					{
+						"id": 36,
+						"gid": 115,
+						"class": "collision",
+						"x": 5,
+						"y": 0,
+						"width": 27,
+						"height": 31
+					},
+					{
+						"id": 37,
+						"gid": 116,
+						"class": "collision",
+						"x": 0,
+						"y": 0,
+						"width": 32,
+						"height": 31
+					},
+					{
+						"id": 38,
+						"gid": 145,
+						"class": "collision",
+						"x": 10,
+						"y": 0,
+						"width": 16,
+						"height": 32
+					},
+					{
+						"id": 39,
+						"gid": 145,
+						"class": "collision",
+						"x": 10,
+						"y": 15,
+						"width": 22,
+						"height": 17
+					},
+					{
+						"id": 40,
+						"gid": 146,
+						"class": "collision",
+						"x": 0,
+						"y": 15,
+						"width": 26,
+						"height": 17
+					},
+					{
+						"id": 41,
+						"gid": 148,
+						"class": "collision",
+						"x": 6,
+						"y": 15,
+						"width": 26,
+						"height": 17
+					},
+					{
+						"id": 42,
+						"gid": 149,
+						"class": "collision",
+						"x": 6,
+						"y": 0,
+						"width": 16,
+						"height": 32
+					},
+					{
+						"id": 43,
+						"gid": 149,
+						"class": "collision",
+						"x": 0,
+						"y": 15,
+						"width": 22,
+						"height": 17
+					},
+					{
+						"id": 44,
+						"gid": 150,
+						"class": "collision",
+						"x": 0,
+						"y": 0,
+						"width": 20,
+						"height": 31
+					},
+					{
+						"id": 45,
+						"gid": 150,
+						"class": "collision",
+						"x": 0,
+						"y": 14,
+						"width": 32,
+						"height": 17
+					},
+					{
+						"id": 46,
+						"gid": 151,
+						"class": "collision",
+						"x": 12,
+						"y": 0,
+						"width": 20,
+						"height": 31
+					},
+					{
+						"id": 47,
+						"gid": 151,
+						"class": "collision",
+						"x": 0,
+						"y": 14,
+						"width": 32,
+						"height": 17
+					},
+					{
+						"id": 48,
+						"gid": 152,
+						"class": "collision",
+						"x": 12,
+						"y": 0,
+						"width": 20,
+						"height": 23
+					},
+					{
+						"id": 49,
+						"gid": 152,
+						"class": "collision",
+						"x": 0,
+						"y": 14,
+						"width": 22,
+						"height": 17
+					},
+					{
+						"id": 50,
+						"gid": 152,
+						"class": "collision",
+						"x": 6,
+						"y": 14,
+						"width": 16,
+						"height": 18
+					},
+					{
+						"id": 51,
+						"gid": 153,
+						"class": "collision",
+						"x": 12,
+						"y": 0,
+						"width": 20,
+						"height": 23
+					},
+					{
+						"id": 52,
+						"gid": 153,
+						"class": "collision",
+						"x": 0,
+						"y": 14,
+						"width": 22,
+						"height": 17
+					},
+					{
+						"id": 53,
+						"gid": 153,
+						"class": "collision",
+						"x": 6,
+						"y": 14,
+						"width": 16,
+						"height": 18
+					},
+					{
+						"id": 54,
+						"gid": 181,
+						"class": "collision",
+						"x": 11,
+						"y": 0,
+						"width": 21,
+						"height": 23
+					},
+					{
+						"id": 55,
+						"gid": 182,
+						"class": "collision",
+						"x": 0,
+						"y": 0,
+						"width": 26,
+						"height": 23
+					},
+					{
+						"id": 56,
+						"gid": 182,
+						"class": "collision",
+						"x": 10,
+						"y": 15,
+						"width": 22,
+						"height": 17
+					},
+					{
+						"id": 57,
+						"gid": 183,
+						"class": "collision",
+						"x": 0,
+						"y": 15,
+						"width": 32,
+						"height": 17
+					},
+					{
+						"id": 58,
+						"gid": 184,
+						"class": "collision",
+						"x": 6,
+						"y": 0,
+						"width": 26,
+						"height": 23
+					},
+					{
+						"id": 59,
+						"gid": 184,
+						"class": "collision",
+						"x": 0,
+						"y": 15,
+						"width": 22,
+						"height": 17
+					},
+					{
+						"id": 60,
+						"gid": 185,
+						"class": "collision",
+						"x": 0,
+						"y": 0,
+						"width": 21,
+						"height": 23
+					},
+					{
+						"id": 61,
+						"gid": 186,
+						"class": "collision",
+						"x": 0,
+						"y": 15,
+						"width": 26,
+						"height": 17
+					},
+					{
+						"id": 62,
+						"gid": 187,
+						"class": "collision",
+						"x": 6,
+						"y": 15,
+						"width": 26,
+						"height": 17
+					},
+					{
+						"id": 63,
+						"gid": 188,
+						"class": "collision",
+						"x": 0,
+						"y": 0,
+						"width": 20,
+						"height": 23
+					},
+					{
+						"id": 64,
+						"gid": 188,
+						"class": "collision",
+						"x": 10,
+						"y": 14,
+						"width": 16,
+						"height": 18
+					},
+					{
+						"id": 65,
+						"gid": 188,
+						"class": "collision",
+						"x": 10,
+						"y": 14,
+						"width": 22,
+						"height": 17
+					},
+					{
+						"id": 66,
+						"gid": 189,
+						"class": "collision",
+						"x": 0,
+						"y": 0,
+						"width": 20,
+						"height": 23
+					},
+					{
+						"id": 67,
+						"gid": 189,
+						"class": "collision",
+						"x": 10,
+						"y": 14,
+						"width": 16,
+						"height": 18
+					},
+					{
+						"id": 68,
+						"gid": 189,
+						"class": "collision",
+						"x": 10,
+						"y": 14,
+						"width": 22,
+						"height": 17
+					},
+					{
+						"id": 69,
+						"gid": 218,
+						"class": "collision",
+						"x": 11,
+						"y": 0,
+						"width": 21,
+						"height": 23
+					},
+					{
+						"id": 70,
+						"gid": 219,
+						"class": "collision",
+						"x": 0,
+						"y": 0,
+						"width": 32,
+						"height": 23
+					},
+					{
+						"id": 71,
+						"gid": 220,
+						"class": "collision",
+						"x": 0,
+						"y": 0,
+						"width": 21,
+						"height": 23
+					},
+					{
+						"id": 72,
+						"gid": 222,
+						"class": "collision",
+						"x": 0,
+						"y": 0,
+						"width": 26,
+						"height": 23
+					},
+					{
+						"id": 73,
+						"gid": 222,
+						"class": "collision",
+						"x": 10,
+						"y": 0,
+						"width": 16,
+						"height": 32
+					},
+					{
+						"id": 74,
+						"gid": 223,
+						"class": "collision",
+						"x": 6,
+						"y": 0,
+						"width": 26,
+						"height": 23
+					},
+					{
+						"id": 75,
+						"gid": 223,
+						"class": "collision",
+						"x": 6,
+						"y": 0,
+						"width": 16,
+						"height": 32
+					},
+					{
+						"id": 76,
+						"gid": 224,
+						"class": "collision",
+						"x": 11,
+						"y": 0,
+						"width": 21,
+						"height": 23
+					},
+					{
+						"id": 77,
+						"gid": 224,
+						"class": "collision",
+						"x": 0,
+						"y": 14,
+						"width": 22,
+						"height": 17
+					},
+					{
+						"id": 78,
+						"gid": 224,
+						"class": "collision",
+						"x": 6,
+						"y": 14,
+						"width": 16,
+						"height": 18
+					},
+					{
+						"id": 79,
+						"gid": 225,
+						"class": "collision",
+						"x": 11,
+						"y": 0,
+						"width": 21,
+						"height": 23
+					},
+					{
+						"id": 80,
+						"gid": 225,
+						"class": "collision",
+						"x": 0,
+						"y": 14,
+						"width": 22,
+						"height": 17
+					},
+					{
+						"id": 81,
+						"gid": 225,
+						"class": "collision",
+						"x": 6,
+						"y": 14,
+						"width": 16,
+						"height": 18
+					},
+					{
+						"id": 82,
+						"gid": 258,
+						"class": "collision",
+						"x": 0,
+						"y": 0,
+						"width": 21,
+						"height": 31
+					},
+					{
+						"id": 83,
+						"gid": 258,
+						"class": "collision",
+						"x": 0,
+						"y": 14,
+						"width": 32,
+						"height": 17
+					},
+					{
+						"id": 84,
+						"gid": 259,
+						"class": "collision",
+						"x": 11,
+						"y": 0,
+						"width": 21,
+						"height": 31
+					},
+					{
+						"id": 85,
+						"gid": 259,
+						"class": "collision",
+						"x": 0,
+						"y": 14,
+						"width": 32,
+						"height": 17
+					},
+					{
+						"id": 86,
+						"gid": 260,
+						"class": "collision",
+						"x": 0,
+						"y": 0,
+						"width": 20,
+						"height": 23
+					},
+					{
+						"id": 87,
+						"gid": 260,
+						"class": "collision",
+						"x": 10,
+						"y": 14,
+						"width": 16,
+						"height": 18
+					},
+					{
+						"id": 88,
+						"gid": 260,
+						"class": "collision",
+						"x": 10,
+						"y": 14,
+						"width": 22,
+						"height": 17
+					},
+					{
+						"id": 89,
+						"gid": 261,
+						"class": "collision",
+						"x": 0,
+						"y": 0,
+						"width": 20,
+						"height": 23
+					},
+					{
+						"id": 90,
+						"gid": 261,
+						"class": "collision",
+						"x": 10,
+						"y": 14,
+						"width": 16,
+						"height": 18
+					},
+					{
+						"id": 91,
+						"gid": 261,
+						"class": "collision",
+						"x": 10,
+						"y": 14,
+						"width": 22,
+						"height": 17
+					}
+				]
+			}
+		}
+	],
 	"wangsets": [
 		{
 			"name": "ruins",
@@ -43,7 +873,7 @@
 					"property": {
 						"name": "collide",
 						"type": "bool",
-						"value": false
+						"value": true
 					}
 				},
 				{
@@ -53,7 +883,7 @@
 					"property": {
 						"name": "collide",
 						"type": "bool",
-						"value": false
+						"value": true
 					}
 				}
 			],

@@ -90,6 +90,16 @@ type Layer struct {
 	Y                int        `json:"y"`
 }
 
+func ObjectsByGID(os []Object) map[int][]Object {
+	result := make(map[int][]Object)
+
+	for _, o := range os {
+		result[o.GID] = append(result[o.GID], o)
+	}
+
+	return result
+}
+
 func NewLayer() Layer {
 	return Layer{
 		Compression: "",

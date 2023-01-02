@@ -39,6 +39,7 @@ type Set struct {
 }
 
 func (s Set) CleanCopy() Set {
+	s.Tiles = nil
 	s.WangSets = nil
 
 	return s
