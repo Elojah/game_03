@@ -1,9 +1,10 @@
 # game_03
 ---
 
-Dev setup:
+Dev once setup:
 
 ```sh
+$ cd cmd/dashboard && npm install
 $ cd cmd/client && npm install
 $ GO111MODULE=off go get github.com/gogo/protobuf/proto
 $ go install github.com/gogo/protobuf/protoc-gen-gogoslick

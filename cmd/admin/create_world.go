@@ -75,6 +75,7 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 	var g wang.Grid
 
 	g.Generate(ts.WangSets[0], cellHeight*height, cellWidth*width)
+	// g.GenerateFlat(ts.WangSets[0], cellHeight*height, cellWidth*width)
 
 	collisions := tile.ObjectsByGID(ts.Tiles[0].ObjectGroup.Objects)
 

@@ -1,4 +1,4 @@
-import { Scene } from "phaser";
+import { GameObjects, Scene } from "phaser";
 import { grpc } from '@improbable-eng/grpc-web';
 
 import { Mutex } from 'async-mutex';
@@ -81,6 +81,7 @@ type GraphicCell = {
 	Cell: Cell.Cell
 	Tilemap: Phaser.Tilemaps.Tilemap
 	Colliders: Map<string, Phaser.Physics.Arcade.Collider>
+	Objects: Map<string, Phaser.Physics.Arcade.StaticGroup>
 	Layers: Map<string, Phaser.Tilemaps.TilemapLayer | null>
 }
 
@@ -168,7 +169,8 @@ export class Game extends Scene {
 			Cell: new Cell.Cell,
 			Tilemap: m,
 			Layers: new Map(),
-			Colliders: new Map()
+			Colliders: new Map(),
+			Objects: new Map(),
 		}
 	}
 	preload() { }
@@ -425,7 +427,8 @@ export class Game extends Scene {
 							Cell: c,
 							Tilemap: this.Blank.Tilemap,
 							Layers: this.Blank.Layers,
-							Colliders: this.Blank.Colliders
+							Colliders: this.Blank.Colliders,
+							Objects: this.Blank.Objects
 						})
 
 						this.Cells.delete(Orientation.Up)
@@ -812,6 +815,7 @@ export class Game extends Scene {
 						Tilemap: this.Blank.Tilemap,
 						Layers: new Map(),
 						Colliders: new Map(),
+						Objects: new Map(),
 					})
 					this.CellsByID.set(ulid(c.getId_asU8()), o)
 
@@ -846,10 +850,10 @@ export class Game extends Scene {
 
 							cc.Tilemap = map
 
-							map.layers.map((l) => {
-								const x = c.getX() * this.World.getCellwidth()
-								const y = c.getY() * this.World.getCellheight()
+							const x = c.getX() * this.World.getCellwidth()
+							const y = c.getY() * this.World.getCellheight()
 
+							map.layers.map((l) => {
 								const layer = map.createLayer(l.name, sets, x, y)
 								if (!layer) {
 									console.log('failed to create layer:', l.name, x, y)
@@ -860,12 +864,27 @@ export class Game extends Scene {
 								layer.setPipeline('main')
 
 								console.log('created layer:', l.name, x, y)
-								const props = layer.layer.properties as properties[]
-								if (props.find((prop) => { return prop.name == 'collides' && prop.value })) {
-									const collider = this.physics.add.collider(this.Entity.Body, layer.setCollisionByExclusion([-1]))
-									cc.Colliders.set(l.name, collider)
-								}
 								cc.Layers.set(l.name, layer)
+							})
+
+							// add objects
+							map.objects.map((os) => {
+								const objects = map.createFromObjects(os.name, {}, false) as Phaser.GameObjects.Sprite[]
+
+								// offset on layer position
+								const group = this.physics.add.staticGroup(objects.map((o) => {
+									o.x += x
+									o.y += y
+									o.setOrigin(0.5, -0.5)
+
+									return o
+								}))
+								cc.Objects.set(os.name, group)
+
+								const collider = this.physics.add.collider(this.Entity.Body, group)
+
+								console.log('created object layer:', os.name)
+								cc.Colliders.set(os.name, collider)
 							})
 
 							// Loading reset
@@ -920,6 +939,12 @@ export class Game extends Scene {
 					}
 				})
 
+				c.Objects.forEach((v, k) => {
+					if (v.world) {
+						v.destroy(true, true)
+					}
+				})
+
 				c.Tilemap.destroy()
 			}
 		})
@@ -950,7 +975,7 @@ export class Game extends Scene {
 					// create associated sprite
 					if (id == ulid(this.Entity.E.getId_asU8())) {
 						this.Entity.Body.destroy()
-						this.Entity.Body = this.physics.add.sprite(entry.getX(), entry.getY(), id)
+						this.Entity.Body = this.physics.add.sprite(entry.getX(), entry.getY(), id).setSize(16, 16).setOffset(0, 0)
 
 						console.log('set body from server info')
 						this.Entity.E.setX(entry.getX())

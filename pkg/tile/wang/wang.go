@@ -12,12 +12,6 @@ import (
 	gtile "github.com/elojah/game_03/pkg/tile"
 )
 
-// const (
-// 	Corner = "corner"
-// 	Edge   = "edge"
-// 	All    = "all"
-// )
-
 type edge uint8
 
 const (
@@ -53,8 +47,7 @@ type tiles map[id]tile
 
 func (ts tiles) rand() id {
 	for id := range ts {
-		// return first iteration, using random map access iteration from go specification
-		// to fetch a random element
+		// return first iteration, using random map access iteration to fetch a random element
 		return id
 	}
 
@@ -144,8 +137,8 @@ func (g Grid) Tilemap(r geometry.Rect, ts gtile.Set, collisions map[int][]gtile.
 	// collision layer
 	clayer := gtile.NewLayer()
 	clayer.ID = 2
-	clayer.Type = "objectlayer"
-	clayer.Properties = append(clayer.Properties, gtile.Property{Name: "collides", Type: "bool", Value: true})
+	clayer.Type = "objectgroup"
+	clayer.Properties = append(clayer.Properties, gtile.Property{Name: "collision", Type: "bool", Value: true})
 	clayer.Visible = false
 	clayer.Height = m.Height
 	clayer.Width = m.Width
@@ -156,6 +149,8 @@ func (g Grid) Tilemap(r geometry.Rect, ts gtile.Set, collisions map[int][]gtile.
 	var relativeI, relativeJ int
 
 	for i := r.Origin.Y; i < r.Origin.Y+int64(r.Height); i++ {
+		relativeJ = 0
+
 		for j := r.Origin.X; j < r.Origin.X+int64(r.Width); j++ {
 			data = binary.LittleEndian.AppendUint32(data, uint32(g[i][j]))
 
@@ -177,10 +172,26 @@ func (g Grid) Tilemap(r geometry.Rect, ts gtile.Set, collisions map[int][]gtile.
 
 	m.Layers = append(m.Layers, layer, clayer)
 
+	m.NextObjectID = 1000
 	m.NextLayerID = 3
-	m.NextObjectID = 1
 
 	return m, nil
+}
+
+// GenerateFlat is a debug function to display flat tileset.
+func (g *Grid) GenerateFlat(w gtile.WangSet, height int64, width int64) {
+	result := make(Grid, height)
+	for i := range result {
+		result[i] = make([]id, width)
+	}
+
+	for i := int64(0); i < height; i++ {
+		for j := int64(0); j < width; j++ {
+			result[i][j] = id(((i * height) + width + 1) % 504)
+		}
+	}
+
+	*g = result
 }
 
 func (g *Grid) Generate(w gtile.WangSet, height int64, width int64) { //nolint: gocognit
