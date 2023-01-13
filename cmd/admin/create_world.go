@@ -34,8 +34,8 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 		Name:       "template_" + id.String(),
 		Height:     height,
 		Width:      width,
-		CellHeight: cellHeight * 32, // TODO: figure out naming here cause it means different than above (x tile_size)
-		CellWidth:  cellWidth * 32,  // TODO: figure out naming here cause it means different than above (x tile_size)
+		CellHeight: cellHeight * 32, // TODO: figure out naming here cause it means different than above (* tile_size)
+		CellWidth:  cellWidth * 32,  // TODO: figure out naming here cause it means different than above (* tile_size)
 	}
 	if err := h.room.InsertWorld(ctx, w); err != nil {
 		logger.Error().Err(err).Msg("failed to create world")
@@ -72,9 +72,13 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
+	// Create basic template
+	wt := wang.NewTemplate(ts.WangSets[0], cellHeight*height, cellWidth*width)
+
 	var g wang.Grid
 
-	g.Generate(ts.WangSets[0], cellHeight*height, cellWidth*width)
+	// Generate with wang constraints
+	g.Generate(ts.WangSets[0], cellHeight*height, cellWidth*width, wt.Heuristic())
 	// g.GenerateFlat(ts.WangSets[0], cellHeight*height, cellWidth*width)
 
 	collisions := tile.ObjectsByGID(ts.Tiles[0].ObjectGroup.Objects)

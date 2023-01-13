@@ -3,7 +3,6 @@ package wang
 import (
 	"encoding/base64"
 	"encoding/binary"
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -178,23 +177,25 @@ func (g Grid) Tilemap(r geometry.Rect, ts gtile.Set, collisions map[int][]gtile.
 	return m, nil
 }
 
-// GenerateFlat is a debug function to display flat tileset.
-func (g *Grid) GenerateFlat(w gtile.WangSet, height int64, width int64) {
-	result := make(Grid, height)
-	for i := range result {
-		result[i] = make([]id, width)
-	}
+type Heuristic func(candidates map[id]struct{}, x int64, y int64, ts tiles) id
 
-	for i := int64(0); i < height; i++ {
-		for j := int64(0); j < width; j++ {
-			result[i][j] = id(((i * height) + width + 1) % 504)
-		}
-	}
+// // GenerateFlat is a debug function to display flat tileset.
+// func (g *Grid) GenerateFlat(w gtile.WangSet, height int64, width int64) {
+// 	result := make(Grid, height)
+// 	for i := range result {
+// 		result[i] = make([]id, width)
+// 	}
 
-	*g = result
-}
+// 	for i := int64(0); i < height; i++ {
+// 		for j := int64(0); j < width; j++ {
+// 			result[i][j] = id(((i * height) + width + 1) % 504)
+// 		}
+// 	}
 
-func (g *Grid) Generate(w gtile.WangSet, height int64, width int64) { //nolint: gocognit
+// 	*g = result
+// }
+
+func (g *Grid) Generate(w gtile.WangSet, height int64, width int64, h Heuristic) { //nolint: gocognit
 	ts, ot := wangtiles(w.WangTiles).oriented()
 
 	result := make(Grid, height)
@@ -271,16 +272,16 @@ func (g *Grid) Generate(w gtile.WangSet, height int64, width int64) { //nolint: 
 			}
 
 			if len(candidates) == 0 {
+				// constraint color not found, return invalid index
 				// TODO: error case ? ignore and set 0 ? warning ?
-				fmt.Println("constraints not found")
-			}
+				// fmt.Println("single constraint not found")
 
-			for k := range candidates {
-				// set first in loop using random map access from golang specification
-				result[i][j] = k
+				result[i][j] = 0
 
 				break
 			}
+
+			result[i][j] = h(candidates, i, j, ts)
 		}
 	}
 
