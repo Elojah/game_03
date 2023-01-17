@@ -169,10 +169,13 @@ func (g Grid) Tilemap(r geometry.Rect, ts gtile.Set, collisions map[int][]gtile.
 
 	layer.Data = base64.StdEncoding.EncodeToString(data)
 
-	m.Layers = append(m.Layers, layer, clayer)
+	m.Layers = append(m.Layers, layer)
+	m.NextLayerID = 2
 
-	m.NextObjectID = 1000
-	m.NextLayerID = 3
+	if len(clayer.Objects) > 0 {
+		m.Layers = append(m.Layers, clayer)
+		m.NextLayerID = 3
+	}
 
 	return m, nil
 }

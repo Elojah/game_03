@@ -112,7 +112,6 @@ init:  ## Setup initial content
 	$Q ./scripts/create_default_templates.sh
 	$Q ./scripts/create_default_tilesets.sh
 	$Q ./scripts/create_default_animations.sh
-	$Q grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '' -plaintext localhost:4282 grpc.Admin/CreateWorld
 
 # Proto lang
 .PHONY: proto-go proto-ts
