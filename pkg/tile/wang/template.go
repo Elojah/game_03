@@ -30,14 +30,14 @@ func NewTemplate(w gtile.WangSet, height int64, width int64) Template {
 		}
 	}
 
-	nPlatforms := 30 + rand.Int63n((height/100)*(width/100))
+	nPlatforms := int64(1000)
 	for n := int64(0); n < nPlatforms; n++ {
 		p := geometry.Vec2{
 			X: rand.Int63n(width - 1),
 			Y: rand.Int63n(height - 1),
 		}
-		w := 1000 + rand.Int63n(width/200)
-		h := 1000 + rand.Int63n(height/200)
+		w := 10 + rand.Int63n(100)
+		h := 10 + rand.Int63n(100)
 
 		for i := p.Y; i < p.Y+h && i < int64(len(t)); i++ {
 			for j := p.X; j < p.X+w && j < int64(len(t[i])); j++ {
