@@ -1,6 +1,8 @@
 package tile
 
-import "github.com/elojah/game_03/pkg/ulid"
+import (
+	"github.com/elojah/game_03/pkg/ulid"
+)
 
 type Map struct {
 	BackgroundColor  string     `json:"backgroundcolor,omitempty"`
