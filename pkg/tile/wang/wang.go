@@ -155,6 +155,7 @@ func (g Grid) Tilemap(r geometry.Rect, ts gtile.Set, collisions map[int][]gtile.
 
 			// add collide object to clayer
 			if objects, ok := collisions[int(g[i][j])]; ok {
+				objects := gtile.Objects(objects).MinimumDissection()
 				for _, o := range objects {
 					o := o
 					o.X += float64(relativeJ * ts.TileWidth)
@@ -181,6 +182,14 @@ func (g Grid) Tilemap(r geometry.Rect, ts gtile.Set, collisions map[int][]gtile.
 }
 
 type Heuristic func(candidates map[id]struct{}, x int64, y int64, ts tiles) id
+
+func DefaultHeuristic(candidates map[id]struct{}, x int64, y int64, ts tiles) id {
+	for k := range candidates {
+		return k
+	}
+
+	return 0
+}
 
 // // GenerateFlat is a debug function to display flat tileset.
 // func (g *Grid) GenerateFlat(w gtile.WangSet, height int64, width int64) {

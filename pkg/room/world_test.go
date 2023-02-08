@@ -1,7 +1,6 @@
 package room_test
 
 import (
-	"fmt"
 	testing "testing"
 
 	"github.com/elojah/game_03/pkg/room"
@@ -16,9 +15,7 @@ func TestNewCells(t *testing.T) {
 	cs := w.NewCells()
 	for _, cl := range cs {
 		for _, c := range cl {
-			fmt.Printf("X:%d/Y:%d   -   ", c.X, c.Y)
+			_ = c
 		}
-
-		fmt.Println("")
 	}
 }

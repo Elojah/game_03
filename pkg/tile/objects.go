@@ -41,9 +41,13 @@ func (os Objects) splitGrid() ([]float64, []float64, [][]bool) {
 	sort.Float64s(xSplit)
 	sort.Float64s(ySplit)
 
-	values := make([][]bool, len(ySplit))
+	if len(xSplit) < 2 || len(ySplit) < 2 {
+		return nil, nil, nil
+	}
+
+	values := make([][]bool, len(ySplit)-1)
 	for i := range values {
-		values[i] = make([]bool, len(xSplit))
+		values[i] = make([]bool, len(xSplit)-1)
 	}
 
 	for _, o := range os {
@@ -77,9 +81,9 @@ func (os Objects) splitGrid() ([]float64, []float64, [][]bool) {
 			}
 		}
 
-		for i := xMin; i < xMax; i++ {
-			for j := yMin; j < yMax; j++ {
-				values[i][j] = false
+		for i := yMin; i < yMax; i++ {
+			for j := xMin; j < xMax; j++ {
+				values[i][j] = true
 			}
 		}
 	}
@@ -92,7 +96,7 @@ func (os Objects) splitGrid() ([]float64, []float64, [][]bool) {
 func dissectRectangles(grid [][]bool) []geometry.Rect { //nolint: gocognit
 	var result []geometry.Rect
 
-	findNext := func() (geometry.Rect, bool) {
+	findNext := func(grid [][]bool) (geometry.Rect, bool) {
 		for i, line := range grid {
 			for j, val := range line {
 				if val {
@@ -106,7 +110,7 @@ func dissectRectangles(grid [][]bool) []geometry.Rect { //nolint: gocognit
 					}
 
 					for jj := j + 1; jj < len(grid[i]); jj++ {
-						if jj == len(grid[i])-1 || !grid[i][jj] {
+						if !grid[i][jj] {
 							break
 						}
 						r.Width++
@@ -115,7 +119,7 @@ func dissectRectangles(grid [][]bool) []geometry.Rect { //nolint: gocognit
 					var incomplete bool
 
 					for ii := i + 1; ii < len(grid); ii++ {
-						for jj := j; uint64(jj) < r.Width; jj++ {
+						for jj := j; uint64(jj) < uint64(j)+r.Width; jj++ {
 							if !grid[ii][jj] {
 								incomplete = true
 
@@ -137,13 +141,13 @@ func dissectRectangles(grid [][]bool) []geometry.Rect { //nolint: gocognit
 		return geometry.Rect{}, false
 	}
 
-	for r, ok := findNext(); ok; {
+	for r, ok := findNext(grid); ok; r, ok = findNext(grid) {
 		result = append(result, r)
 
 		// add rectangle to grid
-		for i := r.Origin.Y; i < int64(r.Height); i++ {
-			for j := r.Origin.X; j < int64(r.Width); j++ {
-				grid[i][j] = true
+		for i := r.Origin.Y; i < r.Origin.Y+int64(r.Height); i++ {
+			for j := r.Origin.X; j < r.Origin.X+int64(r.Width); j++ {
+				grid[i][j] = false
 			}
 		}
 	}

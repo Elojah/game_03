@@ -10,7 +10,7 @@ import (
 
 type Template [][]color
 
-func NewTemplate(w gtile.WangSet, height int64, width int64) Template {
+func NewTemplate(w gtile.WangSet, height int64, width int64) Template { //nolint: gocognit
 	rand.Seed(time.Now().UnixNano())
 
 	t := make(Template, (2*height)+1) //nolint: gomnd
@@ -30,7 +30,7 @@ func NewTemplate(w gtile.WangSet, height int64, width int64) Template {
 		// }
 	}
 
-	randPlatforms := int64(width * height / 1000)
+	randPlatforms := width * height / 1000
 	nPlatforms := randPlatforms + rand.Int63n(randPlatforms)
 	for n := int64(0); n < nPlatforms; n++ {
 		p := geometry.Vec2{
