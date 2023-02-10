@@ -155,7 +155,6 @@ func (g Grid) Tilemap(r geometry.Rect, ts gtile.Set, collisions map[int][]gtile.
 
 			// add collide object to clayer
 			if objects, ok := collisions[int(g[i][j])]; ok {
-				objects := gtile.Objects(objects).MinimumDissection()
 				for _, o := range objects {
 					o := o
 					o.X += float64(relativeJ * ts.TileWidth)
@@ -174,6 +173,8 @@ func (g Grid) Tilemap(r geometry.Rect, ts gtile.Set, collisions map[int][]gtile.
 	m.NextLayerID = 2
 
 	if len(clayer.Objects) > 0 {
+		clayer.Objects = gtile.Objects(clayer.Objects).MinimumDissection()
+
 		m.Layers = append(m.Layers, clayer)
 		m.NextLayerID = 3
 	}

@@ -875,7 +875,6 @@ export class Game extends Scene {
 								const group = this.physics.add.staticGroup(objects.map((o) => {
 									o.x += x
 									o.y += y
-									o.setOrigin(0.5, -0.5)
 
 									return o
 								}))

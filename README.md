@@ -45,6 +45,9 @@ $ go run ./scripts/write_tileset/main.go 'assets/external/Tilesets' 'assets/tile
 ---
 
 - Manage map creation
+  + Fix objects on first line being misplaced/disappeared
+  + Fix collision objects being misplaced
+  + Fix collision values gaps in `.json` adding useless rectangles in min dissection
 - Remove `Math.round()` in `game.ts` and set entity.X entity.Y as float64 to fit Phaser.Body x/y
 
 

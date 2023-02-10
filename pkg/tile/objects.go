@@ -9,37 +9,37 @@ import (
 type Objects []Object
 
 // splitGrid split objects into integer grid.
-func (os Objects) splitGrid() ([]float64, []float64, [][]bool) {
-	var xSplit, ySplit []float64
+func (os Objects) splitGrid() ([]int64, []int64, [][]bool) {
+	var xSplit, ySplit []int64
 
-	xUnique := make(map[float64]struct{})
-	yUnique := make(map[float64]struct{})
+	xUnique := make(map[int64]struct{})
+	yUnique := make(map[int64]struct{})
 
 	// remove duplicates
 	for _, o := range os {
-		if _, ok := xUnique[o.X]; !ok {
-			xSplit = append(xSplit, o.X)
-			xUnique[o.X] = struct{}{}
+		if _, ok := xUnique[int64(o.X)]; !ok {
+			xSplit = append(xSplit, int64(o.X))
+			xUnique[int64(o.X)] = struct{}{}
 		}
 
-		if _, ok := xUnique[o.X+o.Width]; !ok {
-			xSplit = append(xSplit, o.X+o.Width)
-			xUnique[o.X+o.Width] = struct{}{}
+		if _, ok := xUnique[int64(o.X)+int64(o.Width)]; !ok {
+			xSplit = append(xSplit, int64(o.X)+int64(o.Width))
+			xUnique[int64(o.X)+int64(o.Width)] = struct{}{}
 		}
 
-		if _, ok := yUnique[o.Y]; !ok {
-			ySplit = append(ySplit, o.Y)
-			yUnique[o.Y] = struct{}{}
+		if _, ok := yUnique[int64(o.Y)]; !ok {
+			ySplit = append(ySplit, int64(o.Y))
+			yUnique[int64(o.Y)] = struct{}{}
 		}
 
-		if _, ok := yUnique[o.Y+o.Height]; !ok {
-			ySplit = append(ySplit, o.Y+o.Height)
-			yUnique[o.Y+o.Height] = struct{}{}
+		if _, ok := yUnique[int64(o.Y)+int64(o.Height)]; !ok {
+			ySplit = append(ySplit, int64(o.Y)+int64(o.Height))
+			yUnique[int64(o.Y)+int64(o.Height)] = struct{}{}
 		}
 	}
 
-	sort.Float64s(xSplit)
-	sort.Float64s(ySplit)
+	sort.Slice(xSplit, func(i, j int) bool { return xSplit[i] < xSplit[j] })
+	sort.Slice(ySplit, func(i, j int) bool { return ySplit[i] < ySplit[j] })
 
 	if len(xSplit) < 2 || len(ySplit) < 2 {
 		return nil, nil, nil
@@ -55,11 +55,11 @@ func (os Objects) splitGrid() ([]float64, []float64, [][]bool) {
 		var xMin, xMax int64
 
 		for i, x := range xSplit {
-			if x == o.X {
+			if x == int64(o.X) {
 				xMin = int64(i)
 			}
 
-			if x == o.X+o.Width {
+			if x == int64(o.X)+int64(o.Width) {
 				xMax = int64(i)
 
 				break
@@ -70,11 +70,11 @@ func (os Objects) splitGrid() ([]float64, []float64, [][]bool) {
 		var yMin, yMax int64
 
 		for i, y := range ySplit {
-			if y == o.Y {
+			if y == int64(o.Y) {
 				yMin = int64(i)
 			}
 
-			if y == o.Y+o.Height {
+			if y == int64(o.Y)+int64(o.Height) {
 				yMax = int64(i)
 
 				break
@@ -163,10 +163,10 @@ func (os Objects) MinimumDissection() Objects {
 	result := make([]Object, 0, len(rs))
 	for _, r := range rs {
 		result = append(result, Object{
-			X:      xSplit[r.Origin.X],
-			Y:      ySplit[r.Origin.Y],
-			Width:  xSplit[r.Origin.X+int64(r.Width)] - xSplit[r.Origin.X],
-			Height: ySplit[r.Origin.Y+int64(r.Height)] - ySplit[r.Origin.Y],
+			X:      float64(xSplit[r.Origin.X]),
+			Y:      float64(ySplit[r.Origin.Y]),
+			Width:  float64(xSplit[r.Origin.X+int64(r.Width)] - xSplit[r.Origin.X]),
+			Height: float64(ySplit[r.Origin.Y+int64(r.Height)] - ySplit[r.Origin.Y]),
 		})
 	}
 
