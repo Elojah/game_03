@@ -11,20 +11,21 @@ $ go install github.com/gogo/protobuf/protoc-gen-gogoslick
 $ cat scripts/add_localhost.hosts | sudo tee -a /etc/hosts > /dev/null
 ```
 
-Setup:
+Dev setup:
 
 ```sh
 $ docker-compose up -d # wait ~10 sec for scylla to boot
 $ cat scripts/keyspace.cql | docker exec -i game_03_scylla cqlsh
 $ make admin && ./bin/game_03_admin config/admin/local.json
 $ grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '"cql"' -plaintext localhost:4282 grpc.Admin/MigrateUp
+$ make init
 $ make api && ./bin/game_03_api config/api/local.json
 $ make auth && ./bin/game_03_auth config/auth/local.json
 $ make client
 $ make web_client && ./bin/game_03_web config/web_client/local.json
 ```
 
-Upload data:
+Upload assets (`make init`):
 
 ```sh
 $ ./scripts/upload_default_images.sh
@@ -34,7 +35,7 @@ $ ./scripts/create_default_animations.sh
 $ grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '' -plaintext localhost:4282 grpc.Admin/CreateWorld
 ```
 
-Regenerate local data from `assets/external` to `assets/`:
+Regenerate assets from `assets/external` to `assets/`:
 
 ```sh
 $ go run ./scripts/write_animation/main.go 'assets/animations'

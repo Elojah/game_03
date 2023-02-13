@@ -8,6 +8,12 @@ import (
 	gtile "github.com/elojah/game_03/pkg/tile"
 )
 
+const (
+	void  = 0
+	grass = 1
+	fence = 3
+)
+
 type Template [][]color
 
 func NewTemplate(w gtile.WangSet, height int64, width int64) Template { //nolint: gocognit
@@ -17,17 +23,6 @@ func NewTemplate(w gtile.WangSet, height int64, width int64) Template { //nolint
 
 	for i := 0; i < len(t); i++ {
 		t[i] = make([]color, (2*width)+1) //nolint: gomnd
-		// for j := 0; j < len(t[i]); j++ {
-		// 	if i == 0 || j == 0 ||
-		// 		i == len(t)-1 || j == len(t[i])-1 {
-		// 		t[i][j] = 0 // void
-		// 	} else if i == 1 || j == 1 ||
-		// 		i == len(t)-2 || j == len(t[i])-2 {
-		// 		t[i][j] = 3 // fence
-		// 	} else {
-		// 		t[i][j] = 0 // void
-		// 	}
-		// }
 	}
 
 	randPlatforms := width * height / 1000
@@ -46,14 +41,27 @@ func NewTemplate(w gtile.WangSet, height int64, width int64) Template { //nolint
 					continue
 				}
 
+				// basic platform template
 				if i == p.Y || j == p.X ||
 					i == p.Y+h-1 || j == p.X+w-1 {
-					t[i][j] = 0 // void
+					t[i][j] = void // void
 				} else if i == p.Y+1 || j == p.X+1 ||
 					i == p.Y+h-2 || j == p.X+w-2 {
-					t[i][j] = 3 // fence
+					t[i][j] = fence // fence
 				} else {
-					t[i][j] = 1 // grass
+					t[i][j] = grass // grass
+				}
+
+				// remove 1 tile grass paths because frustrating
+				if i > 1 &&
+					(t[i-2][j] == fence || t[i-2][j] == void) &&
+					t[i-1][j] == grass {
+					t[i][j] = grass
+				}
+				if j > 1 &&
+					(t[i][j-2] == fence || t[i][j-2] == void) &&
+					t[i][j-1] == grass {
+					t[i][j] = grass
 				}
 			}
 		}
