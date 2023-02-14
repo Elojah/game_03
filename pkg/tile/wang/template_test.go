@@ -1,19 +1,24 @@
 package wang_test
 
 import (
+	"fmt"
 	"testing"
 
 	gtile "github.com/elojah/game_03/pkg/tile"
 	"github.com/elojah/game_03/pkg/tile/wang"
 )
 
-func TestGridGenerate(t *testing.T) {
+func TestNewTemplate(t *testing.T) {
 	for _, d := range []struct {
-		name string
-		ws   gtile.WangSet
+		name   string
+		ws     gtile.WangSet
+		height int64
+		width  int64
 	}{
 		{
-			name: "basic",
+			name:   "basic",
+			height: 100,
+			width:  70,
 			ws: gtile.WangSet{
 				WangTiles: []gtile.WangTile{
 					{
@@ -36,7 +41,9 @@ func TestGridGenerate(t *testing.T) {
 			},
 		},
 		{
-			name: "complex",
+			name:   "complex",
+			height: 100,
+			width:  70,
 			ws: gtile.WangSet{
 				WangTiles: []gtile.WangTile{
 					{
@@ -255,10 +262,8 @@ func TestGridGenerate(t *testing.T) {
 			},
 		},
 	} {
-		_ = d
+		t := wang.NewTemplate(d.ws, d.height, d.width)
 
-		var g wang.Grid
-
-		g.Generate(d.ws, 5, 5, wang.DefaultHeuristic)
+		fmt.Println(t.String())
 	}
 }

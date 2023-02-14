@@ -183,7 +183,7 @@
 						"id": 19,
 						"gid": 76,
 						"class": "collision",
-						"x": 5,
+						"x": 6,
 						"y": 0,
 						"width": 16,
 						"height": 31
@@ -192,9 +192,9 @@
 						"id": 20,
 						"gid": 76,
 						"class": "collision",
-						"x": 5,
+						"x": 6,
 						"y": 14,
-						"width": 27,
+						"width": 26,
 						"height": 17
 					},
 					{

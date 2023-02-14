@@ -2,6 +2,8 @@ package wang
 
 import (
 	"math/rand"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/elojah/game_03/pkg/geometry"
@@ -12,6 +14,8 @@ const (
 	void  = 0
 	grass = 1
 	fence = 3
+
+	templatePathWidth = 10
 )
 
 type Template [][]color
@@ -25,43 +29,93 @@ func NewTemplate(w gtile.WangSet, height int64, width int64) Template { //nolint
 		t[i] = make([]color, (2*width)+1) //nolint: gomnd
 	}
 
-	randPlatforms := width * height / 1000
+	randPlatforms := width * height / 100
 	nPlatforms := randPlatforms + rand.Int63n(randPlatforms)
 	for n := int64(0); n < nPlatforms; n++ {
 		p := geometry.Vec2{
 			X: rand.Int63n(width - 1),
 			Y: rand.Int63n(height - 1),
 		}
-		w := ((randPlatforms) + rand.Int63n(randPlatforms)) / 100
-		h := ((randPlatforms) + rand.Int63n(randPlatforms)) / 100
+		w := ((randPlatforms) + rand.Int63n(randPlatforms)) / 10
+		h := ((randPlatforms) + rand.Int63n(randPlatforms)) / 10
 
 		for i := p.Y; i < p.Y+h && i < int64(len(t)); i++ {
 			for j := p.X; j < p.X+w && j < int64(len(t[i])); j++ {
-				if t[i][j] != 0 {
-					continue
-				}
 
 				// basic platform template
 				if i == p.Y || j == p.X ||
 					i == p.Y+h-1 || j == p.X+w-1 {
-					t[i][j] = void // void
+					t[i][j] = void
 				} else if i == p.Y+1 || j == p.X+1 ||
 					i == p.Y+h-2 || j == p.X+w-2 {
-					t[i][j] = fence // fence
+					t[i][j] = fence
 				} else {
-					t[i][j] = grass // grass
+					t[i][j] = grass
 				}
 
-				// remove 1 tile grass paths because frustrating
-				if i > 1 &&
-					(t[i-2][j] == fence || t[i-2][j] == void) &&
-					t[i-1][j] == grass {
-					t[i][j] = grass
+				// ensure path width are >= templatePathWidth
+				if t[i][j] == grass {
+					continue
 				}
-				if j > 1 &&
-					(t[i][j-2] == fence || t[i][j-2] == void) &&
-					t[i][j-1] == grass {
-					t[i][j] = grass
+
+				if i > 1 && t[i-1][j] == grass {
+					for ii := int64(0); i-ii > 0; i++ {
+						if ii >= templatePathWidth {
+							break
+						}
+						if t[i-ii][j] != grass {
+							t[i][j] = grass
+							break
+						}
+					}
+				}
+
+				if t[i][j] == grass {
+					continue
+				}
+
+				if j > 1 && t[i][j-1] == grass {
+					for jj := int64(0); j-jj > 0; j++ {
+						if jj >= templatePathWidth {
+							break
+						}
+						if t[i][j-jj] != grass {
+							t[i][j] = grass
+							break
+						}
+					}
+				}
+
+				if t[i][j] == grass {
+					continue
+				}
+
+				if i < p.Y-1 && t[i+1][j] == grass {
+					for ii := int64(0); i+ii < p.Y-1; i++ {
+						if ii >= templatePathWidth {
+							break
+						}
+						if t[i+ii][j] != grass {
+							t[i][j] = grass
+							break
+						}
+					}
+				}
+
+				if t[i][j] == grass {
+					continue
+				}
+
+				if j < p.X-1 && t[i][j+1] == grass {
+					for jj := int64(0); j+jj > 0; j++ {
+						if jj >= templatePathWidth {
+							break
+						}
+						if t[i][j+jj] != grass {
+							t[i][j] = grass
+							break
+						}
+					}
 				}
 			}
 		}
@@ -126,4 +180,17 @@ func (t Template) Heuristic() Heuristic {
 
 		return result
 	}
+}
+
+func (t Template) String() string {
+	var b strings.Builder
+
+	for i := 0; i < len(t); i++ {
+		for j := 0; j < len(t[i]); j++ {
+			b.WriteString(strconv.Itoa(int(t[i][j])))
+		}
+		b.WriteString("\n")
+	}
+
+	return b.String()
 }

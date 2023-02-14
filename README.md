@@ -46,6 +46,8 @@ $ go run ./scripts/write_tileset/main.go 'assets/external/Tilesets' 'assets/tile
 ---
 
 - Manage map creation
+  + Feature remove one-tile grass paths frustrating in generation
+  + Add wall inside concave island(s ?) template and let void outside
   + Fix objects on first line being misplaced/disappeared
   + Fix collision objects being misplaced
   + Fix collision values gaps in `.json` adding useless rectangles in min dissection
