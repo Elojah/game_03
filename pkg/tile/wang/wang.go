@@ -145,10 +145,10 @@ func (g Grid) Tilemap(r geometry.Rect, ts gtile.Set, collisions map[int][]gtile.
 	size := layer.Height * layer.Width
 	data := make([]byte, 0, 4*size) //nolint: gomnd
 
-	var relativeI, relativeJ int
+	var ii, jj int
 
 	for i := r.Origin.Y; i < r.Origin.Y+int64(r.Height); i++ {
-		relativeJ = 0
+		jj = 0
 
 		for j := r.Origin.X; j < r.Origin.X+int64(r.Width); j++ {
 			data = binary.LittleEndian.AppendUint32(data, uint32(g[i][j]))
@@ -157,14 +157,14 @@ func (g Grid) Tilemap(r geometry.Rect, ts gtile.Set, collisions map[int][]gtile.
 			if objects, ok := collisions[int(g[i][j])]; ok {
 				for _, o := range objects {
 					o := o
-					o.X += float64(relativeJ * ts.TileWidth)
-					o.Y += float64(relativeI * ts.TileHeight)
+					o.X += float64(jj * ts.TileWidth)
+					o.Y += float64(ii * ts.TileHeight)
 					clayer.Objects = append(clayer.Objects, o)
 				}
 			}
-			relativeJ++
+			jj++
 		}
-		relativeI++
+		ii++
 	}
 
 	layer.Data = base64.StdEncoding.EncodeToString(data)

@@ -15,7 +15,10 @@ const (
 	grass = 1
 	fence = 3
 
-	templatePathWidth = 10
+	templatePathWidth = 3
+
+	// debug variable, remove me
+	tmpAdjust = 10
 )
 
 type Template [][]color
@@ -23,24 +26,31 @@ type Template [][]color
 func NewTemplate(w gtile.WangSet, height int64, width int64) Template { //nolint: gocognit
 	rand.Seed(time.Now().UnixNano())
 
-	t := make(Template, (2*height)+1) //nolint: gomnd
+	width = (2 * width) + 1
+	height = (2 * height) + 1
+
+	t := make(Template, height) //nolint: gomnd
 
 	for i := 0; i < len(t); i++ {
-		t[i] = make([]color, (2*width)+1) //nolint: gomnd
+		t[i] = make([]color, width) //nolint: gomnd
 	}
 
-	randPlatforms := width * height / 100
+	randPlatforms := width * height / (100 * tmpAdjust)
 	nPlatforms := randPlatforms + rand.Int63n(randPlatforms)
 	for n := int64(0); n < nPlatforms; n++ {
 		p := geometry.Vec2{
 			X: rand.Int63n(width - 1),
 			Y: rand.Int63n(height - 1),
 		}
-		w := ((randPlatforms) + rand.Int63n(randPlatforms)) / 10
-		h := ((randPlatforms) + rand.Int63n(randPlatforms)) / 10
+		w := ((randPlatforms) + rand.Int63n(randPlatforms)) / (50 * tmpAdjust)
+		h := ((randPlatforms) + rand.Int63n(randPlatforms)) / (50 * tmpAdjust)
 
 		for i := p.Y; i < p.Y+h && i < int64(len(t)); i++ {
 			for j := p.X; j < p.X+w && j < int64(len(t[i])); j++ {
+
+				if t[i][j] != void {
+					continue
+				}
 
 				// basic platform template
 				if i == p.Y || j == p.X ||
@@ -52,74 +62,59 @@ func NewTemplate(w gtile.WangSet, height int64, width int64) Template { //nolint
 				} else {
 					t[i][j] = grass
 				}
-
-				// ensure path width are >= templatePathWidth
-				if t[i][j] == grass {
-					continue
-				}
-
-				if i > 1 && t[i-1][j] == grass {
-					for ii := int64(0); i-ii > 0; i++ {
-						if ii >= templatePathWidth {
-							break
-						}
-						if t[i-ii][j] != grass {
-							t[i][j] = grass
-							break
-						}
-					}
-				}
-
-				if t[i][j] == grass {
-					continue
-				}
-
-				if j > 1 && t[i][j-1] == grass {
-					for jj := int64(0); j-jj > 0; j++ {
-						if jj >= templatePathWidth {
-							break
-						}
-						if t[i][j-jj] != grass {
-							t[i][j] = grass
-							break
-						}
-					}
-				}
-
-				if t[i][j] == grass {
-					continue
-				}
-
-				if i < p.Y-1 && t[i+1][j] == grass {
-					for ii := int64(0); i+ii < p.Y-1; i++ {
-						if ii >= templatePathWidth {
-							break
-						}
-						if t[i+ii][j] != grass {
-							t[i][j] = grass
-							break
-						}
-					}
-				}
-
-				if t[i][j] == grass {
-					continue
-				}
-
-				if j < p.X-1 && t[i][j+1] == grass {
-					for jj := int64(0); j+jj > 0; j++ {
-						if jj >= templatePathWidth {
-							break
-						}
-						if t[i][j+jj] != grass {
-							t[i][j] = grass
-							break
-						}
-					}
-				}
 			}
 		}
 	}
+
+	// for i := int64(0); i < int64(len(t)); i++ {
+	// 	for j := int64(0); j < int64(len(t[i])); j++ {
+
+	// 		// ensure path width are >= templatePathWidth
+	// 		if t[i][j] == void {
+	// 			continue
+	// 		}
+
+	// 		// horizontal from left to right
+	// 		if j > 1 && t[i][j-1] == void {
+	// 			for n := int64(0); j+n < int64(len(t[i])) && n <= templatePathWidth; n++ {
+	// 				if t[i][j+n] == void {
+	// 					t[i][j+n] = grass
+	// 				}
+	// 			}
+	// 		}
+
+	// 		// vertical from top to down
+	// 		if i > 1 && t[i-1][j] == void {
+	// 			for n := int64(0); i+n < int64(len(t)) && n <= templatePathWidth; n++ {
+	// 				if t[i+n][j] == void {
+	// 					t[i+n][j] = grass
+	// 				}
+	// 			}
+	// 		}
+
+	// 		// diagonal from top-left to down-right
+	// 		if i > 1 && j > 1 && t[i-1][j-1] == void {
+	// 			for n := int64(0); i+n < int64(len(t)) && j+n < int64(len(t[i+n])) && n <= templatePathWidth; n++ {
+	// 				if n == 0 || n == templatePathWidth {
+	// 					t[i+n][j+n] = fence
+	// 				} else {
+	// 					t[i+n][j+n] = grass
+	// 				}
+	// 			}
+	// 		}
+
+	// 		// diagonal from down-left to top-right
+	// 		if i < int64(len(t)-1) && j > 1 && t[i+1][j-1] == void {
+	// 			for n := int64(0); i-n > 0 && j+n < int64(len(t[i])) && n <= templatePathWidth; n++ {
+	// 				if n == 0 || n == templatePathWidth {
+	// 					t[i-n][j+n] = fence
+	// 				} else {
+	// 					t[i-n][j+n] = grass
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	return t
 }

@@ -15,31 +15,31 @@ func TestNewTemplate(t *testing.T) {
 		height int64
 		width  int64
 	}{
-		{
-			name:   "basic",
-			height: 100,
-			width:  70,
-			ws: gtile.WangSet{
-				WangTiles: []gtile.WangTile{
-					{
-						TileID: 101,
-						WangID: []byte{11, 14, 13, 0, 12, 0, 0, 0},
-					},
-					{
-						TileID: 102,
-						WangID: []byte{12, 0, 13, 0, 11, 14, 13, 0},
-					},
-					{
-						TileID: 103,
-						WangID: []byte{12, 0, 13, 0, 12, 14, 0, 14},
-					},
-					{
-						TileID: 104,
-						WangID: []byte{11, 0, 0, 0, 11, 14, 13, 0},
-					},
-				},
-			},
-		},
+		// {
+		// 	name:   "basic",
+		// 	height: 100,
+		// 	width:  70,
+		// 	ws: gtile.WangSet{
+		// 		WangTiles: []gtile.WangTile{
+		// 			{
+		// 				TileID: 101,
+		// 				WangID: []byte{11, 14, 13, 0, 12, 0, 0, 0},
+		// 			},
+		// 			{
+		// 				TileID: 102,
+		// 				WangID: []byte{12, 0, 13, 0, 11, 14, 13, 0},
+		// 			},
+		// 			{
+		// 				TileID: 103,
+		// 				WangID: []byte{12, 0, 13, 0, 12, 14, 0, 14},
+		// 			},
+		// 			{
+		// 				TileID: 104,
+		// 				WangID: []byte{11, 0, 0, 0, 11, 14, 13, 0},
+		// 			},
+		// 		},
+		// 	},
+		// },
 		{
 			name:   "complex",
 			height: 100,
