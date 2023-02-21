@@ -1,0 +1,53 @@
+{
+	"version": "1.5",
+	"tiledversion": "1.7.2",
+	"name": "01GSSK383YZZAY5FR87BNK00VF",
+	"tilewidth": 32,
+	"tileheight": 32,
+	"tilecount": 61,
+	"columns": 29,
+	"image": "../img/assets/01GSSK383YZZAY5FR87BNK00VF.png",
+	"imagewidth": 928,
+	"imageheight": 288,
+	"firstgid": 1,
+	"tiles": [
+		{
+			"id": 1,
+			"class": "animation",
+			"animation": [
+				{
+					"duration": 100,
+					"tileid": 30
+				},
+				{
+					"duration": 100,
+					"tileid": 31
+				},
+				{
+					"duration": 100,
+					"tileid": 32
+				},
+				{
+					"duration": 100,
+					"tileid": 33
+				},
+				{
+					"duration": 100,
+					"tileid": 34
+				},
+				{
+					"duration": 100,
+					"tileid": 35
+				},
+				{
+					"duration": 100,
+					"tileid": 36
+				},
+				{
+					"duration": 100,
+					"tileid": 37
+				}
+			]
+		}
+	]
+}

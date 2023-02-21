@@ -205,9 +205,9 @@ clean:
 .PHONY: clean-assets
 clean-assets:
 	$(info $(M) cleaning assets…) @
-	$Q rm -rf cmd/$(CLIENT)/img/assets
-	$Q rm -rf cmd/$(CLIENT)/json/assets
-	$Q rm -rf cmd/$(DASHBOARD)/img/assets
+	$Q rm -rf cmd/$(CLIENT)/dist/img/assets/*
+	$Q rm -rf cmd/$(CLIENT)/dist/json/assets/*
+	$Q rm -rf cmd/$(DASHBOARD)/dist/img/assets/*
 
 ## Helpers
 

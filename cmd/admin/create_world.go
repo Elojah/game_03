@@ -21,8 +21,8 @@ import (
 func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.StringValue, error) {
 	logger := log.With().Str("method", "create_world").Logger()
 
-	height := int64(32)     //nolint: gomnd
-	width := int64(32)      //nolint: gomnd
+	height := int64(3)      //nolint: gomnd
+	width := int64(3)       //nolint: gomnd
 	cellHeight := int64(34) //nolint: gomnd
 	cellWidth := int64(60)  //nolint: gomnd
 

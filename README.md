@@ -46,11 +46,10 @@ $ go run ./scripts/write_tileset/main.go 'assets/external/Tilesets' 'assets/tile
 ---
 
 - Manage map creation
-  + Feature remove one-tile grass paths frustrating in generation
-  + Add wall inside concave island(s ?) template and let void outside
-  + Fix objects on first line being misplaced/disappeared
-  + Fix collision objects being misplaced
-  + Fix collision values gaps in `.json` adding useless rectangles in min dissection
+  + [p3] ~~ Feature remove one-tile grass paths frustrating in generation
+  + [p2] Add wall inside concave island(s ?) template and let void outside -> done but no wall/wall wang tiles
+  + [p1] Fix collision values gaps in `.json` adding useless rectangles in min dissection
+  + [p0] Add sky background (bonus: animated tiles)
 - Remove `Math.round()` in `game.ts` and set entity.X entity.Y as float64 to fit Phaser.Body x/y
 
 

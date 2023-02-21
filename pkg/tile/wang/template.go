@@ -13,12 +13,13 @@ import (
 const (
 	void  = 0
 	grass = 1
+	wall  = 2
 	fence = 3
 
 	templatePathWidth = 3
 
 	// debug variable, remove me
-	tmpAdjust = 10
+	tmpAdjust = 1
 )
 
 type Template [][]color
@@ -55,7 +56,7 @@ func NewTemplate(w gtile.WangSet, height int64, width int64) Template { //nolint
 				// basic platform template
 				if i == p.Y || j == p.X ||
 					i == p.Y+h-1 || j == p.X+w-1 {
-					t[i][j] = void
+					t[i][j] = wall
 				} else if i == p.Y+1 || j == p.X+1 ||
 					i == p.Y+h-2 || j == p.X+w-2 {
 					t[i][j] = fence
@@ -66,8 +67,38 @@ func NewTemplate(w gtile.WangSet, height int64, width int64) Template { //nolint
 		}
 	}
 
-	// for i := int64(0); i < int64(len(t)); i++ {
-	// 	for j := int64(0); j < int64(len(t[i])); j++ {
+	// Set void around island.
+	for i := int64(0); i < int64(len(t)); i++ {
+		for j := int64(0); j < int64(len(t[i])); j++ {
+			if t[i][j] != wall {
+				break
+			}
+
+			t[i][j] = void
+		}
+	}
+
+	for i := int64(0); i < int64(len(t)); i++ {
+		for j := int64(len(t[i]) - 1); j > int64(0); j-- {
+			if t[i][j] != wall {
+				break
+			}
+
+			t[i][j] = void
+		}
+	}
+
+	if len(t) > 0 {
+		for j := int64(0); j < int64(len(t[0])); j++ {
+			for i := int64(0); i < int64(len(t)); i++ {
+				if t[i][j] != wall {
+					break
+				}
+
+				t[i][j] = void
+			}
+		}
+	}
 
 	// 		// ensure path width are >= templatePathWidth
 	// 		if t[i][j] == void {
@@ -113,8 +144,6 @@ func NewTemplate(w gtile.WangSet, height int64, width int64) Template { //nolint
 	// 				}
 	// 			}
 	// 		}
-	// 	}
-	// }
 
 	return t
 }

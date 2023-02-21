@@ -880,6 +880,7 @@ export class Game extends Scene {
 								}))
 								cc.Objects.set(os.name, group)
 
+
 								const collider = this.physics.add.collider(this.Entity.Body, group)
 
 								console.log('created object layer:', os.name)

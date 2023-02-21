@@ -142,6 +142,13 @@ func (g Grid) Tilemap(r geometry.Rect, ts gtile.Set, collisions map[int][]gtile.
 	clayer.Height = m.Height
 	clayer.Width = m.Width
 
+	// // background layer
+	// blayer := gtile.NewLayer()
+	// blayer.ID = 3
+	// blayer.Properties = append(blayer.Properties, gtile.Property{Name: "background", Type: "bool", Value: true})
+	// blayer.Height = m.Height
+	// blayer.Width = m.Width
+
 	size := layer.Height * layer.Width
 	data := make([]byte, 0, 4*size) //nolint: gomnd
 
@@ -178,6 +185,11 @@ func (g Grid) Tilemap(r geometry.Rect, ts gtile.Set, collisions map[int][]gtile.
 		m.Layers = append(m.Layers, clayer)
 		m.NextLayerID = 3
 	}
+
+	// if len(blayer) > 0 {
+	// m.Layers = append(m.Layers, blayer)
+	// 	m.NextLayerID = 4
+	// }
 
 	return m, nil
 }

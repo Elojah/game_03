@@ -160,11 +160,11 @@ type Object struct {
 	Properties []Property `json:"properties,omitempty"`
 	Rotation   float64    `json:"rotation,omitempty"`
 	Template   string     `json:"template,omitempty"`
-	Text       Text       `json:"text,omitempty"`
+	Text       Text       `json:"-"`
 	Visible    bool       `json:"visible,omitempty"`
 	Width      float64    `json:"width,omitempty"`
-	X          float64    `json:"x,omitempty"`
-	Y          float64    `json:"y,omitempty"`
+	X          float64    `json:"x"` // don't set omitempty or it will be NaN (instead of 0) in TS and result in wrong positions
+	Y          float64    `json:"y"` // don't set omitempty or it will be NaN (instead of 0) in TS and result in wrong positions
 }
 
 type Text struct {
