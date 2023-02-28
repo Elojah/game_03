@@ -29,45 +29,6 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type WorldCell struct {
-	WorldID github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,1,opt,name=WorldID,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"WorldID"`
-	CellID  github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,2,opt,name=CellID,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"CellID"`
-	X       int64                                 `protobuf:"varint,3,opt,name=X,proto3" json:"X,omitempty"`
-	Y       int64                                 `protobuf:"varint,4,opt,name=Y,proto3" json:"Y,omitempty"`
-}
-
-func (m *WorldCell) Reset()      { *m = WorldCell{} }
-func (*WorldCell) ProtoMessage() {}
-func (*WorldCell) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8408f5360c24017c, []int{0}
-}
-func (m *WorldCell) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *WorldCell) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_WorldCell.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *WorldCell) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_WorldCell.Merge(m, src)
-}
-func (m *WorldCell) XXX_Size() int {
-	return m.Size()
-}
-func (m *WorldCell) XXX_DiscardUnknown() {
-	xxx_messageInfo_WorldCell.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_WorldCell proto.InternalMessageInfo
-
 type Cell struct {
 	ID         github_com_elojah_game_03_pkg_ulid.ID           `protobuf:"bytes,1,opt,name=ID,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"ID"`
 	Contiguous map[int32]github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,2,rep,name=Contiguous,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"Contiguous" protobuf_key:"varint,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
@@ -79,7 +40,7 @@ type Cell struct {
 func (m *Cell) Reset()      { *m = Cell{} }
 func (*Cell) ProtoMessage() {}
 func (*Cell) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8408f5360c24017c, []int{1}
+	return fileDescriptor_8408f5360c24017c, []int{0}
 }
 func (m *Cell) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -108,13 +69,52 @@ func (m *Cell) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Cell proto.InternalMessageInfo
 
+type WorldCell struct {
+	WorldID github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,1,opt,name=WorldID,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"WorldID"`
+	CellID  github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,2,opt,name=CellID,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"CellID"`
+	X       int64                                 `protobuf:"varint,3,opt,name=X,proto3" json:"X,omitempty"`
+	Y       int64                                 `protobuf:"varint,4,opt,name=Y,proto3" json:"Y,omitempty"`
+}
+
+func (m *WorldCell) Reset()      { *m = WorldCell{} }
+func (*WorldCell) ProtoMessage() {}
+func (*WorldCell) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8408f5360c24017c, []int{1}
+}
+func (m *WorldCell) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *WorldCell) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_WorldCell.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *WorldCell) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_WorldCell.Merge(m, src)
+}
+func (m *WorldCell) XXX_Size() int {
+	return m.Size()
+}
+func (m *WorldCell) XXX_DiscardUnknown() {
+	xxx_messageInfo_WorldCell.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_WorldCell proto.InternalMessageInfo
+
 func init() {
-	proto.RegisterType((*WorldCell)(nil), "room.WorldCell")
-	golang_proto.RegisterType((*WorldCell)(nil), "room.WorldCell")
 	proto.RegisterType((*Cell)(nil), "room.Cell")
 	golang_proto.RegisterType((*Cell)(nil), "room.Cell")
 	proto.RegisterMapType((map[int32]github_com_elojah_game_03_pkg_ulid.ID)(nil), "room.Cell.ContiguousEntry")
 	golang_proto.RegisterMapType((map[int32]github_com_elojah_game_03_pkg_ulid.ID)(nil), "room.Cell.ContiguousEntry")
+	proto.RegisterType((*WorldCell)(nil), "room.WorldCell")
+	golang_proto.RegisterType((*WorldCell)(nil), "room.WorldCell")
 }
 
 func init() {
@@ -125,66 +125,34 @@ func init() {
 }
 
 var fileDescriptor_8408f5360c24017c = []byte{
-	// 384 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x92, 0xb1, 0xcf, 0xd2, 0x40,
-	0x18, 0xc6, 0xef, 0x6d, 0x0b, 0xc6, 0x93, 0x44, 0xd3, 0x38, 0x34, 0x0c, 0x2f, 0x84, 0xc4, 0x84,
-	0x85, 0xd6, 0xc8, 0x62, 0x4c, 0x58, 0xa0, 0x44, 0xbb, 0x36, 0x26, 0xc2, 0x64, 0x0a, 0xd4, 0x52,
-	0xb9, 0x72, 0xa4, 0xb6, 0x26, 0x6c, 0xfe, 0x09, 0xfe, 0x19, 0xfe, 0x07, 0x3a, 0x32, 0x32, 0x32,
-	0x38, 0x10, 0x07, 0x62, 0xaf, 0x8b, 0x23, 0xa3, 0xa3, 0xe9, 0x15, 0xf3, 0xf1, 0x7d, 0xc3, 0x97,
-	0xc0, 0xf6, 0x3e, 0x7d, 0xf3, 0x3c, 0x7d, 0xee, 0x77, 0x47, 0x3b, 0x41, 0x98, 0xcc, 0xd3, 0x89,
-	0x39, 0xe5, 0x91, 0xe5, 0x33, 0xfe, 0xd1, 0x9b, 0x5b, 0x81, 0x17, 0xf9, 0xef, 0x9f, 0x77, 0xad,
-	0xd5, 0x22, 0xb0, 0x62, 0xce, 0x23, 0x6b, 0xea, 0x33, 0x66, 0xae, 0x62, 0x9e, 0x70, 0x5d, 0x2b,
-	0x3e, 0xd4, 0xcf, 0x4d, 0x01, 0x0f, 0xb8, 0x25, 0x97, 0x93, 0xf4, 0x83, 0x54, 0x52, 0xc8, 0xa9,
-	0x34, 0xb5, 0xbe, 0x03, 0x7d, 0xf8, 0x8e, 0xc7, 0x6c, 0x36, 0xf0, 0x19, 0xd3, 0x5f, 0xd3, 0x07,
-	0x52, 0x38, 0xb6, 0x01, 0x4d, 0x68, 0xd7, 0xfa, 0x9d, 0xed, 0xa1, 0x41, 0x7e, 0x1d, 0x1a, 0xcf,
-	0xee, 0xaf, 0x92, 0xb2, 0x70, 0x66, 0x3a, 0xb6, 0xfb, 0xdf, 0xad, 0x0f, 0x69, 0xb5, 0x08, 0x74,
-	0x6c, 0x43, 0xb9, 0x26, 0xe7, 0x64, 0xd6, 0x6b, 0x14, 0x46, 0x86, 0xda, 0x84, 0xb6, 0xea, 0xc2,
-	0xa8, 0x50, 0x63, 0x43, 0x2b, 0xd5, 0xb8, 0xf5, 0x53, 0xa1, 0x9a, 0x2c, 0xdd, 0xa3, 0xca, 0xb5,
-	0x7d, 0x15, 0xc7, 0xd6, 0x43, 0x4a, 0x07, 0x7c, 0x99, 0x84, 0x41, 0xca, 0xd3, 0x4f, 0x86, 0xd2,
-	0x54, 0xdb, 0x8f, 0x5e, 0xd4, 0xcd, 0x82, 0xa5, 0x59, 0xc4, 0x9b, 0x37, 0xcb, 0xe1, 0x32, 0x89,
-	0xd7, 0x97, 0xfe, 0xe2, 0x2c, 0xbc, 0xc0, 0xfb, 0x36, 0x64, 0x7e, 0xe4, 0xad, 0xe4, 0xa1, 0x2e,
-	0xc7, 0x7b, 0x72, 0x97, 0x5c, 0xb4, 0x5b, 0x5c, 0x2a, 0x27, 0x2e, 0xf5, 0x1e, 0x7d, 0x7c, 0xa7,
-	0xb2, 0xfe, 0x84, 0xaa, 0x0b, 0x7f, 0x2d, 0x11, 0x55, 0xdc, 0x62, 0xd4, 0x9f, 0xd2, 0xca, 0x67,
-	0x8f, 0xa5, 0x7e, 0x79, 0x3d, 0x6e, 0x29, 0x5e, 0x29, 0x2f, 0xa1, 0xff, 0x66, 0x9b, 0x21, 0xd9,
-	0x65, 0x48, 0xf6, 0x19, 0x92, 0x63, 0x86, 0xf0, 0x37, 0x43, 0xf8, 0x22, 0x10, 0xbe, 0x09, 0x84,
-	0x1f, 0x02, 0x61, 0x23, 0x10, 0xb6, 0x02, 0x61, 0x27, 0x10, 0x7e, 0x0b, 0x84, 0x3f, 0x02, 0xc9,
-	0x51, 0x20, 0x7c, 0xcd, 0x91, 0x6c, 0x72, 0x84, 0x5d, 0x8e, 0x64, 0x9f, 0x23, 0x99, 0x54, 0xe5,
-	0x0b, 0xeb, 0xfe, 0x0b, 0x00, 0x00, 0xff, 0xff, 0xa7, 0x15, 0x71, 0x59, 0xc7, 0x02, 0x00, 0x00,
+	// 388 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x92, 0xb1, 0xaf, 0xd2, 0x50,
+	0x14, 0xc6, 0xef, 0x69, 0xe1, 0xbd, 0x78, 0x7d, 0x89, 0xe6, 0xc6, 0xa1, 0x61, 0x38, 0x8f, 0xbc,
+	0xc4, 0x84, 0x85, 0xd6, 0xc8, 0x62, 0x4c, 0x58, 0xa0, 0x04, 0xbb, 0x36, 0x26, 0xc2, 0x64, 0x0a,
+	0xd4, 0x52, 0xb9, 0xe5, 0x92, 0xda, 0x9a, 0xb0, 0xf9, 0x27, 0xf8, 0x67, 0xf8, 0x1f, 0xe8, 0xc8,
+	0xc8, 0xc8, 0xe0, 0x40, 0x1c, 0x88, 0xbd, 0x5d, 0x1c, 0x19, 0x1d, 0x4d, 0x6f, 0x21, 0xa2, 0xc3,
+	0x4b, 0x60, 0xbb, 0xbf, 0x9e, 0x7c, 0xdf, 0xf9, 0xce, 0x97, 0xd2, 0x66, 0x10, 0x26, 0xd3, 0x74,
+	0x64, 0x8e, 0x45, 0x64, 0xf9, 0x5c, 0xbc, 0xf7, 0xa6, 0x56, 0xe0, 0x45, 0xfe, 0xdb, 0x67, 0x2d,
+	0x6b, 0x31, 0x0b, 0xac, 0x58, 0x88, 0xc8, 0x1a, 0xfb, 0x9c, 0x9b, 0x8b, 0x58, 0x24, 0x82, 0x55,
+	0x8a, 0x0f, 0xb5, 0x53, 0x51, 0x20, 0x02, 0x61, 0xa9, 0xe1, 0x28, 0x7d, 0xa7, 0x48, 0x81, 0x7a,
+	0x95, 0xa2, 0xbb, 0xef, 0x1a, 0xad, 0x74, 0x7d, 0xce, 0x59, 0x9b, 0x6a, 0x8e, 0x6d, 0x40, 0x1d,
+	0x1a, 0x37, 0x9d, 0xe6, 0x7a, 0x77, 0x4b, 0x7e, 0xec, 0x6e, 0x9f, 0xde, 0x1f, 0x20, 0xe5, 0xe1,
+	0xc4, 0x74, 0x6c, 0x57, 0x73, 0x6c, 0x16, 0x52, 0xda, 0x15, 0xf3, 0x24, 0x0c, 0x52, 0x91, 0x7e,
+	0x30, 0xb4, 0xba, 0xde, 0x78, 0xf8, 0xbc, 0x66, 0x16, 0x89, 0xcc, 0xc2, 0xde, 0xfc, 0x3b, 0xec,
+	0xcd, 0x93, 0x78, 0x79, 0xee, 0x8a, 0x13, 0x73, 0xd6, 0xa7, 0xd7, 0xaf, 0x43, 0xee, 0x47, 0xde,
+	0xc2, 0xd0, 0x2f, 0x89, 0x7b, 0x54, 0xb3, 0x1b, 0x0a, 0x03, 0xa3, 0x52, 0x87, 0x86, 0xee, 0xc2,
+	0xa0, 0xa0, 0xa1, 0x51, 0x2d, 0x69, 0x58, 0x6b, 0xd3, 0x47, 0xff, 0x45, 0x66, 0x8f, 0xa9, 0x3e,
+	0xf3, 0x97, 0xaa, 0xa2, 0xaa, 0x5b, 0x3c, 0xd9, 0x13, 0x5a, 0xfd, 0xe8, 0xf1, 0xd4, 0x37, 0xb4,
+	0x22, 0x87, 0x5b, 0xc2, 0x4b, 0xed, 0x05, 0xdc, 0x7d, 0x05, 0xfa, 0xe0, 0x8d, 0x88, 0xf9, 0x44,
+	0x75, 0xdb, 0xa7, 0xd7, 0x0a, 0x2e, 0x2d, 0xf8, 0xa8, 0x66, 0x3d, 0x7a, 0x55, 0x18, 0x3a, 0x76,
+	0xb9, 0xf1, 0x5c, 0x9f, 0x83, 0xb8, 0x3c, 0x5c, 0xff, 0xe7, 0xf0, 0x43, 0x0d, 0xc3, 0xce, 0xab,
+	0x75, 0x86, 0x64, 0x93, 0x21, 0xd9, 0x66, 0x48, 0xf6, 0x19, 0xc2, 0xef, 0x0c, 0xe1, 0x93, 0x44,
+	0xf8, 0x22, 0x11, 0xbe, 0x49, 0x84, 0x95, 0x44, 0x58, 0x4b, 0x84, 0x8d, 0x44, 0xf8, 0x29, 0x11,
+	0x7e, 0x49, 0x24, 0x7b, 0x89, 0xf0, 0x39, 0x47, 0xb2, 0xca, 0x11, 0x36, 0x39, 0x92, 0x6d, 0x8e,
+	0x64, 0x74, 0xa5, 0xfe, 0xb0, 0xd6, 0x9f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x26, 0xe8, 0xa5, 0x16,
+	0xc7, 0x02, 0x00, 0x00,
 }
 
-func (this *WorldCell) Equal(that interface{}) bool {
-	if that == nil {
-		return this == nil
-	}
-
-	that1, ok := that.(*WorldCell)
-	if !ok {
-		that2, ok := that.(WorldCell)
-		if ok {
-			that1 = &that2
-		} else {
-			return false
-		}
-	}
-	if that1 == nil {
-		return this == nil
-	} else if this == nil {
-		return false
-	}
-	if !this.WorldID.Equal(that1.WorldID) {
-		return false
-	}
-	if !this.CellID.Equal(that1.CellID) {
-		return false
-	}
-	if this.X != that1.X {
-		return false
-	}
-	if this.Y != that1.Y {
-		return false
-	}
-	return true
-}
 func (this *Cell) Equal(that interface{}) bool {
 	if that == nil {
 		return this == nil
@@ -226,18 +194,38 @@ func (this *Cell) Equal(that interface{}) bool {
 	}
 	return true
 }
-func (this *WorldCell) GoString() string {
-	if this == nil {
-		return "nil"
+func (this *WorldCell) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
 	}
-	s := make([]string, 0, 8)
-	s = append(s, "&room.WorldCell{")
-	s = append(s, "WorldID: "+fmt.Sprintf("%#v", this.WorldID)+",\n")
-	s = append(s, "CellID: "+fmt.Sprintf("%#v", this.CellID)+",\n")
-	s = append(s, "X: "+fmt.Sprintf("%#v", this.X)+",\n")
-	s = append(s, "Y: "+fmt.Sprintf("%#v", this.Y)+",\n")
-	s = append(s, "}")
-	return strings.Join(s, "")
+
+	that1, ok := that.(*WorldCell)
+	if !ok {
+		that2, ok := that.(WorldCell)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if !this.WorldID.Equal(that1.WorldID) {
+		return false
+	}
+	if !this.CellID.Equal(that1.CellID) {
+		return false
+	}
+	if this.X != that1.X {
+		return false
+	}
+	if this.Y != that1.Y {
+		return false
+	}
+	return true
 }
 func (this *Cell) GoString() string {
 	if this == nil {
@@ -265,6 +253,19 @@ func (this *Cell) GoString() string {
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
+func (this *WorldCell) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 8)
+	s = append(s, "&room.WorldCell{")
+	s = append(s, "WorldID: "+fmt.Sprintf("%#v", this.WorldID)+",\n")
+	s = append(s, "CellID: "+fmt.Sprintf("%#v", this.CellID)+",\n")
+	s = append(s, "X: "+fmt.Sprintf("%#v", this.X)+",\n")
+	s = append(s, "Y: "+fmt.Sprintf("%#v", this.Y)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
 func valueToGoStringCell(v interface{}, typ string) string {
 	rv := reflect.ValueOf(v)
 	if rv.IsNil() {
@@ -273,59 +274,6 @@ func valueToGoStringCell(v interface{}, typ string) string {
 	pv := reflect.Indirect(rv).Interface()
 	return fmt.Sprintf("func(v %v) *%v { return &v } ( %#v )", typ, typ, pv)
 }
-func (m *WorldCell) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *WorldCell) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *WorldCell) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.Y != 0 {
-		i = encodeVarintCell(dAtA, i, uint64(m.Y))
-		i--
-		dAtA[i] = 0x20
-	}
-	if m.X != 0 {
-		i = encodeVarintCell(dAtA, i, uint64(m.X))
-		i--
-		dAtA[i] = 0x18
-	}
-	{
-		size := m.CellID.Size()
-		i -= size
-		if _, err := m.CellID.MarshalTo(dAtA[i:]); err != nil {
-			return 0, err
-		}
-		i = encodeVarintCell(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0x12
-	{
-		size := m.WorldID.Size()
-		i -= size
-		if _, err := m.WorldID.MarshalTo(dAtA[i:]); err != nil {
-			return 0, err
-		}
-		i = encodeVarintCell(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0xa
-	return len(dAtA) - i, nil
-}
-
 func (m *Cell) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -401,6 +349,59 @@ func (m *Cell) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *WorldCell) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *WorldCell) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *WorldCell) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Y != 0 {
+		i = encodeVarintCell(dAtA, i, uint64(m.Y))
+		i--
+		dAtA[i] = 0x20
+	}
+	if m.X != 0 {
+		i = encodeVarintCell(dAtA, i, uint64(m.X))
+		i--
+		dAtA[i] = 0x18
+	}
+	{
+		size := m.CellID.Size()
+		i -= size
+		if _, err := m.CellID.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintCell(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x12
+	{
+		size := m.WorldID.Size()
+		i -= size
+		if _, err := m.WorldID.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintCell(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintCell(dAtA []byte, offset int, v uint64) int {
 	offset -= sovCell(v)
 	base := offset
@@ -412,12 +413,19 @@ func encodeVarintCell(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func NewPopulatedWorldCell(r randyCell, easy bool) *WorldCell {
-	this := &WorldCell{}
+func NewPopulatedCell(r randyCell, easy bool) *Cell {
+	this := &Cell{}
 	v1 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
-	this.WorldID = *v1
-	v2 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
-	this.CellID = *v2
+	this.ID = *v1
+	if r.Intn(5) != 0 {
+		v2 := r.Intn(10)
+		this.Contiguous = make(map[int32]github_com_elojah_game_03_pkg_ulid.ID)
+		for i := 0; i < v2; i++ {
+			this.Contiguous[int32(r.Int31())] = (github_com_elojah_game_03_pkg_ulid.ID)(*github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r))
+		}
+	}
+	v3 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
+	this.Tilemap = *v3
 	this.X = int64(r.Int63())
 	if r.Intn(2) == 0 {
 		this.X *= -1
@@ -431,19 +439,12 @@ func NewPopulatedWorldCell(r randyCell, easy bool) *WorldCell {
 	return this
 }
 
-func NewPopulatedCell(r randyCell, easy bool) *Cell {
-	this := &Cell{}
-	v3 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
-	this.ID = *v3
-	if r.Intn(5) != 0 {
-		v4 := r.Intn(10)
-		this.Contiguous = make(map[int32]github_com_elojah_game_03_pkg_ulid.ID)
-		for i := 0; i < v4; i++ {
-			this.Contiguous[int32(r.Int31())] = (github_com_elojah_game_03_pkg_ulid.ID)(*github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r))
-		}
-	}
+func NewPopulatedWorldCell(r randyCell, easy bool) *WorldCell {
+	this := &WorldCell{}
+	v4 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
+	this.WorldID = *v4
 	v5 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
-	this.Tilemap = *v5
+	this.CellID = *v5
 	this.X = int64(r.Int63())
 	if r.Intn(2) == 0 {
 		this.X *= -1
@@ -529,25 +530,6 @@ func encodeVarintPopulateCell(dAtA []byte, v uint64) []byte {
 	dAtA = append(dAtA, uint8(v))
 	return dAtA
 }
-func (m *WorldCell) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = m.WorldID.Size()
-	n += 1 + l + sovCell(uint64(l))
-	l = m.CellID.Size()
-	n += 1 + l + sovCell(uint64(l))
-	if m.X != 0 {
-		n += 1 + sovCell(uint64(m.X))
-	}
-	if m.Y != 0 {
-		n += 1 + sovCell(uint64(m.Y))
-	}
-	return n
-}
-
 func (m *Cell) Size() (n int) {
 	if m == nil {
 		return 0
@@ -578,24 +560,30 @@ func (m *Cell) Size() (n int) {
 	return n
 }
 
+func (m *WorldCell) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.WorldID.Size()
+	n += 1 + l + sovCell(uint64(l))
+	l = m.CellID.Size()
+	n += 1 + l + sovCell(uint64(l))
+	if m.X != 0 {
+		n += 1 + sovCell(uint64(m.X))
+	}
+	if m.Y != 0 {
+		n += 1 + sovCell(uint64(m.Y))
+	}
+	return n
+}
+
 func sovCell(x uint64) (n int) {
 	return (math_bits.Len64(x|1) + 6) / 7
 }
 func sozCell(x uint64) (n int) {
 	return sovCell(uint64((x << 1) ^ uint64((int64(x) >> 63))))
-}
-func (this *WorldCell) String() string {
-	if this == nil {
-		return "nil"
-	}
-	s := strings.Join([]string{`&WorldCell{`,
-		`WorldID:` + fmt.Sprintf("%v", this.WorldID) + `,`,
-		`CellID:` + fmt.Sprintf("%v", this.CellID) + `,`,
-		`X:` + fmt.Sprintf("%v", this.X) + `,`,
-		`Y:` + fmt.Sprintf("%v", this.Y) + `,`,
-		`}`,
-	}, "")
-	return s
 }
 func (this *Cell) String() string {
 	if this == nil {
@@ -621,6 +609,19 @@ func (this *Cell) String() string {
 	}, "")
 	return s
 }
+func (this *WorldCell) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&WorldCell{`,
+		`WorldID:` + fmt.Sprintf("%v", this.WorldID) + `,`,
+		`CellID:` + fmt.Sprintf("%v", this.CellID) + `,`,
+		`X:` + fmt.Sprintf("%v", this.X) + `,`,
+		`Y:` + fmt.Sprintf("%v", this.Y) + `,`,
+		`}`,
+	}, "")
+	return s
+}
 func valueToStringCell(v interface{}) string {
 	rv := reflect.ValueOf(v)
 	if rv.IsNil() {
@@ -628,160 +629,6 @@ func valueToStringCell(v interface{}) string {
 	}
 	pv := reflect.Indirect(rv).Interface()
 	return fmt.Sprintf("*%v", pv)
-}
-func (m *WorldCell) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowCell
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: WorldCell: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: WorldCell: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field WorldID", wireType)
-			}
-			var byteLen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCell
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				byteLen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if byteLen < 0 {
-				return ErrInvalidLengthCell
-			}
-			postIndex := iNdEx + byteLen
-			if postIndex < 0 {
-				return ErrInvalidLengthCell
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.WorldID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field CellID", wireType)
-			}
-			var byteLen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCell
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				byteLen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if byteLen < 0 {
-				return ErrInvalidLengthCell
-			}
-			postIndex := iNdEx + byteLen
-			if postIndex < 0 {
-				return ErrInvalidLengthCell
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.CellID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 3:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field X", wireType)
-			}
-			m.X = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCell
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.X |= int64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 4:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Y", wireType)
-			}
-			m.Y = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCell
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Y |= int64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		default:
-			iNdEx = preIndex
-			skippy, err := skipCell(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthCell
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
 }
 func (m *Cell) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
@@ -1014,6 +861,160 @@ func (m *Cell) Unmarshal(dAtA []byte) error {
 				}
 			}
 		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Y", wireType)
+			}
+			m.Y = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCell
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Y |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipCell(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthCell
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *WorldCell) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowCell
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: WorldCell: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: WorldCell: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field WorldID", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCell
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthCell
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthCell
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.WorldID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CellID", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCell
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthCell
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthCell
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.CellID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field X", wireType)
+			}
+			m.X = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCell
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.X |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Y", wireType)
 			}

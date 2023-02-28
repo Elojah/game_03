@@ -125,6 +125,15 @@ type APIListRoom = {
   readonly responseType: typeof github_com_elojah_game_03_pkg_room_dto_room_pb.ListRoomResp;
 };
 
+type APIListRoomPublic = {
+  readonly methodName: string;
+  readonly service: typeof API;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof github_com_elojah_game_03_pkg_room_dto_room_pb.ListRoomReq;
+  readonly responseType: typeof github_com_elojah_game_03_pkg_room_dto_room_pb.ListRoomResp;
+};
+
 type APIListCell = {
   readonly methodName: string;
   readonly service: typeof API;
@@ -175,6 +184,7 @@ export class API {
   static readonly CreateEntity: APICreateEntity;
   static readonly CreateRoom: APICreateRoom;
   static readonly ListRoom: APIListRoom;
+  static readonly ListRoomPublic: APIListRoomPublic;
   static readonly ListCell: APIListCell;
   static readonly ListWorld: APIListWorld;
   static readonly ListFollow: APIListFollow;
@@ -302,6 +312,15 @@ export class APIClient {
     callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_room_dto_room_pb.ListRoomResp|null) => void
   ): UnaryResponse;
   listRoom(
+    requestMessage: github_com_elojah_game_03_pkg_room_dto_room_pb.ListRoomReq,
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_room_dto_room_pb.ListRoomResp|null) => void
+  ): UnaryResponse;
+  listRoomPublic(
+    requestMessage: github_com_elojah_game_03_pkg_room_dto_room_pb.ListRoomReq,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_room_dto_room_pb.ListRoomResp|null) => void
+  ): UnaryResponse;
+  listRoomPublic(
     requestMessage: github_com_elojah_game_03_pkg_room_dto_room_pb.ListRoomReq,
     callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_room_dto_room_pb.ListRoomResp|null) => void
   ): UnaryResponse;

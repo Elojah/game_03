@@ -48,6 +48,13 @@ CREATE TABLE main.room_user (
 
 CREATE INDEX ON main.room_user(room_id);
 
+CREATE TABLE main.room_public (
+    id              uuid PRIMARY KEY,
+    room_id         uuid
+);
+
+CREATE INDEX ON main.room_public(room_id);
+
 -- ENTITY MANAGEMENT
 -- -----------------
 

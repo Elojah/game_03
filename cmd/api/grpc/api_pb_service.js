@@ -131,6 +131,15 @@ API.ListRoom = {
   responseType: github_com_elojah_game_03_pkg_room_dto_room_pb.ListRoomResp
 };
 
+API.ListRoomPublic = {
+  methodName: "ListRoomPublic",
+  service: API,
+  requestStream: false,
+  responseStream: false,
+  requestType: github_com_elojah_game_03_pkg_room_dto_room_pb.ListRoomReq,
+  responseType: github_com_elojah_game_03_pkg_room_dto_room_pb.ListRoomResp
+};
+
 API.ListCell = {
   methodName: "ListCell",
   service: API,
@@ -538,6 +547,37 @@ APIClient.prototype.listRoom = function listRoom(requestMessage, metadata, callb
     callback = arguments[1];
   }
   var client = grpc.unary(API.ListRoom, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+APIClient.prototype.listRoomPublic = function listRoomPublic(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(API.ListRoomPublic, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,

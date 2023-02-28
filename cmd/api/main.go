@@ -133,6 +133,7 @@ func run(prog string, filename string) {
 	roomStore := &roomscylla.Store{Service: scyllas}
 	roomApp := roomapp.App{
 		Store:          roomStore,
+		StorePublic:    roomStore,
 		StoreCell:      roomStore,
 		StoreWorld:     roomStore,
 		StoreUser:      roomStore,

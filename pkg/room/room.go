@@ -12,6 +12,8 @@ type Filter struct {
 	OwnerID  ulid.ID
 	OwnerIDs []ulid.ID
 
+	All bool
+
 	State []byte
 	Size  int
 }
@@ -23,8 +25,28 @@ type Store interface {
 	Delete(context.Context, Filter) error
 }
 
+type FilterPublic struct {
+	ID      ulid.ID
+	IDs     []ulid.ID
+	RoomID  ulid.ID
+	RoomIDs []ulid.ID
+
+	All bool
+
+	State []byte
+	Size  int
+}
+
+type StorePublic interface {
+	InsertPublic(context.Context, Public) error
+	FetchPublic(context.Context, FilterPublic) (Public, error)
+	FetchManyPublic(context.Context, FilterPublic) ([]Public, []byte, error)
+	DeletePublic(context.Context, FilterPublic) error
+}
+
 type App interface {
 	Store
+	StorePublic
 	StoreCell
 	StoreUser
 	StoreWorld

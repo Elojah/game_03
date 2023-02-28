@@ -42,3 +42,31 @@ export namespace R {
   }
 }
 
+export class Public extends jspb.Message {
+  getId(): Uint8Array | string;
+  getId_asU8(): Uint8Array;
+  getId_asB64(): string;
+  setId(value: Uint8Array | string): void;
+
+  getRoomid(): Uint8Array | string;
+  getRoomid_asU8(): Uint8Array;
+  getRoomid_asB64(): string;
+  setRoomid(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): Public.AsObject;
+  static toObject(includeInstance: boolean, msg: Public): Public.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: Public, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Public;
+  static deserializeBinaryFromReader(message: Public, reader: jspb.BinaryReader): Public;
+}
+
+export namespace Public {
+  export type AsObject = {
+    id: Uint8Array | string,
+    roomid: Uint8Array | string,
+  }
+}
+

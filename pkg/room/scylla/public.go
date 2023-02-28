@@ -10,9 +10,9 @@ import (
 	"github.com/gocql/gocql"
 )
 
-type filter room.Filter
+type filterPublic room.FilterPublic
 
-func (f filter) where() (string, []any) {
+func (f filterPublic) where() (string, []any) {
 	var clause []string
 
 	var args []any
@@ -31,14 +31,14 @@ func (f filter) where() (string, []any) {
 		args = append(args, f.IDs)
 	}
 
-	if f.OwnerID != nil {
+	if f.RoomID != nil {
 		clause = append(clause, `owner_id = ?`)
-		args = append(args, f.OwnerID)
+		args = append(args, f.RoomID)
 	}
 
-	if len(f.OwnerIDs) > 0 {
+	if len(f.RoomIDs) > 0 {
 		clause = append(clause, `owner_id IN ?`)
-		args = append(args, f.OwnerIDs)
+		args = append(args, f.RoomIDs)
 	}
 
 	b := strings.Builder{}
@@ -53,7 +53,7 @@ func (f filter) where() (string, []any) {
 	return b.String(), args
 }
 
-func (f filter) index() string {
+func (f filterPublic) index() string {
 	var cols []string
 
 	if f.ID != nil {
@@ -69,13 +69,13 @@ func (f filter) index() string {
 		cols = append(cols, strings.Join(ss, "|"))
 	}
 
-	if f.OwnerID != nil {
-		cols = append(cols, f.OwnerID.String())
+	if f.RoomID != nil {
+		cols = append(cols, f.RoomID.String())
 	}
 
-	if f.OwnerIDs != nil {
-		ss := make([]string, 0, len(f.OwnerIDs))
-		for _, id := range f.OwnerIDs {
+	if f.RoomIDs != nil {
+		ss := make([]string, 0, len(f.RoomIDs))
+		for _, id := range f.RoomIDs {
 			ss = append(ss, id.String())
 		}
 
@@ -85,13 +85,11 @@ func (f filter) index() string {
 	return strings.Join(cols, " - ")
 }
 
-func (s Store) Insert(ctx context.Context, r room.R) error {
+func (s Store) InsertPublic(ctx context.Context, r room.Public) error {
 	q := s.Session.Query(
-		`INSERT INTO main.room (id, owner_id, world_id, name) VALUES (?, ?, ?, ?)`,
+		`INSERT INTO main.room_public (id, room_id) VALUES (?, ?)`,
 		r.ID,
-		r.OwnerID,
-		r.WorldID,
-		r.Name,
+		r.RoomID,
 	).WithContext(ctx)
 
 	defer q.Release()
@@ -103,36 +101,36 @@ func (s Store) Insert(ctx context.Context, r room.R) error {
 	return nil
 }
 
-func (s Store) Fetch(ctx context.Context, f room.Filter) (room.R, error) {
+func (s Store) FetchPublic(ctx context.Context, f room.FilterPublic) (room.Public, error) {
 	b := strings.Builder{}
-	b.WriteString(`SELECT id, owner_id, world_id, name FROM main.room `)
+	b.WriteString(`SELECT id, room_id FROM main.room_public `)
 
-	clause, args := filter(f).where()
+	clause, args := filterPublic(f).where()
 	b.WriteString(clause)
 
 	q := s.Session.Query(b.String(), args...).WithContext(ctx)
 
-	var r room.R
-	if err := q.Scan(&r.ID, &r.OwnerID, &r.WorldID, &r.Name); err != nil {
+	var r room.Public
+	if err := q.Scan(&r.ID, &r.RoomID); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
-			return room.R{}, gerrors.ErrNotFound{Resource: "room", Index: filter(f).index()}
+			return room.Public{}, gerrors.ErrNotFound{Resource: "room_public", Index: filterPublic(f).index()}
 		}
 
-		return room.R{}, err
+		return room.Public{}, err
 	}
 
 	return r, nil
 }
 
-func (s Store) FetchMany(ctx context.Context, f room.Filter) ([]room.R, []byte, error) {
+func (s Store) FetchManyPublic(ctx context.Context, f room.FilterPublic) ([]room.Public, []byte, error) {
 	if f.Size <= 0 {
 		return nil, nil, nil
 	}
 
 	b := strings.Builder{}
-	b.WriteString(`SELECT id, owner_id, world_id, name FROM main.room `)
+	b.WriteString(`SELECT id, room_id FROM main.room_public `)
 
-	clause, args := filter(f).where()
+	clause, args := filterPublic(f).where()
 	b.WriteString(clause)
 
 	iter := s.Session.Query(b.String(), args...).
@@ -147,16 +145,14 @@ func (s Store) FetchMany(ctx context.Context, f room.Filter) ([]room.R, []byte, 
 
 	scanner := iter.Scanner()
 
-	rooms := make([]room.R, f.Size)
+	rooms := make([]room.Public, f.Size)
 
 	var i int
 
 	for ; scanner.Next(); i++ {
 		if err := scanner.Scan(
 			&rooms[i].ID,
-			&rooms[i].OwnerID,
-			&rooms[i].WorldID,
-			&rooms[i].Name,
+			&rooms[i].RoomID,
 		); err != nil {
 			return nil, nil, err
 		}
@@ -169,11 +165,11 @@ func (s Store) FetchMany(ctx context.Context, f room.Filter) ([]room.R, []byte, 
 	return rooms[:i], state, nil
 }
 
-func (s Store) Delete(ctx context.Context, f room.Filter) error {
+func (s Store) DeletePublic(ctx context.Context, f room.FilterPublic) error {
 	b := strings.Builder{}
-	b.WriteString(`DELETE FROM main.room `)
+	b.WriteString(`DELETE FROM main.room_public `)
 
-	clause, args := filter(f).where()
+	clause, args := filterPublic(f).where()
 	b.WriteString(clause)
 
 	q := s.Session.Query(b.String(), args...).WithContext(ctx)
