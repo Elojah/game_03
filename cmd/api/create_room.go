@@ -63,6 +63,17 @@ func (h *handler) CreateRoom(ctx context.Context, req *room.R) (*room.R, error) 
 		return &room.R{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
+	// #Insert public room
+	// TODO: use parameter to set public or not
+	if err := h.room.InsertPublic(ctx, room.Public{
+		ID:     ulid.NewID(),
+		RoomID: req.ID,
+	}); err != nil {
+		logger.Error().Err(err).Msg("failed to create public room")
+
+		return &room.R{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
 	logger.Info().Msg("success")
 
 	return req, nil
