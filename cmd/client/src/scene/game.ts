@@ -110,6 +110,8 @@ export class Game extends Scene {
 	World: World.World
 	// Client cell loading
 	Border: Map<Orientation, number>
+	// Background image
+	Background: Phaser.GameObjects.TileSprite
 	// Loading mutex
 	Loading: Uint8Array | undefined
 
@@ -217,6 +219,8 @@ export class Game extends Scene {
 							this.World = ws.getWorldsList()[0]
 						}
 					}).then(() => {
+						return this.loadBackground()
+					}).then(() => {
 						return this.loadMap(Orientation.None)
 					})
 					.then(() => {
@@ -230,7 +234,6 @@ export class Game extends Scene {
 					})
 			})
 	}
-
 
 	updateBodyEntity() {
 		// Controls + local anim update
@@ -297,6 +300,7 @@ export class Game extends Scene {
 
 	update(time: number, deltaTime: number) {
 		this.updateBodyEntity()
+		this.updateBackground()
 
 		let o = Orientation.None
 		const x = this.Entity.Body.body.x
@@ -336,7 +340,6 @@ export class Game extends Scene {
 			const id = this.Cells.get(o)?.Cell.getId_asU8()
 			this.Loading = id
 
-			console.log('loading new direction:', o, id)
 
 			if (id) {
 				this.Entity.E.setCellid(id)
@@ -345,7 +348,7 @@ export class Game extends Scene {
 					console.log('loaded cell')
 				})
 			} else {
-				// don't move entity, out of world
+				// don't load cell, out of world
 			}
 		}
 
@@ -361,7 +364,6 @@ export class Game extends Scene {
 		// this.EntityBufferRendering.forEach((value: string) => {
 
 		this.Entities.forEach((e: GraphicEntity) => {
-
 			// self reconciliation
 			if (ulid(e.E.getId_asU8()) == ulid(this.Entity.E.getId_asU8())) {
 				return
@@ -380,6 +382,25 @@ export class Game extends Scene {
 		})
 
 		// this.EntityBufferRendering = []
+	}
+
+
+	async loadBackground() {
+		const bg = 'game_background'
+		this.load.image(bg, 'img/' + bg + '.png')
+		console.log('add listener on ', 'filecomplete-image-' + bg)
+		this.load.on('filecomplete-image-' + bg, () => {
+			console.log('image completed ', bg)
+			this.Background = this.add.tileSprite(0, 0, 1024, 512, bg, 'img/' + bg + '.png').setOrigin(0).setScrollFactor(0);
+			this.Background.setDisplaySize(this.game.scale.width, this.game.scale.height)
+		})
+	}
+
+	updateBackground() {
+		if (this.Background) {
+			this.Background.tilePositionX = this.Entity.Body.body.x % 1024
+			this.Background.tilePositionY = this.Entity.Body.body.y % 512
+		}
 	}
 
 	// Orientation o uses preload surrounded cells
@@ -422,7 +443,6 @@ export class Game extends Scene {
 						// assign cells to delete
 						// deletedCells.push()
 						// create new blank graphic cell from loaded cell
-						const m = this.make.tilemap()
 						this.Cells.set(Orientation.None, {
 							Cell: c,
 							Tilemap: this.Blank.Tilemap,

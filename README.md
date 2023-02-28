@@ -46,12 +46,11 @@ $ go run ./scripts/write_tileset/main.go 'assets/external/Tilesets' 'assets/tile
 ---
 
 - Manage map creation
-  + [p3] ~~ Feature remove one-tile grass paths frustrating in generation
-  + [p2] Add wall inside concave island(s ?) template and let void outside -> done but no wall/wall wang tiles
-  + [p1] Fix collision values gaps in `.json` adding useless rectangles in min dissection
-  + [p0] Add sky background (bonus: animated tiles)
+  + [ ] [p3] ~~ Feature remove one-tile grass paths frustrating in generation
+  + [ ] [p2] Add wall inside concave island(s ?) template and let void outside -> done but no wall/wall wang tiles
+  + [ ] [p1] Fix collision values gaps in `.json` adding useless rectangles in min dissection
+  + [x] [p0] Add sky background (bonus: animated tiles)
 - Remove `Math.round()` in `game.ts` and set entity.X entity.Y as float64 to fit Phaser.Body x/y
-
 
 # FLOW
 ---
@@ -91,6 +90,11 @@ Instead you can use `scripts/create_default_tilesheets.sh` once from current dir
 - `auth` -> `4281`
 - `admin` -> `4282`
 
+
+### IDEAS
+---
+- When killing a boss, grant a X power materia/gear for final hit guild -> Boss belongs to guild, can't kill it anymore -> When another guilds kill it (final hit guaranteed), grant a X+1 power materia/gear for guild and so on...
+- How to implement TP, lighthouse ?
 
 
 ### Unrelated
