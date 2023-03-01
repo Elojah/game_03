@@ -22,8 +22,10 @@ import "github.com/elojah/game_03/pkg/entity/dto/animation.proto";
 import "github.com/elojah/game_03/pkg/entity/dto/pc.proto";
 import "github.com/elojah/game_03/pkg/entity/dto/template.proto";
 import "github.com/elojah/game_03/pkg/room/room.proto";
+import "github.com/elojah/game_03/pkg/room/user.proto";
 import "github.com/elojah/game_03/pkg/room/dto/cell.proto";
 import "github.com/elojah/game_03/pkg/room/dto/room.proto";
+import "github.com/elojah/game_03/pkg/room/dto/user.proto";
 import "github.com/elojah/game_03/pkg/room/dto/world.proto";
 import "github.com/elojah/game_03/pkg/twitch/dto/follow.proto";
 import "github.com/elojah/game_03/pkg/user/dto/session.proto";
@@ -58,6 +60,7 @@ service API {
     rpc CreateRoom(room.R) returns (room.R);
     rpc ListRoom(dto.ListRoomReq) returns (dto.ListRoomResp);
     rpc ListRoomPublic(dto.ListRoomReq) returns (dto.ListRoomResp);
+    rpc CreateRoomUser(dto.CreateRoomUserReq) returns (room.User);
 
     // Cell
     rpc ListCell(dto.ListCellReq) returns (dto.ListCellResp);

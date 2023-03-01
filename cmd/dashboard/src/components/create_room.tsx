@@ -103,7 +103,7 @@ export default () => {
 
 	// Table World
 	const [page, setPage] = React.useState(0);
-	const [rowsPerPage, setRowsPerPage] = React.useState(10);
+	const [rowsPerPage, setRowsPerPage] = React.useState(100);
 
 	const handleChangePage = (event: unknown, newPage: number) => {
 		setPage(newPage);

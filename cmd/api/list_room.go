@@ -29,7 +29,7 @@ func (h *handler) ListRoom(ctx context.Context, req *dto.ListRoomReq) (*dto.List
 		return &dto.ListRoomResp{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	}
 
-	// #Fetch pcs
+	// #Fetch user rooms
 	rus, state, err := h.room.FetchManyUser(ctx,
 		room.FilterUser{
 			UserID: u.ID,

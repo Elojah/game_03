@@ -10,8 +10,10 @@ var github_com_elojah_game_03_pkg_entity_dto_animation_pb = require("../../../..
 var github_com_elojah_game_03_pkg_entity_dto_pc_pb = require("../../../../../../github.com/elojah/game_03/pkg/entity/dto/pc_pb");
 var github_com_elojah_game_03_pkg_entity_dto_template_pb = require("../../../../../../github.com/elojah/game_03/pkg/entity/dto/template_pb");
 var github_com_elojah_game_03_pkg_room_room_pb = require("../../../../../../github.com/elojah/game_03/pkg/room/room_pb");
+var github_com_elojah_game_03_pkg_room_user_pb = require("../../../../../../github.com/elojah/game_03/pkg/room/user_pb");
 var github_com_elojah_game_03_pkg_room_dto_cell_pb = require("../../../../../../github.com/elojah/game_03/pkg/room/dto/cell_pb");
 var github_com_elojah_game_03_pkg_room_dto_room_pb = require("../../../../../../github.com/elojah/game_03/pkg/room/dto/room_pb");
+var github_com_elojah_game_03_pkg_room_dto_user_pb = require("../../../../../../github.com/elojah/game_03/pkg/room/dto/user_pb");
 var github_com_elojah_game_03_pkg_room_dto_world_pb = require("../../../../../../github.com/elojah/game_03/pkg/room/dto/world_pb");
 var github_com_elojah_game_03_pkg_twitch_dto_follow_pb = require("../../../../../../github.com/elojah/game_03/pkg/twitch/dto/follow_pb");
 var github_com_elojah_game_03_pkg_user_dto_session_pb = require("../../../../../../github.com/elojah/game_03/pkg/user/dto/session_pb");
@@ -138,6 +140,15 @@ API.ListRoomPublic = {
   responseStream: false,
   requestType: github_com_elojah_game_03_pkg_room_dto_room_pb.ListRoomReq,
   responseType: github_com_elojah_game_03_pkg_room_dto_room_pb.ListRoomResp
+};
+
+API.CreateRoomUser = {
+  methodName: "CreateRoomUser",
+  service: API,
+  requestStream: false,
+  responseStream: false,
+  requestType: github_com_elojah_game_03_pkg_room_dto_user_pb.CreateRoomUserReq,
+  responseType: github_com_elojah_game_03_pkg_room_user_pb.User
 };
 
 API.ListCell = {
@@ -578,6 +589,37 @@ APIClient.prototype.listRoomPublic = function listRoomPublic(requestMessage, met
     callback = arguments[1];
   }
   var client = grpc.unary(API.ListRoomPublic, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+APIClient.prototype.createRoomUser = function createRoomUser(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(API.CreateRoomUser, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,

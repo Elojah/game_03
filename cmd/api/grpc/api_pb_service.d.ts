@@ -10,8 +10,10 @@ import * as github_com_elojah_game_03_pkg_entity_dto_animation_pb from "../../..
 import * as github_com_elojah_game_03_pkg_entity_dto_pc_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/dto/pc_pb";
 import * as github_com_elojah_game_03_pkg_entity_dto_template_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/dto/template_pb";
 import * as github_com_elojah_game_03_pkg_room_room_pb from "../../../../../../github.com/elojah/game_03/pkg/room/room_pb";
+import * as github_com_elojah_game_03_pkg_room_user_pb from "../../../../../../github.com/elojah/game_03/pkg/room/user_pb";
 import * as github_com_elojah_game_03_pkg_room_dto_cell_pb from "../../../../../../github.com/elojah/game_03/pkg/room/dto/cell_pb";
 import * as github_com_elojah_game_03_pkg_room_dto_room_pb from "../../../../../../github.com/elojah/game_03/pkg/room/dto/room_pb";
+import * as github_com_elojah_game_03_pkg_room_dto_user_pb from "../../../../../../github.com/elojah/game_03/pkg/room/dto/user_pb";
 import * as github_com_elojah_game_03_pkg_room_dto_world_pb from "../../../../../../github.com/elojah/game_03/pkg/room/dto/world_pb";
 import * as github_com_elojah_game_03_pkg_twitch_dto_follow_pb from "../../../../../../github.com/elojah/game_03/pkg/twitch/dto/follow_pb";
 import * as github_com_elojah_game_03_pkg_user_dto_session_pb from "../../../../../../github.com/elojah/game_03/pkg/user/dto/session_pb";
@@ -134,6 +136,15 @@ type APIListRoomPublic = {
   readonly responseType: typeof github_com_elojah_game_03_pkg_room_dto_room_pb.ListRoomResp;
 };
 
+type APICreateRoomUser = {
+  readonly methodName: string;
+  readonly service: typeof API;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof github_com_elojah_game_03_pkg_room_dto_user_pb.CreateRoomUserReq;
+  readonly responseType: typeof github_com_elojah_game_03_pkg_room_user_pb.User;
+};
+
 type APIListCell = {
   readonly methodName: string;
   readonly service: typeof API;
@@ -185,6 +196,7 @@ export class API {
   static readonly CreateRoom: APICreateRoom;
   static readonly ListRoom: APIListRoom;
   static readonly ListRoomPublic: APIListRoomPublic;
+  static readonly CreateRoomUser: APICreateRoomUser;
   static readonly ListCell: APIListCell;
   static readonly ListWorld: APIListWorld;
   static readonly ListFollow: APIListFollow;
@@ -323,6 +335,15 @@ export class APIClient {
   listRoomPublic(
     requestMessage: github_com_elojah_game_03_pkg_room_dto_room_pb.ListRoomReq,
     callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_room_dto_room_pb.ListRoomResp|null) => void
+  ): UnaryResponse;
+  createRoomUser(
+    requestMessage: github_com_elojah_game_03_pkg_room_dto_user_pb.CreateRoomUserReq,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_room_user_pb.User|null) => void
+  ): UnaryResponse;
+  createRoomUser(
+    requestMessage: github_com_elojah_game_03_pkg_room_dto_user_pb.CreateRoomUserReq,
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_room_user_pb.User|null) => void
   ): UnaryResponse;
   listCell(
     requestMessage: github_com_elojah_game_03_pkg_room_dto_cell_pb.ListCellReq,

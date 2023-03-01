@@ -71,7 +71,7 @@ export default () => {
 
 	// Table Room
 	const [page, setPage] = React.useState(0);
-	const [rowsPerPage, setRowsPerPage] = React.useState(10);
+	const [rowsPerPage, setRowsPerPage] = React.useState(100);
 
 	const handleChangePage = (event: unknown, newPage: number) => {
 		setPage(newPage);

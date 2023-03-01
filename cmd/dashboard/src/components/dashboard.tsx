@@ -23,7 +23,7 @@ import TableRow from '@mui/material/TableRow';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import Button from '@mui/material/Button';
 import Searchbar from './searchbar';
-import RoomsRow from './rooms_row';
+import RoomsPublicRow from './rooms_public_row';
 
 export default () => {
 
@@ -71,7 +71,7 @@ export default () => {
 
 	// Table Room
 	const [page, setPage] = React.useState(0);
-	const [rowsPerPage, setRowsPerPage] = React.useState(10);
+	const [rowsPerPage, setRowsPerPage] = React.useState(100);
 
 	const handleChangePage = (event: unknown, newPage: number) => {
 		setPage(newPage);
@@ -142,7 +142,7 @@ export default () => {
 						{rooms.loaded && rooms.rooms
 							.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 							.map((room) => {
-								return (<RoomsRow Room={room} key={ulid(room.getRoom()?.getId_asU8()!)} />)
+								return (<RoomsPublicRow Room={room} key={ulid(room.getRoom()?.getId_asU8()!)} />)
 							})
 						}
 					</TableBody>

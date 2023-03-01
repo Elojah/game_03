@@ -32,12 +32,12 @@ func (f filterPublic) where() (string, []any) {
 	}
 
 	if f.RoomID != nil {
-		clause = append(clause, `owner_id = ?`)
+		clause = append(clause, `room_id = ?`)
 		args = append(args, f.RoomID)
 	}
 
 	if len(f.RoomIDs) > 0 {
-		clause = append(clause, `owner_id IN ?`)
+		clause = append(clause, `room_id IN ?`)
 		args = append(args, f.RoomIDs)
 	}
 

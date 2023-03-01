@@ -49,6 +49,7 @@ $ go run ./scripts/write_tileset/main.go 'assets/external/Tilesets' 'assets/tile
   + [ ] [p3] ~~ Feature remove one-tile grass paths frustrating in generation
   + [ ] [p1] Fix collision values gaps in `.json` adding useless rectangles in min dissection
   + [x] [p0] Add sky background (bonus: animated tiles)
+  + [ ] [p1] refresh token client + dashboard
   + [ ] [p0] Add room.public with list -> Change dashboard to display post login + Add join display + route to create member
 - Remove `Math.round()` in `game.ts` and set entity.X entity.Y as float64 to fit Phaser.Body x/y
 

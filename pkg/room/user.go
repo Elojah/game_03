@@ -11,7 +11,7 @@ type Role int32
 const (
 	UnknownRole Role = iota
 	Owner
-	Follower
+	Member
 )
 
 type FilterUser struct {
