@@ -45,13 +45,23 @@ $ go run ./scripts/write_tileset/main.go 'assets/external/Tilesets' 'assets/tile
 ### TODO
 ---
 
+- [p0] -> blocking game
+- [p1] -> blocking feature
+- [p2] -> annoying game
+- [p3] -> annoying feature
+- [p4] -> improvement
+
 - Manage map creation
-  + [ ] [p3] ~~ Feature remove one-tile grass paths frustrating in generation
-  + [ ] [p1] Fix collision values gaps in `.json` adding useless rectangles in min dissection
-  + [x] [p0] Add sky background (bonus: animated tiles)
-  + [ ] [p1] refresh token client + dashboard
-  + [ ] [p0] Add room.public with list -> Change dashboard to display post login + Add join display + route to create member
-- Remove `Math.round()` in `game.ts` and set entity.X entity.Y as float64 to fit Phaser.Body x/y
+  + [ ] [p4] Fix collision values gaps in `.json` adding useless rectangles in min dissection
+  + [ ] [p4] Add sky background (bonus: animated tiles) -> as parameter (different background possible in same map too ?)
+  + [ ] [p3] Change dashboard/rooms to display post login (event/state propag)
+  + [ ] [p2] ~~ Feature remove one-tile grass paths frustrating in generation
+  + [ ] [p2] Fix interpolation speed in game.ts (corresponding actual player speed)
+  + [ ] [p0] Remove `Math.round()` in `game.ts` and set entity.X entity.Y as float64 to fit Phaser.Body x/y
+  + [ ] [p0] refresh token dashboard (+ client ?)
+  + [ ] [p0] Remove player from other clients when disconnect
+  + [ ] [p0] Fix player sprite not loaded
+
 
 # FLOW
 ---

@@ -65,9 +65,10 @@ func (h *handler) UpdateEntity(stream ggrpc.API_UpdateEntityServer) error {
 		if err := h.entity.Update(ctx, entity.Filter{
 			ID: e.ID,
 		}, entity.Patch{
-			X:      &e.X,
-			Y:      &e.Y,
-			CellID: e.CellID,
+			X:           &e.X,
+			Y:           &e.Y,
+			AnimationID: e.AnimationID,
+			CellID:      e.CellID,
 		}); err != nil {
 			logger.Error().Err(err).Msg("failed to update entity")
 

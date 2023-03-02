@@ -5,7 +5,7 @@ import { Mutex } from 'async-mutex';
 
 import * as jspb from "google-protobuf";
 
-import { ulid } from '../lib/ulid'
+import { ulid, parse } from '../lib/ulid'
 
 import { API } from 'cmd/api/grpc/api_pb_service';
 
@@ -177,18 +177,6 @@ export class Game extends Scene {
 	}
 	preload() { }
 	create() {
-		// this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W).on('down', () => {this.movePC(Orientation.Up)})
-		// this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S).on('down', () => {this.movePC(Orientation.Down)})
-		// this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A).on('down', () => {this.movePC(Orientation.Left)})
-		// this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D).on('down', () => {this.movePC(Orientation.Right)})
-
-		// this.Controls.Up = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W)
-		// this.Controls.Down = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)
-		// this.Controls.Left = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A)
-		// this.Controls.Right = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D)
-
-		this.Cursors = this.input.keyboard!.createCursorKeys();
-
 		// Connect for entity sync
 		this.connect()
 			.then(() => {
@@ -199,6 +187,8 @@ export class Game extends Scene {
 		this.connectUpdate()
 
 		this.Loading = this.Entity.E.getCellid_asU8()
+
+		this.Cursors = this.input.keyboard!.createCursorKeys();
 
 		this.LoadMapMutex.waitForUnlock()
 			.then(() => {
@@ -280,7 +270,12 @@ export class Game extends Scene {
 		}
 
 		if (animationID) {
-			this.Entity?.Body?.play(animationID, true)
+			this.Entity.E.setAnimationid(parse(animationID))
+
+			const duplicateID = this.Entity.Animations.get(animationID)
+			if (duplicateID) {
+				this.Entity?.Body?.play(duplicateID, true)
+			}
 		}
 	}
 
@@ -376,6 +371,7 @@ export class Game extends Scene {
 			e?.Sprite.setX(x)
 			e?.Sprite.setY(y)
 			const animationID = e.Animations.get(ulid(e.E.getAnimationid_asU8()))
+			console.log('external animid:', ulid(e.E.getAnimationid_asU8()), animationID)
 			if (animationID) {
 				e?.Sprite.play(animationID, true)
 			}
@@ -984,8 +980,9 @@ export class Game extends Scene {
 				if (this.Entities.has(id)) {
 					// update state only
 					const x = entry.getX() + (this.Cells.get(this.CellsByID.get(ulid(entry.getCellid_asU8()))!)?.Cell.getX()! * this.World.getCellwidth())
-					const y = entry.getX() + (this.Cells.get(this.CellsByID.get(ulid(entry.getCellid_asU8()))!)?.Cell.getY()! * this.World.getCellheight())
+					const y = entry.getY() + (this.Cells.get(this.CellsByID.get(ulid(entry.getCellid_asU8()))!)?.Cell.getY()! * this.World.getCellheight())
 					updateGraphicEntity(this.Entities.get(id)!, x, y)
+
 					// console.log(this.CellsByID.get(ulid(entry.getCellid_asU8()))!)
 					// console.log(id, x, y)
 
@@ -993,6 +990,7 @@ export class Game extends Scene {
 					// this.EntityBuffer.push(ulid(entry.getId_asU8()))
 				} else {
 					// create associated sprite
+					// receive own entity from server once and initialize
 					if (id == ulid(this.Entity.E.getId_asU8())) {
 						this.Entity.Body.destroy()
 						this.Entity.Body = this.physics.add.sprite(entry.getX(), entry.getY(), id).setSize(16, 16).setOffset(0, 0)
@@ -1056,16 +1054,20 @@ export class Game extends Scene {
 						const duplicateID = ulid(an.getDuplicateid_asU8())
 						const entityID = ulid(an.getEntityid_asU8())
 
+						let anims = this.Entities.get(entityID)?.Animations!
+
+						// loading self animations, change object + add named animations
 						if (entityID == ulid(this.Entity.E.getId_asU8())) {
-							this.Entity.Animations.set(an.getName(), duplicateID)
+							anims = this.Entity.Animations
+
+							console.log('set named animation:', an.getName(), id)
+							anims.set(an.getName(), id)
 						}
+
 
 						// return if already loaded
 						if (this.anims.exists(duplicateID)) {
-							this.Entities.get(entityID)?.Animations.set(id, duplicateID)
-
-							// Play entity animation
-							// this.EntityBuffer.push(ulid(an.getEntityid_asU8()))
+							anims.set(id, duplicateID)
 
 							return
 						}
@@ -1088,13 +1090,10 @@ export class Game extends Scene {
 								return
 							}
 
-							console.log('set animation:' + ulid(an.getEntityid_asU8()) + ":" + an.getName())
+							console.log('set animation:', id, duplicateID)
 
 							// Add animation to entity animations
-							this.Entities.get(entityID)?.Animations.set(id, duplicateID)
-
-							// Play entity animation
-							// this.EntityBuffer.push(ulid(an.getEntityid_asU8()))
+							anims.set(id, duplicateID)
 						}
 
 						if (!this.SpriteSheets.get(sheetID)) {
