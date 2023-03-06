@@ -85,13 +85,6 @@ type GraphicCell = {
 	Layers: Map<string, Phaser.Tilemaps.TilemapLayer | null>
 }
 
-type Controls = {
-	Up: Phaser.Input.Keyboard.Key
-	Down: Phaser.Input.Keyboard.Key
-	Left: Phaser.Input.Keyboard.Key
-	Right: Phaser.Input.Keyboard.Key
-}
-
 export class Game extends Scene {
 
 	// Self
@@ -119,12 +112,12 @@ export class Game extends Scene {
 	Entities: Map<string, GraphicEntity>
 	// Specific loader for entities
 	EntityLoader: Phaser.Loader.LoaderPlugin
-	// 2 buffers for entity update
-	// Rendering buffer is frozen and used by update only
-	EntityBuffer: Array<string>
-	EntityBufferRendering: Array<string>
 	// Grpc client to send entity updates to server
 	EntityClient: grpc.Client<Entity.E, Entity.E>
+	// Entity update map to detect disconnect
+	EntityLastTick: Map<string, number>
+	cleanEntitiesDelay: number
+
 	SyncTimer: number
 
 	// Spritesheets already loaded
@@ -157,8 +150,8 @@ export class Game extends Scene {
 
 		this.Entities = new Map()
 		this.EntityLoader = new Phaser.Loader.LoaderPlugin(this)
-		this.EntityBuffer = new Array<string>()
-		this.EntityBufferRendering = new Array<string>()
+		this.EntityLastTick = new Map()
+		this.cleanEntitiesDelay = 2 * 1000 // 2 seconds without tick (async) triggers entity removal
 
 		this.SpriteSheets = new Map()
 
@@ -218,6 +211,11 @@ export class Game extends Scene {
 						this.load.on('complete', () => {
 							console.log('load complete')
 						})
+					}).then(() => {
+						// post first loading launch
+						setInterval(() => {
+							this.cleanEntities()
+						}, this.cleanEntitiesDelay)
 					})
 					.catch((err) => {
 						console.log(err)
@@ -351,13 +349,6 @@ export class Game extends Scene {
 		this.Entity.E.setX(Math.round(x))
 		this.Entity.E.setY(Math.round(y))
 
-		// Swap buffers
-		// this.EntityBufferRendering = this.EntityBuffer
-		// this.EntityBuffer = []
-
-		// Entity queue update
-		// this.EntityBufferRendering.forEach((value: string) => {
-
 		this.Entities.forEach((e: GraphicEntity) => {
 			// self reconciliation
 			if (ulid(e.E.getId_asU8()) == ulid(this.Entity.E.getId_asU8())) {
@@ -376,8 +367,6 @@ export class Game extends Scene {
 				e?.Sprite.play(animationID, true)
 			}
 		})
-
-		// this.EntityBufferRendering = []
 	}
 
 
@@ -966,6 +955,28 @@ export class Game extends Scene {
 		})
 	}
 
+	async cleanEntities() {
+		let ids: string[] = new Array()
+
+		this.EntityLastTick.forEach((val, key) => {
+			if (val == 0) {
+				ids.push(key)
+			} else {
+				this.EntityLastTick.set(key, 0)
+			}
+		})
+
+		ids.forEach((id) => {
+			this.EntityLastTick.delete(id)
+
+			// TODO: ensure it cleans everything correctly ?
+			this.Entities.get(id)?.Sprite.destroy()
+			this.Entities.delete(id)
+
+			// TODO: clean animations if not used elsewhere ?
+		})
+	}
+
 	// Connect
 	async connect() {
 		const release = await this.LoadMapMutex.acquire()
@@ -977,6 +988,9 @@ export class Game extends Scene {
 			message.getEntitiesList().forEach((entry: Entity.E) => {
 				const id = ulid(entry.getId_asU8())
 
+				// Set last tick to 0
+				this.EntityLastTick.set(id, (this.EntityLastTick.get(id) || 0) + 1)
+
 				if (this.Entities.has(id)) {
 					// update state only
 					const x = entry.getX() + (this.Cells.get(this.CellsByID.get(ulid(entry.getCellid_asU8()))!)?.Cell.getX()! * this.World.getCellwidth())
@@ -987,7 +1001,6 @@ export class Game extends Scene {
 					// console.log(id, x, y)
 
 					this.Entities.get(id)!.E = entry
-					// this.EntityBuffer.push(ulid(entry.getId_asU8()))
 				} else {
 					// create associated sprite
 					// receive own entity from server once and initialize
@@ -1028,7 +1041,6 @@ export class Game extends Scene {
 
 					// load entity animations
 					entityIDs.push(entry.getId_asU8())
-					// this.EntityBuffer.push(ulid(entry.getId_asU8()))
 				}
 
 			})
