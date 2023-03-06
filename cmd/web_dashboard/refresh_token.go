@@ -6,6 +6,7 @@ import (
 	"github.com/gogo/protobuf/types"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -14,8 +15,19 @@ func (h handler) refreshToken(w http.ResponseWriter, r *http.Request) {
 
 	logger := log.With().Str("route", r.URL.EscapedPath()).Str("method", r.Method).Str("address", r.RemoteAddr).Logger()
 
+	rc, err := r.Cookie("refresh")
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to retrieve token")
+
+		http.Error(w, "failed to retrieve token", http.StatusUnauthorized)
+		return
+	}
+
 	// Refresh with auth.
-	jwt, err := h.RefreshToken(ctx, &types.StringValue{Value: ""})
+	jwt, err := h.RefreshToken(
+		metadata.AppendToOutgoingContext(ctx, "token", rc.Value),
+		&types.StringValue{Value: ""},
+	)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to refresh")
 
@@ -29,7 +41,7 @@ func (h handler) refreshToken(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, e.Message(), http.StatusInternalServerError)
 			}
 		} else {
-			http.Error(w, "failed to signin", http.StatusInternalServerError)
+			http.Error(w, "failed to refresh", http.StatusInternalServerError)
 		}
 
 		return

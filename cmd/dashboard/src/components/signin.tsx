@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { start } from '../lib/refresh_token'
+
 import {
 	GoogleOAuthProvider,
 	GoogleLogin,
@@ -36,6 +38,8 @@ function GSigninSuccess(resp: CredentialResponse) {
 
 				return
 			}
+
+			start()
 
 			console.log('success signin:', resp)
 		})
