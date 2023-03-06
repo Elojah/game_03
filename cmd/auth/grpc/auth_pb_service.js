@@ -4,6 +4,7 @@
 var github_com_elojah_game_03_cmd_auth_grpc_auth_pb = require("../../../../../../github.com/elojah/game_03/cmd/auth/grpc/auth_pb");
 var google_protobuf_empty_pb = require("google-protobuf/google/protobuf/empty_pb");
 var google_protobuf_wrappers_pb = require("google-protobuf/google/protobuf/wrappers_pb");
+var github_com_elojah_game_03_pkg_user_dto_user_pb = require("../../../../../../github.com/elojah/game_03/pkg/user/dto/user_pb");
 var grpc = require("@improbable-eng/grpc-web").grpc;
 
 var Auth = (function () {
@@ -18,7 +19,7 @@ Auth.SigninTwitch = {
   requestStream: false,
   responseStream: false,
   requestType: google_protobuf_wrappers_pb.StringValue,
-  responseType: google_protobuf_wrappers_pb.StringValue
+  responseType: github_com_elojah_game_03_pkg_user_dto_user_pb.SigninResp
 };
 
 Auth.SigninGoogle = {
@@ -27,7 +28,7 @@ Auth.SigninGoogle = {
   requestStream: false,
   responseStream: false,
   requestType: google_protobuf_wrappers_pb.StringValue,
-  responseType: google_protobuf_wrappers_pb.StringValue
+  responseType: github_com_elojah_game_03_pkg_user_dto_user_pb.SigninResp
 };
 
 Auth.Ping = {

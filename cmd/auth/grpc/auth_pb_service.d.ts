@@ -4,6 +4,7 @@
 import * as github_com_elojah_game_03_cmd_auth_grpc_auth_pb from "../../../../../../github.com/elojah/game_03/cmd/auth/grpc/auth_pb";
 import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty_pb";
 import * as google_protobuf_wrappers_pb from "google-protobuf/google/protobuf/wrappers_pb";
+import * as github_com_elojah_game_03_pkg_user_dto_user_pb from "../../../../../../github.com/elojah/game_03/pkg/user/dto/user_pb";
 import {grpc} from "@improbable-eng/grpc-web";
 
 type AuthSigninTwitch = {
@@ -12,7 +13,7 @@ type AuthSigninTwitch = {
   readonly requestStream: false;
   readonly responseStream: false;
   readonly requestType: typeof google_protobuf_wrappers_pb.StringValue;
-  readonly responseType: typeof google_protobuf_wrappers_pb.StringValue;
+  readonly responseType: typeof github_com_elojah_game_03_pkg_user_dto_user_pb.SigninResp;
 };
 
 type AuthSigninGoogle = {
@@ -21,7 +22,7 @@ type AuthSigninGoogle = {
   readonly requestStream: false;
   readonly responseStream: false;
   readonly requestType: typeof google_protobuf_wrappers_pb.StringValue;
-  readonly responseType: typeof google_protobuf_wrappers_pb.StringValue;
+  readonly responseType: typeof github_com_elojah_game_03_pkg_user_dto_user_pb.SigninResp;
 };
 
 type AuthPing = {
@@ -75,20 +76,20 @@ export class AuthClient {
   signinTwitch(
     requestMessage: google_protobuf_wrappers_pb.StringValue,
     metadata: grpc.Metadata,
-    callback: (error: ServiceError|null, responseMessage: google_protobuf_wrappers_pb.StringValue|null) => void
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_user_dto_user_pb.SigninResp|null) => void
   ): UnaryResponse;
   signinTwitch(
     requestMessage: google_protobuf_wrappers_pb.StringValue,
-    callback: (error: ServiceError|null, responseMessage: google_protobuf_wrappers_pb.StringValue|null) => void
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_user_dto_user_pb.SigninResp|null) => void
   ): UnaryResponse;
   signinGoogle(
     requestMessage: google_protobuf_wrappers_pb.StringValue,
     metadata: grpc.Metadata,
-    callback: (error: ServiceError|null, responseMessage: google_protobuf_wrappers_pb.StringValue|null) => void
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_user_dto_user_pb.SigninResp|null) => void
   ): UnaryResponse;
   signinGoogle(
     requestMessage: google_protobuf_wrappers_pb.StringValue,
-    callback: (error: ServiceError|null, responseMessage: google_protobuf_wrappers_pb.StringValue|null) => void
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_user_dto_user_pb.SigninResp|null) => void
   ): UnaryResponse;
   ping(
     requestMessage: google_protobuf_empty_pb.Empty,

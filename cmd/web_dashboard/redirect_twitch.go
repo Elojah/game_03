@@ -65,7 +65,7 @@ func (h handler) redirectTwitch(w http.ResponseWriter, r *http.Request) {
 
 	http.SetCookie(w, &http.Cookie{
 		Name:     "token",
-		Value:    jwt.Value,
+		Value:    jwt.AccessToken,
 		Path:     "/",
 		Secure:   true,
 		HttpOnly: false,

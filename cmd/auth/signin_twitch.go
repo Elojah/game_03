@@ -8,17 +8,18 @@ import (
 	gtwitch "github.com/elojah/game_03/pkg/twitch"
 	"github.com/elojah/game_03/pkg/ulid"
 	"github.com/elojah/game_03/pkg/user"
+	"github.com/elojah/game_03/pkg/user/dto"
 	"github.com/gogo/protobuf/types"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-func (h *handler) SigninTwitch(ctx context.Context, req *types.StringValue) (*types.StringValue, error) {
+func (h *handler) SigninTwitch(ctx context.Context, req *types.StringValue) (*dto.SigninResp, error) {
 	logger := log.With().Str("method", "signin_twitch").Logger()
 
 	if req == nil {
-		return &types.StringValue{}, status.New(codes.Internal, gerrors.ErrNullRequest{}.Error()).Err()
+		return &dto.SigninResp{}, status.New(codes.Internal, gerrors.ErrNullRequest{}.Error()).Err()
 	}
 
 	// Fetch twitch user
@@ -39,7 +40,7 @@ func (h *handler) SigninTwitch(ctx context.Context, req *types.StringValue) (*ty
 	); err != nil {
 		logger.Error().Err(err).Msg("failed to get users")
 
-		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+		return &dto.SigninResp{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
 	// #Check if user exist
@@ -54,12 +55,12 @@ func (h *handler) SigninTwitch(ctx context.Context, req *types.StringValue) (*ty
 			if err := h.user.Insert(ctx, u); err != nil {
 				logger.Error().Err(err).Msg("failed to create user")
 
-				return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+				return &dto.SigninResp{}, status.New(codes.Internal, err.Error()).Err()
 			}
 		} else {
 			logger.Error().Err(err).Msg("failed to fetch user")
 
-			return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+			return &dto.SigninResp{}, status.New(codes.Internal, err.Error()).Err()
 		}
 	}
 
@@ -68,10 +69,12 @@ func (h *handler) SigninTwitch(ctx context.Context, req *types.StringValue) (*ty
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to create JWT")
 
-		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+		return &dto.SigninResp{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
 	logger.Info().Msg("success")
 
-	return &types.StringValue{Value: jwt}, nil
+	return &dto.SigninResp{
+		AccessToken: jwt,
+	}, nil
 }

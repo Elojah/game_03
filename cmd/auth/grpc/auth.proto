@@ -15,12 +15,14 @@ import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
 
+import "github.com/elojah/game_03/pkg/user/dto/user.proto";
+
 service Auth {
     // Signin Twitch
-    rpc SigninTwitch(google.protobuf.StringValue) returns (google.protobuf.StringValue);
+    rpc SigninTwitch(google.protobuf.StringValue) returns (dto.SigninResp);
 
 	// Signin Google
-	rpc SigninGoogle(google.protobuf.StringValue) returns (google.protobuf.StringValue);
+	rpc SigninGoogle(google.protobuf.StringValue) returns (dto.SigninResp);
 
     // Ping
     rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
