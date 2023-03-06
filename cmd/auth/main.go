@@ -133,6 +133,11 @@ func run(prog string, filename string) {
 		StoreSession: userStore,
 		Cookie:       cookieApp,
 	}
+	if err := userApp.Dial(ctx, cfg.Session); err != nil {
+		log.Error().Err(err).Msg("failed to dial user application")
+
+		return
+	}
 
 	// init handler
 	h := handler{

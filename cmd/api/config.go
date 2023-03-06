@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 
+	"github.com/elojah/game_03/pkg/user"
 	"github.com/elojah/go-grpc"
 	"github.com/elojah/go-grpcweb"
 	"github.com/elojah/go-http"
@@ -17,6 +18,8 @@ type config struct {
 	GRPC    grpc.Config    `json:"grpc"`
 	Scylla  scylla.Config  `json:"scylla"`
 	Redis   redis.Config   `json:"redis"`
+
+	Session user.ConfigSession `json:"session"`
 }
 
 // Populate populates config object reading file and env.

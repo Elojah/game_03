@@ -14,6 +14,8 @@ type App interface {
 	CreateJWT(context.Context, U) (string, error)
 	ReadJWT(context.Context, string) (U, error)
 
+	CreateSession(context.Context, Session) ([]byte, error)
+
 	Auth(context.Context) (U, error)
 	AuthSession(context.Context) (Session, error)
 }

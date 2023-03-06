@@ -21,6 +21,20 @@ type App struct {
 	user.CacheSession
 
 	Cookie cookie.App
+
+	// sessionKey is a weak security key but fast and constant.
+	sessionKey []byte
+}
+
+func (a *App) Dial(ctx context.Context, cs user.ConfigSession) error {
+	id, err := ulid.Parse(cs.Key)
+	if err != nil {
+		return err
+	}
+
+	a.sessionKey = id
+
+	return nil
 }
 
 func (a App) CreateJWT(ctx context.Context, u user.U) (string, error) {
@@ -124,42 +138,4 @@ func (a App) Auth(ctx context.Context) (user.U, error) {
 	}
 
 	return a.ReadJWT(ctx, token)
-}
-
-func (a App) AuthSession(ctx context.Context) (user.Session, error) {
-	md, ok := metadata.FromIncomingContext(ctx)
-	if !ok {
-		return user.Session{}, errors.ErrMissingAuth{}
-	}
-
-	token := func() string {
-		if len(md["token"]) == 0 {
-			return ""
-		}
-
-		return strings.Trim(md["token"][0], " ")
-	}()
-	if token == "" {
-		return user.Session{}, errors.ErrMissingAuth{}
-	}
-
-	var ses user.Session
-
-	if err := ses.Decrypt([]byte(token)); err != nil {
-		return user.Session{}, err
-	}
-
-	return ses, nil
-}
-
-func (a App) InsertSession(ctx context.Context, ses user.Session) error {
-	return a.StoreSession.InsertSession(ctx, ses)
-}
-
-func (a App) FetchSession(ctx context.Context, f user.FilterSession) (user.Session, error) {
-	return a.StoreSession.FetchSession(ctx, f)
-}
-
-func (a App) DeleteSession(ctx context.Context, f user.FilterSession) error {
-	return a.StoreSession.DeleteSession(ctx, f)
 }

@@ -47,15 +47,9 @@ func (h *handler) CreateSession(ctx context.Context, req *dto.CreateSessionReq) 
 		At:     time.Now().Unix(),
 	}
 
-	if err := h.user.InsertSession(ctx, ses); err != nil {
-		logger.Error().Err(err).Msg("failed to create session")
-
-		return &dto.CreateSessionResp{}, status.New(codes.Internal, err.Error()).Err()
-	}
-
-	raw, err := ses.Encrypt()
+	raw, err := h.user.CreateSession(ctx, ses)
 	if err != nil {
-		logger.Error().Err(err).Msg("failed to encrypt session")
+		logger.Error().Err(err).Msg("failed to create session")
 
 		return &dto.CreateSessionResp{}, status.New(codes.Internal, err.Error()).Err()
 	}

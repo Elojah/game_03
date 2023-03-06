@@ -7,9 +7,6 @@ import (
 	"github.com/xxtea/xxtea-go/xxtea"
 )
 
-// sessionKey is a weak security key but fast and constant.
-var sessionKey = []byte("01GG4HA3DM43KT1F8YRGZ5EZZ5")
-
 type FilterSession struct {
 	ID ulid.ID
 }
@@ -26,17 +23,17 @@ type StoreSession interface {
 	DeleteSession(context.Context, FilterSession) error
 }
 
-func (ses Session) Encrypt() ([]byte, error) {
+func (ses Session) Encrypt(key []byte) ([]byte, error) {
 	raw, err := ses.Marshal()
 	if err != nil {
 		return nil, nil
 	}
 
-	return xxtea.Encrypt(raw, sessionKey), nil
+	return xxtea.Encrypt(raw, key), nil
 }
 
-func (ses *Session) Decrypt(s []byte) error {
-	raw := xxtea.Decrypt(s, sessionKey)
+func (ses *Session) Decrypt(key []byte, s []byte) error {
+	raw := xxtea.Decrypt(s, key)
 
 	return ses.Unmarshal(raw)
 }
