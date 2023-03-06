@@ -37,7 +37,7 @@ func (a *App) Dial(ctx context.Context, cs user.ConfigSession) error {
 	return nil
 }
 
-func (a App) CreateJWT(ctx context.Context, u user.U) (string, error) {
+func (a App) CreateJWT(ctx context.Context, u user.U, audience string, validity time.Duration) (string, error) {
 	// #Create JWT
 	id := ulid.NewID()
 
@@ -52,8 +52,8 @@ func (a App) CreateJWT(ctx context.Context, u user.U) (string, error) {
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    "spc",
 			Subject:   u.ID.String(),
-			Audience:  jwt.ClaimStrings{"log"},
-			ExpiresAt: jwt.NewNumericDate(now.Add(time.Hour)),
+			Audience:  jwt.ClaimStrings{audience},
+			ExpiresAt: jwt.NewNumericDate(now.Add(validity)),
 			NotBefore: jwt.NewNumericDate(now),
 			IssuedAt:  jwt.NewNumericDate(now),
 			ID:        secret,

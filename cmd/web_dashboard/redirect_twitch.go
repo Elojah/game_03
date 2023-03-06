@@ -54,6 +54,7 @@ func (h handler) redirectTwitch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// clear previous oauth cookie
 	http.SetCookie(w, &http.Cookie{
 		Name:     "oauth-state-callback",
 		Value:    "",

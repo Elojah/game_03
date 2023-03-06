@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"time"
 
 	gerrors "github.com/elojah/game_03/pkg/errors"
 	gtwitch "github.com/elojah/game_03/pkg/twitch"
@@ -65,7 +66,15 @@ func (h *handler) SigninTwitch(ctx context.Context, req *types.StringValue) (*dt
 	}
 
 	// #Create JWT
-	jwt, err := h.user.CreateJWT(ctx, u)
+	jwt, err := h.user.CreateJWT(ctx, u, "access", time.Hour)
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to create JWT")
+
+		return &dto.SigninResp{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
+	// #Create refresh token
+	rt, err := h.user.CreateJWT(ctx, u, "refresh", 24*time.Hour)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to create JWT")
 
@@ -75,6 +84,7 @@ func (h *handler) SigninTwitch(ctx context.Context, req *types.StringValue) (*dt
 	logger.Info().Msg("success")
 
 	return &dto.SigninResp{
-		AccessToken: jwt,
+		AccessToken:  jwt,
+		RefreshToken: rt,
 	}, nil
 }

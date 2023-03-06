@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"time"
 
 	"github.com/elojah/game_03/pkg/ulid"
 )
@@ -11,7 +12,7 @@ type App interface {
 	StoreSession
 	CacheSession
 
-	CreateJWT(context.Context, U) (string, error)
+	CreateJWT(context.Context, U, string, time.Duration) (string, error)
 	ReadJWT(context.Context, string) (U, error)
 
 	CreateSession(context.Context, Session) ([]byte, error)
