@@ -25,6 +25,15 @@ type AuthSigninGoogle = {
   readonly responseType: typeof github_com_elojah_game_03_pkg_user_dto_user_pb.SigninResp;
 };
 
+type AuthRefreshToken = {
+  readonly methodName: string;
+  readonly service: typeof Auth;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof google_protobuf_wrappers_pb.StringValue;
+  readonly responseType: typeof github_com_elojah_game_03_pkg_user_dto_user_pb.SigninResp;
+};
+
 type AuthPing = {
   readonly methodName: string;
   readonly service: typeof Auth;
@@ -38,6 +47,7 @@ export class Auth {
   static readonly serviceName: string;
   static readonly SigninTwitch: AuthSigninTwitch;
   static readonly SigninGoogle: AuthSigninGoogle;
+  static readonly RefreshToken: AuthRefreshToken;
   static readonly Ping: AuthPing;
 }
 
@@ -88,6 +98,15 @@ export class AuthClient {
     callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_user_dto_user_pb.SigninResp|null) => void
   ): UnaryResponse;
   signinGoogle(
+    requestMessage: google_protobuf_wrappers_pb.StringValue,
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_user_dto_user_pb.SigninResp|null) => void
+  ): UnaryResponse;
+  refreshToken(
+    requestMessage: google_protobuf_wrappers_pb.StringValue,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_user_dto_user_pb.SigninResp|null) => void
+  ): UnaryResponse;
+  refreshToken(
     requestMessage: google_protobuf_wrappers_pb.StringValue,
     callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_user_dto_user_pb.SigninResp|null) => void
   ): UnaryResponse;

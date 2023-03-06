@@ -32,7 +32,7 @@ export default () => {
 
 	const listPublicRooms = (req: ListRoomReq) => {
 		let md = new grpc.Metadata()
-		md.set('token', getCookie('token')!)
+		md.set('token', getCookie('access')!)
 
 		const prom = new Promise<ListRoomResp>((resolve, reject) => {
 			grpc.unary(API.ListRoomPublic, {
@@ -67,7 +67,6 @@ export default () => {
 			console.log(err)
 		})
 	}
-
 
 	// Table Room
 	const [page, setPage] = React.useState(0);
@@ -137,7 +136,6 @@ export default () => {
 									<CircularProgress color='secondary' />
 								</TableCell>
 							</TableRow>
-
 						}
 						{rooms.loaded && rooms.rooms
 							.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)

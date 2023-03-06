@@ -32,7 +32,7 @@ export default () => {
 
 	const listRooms = (req: ListRoomReq) => {
 		let md = new grpc.Metadata()
-		md.set('token', getCookie('token')!)
+		md.set('token', getCookie('access')!)
 
 		const prom = new Promise<ListRoomResp>((resolve, reject) => {
 			grpc.unary(API.ListRoom, {

@@ -41,7 +41,7 @@ export default () => {
 
 	const createPC = (req: CreatePCReq) => {
 		let md = new grpc.Metadata()
-		md.set('token', getCookie('token')!)
+		md.set('token', getCookie('access')!)
 
 		const prom = new Promise<PC>((resolve, reject) => {
 			grpc.unary(API.CreatePC, {
@@ -66,7 +66,7 @@ export default () => {
 
 	const listTemplates = (req: ListTemplateReq) => {
 		let md = new grpc.Metadata()
-		md.set('token', getCookie('token')!)
+		md.set('token', getCookie('access')!)
 
 		const prom = new Promise<ListTemplateResp>((resolve, reject) => {
 			grpc.unary(API.ListTemplate, {

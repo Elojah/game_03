@@ -23,7 +23,7 @@ func (h *handler) ListPC(ctx context.Context, req *dto.ListPCReq) (*dto.ListPCRe
 	}
 
 	// #Authenticate
-	u, err := h.user.Auth(ctx)
+	u, err := h.user.Auth(ctx, "access")
 	if err != nil {
 		return &dto.ListPCResp{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	}

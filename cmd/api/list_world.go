@@ -21,7 +21,7 @@ func (h *handler) ListWorld(ctx context.Context, req *dto.ListWorldReq) (*dto.Li
 	// #Authenticate
 	_, err := h.user.AuthSession(ctx)
 	if err != nil {
-		if _, err := h.user.Auth(ctx); err != nil {
+		if _, err := h.user.Auth(ctx, "access"); err != nil {
 			return &dto.ListWorldResp{}, status.New(codes.Unauthenticated, err.Error()).Err()
 		}
 	}

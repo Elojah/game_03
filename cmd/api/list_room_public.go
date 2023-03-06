@@ -19,7 +19,7 @@ func (h *handler) ListRoomPublic(ctx context.Context, req *dto.ListRoomReq) (*dt
 	}
 
 	// #Authenticate
-	u, err := h.user.Auth(ctx)
+	u, err := h.user.Auth(ctx, "access")
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to authenticate")
 

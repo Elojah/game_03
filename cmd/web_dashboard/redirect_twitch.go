@@ -64,12 +64,24 @@ func (h handler) redirectTwitch(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: false,
 	})
 
+	// Set access token
 	http.SetCookie(w, &http.Cookie{
-		Name:     "token",
+		Name:     "access",
 		Value:    jwt.AccessToken,
 		Path:     "/",
 		Secure:   true,
 		HttpOnly: false,
+		Domain:   ".legacyfactory.com",
+	})
+
+	// Set refresh token
+	http.SetCookie(w, &http.Cookie{
+		Name:     "refresh",
+		Value:    jwt.RefreshToken,
+		Path:     "/",
+		Secure:   true,
+		HttpOnly: true,
+		SameSite: http.SameSiteDefaultMode,
 		Domain:   ".legacyfactory.com",
 	})
 

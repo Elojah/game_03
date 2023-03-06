@@ -1,3 +1,5 @@
+// Adapted from golang ULID library
+
 const encoding = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
 
 function ulid(id: Uint8Array): string {

@@ -27,7 +27,7 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 	}
 
 	// #Authenticate
-	u, err := h.user.Auth(ctx)
+	u, err := h.user.Auth(ctx, "access")
 	if err != nil {
 		return &entity.PC{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	}

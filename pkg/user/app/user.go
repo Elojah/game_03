@@ -75,16 +75,16 @@ func (a App) CreateJWT(ctx context.Context, u user.U, audience string, validity 
 	return ck, nil
 }
 
-func (a App) ReadJWT(ctx context.Context, token string) (user.U, error) {
+func (a App) ReadJWT(ctx context.Context, token string) (user.Claims, error) {
 	ck, err := a.Cookie.Decode(ctx, "token", token)
 	if err != nil {
-		return user.U{}, err
+		return user.Claims{}, err
 	}
 
 	t, err := jwt.ParseWithClaims(ck, &user.Claims{}, func(t *jwt.Token) (any, error) {
 		claims, ok := t.Claims.(*user.Claims)
 		if !ok {
-			return user.U{}, errors.ErrInvalidClaims{}
+			return user.Claims{}, errors.ErrInvalidClaims{}
 		}
 
 		secret, err := a.Cookie.Decode(ctx, "jwt_secret", claims.RegisteredClaims.ID)
@@ -95,30 +95,23 @@ func (a App) ReadJWT(ctx context.Context, token string) (user.U, error) {
 		return []byte(secret), nil
 	})
 	if err != nil {
-		return user.U{}, err
+		return user.Claims{}, err
 	}
 
 	// check token validity
 	claims, ok := t.Claims.(*user.Claims)
 	if !ok {
-		return user.U{}, errors.ErrInvalidClaims{}
+		return user.Claims{}, errors.ErrInvalidClaims{}
 	}
 
 	if err := claims.Valid(); err != nil {
-		return user.U{}, errors.ErrInvalidClaims{Err: err}
+		return user.Claims{}, errors.ErrInvalidClaims{Err: err}
 	}
 
-	id, err := ulid.Parse(claims.Subject)
-	if err != nil {
-		return user.U{}, errors.ErrInvalidClaims{Err: err}
-	}
-
-	return user.U{
-		ID: id,
-	}, nil
+	return *claims, nil
 }
 
-func (a App) Auth(ctx context.Context) (user.U, error) {
+func (a App) Auth(ctx context.Context, audience string) (user.U, error) {
 	// read & parse token
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
@@ -137,5 +130,21 @@ func (a App) Auth(ctx context.Context) (user.U, error) {
 		return user.U{}, errors.ErrMissingAuth{}
 	}
 
-	return a.ReadJWT(ctx, token)
+	claims, err := a.ReadJWT(ctx, token)
+	if err != nil {
+		return user.U{}, err
+	}
+
+	if len(claims.Audience) == 0 || claims.Audience[0] != audience {
+		return user.U{}, err
+	}
+
+	id, err := ulid.Parse(claims.Subject)
+	if err != nil {
+		return user.U{}, errors.ErrInvalidClaims{Err: err}
+	}
+
+	return user.U{
+		ID: id,
+	}, nil
 }

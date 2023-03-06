@@ -13,11 +13,12 @@ type App interface {
 	CacheSession
 
 	CreateJWT(context.Context, U, string, time.Duration) (string, error)
-	ReadJWT(context.Context, string) (U, error)
+	ReadJWT(context.Context, string) (Claims, error)
 
+	// create and return encrypted session
 	CreateSession(context.Context, Session) ([]byte, error)
 
-	Auth(context.Context) (U, error)
+	Auth(context.Context, string) (U, error)
 	AuthSession(context.Context) (Session, error)
 }
 

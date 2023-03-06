@@ -22,7 +22,7 @@ func (h *handler) CreateAnimation(ctx context.Context, req *dto.CreateAnimationR
 	}
 
 	// #Authenticate
-	// _, err := h.user.Auth(ctx)
+	// _, err := h.user.Auth(ctx, "access")
 	// if err != nil {
 	// 	return &types.Empty{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	// }

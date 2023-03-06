@@ -37,7 +37,7 @@ export default () => {
 
 	const createRoom = (req: R) => {
 		let md = new grpc.Metadata()
-		md.set('token', getCookie('token')!)
+		md.set('token', getCookie('access')!)
 
 		const prom = new Promise<R>((resolve, reject) => {
 			grpc.unary(API.CreateRoom, {
@@ -63,7 +63,7 @@ export default () => {
 
 	const listWorlds = (req: ListWorldReq) => {
 		let md = new grpc.Metadata()
-		md.set('token', getCookie('token')!)
+		md.set('token', getCookie('access')!)
 
 		const prom = new Promise<ListWorldResp>((resolve, reject) => {
 			grpc.unary(API.ListWorld, {

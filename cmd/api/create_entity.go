@@ -18,7 +18,7 @@ func (h *handler) CreateEntity(ctx context.Context, req *entity.E) (*entity.E, e
 	}
 
 	// #Authenticate
-	_, err := h.user.Auth(ctx)
+	_, err := h.user.Auth(ctx, "access")
 	if err != nil {
 		return &entity.E{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	}

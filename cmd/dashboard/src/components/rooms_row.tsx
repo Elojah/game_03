@@ -47,7 +47,7 @@ export default (props: propRoomsRow) => {
 
 	const listPCs = (req: ListPCReq) => {
 		let md = new grpc.Metadata()
-		md.set('token', getCookie('token')!)
+		md.set('token', getCookie('access')!)
 
 		const prom = new Promise<ListPCResp>((resolve, reject) => {
 			grpc.unary(API.ListPC, {

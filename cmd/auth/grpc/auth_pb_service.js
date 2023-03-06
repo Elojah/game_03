@@ -31,6 +31,15 @@ Auth.SigninGoogle = {
   responseType: github_com_elojah_game_03_pkg_user_dto_user_pb.SigninResp
 };
 
+Auth.RefreshToken = {
+  methodName: "RefreshToken",
+  service: Auth,
+  requestStream: false,
+  responseStream: false,
+  requestType: google_protobuf_wrappers_pb.StringValue,
+  responseType: github_com_elojah_game_03_pkg_user_dto_user_pb.SigninResp
+};
+
 Auth.Ping = {
   methodName: "Ping",
   service: Auth,
@@ -83,6 +92,37 @@ AuthClient.prototype.signinGoogle = function signinGoogle(requestMessage, metada
     callback = arguments[1];
   }
   var client = grpc.unary(Auth.SigninGoogle, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+AuthClient.prototype.refreshToken = function refreshToken(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(Auth.RefreshToken, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,

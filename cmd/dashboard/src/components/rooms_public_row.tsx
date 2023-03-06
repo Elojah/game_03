@@ -31,7 +31,7 @@ export default (props: propRoomsRow) => {
 
 	const createUser = (req: CreateRoomUserReq) => {
 		let md = new grpc.Metadata()
-		md.set('token', getCookie('token')!)
+		md.set('token', getCookie('access')!)
 
 		const prom = new Promise<User>((resolve, reject) => {
 			grpc.unary(API.CreateRoomUser, {

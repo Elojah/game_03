@@ -20,7 +20,7 @@ func (h *handler) CreateTemplate(ctx context.Context, req *dto.CreateTemplateReq
 	}
 
 	// #Authenticate
-	// _, err := h.user.Auth(ctx)
+	// _, err := h.user.Auth(ctx, "access")
 	// if err != nil {
 	// 	return &entity.Template{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	// }

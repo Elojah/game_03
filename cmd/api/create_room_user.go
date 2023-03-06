@@ -20,7 +20,7 @@ func (h *handler) CreateRoomUser(ctx context.Context, req *dto.CreateRoomUserReq
 	}
 
 	// #Authenticate
-	u, err := h.user.Auth(ctx)
+	u, err := h.user.Auth(ctx, "access")
 	if err != nil {
 		return &room.User{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	}

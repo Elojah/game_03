@@ -23,7 +23,7 @@ func (h *handler) CreateSession(ctx context.Context, req *dto.CreateSessionReq) 
 	}
 
 	// #Authenticate
-	u, err := h.user.Auth(ctx)
+	u, err := h.user.Auth(ctx, "access")
 	if err != nil {
 		return &dto.CreateSessionResp{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	}

@@ -24,6 +24,9 @@ service Auth {
 	// Signin Google
 	rpc SigninGoogle(google.protobuf.StringValue) returns (dto.SigninResp);
 
+	// Refresh token
+	rpc RefreshToken(google.protobuf.StringValue) returns (dto.SigninResp);
+
     // Ping
     rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
 }

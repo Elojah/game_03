@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io"
 	"net/http"
 
 	"github.com/gogo/protobuf/types"
@@ -10,33 +9,15 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-const maxTokenLength = 32768
-
-func (h handler) signinGoogle(w http.ResponseWriter, r *http.Request) {
+func (h handler) refreshToken(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	logger := log.With().Str("route", r.URL.EscapedPath()).Str("method", r.Method).Str("address", r.RemoteAddr).Logger()
 
-	// Fetch token from payload.
-	raw, err := io.ReadAll(r.Body)
+	// Refresh with auth.
+	jwt, err := h.RefreshToken(ctx, &types.StringValue{Value: ""})
 	if err != nil {
-		logger.Error().Err(err).Msg("failed to read body")
-		http.Error(w, "failed to read body", http.StatusInternalServerError)
-
-		return
-	}
-
-	if len(raw) > maxTokenLength {
-		logger.Error().Msg("invalid token format")
-		http.Error(w, "invalid token format", http.StatusBadRequest)
-
-		return
-	}
-
-	// Signin with auth.
-	jwt, err := h.SigninGoogle(ctx, &types.StringValue{Value: string(raw)})
-	if err != nil {
-		logger.Error().Err(err).Msg("failed to signin")
+		logger.Error().Err(err).Msg("failed to refresh")
 
 		if e, ok := status.FromError(err); ok {
 			switch e.Code() { //nolint: exhaustive

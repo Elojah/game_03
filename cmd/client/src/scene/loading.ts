@@ -57,7 +57,7 @@ export class Loading extends Scene {
 
 	getPC(req: GetPCReq) {
 		let md = new grpc.Metadata()
-		md.set('token', getCookie('token')!)
+		md.set('token', getCookie('access')!)
 
 		const prom = new Promise<PC>((resolve, reject) => {
 			grpc.unary(API.GetPC, {
@@ -83,7 +83,7 @@ export class Loading extends Scene {
 
 	createSession(req: CreateSessionReq) {
 		let md = new grpc.Metadata()
-		md.set('token', getCookie('token')!)
+		md.set('token', getCookie('access')!)
 
 		const prom = new Promise<CreateSessionResp>((resolve, reject) => {
 			grpc.unary(API.CreateSession, {

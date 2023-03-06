@@ -125,6 +125,7 @@ func run(prog string, filename string) {
 	// auth
 	https.Router.Path("/signin_google").HandlerFunc(h.signinGoogle)
 	https.Router.Path("/signin_twitch").HandlerFunc(h.signinTwitch)
+	https.Router.Path("/refresh_token").HandlerFunc(h.refreshToken)
 	// serve static dir
 	https.Router.PathPrefix("/").Handler(http.FileServer(http.Dir(cfg.Web.Static)))
 

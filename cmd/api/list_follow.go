@@ -18,7 +18,7 @@ func (h *handler) ListFollow(ctx context.Context, req *dto.ListFollowReq) (*dto.
 	}
 
 	// #Authenticate
-	u, err := h.user.Auth(ctx)
+	u, err := h.user.Auth(ctx, "access")
 	if err != nil {
 		return &dto.ListFollowResp{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	}

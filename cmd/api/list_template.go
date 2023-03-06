@@ -19,7 +19,7 @@ func (h *handler) ListTemplate(ctx context.Context, req *dto.ListTemplateReq) (*
 	}
 
 	// #Authenticate
-	_, err := h.user.Auth(ctx)
+	_, err := h.user.Auth(ctx, "access")
 	if err != nil {
 		return &dto.ListTemplateResp{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	}

@@ -19,7 +19,7 @@ func (h *handler) GetPC(ctx context.Context, req *dto.GetPCReq) (*dto.PC, error)
 	}
 
 	// #Authenticate
-	u, err := h.user.Auth(ctx)
+	u, err := h.user.Auth(ctx, "access")
 	if err != nil {
 		return &dto.PC{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	}
