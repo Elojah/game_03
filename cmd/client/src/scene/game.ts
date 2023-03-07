@@ -362,7 +362,6 @@ export class Game extends Scene {
 			e?.Sprite.setX(x)
 			e?.Sprite.setY(y)
 			const animationID = e.Animations.get(ulid(e.E.getAnimationid_asU8()))
-			console.log('external animid:', ulid(e.E.getAnimationid_asU8()), animationID)
 			if (animationID) {
 				e?.Sprite.play(animationID, true)
 			}

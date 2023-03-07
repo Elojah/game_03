@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+
+# Character templates
 grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '{"Name": "BlueNinja"}' -plaintext localhost:4282 grpc.Admin/CreateTemplate
 grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '{"Name": "BlueSamurai"}' -plaintext localhost:4282 grpc.Admin/CreateTemplate
 grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '{"Name": "Boy"}' -plaintext localhost:4282 grpc.Admin/CreateTemplate
@@ -40,3 +42,6 @@ grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '{"Name": 
 grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '{"Name": "Villager3"}' -plaintext localhost:4282 grpc.Admin/CreateTemplate
 grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '{"Name": "Villager4"}' -plaintext localhost:4282 grpc.Admin/CreateTemplate
 grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '{"Name": "Woman"}' -plaintext localhost:4282 grpc.Admin/CreateTemplate
+
+# NPC templates
+grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '{"Name": "Altar"}' -plaintext localhost:4282 grpc.Admin/CreateTemplate

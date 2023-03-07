@@ -4,7 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"os"
+	"time"
 
+	"github.com/elojah/game_03/pkg/entity"
 	"github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/geometry"
 	"github.com/elojah/game_03/pkg/room"
@@ -83,16 +85,79 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 
 	collisions := tile.ObjectsByGID(ts.Tiles[0].ObjectGroup.Objects)
 
-	// an, err := h.entity.FetchAnimation(ctx, entity.FilterAnimation{
-	// 	ID: ulid.MustParse("01FM1YY76G9879YJSZAFSGJ52Y"),
-	// })
-	// if err != nil {
-	// 	logger.Error().Err(err).Msg("failed to fetch animation")
+	// Fetch and create altar animation
+	// ________________________________
 
-	// 	return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
-	// }
+	altar, err := h.entity.FetchTemplate(ctx, entity.FilterTemplate{
+		// Pick first result (random) of altar template
+		// TODO: Add as parameter to pick specific Altar
+		Name: func(s string) *string { return &s }("Altar"),
+	})
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to fetch altar template")
 
-	// now := time.Now()
+		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
+	ans, _, err := h.entity.FetchManyAnimation(ctx, entity.FilterAnimation{
+		EntityID: altar.ID,
+		Size:     1,
+	})
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to fetch many animation")
+
+		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
+	if len(ans) == 0 {
+		err := errors.ErrMissingDefaultAnimations{EntityID: altar.ID.String()}
+
+		logger.Error().Err(err).Msg("missing animation")
+
+		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
+	entityID := ulid.NewID()
+
+	var main ulid.ID
+
+	for _, an := range ans {
+		an.ID = ulid.NewID()
+		an.EntityID = entityID
+
+		// default animation name is always "main"
+		if an.Name == "main" {
+			main = an.ID
+		}
+
+		if err := h.entity.InsertAnimation(ctx, an); err != nil {
+			logger.Error().Err(err).Msg("failed to create animation")
+
+			return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+		}
+	}
+
+	// #Insert entity
+	e := entity.E{
+		ID:          entityID,
+		UserID:      ulid.NewID(),
+		CellID:      cells[0][0].ID,
+		X:           0,
+		Y:           0,
+		Rot:         0,
+		Radius:      10, //nolint: gomnd
+		At:          time.Now().UnixNano(),
+		AnimationID: main,
+		AnimationAt: 0,
+	}
+	if err := h.entity.Insert(ctx, e); err != nil {
+		logger.Error().Err(err).Msg("failed to create entity")
+
+		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
+	// ________________________________
+	// !Fetch and create altar animation
 
 	// TODO: add goroutine pool
 	for i, cl := range cells {
@@ -110,61 +175,6 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 
 				return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
 			}
-
-			// decode world data (ok to instant test parsing) to find first non collides spot for spawn
-			// data, err := base64.StdEncoding.DecodeString(m.Layers[1].Data)
-			// for i := 0; i < len(data); i += 4 {
-			// 	n := binary.LittleEndian.Uint32(data[i : i+4])
-			// 	if !tile.Field(n).Collides() {
-			// 		// a := an
-			// 		// a.ID = ulid.NewID()
-			// 		// a.EntityID = ulid.NewID()
-
-			// 		// if err := h.entity.InsertAnimation(ctx, a); err != nil {
-			// 		// 	logger.Error().Err(err).Msg("failed to create animation")
-
-			// 		// 	return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
-			// 		// }
-
-			// 		// e := entity.E{
-			// 		// 	ID:          a.EntityID,
-			// 		// 	UserID:      nil,
-			// 		// 	CellID:      c.ID,
-			// 		// 	Name:        fmt.Sprintf("spawn_%d_%d", i, j),
-			// 		// 	X:           int64(i) % w.CellWidth,
-			// 		// 	Y:           int64(i) / w.CellWidth,
-			// 		// 	Rot:         0,
-			// 		// 	Radius:      0,
-			// 		// 	At:          now.Unix(),
-			// 		// 	AnimationID: a.ID,
-			// 		// 	AnimationAt: 0,
-			// 		// }
-
-			// 		// if err := h.entity.InsertNPC(ctx, entity.NPC{
-			// 		// 	ID:       ulid.NewID(),
-			// 		// 	WorldID:  w.ID,
-			// 		// 	EntityID: e.ID,
-			// 		// }); err != nil {
-			// 		// 	logger.Error().Err(err).Msg("failed to create npc")
-
-			// 		// 	return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
-			// 		// }
-
-			// 		// if err := h.entity.InsertBackup(ctx, e); err != nil {
-			// 		// 	logger.Error().Err(err).Msg("failed to create entity backup")
-
-			// 		// 	return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
-			// 		// }
-
-			// 		// if err := h.entity.Insert(ctx, e); err != nil {
-			// 		// 	logger.Error().Err(err).Msg("failed to create entity")
-
-			// 		// 	return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
-			// 		// }
-
-			// 		break
-			// 	}
-			// }
 
 			raw, err := json.Marshal(m)
 			if err != nil {

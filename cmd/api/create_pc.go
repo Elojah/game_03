@@ -104,7 +104,7 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 	if len(ans) == 0 {
 		err := gerrors.ErrMissingDefaultAnimations{EntityID: template.ID.String()}
 
-		logger.Error().Err(err).Msg("failed to create pc")
+		logger.Error().Err(err).Msg("missing animation")
 
 		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
 	}

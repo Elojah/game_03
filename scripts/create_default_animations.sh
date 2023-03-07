@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+
+# Characters animations
 grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d @ -plaintext localhost:4282 grpc.Admin/CreateAnimation <assets/animations/BlueNinja/idle_down.json
 grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d @ -plaintext localhost:4282 grpc.Admin/CreateAnimation <assets/animations/BlueNinja/idle_left.json
 grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d @ -plaintext localhost:4282 grpc.Admin/CreateAnimation <assets/animations/BlueNinja/idle_right.json
@@ -367,3 +369,6 @@ grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d @ -plainte
 grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d @ -plaintext localhost:4282 grpc.Admin/CreateAnimation <assets/animations/Woman/walk_left.json
 grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d @ -plaintext localhost:4282 grpc.Admin/CreateAnimation <assets/animations/Woman/walk_right.json
 grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d @ -plaintext localhost:4282 grpc.Admin/CreateAnimation <assets/animations/Woman/walk_up.json
+
+# NPC animations
+grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d @ -plaintext localhost:4282 grpc.Admin/CreateAnimation <assets/animations/Altar/main.json

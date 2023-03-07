@@ -13,7 +13,28 @@ import (
 )
 
 var (
-	templateSheets = map[string]string{
+	npcSheets = map[string]string{
+		"Altar": "01GTXTWQQ0GEK0SZZ83FXPDB3E",
+	}
+
+	npcAnimations = map[string]dto.CreateAnimationReq{
+		"main": {
+			Animation: entity.Animation{
+				Name:         "main",
+				Start:        1,
+				End:          39,
+				Rate:         1,
+				FrameWidth:   224,
+				FrameHeight:  288,
+				FrameStart:   0,
+				FrameEnd:     38,
+				FrameMargin:  0,
+				FrameSpacing: 0,
+			},
+		},
+	}
+
+	charSheets = map[string]string{
 		"BlueNinja":   "01GF16HSRMZ5HD82BSPTZ8YAAY",
 		"BlueSamurai": "01GF16HSRMMR8ME1FM50A5BE8E",
 		"Boy":         "01GF16HSRMMYB38HS5X955K2HJ",
@@ -57,7 +78,7 @@ var (
 		"Woman":       "01GF16HSRMAF049BW351816QPW",
 	}
 
-	basicAnimations = map[string]dto.CreateAnimationReq{
+	charAnimations = map[string]dto.CreateAnimationReq{
 		"idle_down": {
 			Animation: entity.Animation{
 				Name:         "idle_down",
@@ -180,9 +201,9 @@ func encodeULID(s string) string {
 	return base64.StdEncoding.EncodeToString(id)
 }
 
-func run(prog string, param string) {
-	for name, id := range templateSheets {
-		for _, ba := range basicAnimations {
+func generateAnimations(path string, sheets map[string]string, anims map[string]dto.CreateAnimationReq) {
+	for name, id := range sheets {
+		for _, ba := range anims {
 			ba := ba
 			ba.EntityTemplate = name
 			ba.SheetID = ulid.MustParse(id)
@@ -195,7 +216,7 @@ func run(prog string, param string) {
 			}
 
 			if err := os.WriteFile(
-				filepath.Join(param, name, ba.Name+".json"),
+				filepath.Join(path, name, ba.Name+".json"),
 				raw,
 				0o600, //nolint: gomnd
 			); err != nil {
@@ -205,6 +226,12 @@ func run(prog string, param string) {
 			}
 		}
 	}
+
+}
+
+func run(prog string, param string) {
+	generateAnimations(param, charSheets, charAnimations)
+	generateAnimations(param, npcSheets, npcAnimations)
 }
 
 func main() {
