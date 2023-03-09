@@ -996,9 +996,6 @@ export class Game extends Scene {
 					const y = entry.getY() + (this.Cells.get(this.CellsByID.get(ulid(entry.getCellid_asU8()))!)?.Cell.getY()! * this.World.getCellheight())
 					updateGraphicEntity(this.Entities.get(id)!, x, y)
 
-					// console.log(this.CellsByID.get(ulid(entry.getCellid_asU8()))!)
-					// console.log(id, x, y)
-
 					this.Entities.get(id)!.E = entry
 				} else {
 					// create associated sprite

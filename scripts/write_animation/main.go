@@ -23,7 +23,7 @@ var (
 				Name:         "main",
 				Start:        1,
 				End:          39,
-				Rate:         1,
+				Rate:         4,
 				FrameWidth:   224,
 				FrameHeight:  288,
 				FrameStart:   0,

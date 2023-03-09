@@ -15,7 +15,7 @@ Dev setup:
 
 ```sh
 $ docker-compose up -d # wait ~10 sec for scylla to boot
-$ cat scripts/keyspace.cql | docker exec -i game_03_scylla cqlsh
+$ cat docker/scylla/keyspace.cql | docker exec -i game_03_scylla cqlsh
 $ make admin && ./bin/game_03_admin config/admin/local.json
 $ grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '"cql"' -plaintext localhost:4282 grpc.Admin/MigrateUp
 $ make init
@@ -35,7 +35,7 @@ $ ./scripts/create_default_animations.sh
 $ grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '' -plaintext localhost:4282 grpc.Admin/CreateWorld
 ```
 
-Regenerate assets from `assets/external` to `assets/`:
+Regenerate assets from `assets/external` to `assets/` (`make regen-assets`):
 
 ```sh
 $ go run ./scripts/write_animation/main.go 'assets/animations'
@@ -57,6 +57,8 @@ $ go run ./scripts/write_tileset/main.go 'assets/external/Tilesets' 'assets/tile
   + [ ] [p3] Change dashboard/rooms to display post login (event/state propag)
   + [ ] [p2] !!! Feature remove one-tile grass paths frustrating in generation
   + [ ] [p2] Fix interpolation speed in game.ts (corresponding actual player speed)
+  + [ ] [p1] Console warnings (webGL mostly)
+  + [ ] [p0] Audio
   + [ ] [p0] Remove `Math.round()` in `game.ts` and set entity.X entity.Y as float64 to fit Phaser.Body x/y
   + [ ] [p0] (re-)implement spawns
   + [x] [p0] refresh token dashboard (+ client ?)

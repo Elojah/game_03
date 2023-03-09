@@ -113,6 +113,12 @@ init:  ## Setup initial content
 	$Q ./scripts/create_default_tilesets.sh
 	$Q ./scripts/create_default_animations.sh
 
+.PHONY: regen-assets
+regen-assets:  ## Regenerate assets from external raw
+	$(info $(M) regenerate assets …) @
+	$Q go run ./scripts/write_animation/main.go 'assets/animations'
+	$Q go run ./scripts/write_tileset/main.go 'assets/external/Tilesets' 'assets/tilesets'
+
 # Proto lang
 .PHONY: proto-go proto-ts
 proto-go:    PB_LANG = GO
