@@ -11,21 +11,21 @@ import (
 	gtile "github.com/elojah/game_03/pkg/tile"
 )
 
-type edge uint8
+type Edge uint8
 
 const (
-	top edge = iota
-	right
-	down
-	left
+	Top Edge = iota
+	Right
+	Down
+	Left
 )
 
-type id int
+type ID int
 
-type color byte
+type Color byte
 
 // string method for debug purpose.
-func (cs colors) string() string {
+func (cs Colors) string() string {
 	b := strings.Builder{}
 	b.WriteByte('_')
 
@@ -38,13 +38,13 @@ func (cs colors) string() string {
 	return b.String()
 }
 
-type colors string
+type Colors string
 
-type tile map[edge]colors
+type Tile map[Edge]Colors
 
-type tiles map[id]tile
+type Tiles map[ID]Tile
 
-func (ts tiles) rand() id {
+func (ts Tiles) rand() ID {
 	for id := range ts {
 		// return first iteration, using random map access iteration to fetch a random element
 		return id
@@ -53,19 +53,19 @@ func (ts tiles) rand() id {
 	return 0
 }
 
-type orientedTile map[colors]map[id]struct{}
+type orientedTile map[Colors]map[ID]struct{}
 
-type orientedTiles map[edge]orientedTile
+type orientedTiles map[Edge]orientedTile
 
 type wangtiles []gtile.WangTile
 
-func (ws wangtiles) oriented() (tiles, orientedTiles) {
-	ts := make(tiles, len(ws))
+func (ws wangtiles) oriented() (Tiles, orientedTiles) {
+	ts := make(Tiles, len(ws))
 	ot := orientedTiles{
-		top:   make(orientedTile),
-		right: make(orientedTile),
-		down:  make(orientedTile),
-		left:  make(orientedTile),
+		Top:   make(orientedTile),
+		Right: make(orientedTile),
+		Down:  make(orientedTile),
+		Left:  make(orientedTile),
 	}
 
 	for _, wt := range ws {
@@ -74,46 +74,46 @@ func (ws wangtiles) oriented() (tiles, orientedTiles) {
 			continue
 		}
 
-		t := tile{
-			top:   colors([]byte{wt.WangID[7], wt.WangID[0], wt.WangID[1]}), // left to right
-			right: colors([]byte{wt.WangID[1], wt.WangID[2], wt.WangID[3]}), // top to down
-			down:  colors([]byte{wt.WangID[5], wt.WangID[4], wt.WangID[3]}), // left to right
-			left:  colors([]byte{wt.WangID[7], wt.WangID[6], wt.WangID[5]}), // top to down
+		t := Tile{
+			Top:   Colors([]byte{wt.WangID[7], wt.WangID[0], wt.WangID[1]}), // Left to Right
+			Right: Colors([]byte{wt.WangID[1], wt.WangID[2], wt.WangID[3]}), // Top to Down
+			Down:  Colors([]byte{wt.WangID[5], wt.WangID[4], wt.WangID[3]}), // Left to Right
+			Left:  Colors([]byte{wt.WangID[7], wt.WangID[6], wt.WangID[5]}), // Top to Down
 		}
 
 		// add tiles to general usage tiles struct
-		ts[id(wt.TileID)] = t
+		ts[ID(wt.TileID)] = t
 
 		// add tiles to oriented struct for fast access during populate
-		if _, ok := ot[top][t[top]]; !ok {
-			ot[top][t[top]] = map[id]struct{}{id(wt.TileID): {}}
+		if _, ok := ot[Top][t[Top]]; !ok {
+			ot[Top][t[Top]] = map[ID]struct{}{ID(wt.TileID): {}}
 		} else {
-			ot[top][t[top]][id(wt.TileID)] = struct{}{}
+			ot[Top][t[Top]][ID(wt.TileID)] = struct{}{}
 		}
 
-		if _, ok := ot[right][t[right]]; !ok {
-			ot[right][t[right]] = map[id]struct{}{id(wt.TileID): {}}
+		if _, ok := ot[Right][t[Right]]; !ok {
+			ot[Right][t[Right]] = map[ID]struct{}{ID(wt.TileID): {}}
 		} else {
-			ot[top][t[top]][id(wt.TileID)] = struct{}{}
+			ot[Top][t[Top]][ID(wt.TileID)] = struct{}{}
 		}
 
-		if _, ok := ot[down][t[down]]; !ok {
-			ot[down][t[down]] = map[id]struct{}{id(wt.TileID): {}}
+		if _, ok := ot[Down][t[Down]]; !ok {
+			ot[Down][t[Down]] = map[ID]struct{}{ID(wt.TileID): {}}
 		} else {
-			ot[down][t[down]][id(wt.TileID)] = struct{}{}
+			ot[Down][t[Down]][ID(wt.TileID)] = struct{}{}
 		}
 
-		if _, ok := ot[left][t[left]]; !ok {
-			ot[left][t[left]] = map[id]struct{}{id(wt.TileID): {}}
+		if _, ok := ot[Left][t[Left]]; !ok {
+			ot[Left][t[Left]] = map[ID]struct{}{ID(wt.TileID): {}}
 		} else {
-			ot[left][t[left]][id(wt.TileID)] = struct{}{}
+			ot[Left][t[Left]][ID(wt.TileID)] = struct{}{}
 		}
 	}
 
 	return ts, ot
 }
 
-type Grid [][]id
+type Grid [][]ID
 
 func (g Grid) Tilemap(r geometry.Rect, ts gtile.Set, collisions map[int][]gtile.Object) (gtile.Map, error) {
 	if r.Origin.Y < 0 || r.Origin.Y+int64(r.Height) > int64(len(g)) ||
@@ -182,9 +182,9 @@ func (g Grid) Tilemap(r geometry.Rect, ts gtile.Set, collisions map[int][]gtile.
 	return m, nil
 }
 
-type Heuristic func(candidates map[id]struct{}, x int64, y int64, ts tiles) id
+type Heuristic func(candidates map[ID]struct{}, x int64, y int64, ts Tiles) ID
 
-func DefaultHeuristic(candidates map[id]struct{}, x int64, y int64, ts tiles) id {
+func DefaultHeuristic(candidates map[ID]struct{}, x int64, y int64, ts Tiles) ID {
 	for k := range candidates {
 		return k
 	}
@@ -213,14 +213,14 @@ func (g *Grid) Generate(w gtile.WangSet, height int64, width int64, h Heuristic)
 
 	result := make(Grid, height)
 	for i := range result {
-		result[i] = make([]id, width)
+		result[i] = make([]ID, width)
 	}
 
 	for i := int64(0); i < height; i++ {
 		for j := int64(0); j < width; j++ {
-			constraints := make(map[edge]colors)
+			constraints := make(map[Edge]Colors)
 
-			// set only top & left constraints for usual top left run
+			// set only Top & Left constraints for usual Top Left run
 			if i > 0 {
 				t, ok := ts[result[i-1][j]]
 
@@ -229,7 +229,7 @@ func (g *Grid) Generate(w gtile.WangSet, height int64, width int64, h Heuristic)
 					continue
 				}
 
-				constraints[top] = t[down]
+				constraints[Top] = t[Down]
 			}
 
 			if j > 0 {
@@ -240,7 +240,7 @@ func (g *Grid) Generate(w gtile.WangSet, height int64, width int64, h Heuristic)
 					continue
 				}
 
-				constraints[left] = t[right]
+				constraints[Left] = t[Right]
 			}
 
 			if len(constraints) == 0 {
@@ -250,7 +250,7 @@ func (g *Grid) Generate(w gtile.WangSet, height int64, width int64, h Heuristic)
 				continue
 			}
 
-			var candidates map[id]struct{}
+			var candidates map[ID]struct{}
 
 			filter := false
 
@@ -272,7 +272,7 @@ func (g *Grid) Generate(w gtile.WangSet, height int64, width int64, h Heuristic)
 					filter = true
 				} else {
 					// second pass, if id also exists in candidates, add as solution
-					tmp := make(map[id]struct{})
+					tmp := make(map[ID]struct{})
 
 					for k := range c {
 						if _, ok := candidates[k]; ok {

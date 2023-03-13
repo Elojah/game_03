@@ -74,13 +74,13 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
-	// Create basic template
-	wt := wang.NewTemplate(ts.WangSets[0], cellHeight*height, cellWidth*width)
+	// Create island template
+	wi := wang.NewIslands(ts.WangSets[0], cellHeight*height, cellWidth*width)
 
 	var g wang.Grid
 
 	// Generate with wang constraints
-	g.Generate(ts.WangSets[0], cellHeight*height, cellWidth*width, wt.Heuristic())
+	g.Generate(ts.WangSets[0], cellHeight*height, cellWidth*width, wi.Heuristic())
 	// g.GenerateFlat(ts.WangSets[0], cellHeight*height, cellWidth*width)
 
 	collisions := tile.ObjectsByGID(ts.Tiles[0].ObjectGroup.Objects)
