@@ -11,6 +11,7 @@ import (
 	"github.com/elojah/game_03/pkg/geometry"
 	"github.com/elojah/game_03/pkg/room"
 	"github.com/elojah/game_03/pkg/tile"
+	"github.com/elojah/game_03/pkg/tile/template"
 	"github.com/elojah/game_03/pkg/tile/wang"
 	"github.com/elojah/game_03/pkg/ulid"
 	"github.com/gogo/protobuf/types"
@@ -75,12 +76,20 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 	}
 
 	// Create island template
-	wi := wang.NewIslands(ts.WangSets[0], cellHeight*height, cellWidth*width)
+	wi := template.NewIslands(template.IslandsOptions{
+		Width:         (cellWidth * width * 2) + 1,
+		Height:        (cellHeight * height * 2) + 1,
+		IslandWidth:   60,
+		IslandHeight:  34,
+		PaddingWidth:  20,
+		PaddingHeight: 12,
+		PathWidth:     15,
+	})
 
 	var g wang.Grid
 
 	// Generate with wang constraints
-	g.Generate(ts.WangSets[0], cellHeight*height, cellWidth*width, wi.Heuristic())
+	g.Generate(ts.WangSets[0], cellHeight*height, cellWidth*width, wi.Heuristic(), template.AttunedHeuristic)
 	// g.GenerateFlat(ts.WangSets[0], cellHeight*height, cellWidth*width)
 
 	collisions := tile.ObjectsByGID(ts.Tiles[0].ObjectGroup.Objects)

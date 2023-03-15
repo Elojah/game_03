@@ -1002,7 +1002,7 @@ export class Game extends Scene {
 					// receive own entity from server once and initialize
 					if (id == ulid(this.Entity.E.getId_asU8())) {
 						this.Entity.Body.destroy()
-						this.Entity.Body = this.physics.add.sprite(entry.getX(), entry.getY(), id).setSize(8, 8).setOffset(4, 4)
+						this.Entity.Body = this.physics.add.sprite(entry.getX(), entry.getY(), id).setSize(12, 12).setOffset(4, 4)
 
 						console.log('set body from server info')
 						this.Entity.E.setX(entry.getX())

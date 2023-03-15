@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/elojah/game_03/pkg/geometry"
 	"github.com/elojah/game_03/pkg/tile/wang"
 )
 
@@ -15,6 +16,8 @@ const (
 )
 
 type Islands [][]wang.Color
+
+type Spawns []geometry.Vec2
 
 type IslandsOptions struct {
 	Width         int64
@@ -59,7 +62,8 @@ func NewIslands(opts IslandsOptions) Islands { //nolint: gocognit
 				for jj := int64(0); jj < cellWidth; jj++ {
 					c := grass
 
-					if ii == 0 || ii == opts.PathWidth-1 {
+					if ii == 0 || ii == opts.PathWidth-1 ||
+						(jj == 0 && j == 0) || (jj == cellWidth-1 && j == nWidth-1) {
 						c = fence
 					}
 
@@ -72,7 +76,9 @@ func NewIslands(opts IslandsOptions) Islands { //nolint: gocognit
 				for jj := int64(0); jj < opts.PathWidth; jj++ {
 					c := grass
 
-					if jj == 0 || jj == opts.IslandWidth-1 {
+					if jj == 0 || jj == opts.IslandWidth-1 ||
+						(ii == 0 && i == 0) || (ii == cellWidth-1 && i == nWidth-1) {
+
 						c = fence
 					}
 
@@ -87,8 +93,8 @@ func NewIslands(opts IslandsOptions) Islands { //nolint: gocognit
 }
 
 func (t Islands) Heuristic() wang.Heuristic {
-	return func(candidates map[wang.ID]struct{}, y int64, x int64, ts wang.Tiles) wang.ID {
-		result := wang.ID(-1)
+	return func(candidates map[wang.ID]struct{}, y int64, x int64, ts wang.Tiles) map[wang.ID]struct{} {
+		result := make(map[wang.ID]struct{})
 		resultMatches := 0
 
 		for c := range candidates {
@@ -134,9 +140,13 @@ func (t Islands) Heuristic() wang.Heuristic {
 				matches++
 			}
 
-			if matches > resultMatches || result == -1 {
+			if matches > resultMatches || len(result) == 0 {
 				resultMatches = matches
-				result = c
+				// reset map and assign single result
+				result = map[wang.ID]struct{}{c: {}}
+			} else if matches == resultMatches {
+				// add another solution
+				result[c] = struct{}{}
 			}
 		}
 

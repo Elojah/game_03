@@ -182,7 +182,7 @@ func (g Grid) Tilemap(r geometry.Rect, ts gtile.Set, collisions map[int][]gtile.
 	return m, nil
 }
 
-type Heuristic func(candidates map[ID]struct{}, x int64, y int64, ts Tiles) ID
+type Heuristic func(candidates map[ID]struct{}, x int64, y int64, ts Tiles) map[ID]struct{}
 
 func DefaultHeuristic(candidates map[ID]struct{}, x int64, y int64, ts Tiles) ID {
 	for k := range candidates {
@@ -208,7 +208,7 @@ func DefaultHeuristic(candidates map[ID]struct{}, x int64, y int64, ts Tiles) ID
 // 	*g = result
 // }
 
-func (g *Grid) Generate(w gtile.WangSet, height int64, width int64, h Heuristic) { //nolint: gocognit
+func (g *Grid) Generate(w gtile.WangSet, height int64, width int64, hs ...Heuristic) { //nolint: gocognit
 	ts, ot := wangtiles(w.WangTiles).oriented()
 
 	result := make(Grid, height)
@@ -294,7 +294,15 @@ func (g *Grid) Generate(w gtile.WangSet, height int64, width int64, h Heuristic)
 				break
 			}
 
-			result[i][j] = h(candidates, i, j, ts)
+			for _, h := range hs {
+				candidates = h(candidates, i, j, ts)
+			}
+
+			for c := range candidates {
+				// pick first result (assign and break loop)
+				result[i][j] = c
+				break
+			}
 		}
 	}
 
