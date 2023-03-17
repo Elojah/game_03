@@ -10,10 +10,10 @@ func (err ErrNotImplemented) Error() string {
 	return fmt.Sprintf("not implemented yet, planned for %s", err.Version)
 }
 
-type ErrMissingRequiredFilter struct {
-	Filter string
+type ErrMissingImplementation struct {
+	Interface string
 }
 
-func (err ErrMissingRequiredFilter) Error() string {
-	return fmt.Sprintf("filter %s must be set", err.Filter)
+func (err ErrMissingImplementation) Error() string {
+	return fmt.Sprintf("interface %s must be set", err.Interface)
 }

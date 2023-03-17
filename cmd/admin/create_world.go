@@ -4,9 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"os"
-	"time"
 
-	"github.com/elojah/game_03/pkg/entity"
 	"github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/geometry"
 	"github.com/elojah/game_03/pkg/room"
@@ -75,7 +73,7 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
-	// Create island template
+	// Create island template and use it for spawns afterward
 	wi := template.NewIslands(template.IslandsOptions{
 		Width:         (cellWidth * width * 2) + 1,
 		Height:        (cellHeight * height * 2) + 1,
@@ -89,96 +87,24 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 	var g wang.Grid
 
 	// Generate with wang constraints
+	// Heuristic order is important
 	g.Generate(ts.WangSets[0], cellHeight*height, cellWidth*width, wi.Heuristic(), template.AttunedHeuristic)
-	// g.GenerateFlat(ts.WangSets[0], cellHeight*height, cellWidth*width)
 
 	collisions := tile.ObjectsByGID(ts.Tiles[0].ObjectGroup.Objects)
-
-	// Fetch and create altar animation
-	// ________________________________
-
-	altar, err := h.entity.FetchTemplate(ctx, entity.FilterTemplate{
-		// Pick first result (random) of altar template
-		// TODO: Add as parameter to pick specific Altar
-		Name: func(s string) *string { return &s }("Altar"),
-	})
-	if err != nil {
-		logger.Error().Err(err).Msg("failed to fetch altar template")
-
-		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
-	}
-
-	ans, _, err := h.entity.FetchManyAnimation(ctx, entity.FilterAnimation{
-		EntityID: altar.ID,
-		Size:     1,
-	})
-	if err != nil {
-		logger.Error().Err(err).Msg("failed to fetch many animation")
-
-		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
-	}
-
-	if len(ans) == 0 {
-		err := errors.ErrMissingDefaultAnimations{EntityID: altar.ID.String()}
-
-		logger.Error().Err(err).Msg("missing animation")
-
-		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
-	}
-
-	entityID := ulid.NewID()
-
-	var main ulid.ID
-
-	for _, an := range ans {
-		an.ID = ulid.NewID()
-		an.EntityID = entityID
-
-		// default animation name is always "main"
-		if an.Name == "main" {
-			main = an.ID
-		}
-
-		if err := h.entity.InsertAnimation(ctx, an); err != nil {
-			logger.Error().Err(err).Msg("failed to create animation")
-
-			return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
-		}
-	}
-
-	// #Insert entity
-	e := entity.E{
-		ID:          entityID,
-		UserID:      ulid.NewID(),
-		CellID:      cells[0][0].ID,
-		X:           0,
-		Y:           0,
-		Rot:         0,
-		Radius:      10, //nolint: gomnd
-		At:          time.Now().UnixNano(),
-		AnimationID: main,
-		AnimationAt: 0,
-	}
-	if err := h.entity.Insert(ctx, e); err != nil {
-		logger.Error().Err(err).Msg("failed to create entity")
-
-		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
-	}
-
-	// ________________________________
-	// !Fetch and create altar animation
 
 	// TODO: add goroutine pool
 	for i, cl := range cells {
 		for j, c := range cl {
-			m, err := g.Tilemap(geometry.Rect{
+			rect := geometry.Rect{
 				Origin: geometry.Vec2{
 					X: int64(j) * cellWidth,
 					Y: int64(i) * cellHeight,
 				},
 				Width:  uint64(cellWidth),
 				Height: uint64(cellHeight),
-			}, ts, collisions)
+			}
+
+			m, err := g.Tilemap(rect, ts, collisions)
 			if err != nil {
 				logger.Error().Err(err).Msg("failed to create tilemap")
 
@@ -224,6 +150,15 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 				Y:       c.Y,
 			}); err != nil {
 				logger.Error().Err(err).Msg("failed to create world cell")
+
+				return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+			}
+
+			// assign cell id to waypoints
+			wps := wi.Waypoints(rect, c.ID)
+
+			if err := h.room.PopulateWaypoints(ctx, wps); err != nil {
+				logger.Error().Err(err).Msg("failed to populate waypoints")
 
 				return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
 			}

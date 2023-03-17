@@ -60,7 +60,7 @@ $ go run ./scripts/write_tileset/main.go 'assets/external/Tilesets' 'assets/tile
   + [ ] [p1] Console warnings (webGL mostly)
   + [ ] [p0] Audio
   + [ ] [p0] Remove `Math.round()` in `game.ts` and set entity.X entity.Y as float64 to fit Phaser.Body x/y
-  + [ ] [p0] (re-)implement spawns
+  + [ ] [p0] (re-)implement spawns -> change into point of interest per map to fill or not
   + [x] [p0] refresh token dashboard (+ client ?)
   + [x] [p0] Remove player from other clients when disconnect
   + [x] [p0] Fix player sprite not loaded

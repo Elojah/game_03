@@ -5,7 +5,9 @@ import (
 	"strings"
 
 	"github.com/elojah/game_03/pkg/geometry"
+	"github.com/elojah/game_03/pkg/room"
 	"github.com/elojah/game_03/pkg/tile/wang"
+	"github.com/elojah/game_03/pkg/ulid"
 )
 
 const (
@@ -15,9 +17,11 @@ const (
 	fence
 )
 
-type Islands [][]wang.Color
+type Islands struct {
+	grid [][]wang.Color
 
-type Spawns []geometry.Vec2
+	waypoints [][]bool
+}
 
 type IslandsOptions struct {
 	Width         int64
@@ -30,10 +34,12 @@ type IslandsOptions struct {
 }
 
 func NewIslands(opts IslandsOptions) Islands { //nolint: gocognit
-	t := make(Islands, opts.Height) //nolint: gomnd
+	t := make([][]wang.Color, opts.Height)
+	wps := make([][]bool, opts.Height)
 
 	for i := 0; i < len(t); i++ {
-		t[i] = make([]wang.Color, opts.Width) //nolint: gomnd
+		t[i] = make([]wang.Color, opts.Width)
+		wps[i] = make([]bool, opts.Width)
 	}
 
 	cellHeight := opts.IslandHeight + opts.PaddingHeight
@@ -43,6 +49,9 @@ func NewIslands(opts IslandsOptions) Islands { //nolint: gocognit
 
 	for i := int64(0); i < nHeight; i++ {
 		for j := int64(0); j < nWidth; j++ {
+			// add spawn middle platform
+			wps[(i*cellHeight)+(cellHeight/2)][(j*cellWidth)+(cellWidth/2)] = true
+
 			// platform
 			for ii := int64(0); ii < opts.IslandHeight; ii++ {
 				for jj := int64(0); jj < opts.IslandWidth; jj++ {
@@ -85,11 +94,32 @@ func NewIslands(opts IslandsOptions) Islands { //nolint: gocognit
 					t[(i*cellHeight)+ii][(j*cellWidth)+jj+((cellWidth/2)-(opts.PathWidth/2))] = c
 				}
 			}
-
 		}
 	}
 
-	return t
+	return Islands{
+		grid:      t,
+		waypoints: wps,
+	}
+}
+
+func (t Islands) Waypoints(r geometry.Rect, cellID ulid.ID) room.Waypoints {
+	var result room.Waypoints
+
+	for i := r.Origin.Y; i < r.Origin.Y+int64(r.Height); i++ {
+		for j := r.Origin.X; j < r.Origin.X+int64(r.Width); j++ {
+			if t.waypoints[i][j] {
+				result = append(result, room.Waypoint{Position: geometry.Vec2{
+					X: j * 32 * 2,
+					Y: i * 32 * 2,
+				},
+					CellID: cellID,
+				})
+			}
+		}
+	}
+
+	return result
 }
 
 func (t Islands) Heuristic() wang.Heuristic {
@@ -101,42 +131,42 @@ func (t Islands) Heuristic() wang.Heuristic {
 			var matches int
 
 			// top left
-			if ts[c][wang.Top][0] == byte(t[(2 * y)][(2*x)]) {
+			if ts[c][wang.Top][0] == byte(t.grid[(2 * y)][(2*x)]) {
 				matches++
 			}
 
 			// top
-			if ts[c][wang.Top][1] == byte(t[(2 * y)][(2*x)+1]) {
+			if ts[c][wang.Top][1] == byte(t.grid[(2 * y)][(2*x)+1]) {
 				matches++
 			}
 
 			// top right
-			if ts[c][wang.Top][2] == byte(t[(2 * y)][(2*x)+2]) {
+			if ts[c][wang.Top][2] == byte(t.grid[(2 * y)][(2*x)+2]) {
 				matches++
 			}
 
 			// left
-			if ts[c][wang.Left][1] == byte(t[(2*y)+1][(2*x)]) {
+			if ts[c][wang.Left][1] == byte(t.grid[(2*y)+1][(2*x)]) {
 				matches++
 			}
 
 			// right
-			if ts[c][wang.Right][1] == byte(t[(2*y)+1][(2*x)+2]) {
+			if ts[c][wang.Right][1] == byte(t.grid[(2*y)+1][(2*x)+2]) {
 				matches++
 			}
 
 			// down left
-			if ts[c][wang.Left][2] == byte(t[(2*y)+2][(2*x)]) {
+			if ts[c][wang.Left][2] == byte(t.grid[(2*y)+2][(2*x)]) {
 				matches++
 			}
 
 			// down
-			if ts[c][wang.Down][1] == byte(t[(2*y)+2][(2*x)+1]) {
+			if ts[c][wang.Down][1] == byte(t.grid[(2*y)+2][(2*x)+1]) {
 				matches++
 			}
 
 			// down right
-			if ts[c][wang.Down][2] == byte(t[(2*y)+2][(2*x)+2]) {
+			if ts[c][wang.Down][2] == byte(t.grid[(2*y)+2][(2*x)+2]) {
 				matches++
 			}
 
@@ -157,9 +187,9 @@ func (t Islands) Heuristic() wang.Heuristic {
 func (t Islands) String() string {
 	var b strings.Builder
 
-	for i := 0; i < len(t); i++ {
-		for j := 0; j < len(t[i]); j++ {
-			b.WriteString(strconv.Itoa(int(t[i][j])))
+	for i := 0; i < len(t.grid); i++ {
+		for j := 0; j < len(t.grid[i]); j++ {
+			b.WriteString(strconv.Itoa(int(t.grid[i][j])))
 		}
 		b.WriteString("\n")
 	}

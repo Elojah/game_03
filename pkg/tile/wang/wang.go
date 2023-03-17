@@ -184,29 +184,21 @@ func (g Grid) Tilemap(r geometry.Rect, ts gtile.Set, collisions map[int][]gtile.
 
 type Heuristic func(candidates map[ID]struct{}, x int64, y int64, ts Tiles) map[ID]struct{}
 
-func DefaultHeuristic(candidates map[ID]struct{}, x int64, y int64, ts Tiles) ID {
-	for k := range candidates {
-		return k
+// GenerateFlat is a debug function to display flat tileset.
+func (g *Grid) GenerateFlat(w gtile.WangSet, height int64, width int64) {
+	result := make(Grid, height)
+	for i := range result {
+		result[i] = make([]ID, width)
 	}
 
-	return 0
+	for i := int64(0); i < height; i++ {
+		for j := int64(0); j < width; j++ {
+			result[i][j] = ID(((i * height) + width + 1) % 504)
+		}
+	}
+
+	*g = result
 }
-
-// // GenerateFlat is a debug function to display flat tileset.
-// func (g *Grid) GenerateFlat(w gtile.WangSet, height int64, width int64) {
-// 	result := make(Grid, height)
-// 	for i := range result {
-// 		result[i] = make([]id, width)
-// 	}
-
-// 	for i := int64(0); i < height; i++ {
-// 		for j := int64(0); j < width; j++ {
-// 			result[i][j] = id(((i * height) + width + 1) % 504)
-// 		}
-// 	}
-
-// 	*g = result
-// }
 
 func (g *Grid) Generate(w gtile.WangSet, height int64, width int64, hs ...Heuristic) { //nolint: gocognit
 	ts, ot := wangtiles(w.WangTiles).oriented()

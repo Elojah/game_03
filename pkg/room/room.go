@@ -51,4 +51,6 @@ type App interface {
 	StoreUser
 	StoreWorld
 	StoreWorldCell
+
+	PopulateWaypoints(context.Context, Waypoints) error
 }

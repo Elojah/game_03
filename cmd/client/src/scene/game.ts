@@ -361,6 +361,7 @@ export class Game extends Scene {
 			const y = e.Sprite.y + ((e.Direction.y - e.Sprite.y) * e.Interpolation)
 			e?.Sprite.setX(x)
 			e?.Sprite.setY(y)
+
 			const animationID = e.Animations.get(ulid(e.E.getAnimationid_asU8()))
 			if (animationID) {
 				e?.Sprite.play(animationID, true)
