@@ -1,7 +1,6 @@
 package template_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/elojah/game_03/pkg/tile/template"
@@ -24,15 +23,9 @@ func TestNewIslands(t *testing.T) {
 				PathWidth:     4,
 			},
 		},
-		// {
-		// 	name:   "complex",
-		// 	height: 100,
-		// 	width:  70,
-		// },
 	} {
 		t := template.NewIslands(d.opts)
 
 		_ = t
-		fmt.Println(t.String())
 	}
 }

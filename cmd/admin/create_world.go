@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/geometry"
 	"github.com/elojah/game_03/pkg/room"
 	"github.com/elojah/game_03/pkg/tile"
@@ -59,16 +58,8 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
-	if len(ts.WangSets) == 0 {
-		err := errors.ErrMissingWangSet{ID: tsID.String()}
-		logger.Error().Err(err).Msg("missing wangset in tileset")
-
-		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
-	}
-
-	if len(ts.Tiles) == 0 {
-		err := errors.ErrMissingCollisionLayer{ID: tsID.String()}
-		logger.Error().Err(err).Msg("missing collision layer in tileset")
+	if err := ts.CheckGenerate(); err != nil {
+		logger.Error().Err(err).Msg("invalid tileset")
 
 		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
 	}

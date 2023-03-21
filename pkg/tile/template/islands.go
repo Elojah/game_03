@@ -106,12 +106,51 @@ func NewIslands(opts IslandsOptions) Islands { //nolint: gocognit
 func (t Islands) Waypoints(r geometry.Rect, cellID ulid.ID) room.Waypoints {
 	var result room.Waypoints
 
+	/*
+		- Pixel on screen
+
+			    0  16  32
+			0   ._______.
+				|   |   |
+			16	|___|___|
+				|   |   |
+			32  |___|___|
+
+		- Islands wang grid
+			    0   1   2
+			0   ._______.
+				|   |   |
+			1	|___|___|
+				|   |   |
+			2   |___|___|
+
+		- Input parameter
+			    0       1
+			0   ._______.
+				|   |   |
+				|___|___|
+				|   |   |
+			1   |___|___|
+
+	*/
+
+	pixelScale := 32
+	gridScale := int64(2)
+	r = geometry.Rect{
+		Origin: geometry.Vec2{
+			X: r.Origin.X * gridScale,
+			Y: r.Origin.Y * gridScale,
+		},
+		Height: r.Height * uint64(gridScale),
+		Width:  r.Width * uint64(gridScale),
+	}
+
 	for i := r.Origin.Y; i < r.Origin.Y+int64(r.Height); i++ {
 		for j := r.Origin.X; j < r.Origin.X+int64(r.Width); j++ {
 			if t.waypoints[i][j] {
 				result = append(result, room.Waypoint{Position: geometry.Vec2{
-					X: j * 32 * 2,
-					Y: i * 32 * 2,
+					X: j * (int64(pixelScale) / gridScale),
+					Y: i * (int64(pixelScale) / gridScale),
 				},
 					CellID: cellID,
 				})

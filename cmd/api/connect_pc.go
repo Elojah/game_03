@@ -154,6 +154,7 @@ func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) err
 				continue
 			}
 
+			// use cache
 			// Fetch current cell
 			ce, err := h.room.FetchCell(ctx,
 				room.FilterCell{
@@ -198,6 +199,12 @@ func (h *handler) ConnectPC(req *entity.PC, stream grpc.API_ConnectPCServer) err
 						}
 
 						state = st
+
+						if len(entities) == 0 {
+							logger.Info().Msg("success")
+
+							return
+						}
 
 						if err := stream.SendMsg(&dto.ListEntityResp{
 							Entities: entities,

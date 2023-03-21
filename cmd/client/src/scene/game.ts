@@ -1,9 +1,9 @@
-import { GameObjects, Scene } from "phaser";
+import { GameObjects, Scene } from 'phaser';
 import { grpc } from '@improbable-eng/grpc-web';
 
 import { Mutex } from 'async-mutex';
 
-import * as jspb from "google-protobuf";
+import * as jspb from 'google-protobuf';
 
 import { ulid, parse } from '../lib/ulid'
 
@@ -197,7 +197,7 @@ export class Game extends Scene {
 				})())
 					.then((ws: WorldDTO.ListWorldResp) => {
 						if (ws.getWorldsList().length != 1) {
-							console.log("failed to load world")
+							console.log('failed to load world')
 						} else {
 							this.World = ws.getWorldsList()[0]
 						}
@@ -218,7 +218,7 @@ export class Game extends Scene {
 						}, this.cleanEntitiesDelay)
 					})
 					.catch((err) => {
-						console.log(err)
+						console.log('setup error', err)
 					})
 			})
 	}
@@ -368,7 +368,6 @@ export class Game extends Scene {
 			}
 		})
 	}
-
 
 	async loadBackground() {
 		const bg = 'game_background'
@@ -966,6 +965,8 @@ export class Game extends Scene {
 			}
 		})
 
+		console.log('cleaning entities', ids)
+
 		ids.forEach((id) => {
 			this.EntityLastTick.delete(id)
 
@@ -993,8 +994,8 @@ export class Game extends Scene {
 
 				if (this.Entities.has(id)) {
 					// update state only
-					const x = entry.getX() + (this.Cells.get(this.CellsByID.get(ulid(entry.getCellid_asU8()))!)?.Cell.getX()! * this.World.getCellwidth())
-					const y = entry.getY() + (this.Cells.get(this.CellsByID.get(ulid(entry.getCellid_asU8()))!)?.Cell.getY()! * this.World.getCellheight())
+					const x = entry.getX() //+ (this.Cells.get(this.CellsByID.get(ulid(entry.getCellid_asU8()))!)?.Cell.getX()! * this.World.getCellwidth())
+					const y = entry.getY() //+ (this.Cells.get(this.CellsByID.get(ulid(entry.getCellid_asU8()))!)?.Cell.getY()! * this.World.getCellheight())
 					updateGraphicEntity(this.Entities.get(id)!, x, y)
 
 					this.Entities.get(id)!.E = entry

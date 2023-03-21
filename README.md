@@ -18,14 +18,14 @@ $ docker-compose up -d # wait ~10 sec for scylla to boot
 $ cat docker/scylla/keyspace.cql | docker exec -i game_03_scylla cqlsh
 $ make admin && ./bin/game_03_admin config/admin/local.json
 $ grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '"cql"' -plaintext localhost:4282 grpc.Admin/MigrateUp
-$ make init
+$ make populate
 $ make api && ./bin/game_03_api config/api/local.json
 $ make auth && ./bin/game_03_auth config/auth/local.json
 $ make client
 $ make web_client && ./bin/game_03_web config/web_client/local.json
 ```
 
-Upload assets (`make init`):
+Upload assets (`make populate`):
 
 ```sh
 $ ./scripts/upload_default_images.sh

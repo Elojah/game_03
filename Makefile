@@ -105,9 +105,9 @@ dashboard:  ## Build dashboard content
 	$Q mkdir -p bin && rm -rf bin/$(STATIC) && mkdir -p bin/$(DASHBOARD)/$(STATIC)/
 	$Q yes | cp -rf cmd/$(DASHBOARD)/dist/. bin/$(DASHBOARD)/$(STATIC)/
 
-.PHONY: init
-init:  ## Setup initial content
-	$(info $(M) setup initial content…) @
+.PHONY: populate
+populate:  ## Populate initial content
+	$(info $(M) populate initial content…) @
 	$Q ./scripts/upload_default_images.sh
 	$Q ./scripts/create_default_templates.sh
 	$Q ./scripts/create_default_tilesets.sh

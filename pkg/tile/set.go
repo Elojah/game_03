@@ -3,6 +3,7 @@ package tile
 import (
 	"context"
 
+	"github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/ulid"
 )
 
@@ -43,6 +44,18 @@ func (s Set) CleanCopy() Set {
 	s.WangSets = nil
 
 	return s
+}
+
+func (s Set) CheckGenerate() error {
+	if len(s.WangSets) == 0 {
+		return errors.ErrMissingWangSet{ID: s.ID.String()}
+	}
+
+	if len(s.Tiles) == 0 {
+		return errors.ErrMissingCollisionLayer{ID: s.ID.String()}
+	}
+
+	return nil
 }
 
 type FilterSet struct {

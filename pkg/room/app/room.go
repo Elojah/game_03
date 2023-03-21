@@ -8,8 +8,6 @@ import (
 	"github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/room"
 	"github.com/elojah/game_03/pkg/ulid"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 var _ room.App = (*App)(nil)
@@ -37,7 +35,7 @@ func (a App) PopulateWaypoints(ctx context.Context, ws room.Waypoints) error {
 		Name: func(s string) *string { return &s }("Altar"),
 	})
 	if err != nil {
-		return status.New(codes.Internal, err.Error()).Err()
+		return err
 	}
 
 	ans, _, err := a.Entity.FetchManyAnimation(ctx, entity.FilterAnimation{
@@ -45,13 +43,13 @@ func (a App) PopulateWaypoints(ctx context.Context, ws room.Waypoints) error {
 		Size:     1, // TODO: fetch all when more anims available
 	})
 	if err != nil {
-		return status.New(codes.Internal, err.Error()).Err()
+		return err
 	}
 
 	if len(ans) == 0 {
 		err := errors.ErrMissingDefaultAnimations{EntityID: altar.ID.String()}
 
-		return status.New(codes.Internal, err.Error()).Err()
+		return err
 	}
 
 	for _, w := range ws {
@@ -70,7 +68,7 @@ func (a App) PopulateWaypoints(ctx context.Context, ws room.Waypoints) error {
 			}
 
 			if err := a.Entity.InsertAnimation(ctx, an); err != nil {
-				return status.New(codes.Internal, err.Error()).Err()
+				return err
 			}
 		}
 
@@ -88,7 +86,7 @@ func (a App) PopulateWaypoints(ctx context.Context, ws room.Waypoints) error {
 			AnimationAt: 0,
 		}
 		if err := a.Entity.Insert(ctx, e); err != nil {
-			return status.New(codes.Internal, err.Error()).Err()
+			return err
 		}
 	}
 

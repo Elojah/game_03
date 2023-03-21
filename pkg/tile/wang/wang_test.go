@@ -259,6 +259,6 @@ func TestGridGenerate(t *testing.T) {
 
 		var g wang.Grid
 
-		g.Generate(d.ws, 5, 5, wang.DefaultHeuristic)
+		g.Generate(d.ws, 5, 5)
 	}
 }
