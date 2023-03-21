@@ -116,8 +116,8 @@ func (ws wangtiles) oriented() (Tiles, orientedTiles) {
 type Grid [][]ID
 
 func (g Grid) Tilemap(r geometry.Rect, ts gtile.Set, collisions map[int][]gtile.Object) (gtile.Map, error) {
-	if r.Origin.Y < 0 || r.Origin.Y+int64(r.Height) > int64(len(g)) ||
-		r.Origin.X < 0 || r.Origin.X+int64(r.Width) > int64(len(g[r.Origin.Y])) {
+	if r.Y < 0 || r.Y+int64(r.Height) > int64(len(g)) ||
+		r.X < 0 || r.X+int64(r.Width) > int64(len(g[r.Y])) {
 		return gtile.Map{}, errors.ErrInvalidDimension{}
 	}
 
@@ -147,10 +147,10 @@ func (g Grid) Tilemap(r geometry.Rect, ts gtile.Set, collisions map[int][]gtile.
 
 	var ii, jj int
 
-	for i := r.Origin.Y; i < r.Origin.Y+int64(r.Height); i++ {
+	for i := r.Y; i < r.Y+int64(r.Height); i++ {
 		jj = 0
 
-		for j := r.Origin.X; j < r.Origin.X+int64(r.Width); j++ {
+		for j := r.X; j < r.X+int64(r.Width); j++ {
 			data = binary.LittleEndian.AppendUint32(data, uint32(g[i][j]))
 
 			// add collide object to clayer

@@ -145,6 +145,16 @@ func (p patch) set() (string, []any) {
 		args = append(args, *p.AnimationAt)
 	}
 
+	if p.StaticBoxes != nil {
+		clause = append(clause, `static_boxes = ?`)
+		args = append(args, p.StaticBoxes)
+	}
+
+	if p.DynamicBoxes != nil {
+		clause = append(clause, `dynamic_boxes = ?`)
+		args = append(args, p.DynamicBoxes)
+	}
+
 	b := strings.Builder{}
 	b.WriteString(" SET ")
 
@@ -164,15 +174,17 @@ func (s Store) Insert(ctx context.Context, e entity.E) error {
 			name,
 			x, y, rot, radius,
 			at,
-			animation_id, animation_at
+			animation_id, animation_at,
+			static_boxes, dynamic_boxes
 		) VALUES (
-			?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+			?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 		)`,
 		e.ID, e.UserID, e.CellID,
 		e.Name,
 		e.X, e.Y, e.Rot, e.Radius,
 		e.At,
 		e.AnimationID, e.AnimationAt,
+		e.StaticBoxes, e.DynamicBoxes,
 	).WithContext(ctx)
 
 	defer q.Release()
@@ -212,7 +224,8 @@ func (s Store) Fetch(ctx context.Context, f entity.Filter) (entity.E, error) {
 		name,
 		x, y, rot, radius,
 		at,
-		animation_id, animation_at
+		animation_id, animation_at,
+		static_boxes, dynamic_boxes
 	FROM main.entity `)
 
 	clause, args := filter(f).where()
@@ -227,6 +240,7 @@ func (s Store) Fetch(ctx context.Context, f entity.Filter) (entity.E, error) {
 		&e.X, &e.Y, &e.Rot, &e.Radius,
 		&e.At,
 		&e.AnimationID, &e.AnimationAt,
+		&e.StaticBoxes, &e.DynamicBoxes,
 	); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
 			return entity.E{}, gerrors.ErrNotFound{Resource: "entity", Index: filter(f).index()}
@@ -249,7 +263,8 @@ func (s Store) FetchMany(ctx context.Context, f entity.Filter) ([]entity.E, []by
 		name,
 		x, y, rot, radius,
 		at,
-		animation_id, animation_at
+		animation_id, animation_at,
+		static_boxes, dynamic_boxes
 	FROM main.entity `)
 
 	clause, args := filter(f).where()
@@ -278,6 +293,7 @@ func (s Store) FetchMany(ctx context.Context, f entity.Filter) ([]entity.E, []by
 			&es[i].X, &es[i].Y, &es[i].Rot, &es[i].Radius,
 			&es[i].At,
 			&es[i].AnimationID, &es[i].AnimationAt,
+			&es[i].StaticBoxes, &es[i].DynamicBoxes,
 		); err != nil {
 			return nil, nil, err
 		}

@@ -19,7 +19,8 @@ message Vec2 {
 }
 
 message Rect {
-	Vec2 Origin           = 1 [(gogoproto.nullable) = false];
-	uint64 Height         = 2;
-	uint64 Width          = 3;
+    int64 X               = 1;
+    int64 Y               = 2;
+	uint64 Height         = 3;
+	uint64 Width          = 4;
 }

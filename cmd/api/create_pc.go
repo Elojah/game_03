@@ -8,6 +8,7 @@ import (
 	"github.com/elojah/game_03/pkg/entity"
 	"github.com/elojah/game_03/pkg/entity/dto"
 	gerrors "github.com/elojah/game_03/pkg/errors"
+	"github.com/elojah/game_03/pkg/geometry"
 	"github.com/elojah/game_03/pkg/room"
 	"github.com/elojah/game_03/pkg/ulid"
 	"github.com/rs/zerolog/log"
@@ -141,6 +142,12 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 		At:          time.Now().UnixNano(),
 		AnimationID: idle,
 		AnimationAt: 0,
+		StaticBoxes: []geometry.Rect{{
+			X:      0,
+			Y:      0,
+			Width:  16,
+			Height: 16,
+		}},
 	}
 	if err := h.entity.InsertBackup(ctx, bu); err != nil {
 		logger.Error().Err(err).Msg("failed to create entity")

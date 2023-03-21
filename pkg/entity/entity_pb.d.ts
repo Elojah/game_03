@@ -3,6 +3,7 @@
 
 import * as jspb from "google-protobuf";
 import * as github_com_gogo_protobuf_gogoproto_gogo_pb from "../../../../../github.com/gogo/protobuf/gogoproto/gogo_pb";
+import * as github_com_elojah_game_03_pkg_geometry_geometry_pb from "../../../../../github.com/elojah/game_03/pkg/geometry/geometry_pb";
 
 export class E extends jspb.Message {
   getId(): Uint8Array | string;
@@ -46,6 +47,16 @@ export class E extends jspb.Message {
   getAnimationat(): number;
   setAnimationat(value: number): void;
 
+  clearStaticboxesList(): void;
+  getStaticboxesList(): Array<github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect>;
+  setStaticboxesList(value: Array<github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect>): void;
+  addStaticboxes(value?: github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect, index?: number): github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect;
+
+  clearDynamicboxesList(): void;
+  getDynamicboxesList(): Array<github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect>;
+  setDynamicboxesList(value: Array<github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect>): void;
+  addDynamicboxes(value?: github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect, index?: number): github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): E.AsObject;
   static toObject(includeInstance: boolean, msg: E): E.AsObject;
@@ -69,6 +80,8 @@ export namespace E {
     at: number,
     animationid: Uint8Array | string,
     animationat: number,
+    staticboxesList: Array<github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect.AsObject>,
+    dynamicboxesList: Array<github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect.AsObject>,
   }
 }
 

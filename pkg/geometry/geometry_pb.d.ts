@@ -29,10 +29,11 @@ export namespace Vec2 {
 }
 
 export class Rect extends jspb.Message {
-  hasOrigin(): boolean;
-  clearOrigin(): void;
-  getOrigin(): Vec2 | undefined;
-  setOrigin(value?: Vec2): void;
+  getX(): number;
+  setX(value: number): void;
+
+  getY(): number;
+  setY(value: number): void;
 
   getHeight(): number;
   setHeight(value: number): void;
@@ -52,7 +53,8 @@ export class Rect extends jspb.Message {
 
 export namespace Rect {
   export type AsObject = {
-    origin?: Vec2.AsObject,
+    x: number,
+    y: number,
     height: number,
     width: number,
   }

@@ -137,16 +137,14 @@ func (t Islands) Waypoints(r geometry.Rect, cellID ulid.ID) room.Waypoints {
 	pixelScale := 32
 	gridScale := int64(2)
 	r = geometry.Rect{
-		Origin: geometry.Vec2{
-			X: r.Origin.X * gridScale,
-			Y: r.Origin.Y * gridScale,
-		},
+		X:      r.X * gridScale,
+		Y:      r.Y * gridScale,
 		Height: r.Height * uint64(gridScale),
 		Width:  r.Width * uint64(gridScale),
 	}
 
-	for i := r.Origin.Y; i < r.Origin.Y+int64(r.Height); i++ {
-		for j := r.Origin.X; j < r.Origin.X+int64(r.Width); j++ {
+	for i := r.Y; i < r.Y+int64(r.Height); i++ {
+		for j := r.X; j < r.X+int64(r.Width); j++ {
 			if t.waypoints[i][j] {
 				result = append(result, room.Waypoint{Position: geometry.Vec2{
 					X: j * (int64(pixelScale) / gridScale),

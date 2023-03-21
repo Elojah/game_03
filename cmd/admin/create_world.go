@@ -87,10 +87,8 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 	for i, cl := range cells {
 		for j, c := range cl {
 			rect := geometry.Rect{
-				Origin: geometry.Vec2{
-					X: int64(j) * cellWidth,
-					Y: int64(i) * cellHeight,
-				},
+				X:      int64(j) * cellWidth,
+				Y:      int64(i) * cellHeight,
 				Width:  uint64(cellWidth),
 				Height: uint64(cellHeight),
 			}

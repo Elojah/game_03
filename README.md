@@ -51,7 +51,7 @@ $ go run ./scripts/write_tileset/main.go 'assets/external/Tilesets' 'assets/tile
 - [p3] -> annoying feature
 - [p4] -> improvement
 
-- Manage map creation
+- [EPIC] Manage map creation
   + [ ] [p4] Fix collision values gaps in `.json` adding useless rectangles in min dissection
   + [ ] [p4] Add sky background (bonus: animated tiles) -> as parameter (different background possible in same map too ?)
   + [ ] [p3] Change dashboard/rooms to display post login (event/state propag)
@@ -60,7 +60,10 @@ $ go run ./scripts/write_tileset/main.go 'assets/external/Tilesets' 'assets/tile
   + [ ] [p1] Console warnings (webGL mostly)
   + [ ] [p0] Audio
   + [ ] [p0] Remove `Math.round()` in `game.ts` and set entity.X entity.Y as float64 to fit Phaser.Body x/y
-  + [ ] [p0] (re-)implement spawns -> change into point of interest per map to fill or not
+  + [ ] [p0] [HD] (re-)implement spawns -> change into point of interest per map to fill or not
+    + [ ] NPC entity have lower z index
+    + [ ] NPC entity static collision
+    + [ ] implement spawn mechanic
   + [x] [p0] refresh token dashboard (+ client ?)
   + [x] [p0] Remove player from other clients when disconnect
   + [x] [p0] Fix player sprite not loaded

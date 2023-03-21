@@ -101,10 +101,8 @@ func dissectRectangles(grid [][]bool) []geometry.Rect { //nolint: gocognit
 			for j, val := range line {
 				if val {
 					r := geometry.Rect{
-						Origin: geometry.Vec2{
-							X: int64(j),
-							Y: int64(i),
-						},
+						X:      int64(j),
+						Y:      int64(i),
 						Width:  1,
 						Height: 1,
 					}
@@ -145,8 +143,8 @@ func dissectRectangles(grid [][]bool) []geometry.Rect { //nolint: gocognit
 		result = append(result, r)
 
 		// add rectangle to grid
-		for i := r.Origin.Y; i < r.Origin.Y+int64(r.Height); i++ {
-			for j := r.Origin.X; j < r.Origin.X+int64(r.Width); j++ {
+		for i := r.Y; i < r.Y+int64(r.Height); i++ {
+			for j := r.X; j < r.X+int64(r.Width); j++ {
 				grid[i][j] = false
 			}
 		}
@@ -163,10 +161,10 @@ func (os Objects) MinimumDissection() Objects {
 	result := make([]Object, 0, len(rs))
 	for _, r := range rs {
 		result = append(result, Object{
-			X:      float64(xSplit[r.Origin.X]),
-			Y:      float64(ySplit[r.Origin.Y]),
-			Width:  float64(xSplit[r.Origin.X+int64(r.Width)] - xSplit[r.Origin.X]),
-			Height: float64(ySplit[r.Origin.Y+int64(r.Height)] - ySplit[r.Origin.Y]),
+			X:      float64(xSplit[r.X]),
+			Y:      float64(ySplit[r.Y]),
+			Width:  float64(xSplit[r.X+int64(r.Width)] - xSplit[r.X]),
+			Height: float64(ySplit[r.Y+int64(r.Height)] - ySplit[r.Y]),
 		})
 	}
 

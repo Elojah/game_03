@@ -13,20 +13,25 @@ option (gogoproto.goproto_registration) = true;
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
+import "github.com/elojah/game_03/pkg/geometry/geometry.proto";
+
 message E {
-    bytes ID           = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
-    bytes UserID       = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
-    bytes CellID       = 3 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    bytes ID                            = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    bytes UserID                        = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    bytes CellID                        = 3 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
 
-    string Name        = 4;
+    string Name                         = 4;
 
-    int64 X            = 5;
-    int64 Y            = 6;
-    int32 Rot          = 7;
-    int32 Radius       = 8;
+    int64 X                             = 5;
+    int64 Y                             = 6;
+    int32 Rot                           = 7;
+    int32 Radius                        = 8;
 
-    int64 At           = 9;
+    int64 At                            = 9;
 
-    bytes AnimationID  = 10 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
-    int64 AnimationAt  = 11;
+    bytes AnimationID                   = 10 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    int64 AnimationAt                   = 11;
+
+    repeated geometry.Rect StaticBoxes  = 12 [(gogoproto.nullable) = false];
+    repeated geometry.Rect DynamicBoxes = 13 [(gogoproto.nullable) = false];
 }

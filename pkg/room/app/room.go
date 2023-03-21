@@ -6,6 +6,7 @@ import (
 
 	"github.com/elojah/game_03/pkg/entity"
 	"github.com/elojah/game_03/pkg/errors"
+	"github.com/elojah/game_03/pkg/geometry"
 	"github.com/elojah/game_03/pkg/room"
 	"github.com/elojah/game_03/pkg/ulid"
 )
@@ -84,6 +85,12 @@ func (a App) PopulateWaypoints(ctx context.Context, ws room.Waypoints) error {
 			At:          time.Now().UnixNano(),
 			AnimationID: main,
 			AnimationAt: 0,
+			StaticBoxes: []geometry.Rect{{
+				X:      0,
+				Y:      0,
+				Width:  16,
+				Height: 16,
+			}},
 		}
 		if err := a.Entity.Insert(ctx, e); err != nil {
 			return err

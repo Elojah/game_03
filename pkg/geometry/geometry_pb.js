@@ -250,9 +250,10 @@ proto.geometry.Rect.prototype.toObject = function(opt_includeInstance) {
  */
 proto.geometry.Rect.toObject = function(includeInstance, msg) {
   var f, obj = {
-    origin: (f = msg.getOrigin()) && proto.geometry.Vec2.toObject(includeInstance, f),
-    height: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    width: jspb.Message.getFieldWithDefault(msg, 3, 0)
+    x: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    y: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    height: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    width: jspb.Message.getFieldWithDefault(msg, 4, 0)
   };
 
   if (includeInstance) {
@@ -290,15 +291,18 @@ proto.geometry.Rect.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new proto.geometry.Vec2;
-      reader.readMessage(value,proto.geometry.Vec2.deserializeBinaryFromReader);
-      msg.setOrigin(value);
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setX(value);
       break;
     case 2:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setY(value);
+      break;
+    case 3:
       var value = /** @type {number} */ (reader.readUint64());
       msg.setHeight(value);
       break;
-    case 3:
+    case 4:
       var value = /** @type {number} */ (reader.readUint64());
       msg.setWidth(value);
       break;
@@ -331,73 +335,60 @@ proto.geometry.Rect.prototype.serializeBinary = function() {
  */
 proto.geometry.Rect.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getOrigin();
-  if (f != null) {
-    writer.writeMessage(
+  f = message.getX();
+  if (f !== 0) {
+    writer.writeInt64(
       1,
-      f,
-      proto.geometry.Vec2.serializeBinaryToWriter
+      f
     );
   }
-  f = message.getHeight();
+  f = message.getY();
   if (f !== 0) {
-    writer.writeUint64(
+    writer.writeInt64(
       2,
       f
     );
   }
-  f = message.getWidth();
+  f = message.getHeight();
   if (f !== 0) {
     writer.writeUint64(
       3,
       f
     );
   }
+  f = message.getWidth();
+  if (f !== 0) {
+    writer.writeUint64(
+      4,
+      f
+    );
+  }
 };
 
 
 /**
- * optional Vec2 Origin = 1;
- * @return {?proto.geometry.Vec2}
- */
-proto.geometry.Rect.prototype.getOrigin = function() {
-  return /** @type{?proto.geometry.Vec2} */ (
-    jspb.Message.getWrapperField(this, proto.geometry.Vec2, 1));
-};
-
-
-/**
- * @param {?proto.geometry.Vec2|undefined} value
- * @return {!proto.geometry.Rect} returns this
-*/
-proto.geometry.Rect.prototype.setOrigin = function(value) {
-  return jspb.Message.setWrapperField(this, 1, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.geometry.Rect} returns this
- */
-proto.geometry.Rect.prototype.clearOrigin = function() {
-  return this.setOrigin(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.geometry.Rect.prototype.hasOrigin = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * optional uint64 Height = 2;
+ * optional int64 X = 1;
  * @return {number}
  */
-proto.geometry.Rect.prototype.getHeight = function() {
+proto.geometry.Rect.prototype.getX = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.geometry.Rect} returns this
+ */
+proto.geometry.Rect.prototype.setX = function(value) {
+  return jspb.Message.setProto3IntField(this, 1, value);
+};
+
+
+/**
+ * optional int64 Y = 2;
+ * @return {number}
+ */
+proto.geometry.Rect.prototype.getY = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
@@ -406,16 +397,16 @@ proto.geometry.Rect.prototype.getHeight = function() {
  * @param {number} value
  * @return {!proto.geometry.Rect} returns this
  */
-proto.geometry.Rect.prototype.setHeight = function(value) {
+proto.geometry.Rect.prototype.setY = function(value) {
   return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * optional uint64 Width = 3;
+ * optional uint64 Height = 3;
  * @return {number}
  */
-proto.geometry.Rect.prototype.getWidth = function() {
+proto.geometry.Rect.prototype.getHeight = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
@@ -424,8 +415,26 @@ proto.geometry.Rect.prototype.getWidth = function() {
  * @param {number} value
  * @return {!proto.geometry.Rect} returns this
  */
-proto.geometry.Rect.prototype.setWidth = function(value) {
+proto.geometry.Rect.prototype.setHeight = function(value) {
   return jspb.Message.setProto3IntField(this, 3, value);
+};
+
+
+/**
+ * optional uint64 Width = 4;
+ * @return {number}
+ */
+proto.geometry.Rect.prototype.getWidth = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.geometry.Rect} returns this
+ */
+proto.geometry.Rect.prototype.setWidth = function(value) {
+  return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 

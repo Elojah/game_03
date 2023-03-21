@@ -58,6 +58,13 @@ CREATE INDEX ON main.room_public(room_id);
 -- ENTITY MANAGEMENT
 -- -----------------
 
+CREATE TYPE rect (
+    x               bigint,
+    y               bigint,
+    width           bigint,
+    height          bigint,
+);
+
 -- must replicate main.entity_backup fields
 CREATE TABLE main.entity (
     id              uuid PRIMARY KEY,
@@ -70,7 +77,9 @@ CREATE TABLE main.entity (
     radius          smallint,
     at              bigint,
     animation_id    uuid,
-    animation_at    bigint
+    animation_at    bigint,
+	dynamic_boxes   frozen<list<rect>>,
+	static_boxes    frozen<list<rect>>
 );
 
 CREATE INDEX ON main.entity(cell_id);
@@ -87,7 +96,9 @@ CREATE TABLE main.entity_backup (
     radius          smallint,
     at              bigint,
     animation_id    uuid,
-    animation_at    bigint
+    animation_at    bigint,
+	dynamic_boxes   frozen<list<rect>>,
+	static_boxes    frozen<list<rect>>
 );
 
 CREATE TABLE main.entity_animation (
@@ -98,7 +109,7 @@ CREATE TABLE main.entity_animation (
     name            varchar,
     start           bigint,
     end             bigint,
-    sequence        list<bigint>,
+    sequence        frozen<list<bigint>>,
     rate            bigint,
     frame_width     bigint,
     frame_height    bigint,

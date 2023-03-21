@@ -3,6 +3,7 @@ package entity
 import (
 	"context"
 
+	"github.com/elojah/game_03/pkg/geometry"
 	"github.com/elojah/game_03/pkg/ulid"
 )
 
@@ -18,16 +19,18 @@ type Filter struct {
 }
 
 type Patch struct {
-	UserID      ulid.ID
-	CellID      ulid.ID
-	Name        *string
-	X           *int64
-	Y           *int64
-	Rot         *int32
-	Radius      *int32
-	At          *int64
-	AnimationID ulid.ID
-	AnimationAt *int64
+	UserID       ulid.ID
+	CellID       ulid.ID
+	Name         *string
+	X            *int64
+	Y            *int64
+	Rot          *int32
+	Radius       *int32
+	At           *int64
+	AnimationID  ulid.ID
+	AnimationAt  *int64
+	StaticBoxes  []geometry.Rect
+	DynamicBoxes []geometry.Rect
 }
 
 type Store interface {

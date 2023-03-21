@@ -1012,7 +1012,7 @@ export class Game extends Scene {
 
 						// local player sprite loaded, start camera follow
 						this.cameras.main.startFollow(this.Entity.Body)
-						this.Entity.Body.setDepth(entitySpriteDepth - 1)
+						this.Entity.Body.setDepth(entitySpriteDepth)
 
 						this.Entities.set(id, {
 							E: entry,
