@@ -57,6 +57,9 @@ type GraphicEntity = {
 	Direction: Phaser.Geom.Point
 	Interpolation: number
 	Sprite: Phaser.GameObjects.Sprite
+
+	Objects: Map<string, Phaser.Physics.Arcade.StaticGroup>
+	Colliders: Map<string, Phaser.Physics.Arcade.Collider>
 }
 
 function updateGraphicEntity(ge: GraphicEntity, x: number, y: number) {
@@ -80,8 +83,8 @@ function interpolateGraphicEntity(ge: GraphicEntity) {
 type GraphicCell = {
 	Cell: Cell.Cell
 	Tilemap: Phaser.Tilemaps.Tilemap
-	Colliders: Map<string, Phaser.Physics.Arcade.Collider>
 	Objects: Map<string, Phaser.Physics.Arcade.StaticGroup>
+	Colliders: Map<string, Phaser.Physics.Arcade.Collider>
 	Layers: Map<string, Phaser.Tilemaps.TilemapLayer | null>
 }
 
@@ -968,13 +971,29 @@ export class Game extends Scene {
 		console.log('cleaning entities', ids)
 
 		ids.forEach((id) => {
+			let e = this.Entities.get(id)!
+
 			this.EntityLastTick.delete(id)
 
 			// TODO: ensure it cleans everything correctly ?
-			this.Entities.get(id)?.Sprite.destroy()
-			this.Entities.delete(id)
+			e.Sprite.destroy()
+
+			// remove collisions
+			e.Colliders.forEach((v, k) => {
+				if (v.world) {
+					v.destroy()
+				}
+			})
+
+			e.Objects.forEach((v, k) => {
+				if (v.world) {
+					v.destroy(true, true)
+				}
+			})
 
 			// TODO: clean animations if not used elsewhere ?
+
+			this.Entities.delete(id)
 		})
 	}
 
@@ -1020,6 +1039,9 @@ export class Game extends Scene {
 							Direction: new Phaser.Geom.Point(entry.getX(), entry.getY()),
 							Interpolation: 0.00,
 							Sprite: this.Entity.Body,
+
+							Objects: new Map(),
+							Colliders: new Map(),
 						})
 
 						this.syncEntity()
@@ -1028,13 +1050,42 @@ export class Game extends Scene {
 						const sprite = this.add.sprite(entry.getX(), entry.getY(), id)
 						sprite.setDepth(entitySpriteDepth - 1)
 
-						this.Entities.set(id, {
+						let ge: GraphicEntity = {
 							E: entry,
 							Animations: new Map(),
 							Direction: new Phaser.Geom.Point(entry.getX(), entry.getY()),
 							Interpolation: 0.00, // default speed
 							Sprite: sprite,
-						})
+
+							Objects: new Map(),
+							Colliders: new Map(),
+						}
+
+						// set collision boxes
+						// offset on layer position
+						const staticBoxes = entry.getStaticboxesList()
+						if (staticBoxes.length > 0) {
+							const group = this.physics.add.staticGroup(staticBoxes.map((b) => {
+								const tmp = this.physics.add.staticImage(
+									b.getX() + ge.E.getX(),
+									b.getY() + ge.E.getY(),
+									'')
+								tmp.setSize(b.getWidth(), b.getHeight())
+								tmp.setVisible(false)
+								tmp.setImmovable(true)
+
+								return tmp
+							}))
+
+
+							const collider = this.physics.add.collider(this.Entity.Body, group)
+
+							ge.Objects.set(id, group)
+							ge.Colliders.set(id, collider)
+							console.log('created entity collision:', id)
+						}
+
+						this.Entities.set(id, ge)
 					}
 
 					// load entity animations
@@ -1052,7 +1103,7 @@ export class Game extends Scene {
 				const req = new AnimationDTO.ListAnimationReq()
 
 				req.setEntityidsList(entityIDs)
-				req.setSize(1000)
+				req.setSize(1000) // TODO: less random
 
 				return req
 			})())

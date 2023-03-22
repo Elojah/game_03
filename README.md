@@ -61,8 +61,8 @@ $ go run ./scripts/write_tileset/main.go 'assets/external/Tilesets' 'assets/tile
   + [ ] [p0] Audio
   + [ ] [p0] Remove `Math.round()` in `game.ts` and set entity.X entity.Y as float64 to fit Phaser.Body x/y
   + [ ] [p0] [HD] (re-)implement spawns -> change into point of interest per map to fill or not
-    + [ ] NPC entity have lower z index
-    + [ ] NPC entity static collision
+    + [x] NPC entity have lower z index
+    + [ ] [HD] NPC entity static/dynamic collision -> TO DEBUG
     + [ ] implement spawn mechanic
   + [x] [p0] refresh token dashboard (+ client ?)
   + [x] [p0] Remove player from other clients when disconnect
