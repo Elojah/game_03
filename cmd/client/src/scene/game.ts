@@ -1023,7 +1023,17 @@ export class Game extends Scene {
 					// receive own entity from server once and initialize
 					if (id == ulid(this.Entity.E.getId_asU8())) {
 						this.Entity.Body.destroy()
-						this.Entity.Body = this.physics.add.sprite(entry.getX(), entry.getY(), id).setSize(12, 12).setOffset(4, 4)
+
+						if (entry.getDynamicobjectsList().length == 0) {
+							console.log('player entity has no collision body. set default')
+							this.Entity.Body = this.physics.add.sprite(entry.getX(), entry.getY(), id).setSize(16, 16).setOffset(0, 0)
+						} else {
+							// pick first dynamic body from list to assign as main collision object
+							const obj = entry.getDynamicobjectsList().at(0)!
+							this.Entity.Body = this.physics.add.sprite(entry.getX(), entry.getY(), id).
+								setSize(obj.getWidth(), obj.getHeight()).
+								setOffset(obj.getX(), obj.getY())
+						}
 
 						console.log('set body from server info')
 						this.Entity.E.setX(entry.getX())
