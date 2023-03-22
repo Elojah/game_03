@@ -78,8 +78,8 @@ CREATE TABLE main.entity (
     at              bigint,
     animation_id    uuid,
     animation_at    bigint,
-	dynamic_boxes   frozen<list<rect>>,
-	static_boxes    frozen<list<rect>>
+	static_objects    frozen<list<rect>>,
+	dynamic_objects   frozen<list<rect>>
 );
 
 CREATE INDEX ON main.entity(cell_id);
@@ -97,8 +97,8 @@ CREATE TABLE main.entity_backup (
     at              bigint,
     animation_id    uuid,
     animation_at    bigint,
-	dynamic_boxes   frozen<list<rect>>,
-	static_boxes    frozen<list<rect>>
+	static_objects    frozen<list<rect>>,
+	dynamic_objects   frozen<list<rect>>
 );
 
 CREATE TABLE main.entity_animation (

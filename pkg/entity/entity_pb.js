@@ -88,9 +88,9 @@ proto.entity.E.toObject = function(includeInstance, msg) {
     at: jspb.Message.getFieldWithDefault(msg, 9, 0),
     animationid: msg.getAnimationid_asB64(),
     animationat: jspb.Message.getFieldWithDefault(msg, 11, 0),
-    staticboxesList: jspb.Message.toObjectList(msg.getStaticboxesList(),
+    staticobjectsList: jspb.Message.toObjectList(msg.getStaticobjectsList(),
     github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect.toObject, includeInstance),
-    dynamicboxesList: jspb.Message.toObjectList(msg.getDynamicboxesList(),
+    dynamicobjectsList: jspb.Message.toObjectList(msg.getDynamicobjectsList(),
     github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect.toObject, includeInstance)
   };
 
@@ -175,12 +175,12 @@ proto.entity.E.deserializeBinaryFromReader = function(msg, reader) {
     case 12:
       var value = new github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect;
       reader.readMessage(value,github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect.deserializeBinaryFromReader);
-      msg.addStaticboxes(value);
+      msg.addStaticobjects(value);
       break;
     case 13:
       var value = new github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect;
       reader.readMessage(value,github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect.deserializeBinaryFromReader);
-      msg.addDynamicboxes(value);
+      msg.addDynamicobjects(value);
       break;
     default:
       reader.skipField();
@@ -288,7 +288,7 @@ proto.entity.E.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getStaticboxesList();
+  f = message.getStaticobjectsList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
       12,
@@ -296,7 +296,7 @@ proto.entity.E.serializeBinaryToWriter = function(message, writer) {
       github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect.serializeBinaryToWriter
     );
   }
-  f = message.getDynamicboxesList();
+  f = message.getDynamicobjectsList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
       13,
@@ -602,10 +602,10 @@ proto.entity.E.prototype.setAnimationat = function(value) {
 
 
 /**
- * repeated geometry.Rect StaticBoxes = 12;
+ * repeated geometry.Rect StaticObjects = 12;
  * @return {!Array<!proto.geometry.Rect>}
  */
-proto.entity.E.prototype.getStaticboxesList = function() {
+proto.entity.E.prototype.getStaticobjectsList = function() {
   return /** @type{!Array<!proto.geometry.Rect>} */ (
     jspb.Message.getRepeatedWrapperField(this, github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect, 12));
 };
@@ -615,7 +615,7 @@ proto.entity.E.prototype.getStaticboxesList = function() {
  * @param {!Array<!proto.geometry.Rect>} value
  * @return {!proto.entity.E} returns this
 */
-proto.entity.E.prototype.setStaticboxesList = function(value) {
+proto.entity.E.prototype.setStaticobjectsList = function(value) {
   return jspb.Message.setRepeatedWrapperField(this, 12, value);
 };
 
@@ -625,7 +625,7 @@ proto.entity.E.prototype.setStaticboxesList = function(value) {
  * @param {number=} opt_index
  * @return {!proto.geometry.Rect}
  */
-proto.entity.E.prototype.addStaticboxes = function(opt_value, opt_index) {
+proto.entity.E.prototype.addStaticobjects = function(opt_value, opt_index) {
   return jspb.Message.addToRepeatedWrapperField(this, 12, opt_value, proto.geometry.Rect, opt_index);
 };
 
@@ -634,16 +634,16 @@ proto.entity.E.prototype.addStaticboxes = function(opt_value, opt_index) {
  * Clears the list making it empty but non-null.
  * @return {!proto.entity.E} returns this
  */
-proto.entity.E.prototype.clearStaticboxesList = function() {
-  return this.setStaticboxesList([]);
+proto.entity.E.prototype.clearStaticobjectsList = function() {
+  return this.setStaticobjectsList([]);
 };
 
 
 /**
- * repeated geometry.Rect DynamicBoxes = 13;
+ * repeated geometry.Rect DynamicObjects = 13;
  * @return {!Array<!proto.geometry.Rect>}
  */
-proto.entity.E.prototype.getDynamicboxesList = function() {
+proto.entity.E.prototype.getDynamicobjectsList = function() {
   return /** @type{!Array<!proto.geometry.Rect>} */ (
     jspb.Message.getRepeatedWrapperField(this, github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect, 13));
 };
@@ -653,7 +653,7 @@ proto.entity.E.prototype.getDynamicboxesList = function() {
  * @param {!Array<!proto.geometry.Rect>} value
  * @return {!proto.entity.E} returns this
 */
-proto.entity.E.prototype.setDynamicboxesList = function(value) {
+proto.entity.E.prototype.setDynamicobjectsList = function(value) {
   return jspb.Message.setRepeatedWrapperField(this, 13, value);
 };
 
@@ -663,7 +663,7 @@ proto.entity.E.prototype.setDynamicboxesList = function(value) {
  * @param {number=} opt_index
  * @return {!proto.geometry.Rect}
  */
-proto.entity.E.prototype.addDynamicboxes = function(opt_value, opt_index) {
+proto.entity.E.prototype.addDynamicobjects = function(opt_value, opt_index) {
   return jspb.Message.addToRepeatedWrapperField(this, 13, opt_value, proto.geometry.Rect, opt_index);
 };
 
@@ -672,8 +672,8 @@ proto.entity.E.prototype.addDynamicboxes = function(opt_value, opt_index) {
  * Clears the list making it empty but non-null.
  * @return {!proto.entity.E} returns this
  */
-proto.entity.E.prototype.clearDynamicboxesList = function() {
-  return this.setDynamicboxesList([]);
+proto.entity.E.prototype.clearDynamicobjectsList = function() {
+  return this.setDynamicobjectsList([]);
 };
 
 

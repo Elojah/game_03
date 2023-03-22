@@ -19,18 +19,18 @@ type Filter struct {
 }
 
 type Patch struct {
-	UserID       ulid.ID
-	CellID       ulid.ID
-	Name         *string
-	X            *int64
-	Y            *int64
-	Rot          *int32
-	Radius       *int32
-	At           *int64
-	AnimationID  ulid.ID
-	AnimationAt  *int64
-	StaticBoxes  []geometry.Rect
-	DynamicBoxes []geometry.Rect
+	UserID         ulid.ID
+	CellID         ulid.ID
+	Name           *string
+	X              *int64
+	Y              *int64
+	Rot            *int32
+	Radius         *int32
+	At             *int64
+	AnimationID    ulid.ID
+	AnimationAt    *int64
+	StaticObjects  []geometry.Rect
+	DynamicObjects []geometry.Rect
 }
 
 type Store interface {

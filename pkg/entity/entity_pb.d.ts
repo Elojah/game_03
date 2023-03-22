@@ -47,15 +47,15 @@ export class E extends jspb.Message {
   getAnimationat(): number;
   setAnimationat(value: number): void;
 
-  clearStaticboxesList(): void;
-  getStaticboxesList(): Array<github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect>;
-  setStaticboxesList(value: Array<github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect>): void;
-  addStaticboxes(value?: github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect, index?: number): github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect;
+  clearStaticobjectsList(): void;
+  getStaticobjectsList(): Array<github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect>;
+  setStaticobjectsList(value: Array<github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect>): void;
+  addStaticobjects(value?: github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect, index?: number): github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect;
 
-  clearDynamicboxesList(): void;
-  getDynamicboxesList(): Array<github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect>;
-  setDynamicboxesList(value: Array<github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect>): void;
-  addDynamicboxes(value?: github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect, index?: number): github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect;
+  clearDynamicobjectsList(): void;
+  getDynamicobjectsList(): Array<github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect>;
+  setDynamicobjectsList(value: Array<github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect>): void;
+  addDynamicobjects(value?: github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect, index?: number): github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): E.AsObject;
@@ -80,8 +80,8 @@ export namespace E {
     at: number,
     animationid: Uint8Array | string,
     animationat: number,
-    staticboxesList: Array<github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect.AsObject>,
-    dynamicboxesList: Array<github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect.AsObject>,
+    staticobjectsList: Array<github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect.AsObject>,
+    dynamicobjectsList: Array<github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect.AsObject>,
   }
 }
 

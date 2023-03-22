@@ -85,7 +85,7 @@ func (a App) PopulateWaypoints(ctx context.Context, ws room.Waypoints) error {
 			At:          time.Now().UnixNano(),
 			AnimationID: main,
 			AnimationAt: 0,
-			StaticBoxes: []geometry.Rect{{
+			StaticObjects: []geometry.Rect{{ // TODO
 				X:      0,
 				Y:      0,
 				Width:  16,

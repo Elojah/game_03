@@ -1061,11 +1061,11 @@ export class Game extends Scene {
 							Colliders: new Map(),
 						}
 
-						// set collision boxes
+						// set collision objects
 						// offset on layer position
-						const staticBoxes = entry.getStaticboxesList()
-						if (staticBoxes.length > 0) {
-							const group = this.physics.add.staticGroup(staticBoxes.map((b) => {
+						const staticObjects = entry.getStaticobjectsList()
+						if (staticObjects.length > 0) {
+							const group = this.physics.add.staticGroup(staticObjects.map((b) => {
 								const tmp = this.physics.add.staticImage(
 									b.getX() + ge.E.getX(),
 									b.getY() + ge.E.getY(),

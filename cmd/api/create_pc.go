@@ -142,7 +142,7 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 		At:          time.Now().UnixNano(),
 		AnimationID: idle,
 		AnimationAt: 0,
-		StaticBoxes: []geometry.Rect{{
+		StaticObjects: []geometry.Rect{{
 			X:      0,
 			Y:      0,
 			Width:  16,

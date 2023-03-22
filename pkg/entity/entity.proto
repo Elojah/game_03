@@ -32,6 +32,6 @@ message E {
     bytes AnimationID                   = 10 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
     int64 AnimationAt                   = 11;
 
-    repeated geometry.Rect StaticBoxes  = 12 [(gogoproto.nullable) = false];
-    repeated geometry.Rect DynamicBoxes = 13 [(gogoproto.nullable) = false];
+    repeated geometry.Rect StaticObjects  = 12 [(gogoproto.nullable) = false];
+    repeated geometry.Rect DynamicObjects = 13 [(gogoproto.nullable) = false];
 }
