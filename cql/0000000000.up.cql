@@ -63,6 +63,7 @@ CREATE TYPE rect (
     y               bigint,
     width           bigint,
     height          bigint,
+    rotation        bigint
 );
 
 -- must replicate main.entity_backup fields
@@ -78,8 +79,7 @@ CREATE TABLE main.entity (
     at              bigint,
     animation_id    uuid,
     animation_at    bigint,
-	static_objects    frozen<list<rect>>,
-	dynamic_objects   frozen<list<rect>>
+	objects         frozen<list<rect>>
 );
 
 CREATE INDEX ON main.entity(cell_id);
@@ -97,8 +97,7 @@ CREATE TABLE main.entity_backup (
     at              bigint,
     animation_id    uuid,
     animation_at    bigint,
-	static_objects    frozen<list<rect>>,
-	dynamic_objects   frozen<list<rect>>
+	objects         frozen<list<rect>>
 );
 
 CREATE TABLE main.entity_animation (
@@ -123,6 +122,7 @@ CREATE INDEX ON main.entity_animation(entity_id);
 
 CREATE TABLE main.entity_template (
     id              uuid PRIMARY KEY,
+    entity_id       uuid,
     name            varchar
 );
 
@@ -167,7 +167,7 @@ CREATE TABLE main.world_cell (
 
 CREATE TABLE main.cell (
     id              uuid PRIMARY KEY,
-    contiguous      map<tinyint, uuid>,
+    contiguous      frozen<map<tinyint, uuid>>,
     tilemap         uuid,
     x               bigint,
     y               bigint

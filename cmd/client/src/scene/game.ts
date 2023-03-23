@@ -1024,15 +1024,16 @@ export class Game extends Scene {
 					if (id == ulid(this.Entity.E.getId_asU8())) {
 						this.Entity.Body.destroy()
 
-						if (entry.getDynamicobjectsList().length == 0) {
+						if (entry.getObjectsList().length == 0) {
 							console.log('player entity has no collision body. set default')
 							this.Entity.Body = this.physics.add.sprite(entry.getX(), entry.getY(), id).setSize(16, 16).setOffset(0, 0)
 						} else {
 							// pick first dynamic body from list to assign as main collision object
-							const obj = entry.getDynamicobjectsList().at(0)!
+							const obj = entry.getObjectsList().at(0)!
 							this.Entity.Body = this.physics.add.sprite(entry.getX(), entry.getY(), id).
 								setSize(obj.getWidth(), obj.getHeight()).
-								setOffset(obj.getX(), obj.getY())
+								setOffset(obj.getX(), obj.getY()).
+								setRotation(obj.getRotation())
 						}
 
 						console.log('set body from server info')
@@ -1073,18 +1074,18 @@ export class Game extends Scene {
 
 						// set collision objects
 						// offset on layer position
-						const staticObjects = entry.getStaticobjectsList()
-						if (staticObjects.length > 0) {
-							const group = this.physics.add.staticGroup(staticObjects.map((b) => {
-								const tmp = this.physics.add.staticImage(
-									b.getX() + ge.E.getX(),
-									b.getY() + ge.E.getY(),
-									'')
-								tmp.setSize(b.getWidth(), b.getHeight())
-								tmp.setVisible(false)
-								tmp.setImmovable(true)
-
-								return tmp
+						const objects = entry.getObjectsList()
+						if (objects.length > 0) {
+							const group = this.physics.add.staticGroup(objects.map((b) => {
+								return this.physics.add.
+									staticImage(
+										b.getX() + ge.E.getX(),
+										b.getY() + ge.E.getY(),
+										'').
+									setSize(b.getWidth(), b.getHeight()).
+									setRotation(b.getRotation()).
+									setVisible(false).
+									setImmovable(true)
 							}))
 
 
@@ -1101,7 +1102,6 @@ export class Game extends Scene {
 					// load entity animations
 					entityIDs.push(entry.getId_asU8())
 				}
-
 			})
 
 			if (entityIDs.length == 0) {

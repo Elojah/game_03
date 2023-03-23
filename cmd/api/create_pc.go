@@ -8,7 +8,6 @@ import (
 	"github.com/elojah/game_03/pkg/entity"
 	"github.com/elojah/game_03/pkg/entity/dto"
 	gerrors "github.com/elojah/game_03/pkg/errors"
-	"github.com/elojah/game_03/pkg/geometry"
 	"github.com/elojah/game_03/pkg/room"
 	"github.com/elojah/game_03/pkg/ulid"
 	"github.com/rs/zerolog/log"
@@ -92,6 +91,15 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
+	eTemplate, err := h.entity.Fetch(ctx, entity.Filter{
+		ID: template.EntityID,
+	})
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to fetch entity")
+
+		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
 	ans, _, err := h.entity.FetchManyAnimation(ctx, entity.FilterAnimation{
 		EntityID: template.ID,
 		Size:     maxAnimations,
@@ -138,16 +146,11 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 		X:           0,
 		Y:           0,
 		Rot:         0,
-		Radius:      10, //nolint: gomnd
+		Radius:      eTemplate.Radius,
 		At:          time.Now().UnixNano(),
 		AnimationID: idle,
 		AnimationAt: 0,
-		StaticObjects: []geometry.Rect{{
-			X:      0,
-			Y:      0,
-			Width:  16,
-			Height: 16,
-		}},
+		Objects:     eTemplate.Objects,
 	}
 	if err := h.entity.InsertBackup(ctx, bu); err != nil {
 		logger.Error().Err(err).Msg("failed to create entity")

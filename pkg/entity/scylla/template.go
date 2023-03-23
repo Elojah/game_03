@@ -92,8 +92,9 @@ func (f filterTemplate) index() string {
 
 func (s Store) InsertTemplate(ctx context.Context, t entity.Template) error {
 	q := s.Session.Query(
-		`INSERT INTO main.entity_template (id, name) VALUES (?, ?)`,
+		`INSERT INTO main.entity_template (id, entity_id, name) VALUES (?, ?, ?)`,
 		t.ID,
+		t.EntityID,
 		t.Name,
 	).WithContext(ctx)
 
@@ -108,7 +109,7 @@ func (s Store) InsertTemplate(ctx context.Context, t entity.Template) error {
 
 func (s Store) FetchTemplate(ctx context.Context, f entity.FilterTemplate) (entity.Template, error) {
 	b := strings.Builder{}
-	b.WriteString(`SELECT id, name FROM main.entity_template `)
+	b.WriteString(`SELECT id, entity_id, name FROM main.entity_template `)
 
 	clause, args := filterTemplate(f).where()
 	b.WriteString(clause)
@@ -116,7 +117,7 @@ func (s Store) FetchTemplate(ctx context.Context, f entity.FilterTemplate) (enti
 	q := s.Session.Query(b.String(), args...).WithContext(ctx)
 
 	var t entity.Template
-	if err := q.Scan(&t.ID, &t.Name); err != nil {
+	if err := q.Scan(&t.ID, &t.EntityID, &t.Name); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
 			return entity.Template{}, gerrors.ErrNotFound{Resource: "template", Index: filterTemplate(f).index()}
 		}
@@ -133,7 +134,7 @@ func (s Store) FetchManyTemplate(ctx context.Context, f entity.FilterTemplate) (
 	}
 
 	b := strings.Builder{}
-	b.WriteString(`SELECT id, name FROM main.entity_template `)
+	b.WriteString(`SELECT id, entity_id, name FROM main.entity_template `)
 
 	clause, args := filterTemplate(f).where()
 	b.WriteString(clause)
@@ -157,6 +158,7 @@ func (s Store) FetchManyTemplate(ctx context.Context, f entity.FilterTemplate) (
 	for ; scanner.Next(); i++ {
 		if err := scanner.Scan(
 			&ts[i].ID,
+			&ts[i].EntityID,
 			&ts[i].Name,
 		); err != nil {
 			return nil, nil, err

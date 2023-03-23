@@ -16,5 +16,6 @@ import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 message Template {
     bytes ID           = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
 
-    string Name        = 2;
+    bytes EntityID     = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    string Name        = 3;
 }

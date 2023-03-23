@@ -6,7 +6,6 @@ import (
 
 	"github.com/elojah/game_03/pkg/entity"
 	"github.com/elojah/game_03/pkg/errors"
-	"github.com/elojah/game_03/pkg/geometry"
 	"github.com/elojah/game_03/pkg/room"
 	"github.com/elojah/game_03/pkg/ulid"
 )
@@ -34,6 +33,13 @@ func (a App) PopulateWaypoints(ctx context.Context, ws room.Waypoints) error {
 		// Pick first result (random) of altar template
 		// TODO: Add as parameter to pick specific Altar
 		Name: func(s string) *string { return &s }("Altar"),
+	})
+	if err != nil {
+		return err
+	}
+
+	eAltar, err := a.Entity.Fetch(ctx, entity.Filter{
+		ID: altar.EntityID,
 	})
 	if err != nil {
 		return err
@@ -81,16 +87,11 @@ func (a App) PopulateWaypoints(ctx context.Context, ws room.Waypoints) error {
 			X:           w.Position.X,
 			Y:           w.Position.Y,
 			Rot:         0,
-			Radius:      10, //nolint: gomnd
+			Radius:      eAltar.Radius,
 			At:          time.Now().UnixNano(),
 			AnimationID: main,
 			AnimationAt: 0,
-			StaticObjects: []geometry.Rect{{ // TODO
-				X:      0,
-				Y:      0,
-				Width:  16,
-				Height: 16,
-			}},
+			Objects:     eAltar.Objects,
 		}
 		if err := a.Entity.Insert(ctx, e); err != nil {
 			return err

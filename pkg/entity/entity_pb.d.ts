@@ -47,15 +47,10 @@ export class E extends jspb.Message {
   getAnimationat(): number;
   setAnimationat(value: number): void;
 
-  clearStaticobjectsList(): void;
-  getStaticobjectsList(): Array<github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect>;
-  setStaticobjectsList(value: Array<github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect>): void;
-  addStaticobjects(value?: github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect, index?: number): github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect;
-
-  clearDynamicobjectsList(): void;
-  getDynamicobjectsList(): Array<github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect>;
-  setDynamicobjectsList(value: Array<github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect>): void;
-  addDynamicobjects(value?: github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect, index?: number): github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect;
+  clearObjectsList(): void;
+  getObjectsList(): Array<github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect>;
+  setObjectsList(value: Array<github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect>): void;
+  addObjects(value?: github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect, index?: number): github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): E.AsObject;
@@ -80,8 +75,7 @@ export namespace E {
     at: number,
     animationid: Uint8Array | string,
     animationat: number,
-    staticobjectsList: Array<github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect.AsObject>,
-    dynamicobjectsList: Array<github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect.AsObject>,
+    objectsList: Array<github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect.AsObject>,
   }
 }
 

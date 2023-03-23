@@ -88,15 +88,17 @@ func (s Store) InsertBackup(ctx context.Context, bu entity.Backup) error {
 			name,
 			x, y, rot, radius,
 			at,
-			animation_id, animation_at
+			animation_id, animation_at,
+			objects
 		) VALUES (
-			?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+			?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 		)`,
 		bu.ID, bu.UserID, bu.CellID,
 		bu.Name,
 		bu.X, bu.Y, bu.Rot, bu.Radius,
 		bu.At,
 		bu.AnimationID, bu.AnimationAt,
+		bu.Objects,
 	).WithContext(ctx)
 
 	defer q.Release()
@@ -115,7 +117,8 @@ func (s Store) UpdateBackup(ctx context.Context, f entity.FilterBackup, bu entit
 		name = ?,
 		x = ?, y = ?, rot = ?, radius = ?,
 		at = ?,
-		animation_id = ?, animation_at = ?
+		animation_id = ?, animation_at = ?,
+		objects = ?
 	`)
 
 	clause, args := filterBackup(f).where()
@@ -127,6 +130,7 @@ func (s Store) UpdateBackup(ctx context.Context, f entity.FilterBackup, bu entit
 		bu.X, bu.Y, bu.Rot, bu.Radius,
 		bu.At,
 		bu.AnimationID, bu.AnimationAt,
+		bu.Objects,
 	}, args...)
 
 	q := s.Session.Query(b.String(), args...).WithContext(ctx)
@@ -147,7 +151,8 @@ func (s Store) FetchBackup(ctx context.Context, f entity.FilterBackup) (entity.B
 		name,
 		x, y, rot, radius,
 		at,
-		animation_id, animation_at
+		animation_id, animation_at,
+		objects
 	FROM main.entity_backup `)
 
 	clause, args := filterBackup(f).where()
@@ -162,6 +167,7 @@ func (s Store) FetchBackup(ctx context.Context, f entity.FilterBackup) (entity.B
 		&bu.X, &bu.Y, &bu.Rot, &bu.Radius,
 		&bu.At,
 		&bu.AnimationID, &bu.AnimationAt,
+		&bu.Objects,
 	); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
 			return entity.Backup{}, gerrors.ErrNotFound{Resource: "entity_backup", Index: filterBackup(f).index()}
@@ -184,7 +190,8 @@ func (s Store) FetchManyBackup(ctx context.Context, f entity.FilterBackup) ([]en
 		name,
 		x, y, rot, radius,
 		at,
-		animation_id, animation_at
+		animation_id, animation_at,
+		objects
 	FROM main.entity_backup `)
 
 	clause, args := filterBackup(f).where()
@@ -213,6 +220,7 @@ func (s Store) FetchManyBackup(ctx context.Context, f entity.FilterBackup) ([]en
 			&bus[i].X, &bus[i].Y, &bus[i].Rot, &bus[i].Radius,
 			&bus[i].At,
 			&bus[i].AnimationID, &bus[i].AnimationAt,
+			&bus[i].Objects,
 		); err != nil {
 			return nil, nil, err
 		}

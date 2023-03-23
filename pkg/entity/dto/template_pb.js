@@ -16,6 +16,8 @@ var github_com_gogo_protobuf_gogoproto_gogo_pb = require('../../../../../../gith
 goog.object.extend(proto, github_com_gogo_protobuf_gogoproto_gogo_pb);
 var github_com_elojah_game_03_pkg_entity_template_pb = require('../../../../../../github.com/elojah/game_03/pkg/entity/template_pb.js');
 goog.object.extend(proto, github_com_elojah_game_03_pkg_entity_template_pb);
+var github_com_elojah_game_03_pkg_entity_entity_pb = require('../../../../../../github.com/elojah/game_03/pkg/entity/entity_pb.js');
+goog.object.extend(proto, github_com_elojah_game_03_pkg_entity_entity_pb);
 goog.exportSymbol('proto.dto.CreateTemplateReq', null, global);
 goog.exportSymbol('proto.dto.ListTemplateReq', null, global);
 goog.exportSymbol('proto.dto.ListTemplateResp', null, global);
@@ -114,7 +116,8 @@ proto.dto.CreateTemplateReq.prototype.toObject = function(opt_includeInstance) {
  */
 proto.dto.CreateTemplateReq.toObject = function(includeInstance, msg) {
   var f, obj = {
-    name: jspb.Message.getFieldWithDefault(msg, 1, "")
+    name: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    entity: (f = msg.getEntity()) && github_com_elojah_game_03_pkg_entity_entity_pb.E.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -155,6 +158,11 @@ proto.dto.CreateTemplateReq.deserializeBinaryFromReader = function(msg, reader) 
       var value = /** @type {string} */ (reader.readString());
       msg.setName(value);
       break;
+    case 2:
+      var value = new github_com_elojah_game_03_pkg_entity_entity_pb.E;
+      reader.readMessage(value,github_com_elojah_game_03_pkg_entity_entity_pb.E.deserializeBinaryFromReader);
+      msg.setEntity(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -191,6 +199,14 @@ proto.dto.CreateTemplateReq.serializeBinaryToWriter = function(message, writer) 
       f
     );
   }
+  f = message.getEntity();
+  if (f != null) {
+    writer.writeMessage(
+      2,
+      f,
+      github_com_elojah_game_03_pkg_entity_entity_pb.E.serializeBinaryToWriter
+    );
+  }
 };
 
 
@@ -209,6 +225,43 @@ proto.dto.CreateTemplateReq.prototype.getName = function() {
  */
 proto.dto.CreateTemplateReq.prototype.setName = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional entity.E Entity = 2;
+ * @return {?proto.entity.E}
+ */
+proto.dto.CreateTemplateReq.prototype.getEntity = function() {
+  return /** @type{?proto.entity.E} */ (
+    jspb.Message.getWrapperField(this, github_com_elojah_game_03_pkg_entity_entity_pb.E, 2));
+};
+
+
+/**
+ * @param {?proto.entity.E|undefined} value
+ * @return {!proto.dto.CreateTemplateReq} returns this
+*/
+proto.dto.CreateTemplateReq.prototype.setEntity = function(value) {
+  return jspb.Message.setWrapperField(this, 2, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.dto.CreateTemplateReq} returns this
+ */
+proto.dto.CreateTemplateReq.prototype.clearEntity = function() {
+  return this.setEntity(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.dto.CreateTemplateReq.prototype.hasEntity = function() {
+  return jspb.Message.getField(this, 2) != null;
 };
 
 

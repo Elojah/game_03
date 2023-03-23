@@ -4,10 +4,16 @@
 import * as jspb from "google-protobuf";
 import * as github_com_gogo_protobuf_gogoproto_gogo_pb from "../../../../../../github.com/gogo/protobuf/gogoproto/gogo_pb";
 import * as github_com_elojah_game_03_pkg_entity_template_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/template_pb";
+import * as github_com_elojah_game_03_pkg_entity_entity_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/entity_pb";
 
 export class CreateTemplateReq extends jspb.Message {
   getName(): string;
   setName(value: string): void;
+
+  hasEntity(): boolean;
+  clearEntity(): void;
+  getEntity(): github_com_elojah_game_03_pkg_entity_entity_pb.E | undefined;
+  setEntity(value?: github_com_elojah_game_03_pkg_entity_entity_pb.E): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): CreateTemplateReq.AsObject;
@@ -22,6 +28,7 @@ export class CreateTemplateReq extends jspb.Message {
 export namespace CreateTemplateReq {
   export type AsObject = {
     name: string,
+    entity?: github_com_elojah_game_03_pkg_entity_entity_pb.E.AsObject,
   }
 }
 

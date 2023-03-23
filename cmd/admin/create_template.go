@@ -25,9 +25,27 @@ func (h *handler) CreateTemplate(ctx context.Context, req *dto.CreateTemplateReq
 	// 	return &entity.Template{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	// }
 
+	// Create entity
+	e := entity.E{
+		ID: ulid.NewID(),
+
+		Name:    req.Name,
+		Radius:  req.Entity.Radius,
+		Objects: req.Entity.Objects,
+
+		UserID: nil, // explicitly set nil
+		CellID: nil, // explicitly set nil
+	}
+	if err := h.entity.Insert(ctx, e); err != nil {
+		logger.Error().Err(err).Msg("failed to create entity")
+
+		return &entity.Template{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
 	t := entity.Template{
-		ID:   ulid.NewID(),
-		Name: req.Name,
+		ID:       ulid.NewID(),
+		EntityID: e.ID,
+		Name:     req.Name,
 	}
 
 	// Create template

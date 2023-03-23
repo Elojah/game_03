@@ -10,6 +10,11 @@ export class Template extends jspb.Message {
   getId_asB64(): string;
   setId(value: Uint8Array | string): void;
 
+  getEntityid(): Uint8Array | string;
+  getEntityid_asU8(): Uint8Array;
+  getEntityid_asB64(): string;
+  setEntityid(value: Uint8Array | string): void;
+
   getName(): string;
   setName(value: string): void;
 
@@ -26,6 +31,7 @@ export class Template extends jspb.Message {
 export namespace Template {
   export type AsObject = {
     id: Uint8Array | string,
+    entityid: Uint8Array | string,
     name: string,
   }
 }
