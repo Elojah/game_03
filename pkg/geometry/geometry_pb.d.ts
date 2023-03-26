@@ -41,9 +41,6 @@ export class Rect extends jspb.Message {
   getWidth(): number;
   setWidth(value: number): void;
 
-  getRotation(): number;
-  setRotation(value: number): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Rect.AsObject;
   static toObject(includeInstance: boolean, msg: Rect): Rect.AsObject;
@@ -60,7 +57,6 @@ export namespace Rect {
     y: number,
     height: number,
     width: number,
-    rotation: number,
   }
 }
 

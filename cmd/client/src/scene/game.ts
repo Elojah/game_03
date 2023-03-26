@@ -887,7 +887,6 @@ export class Game extends Scene {
 								}))
 								cc.Objects.set(os.name, group)
 
-
 								const collider = this.physics.add.collider(this.Entity.Body, group)
 
 								console.log('created object layer:', os.name)
@@ -1032,8 +1031,7 @@ export class Game extends Scene {
 							const obj = entry.getObjectsList().at(0)!
 							this.Entity.Body = this.physics.add.sprite(entry.getX(), entry.getY(), id).
 								setSize(obj.getWidth(), obj.getHeight()).
-								setOffset(obj.getX(), obj.getY()).
-								setRotation(obj.getRotation())
+								setOffset(obj.getX(), obj.getY())
 						}
 
 						console.log('set body from server info')
@@ -1072,22 +1070,23 @@ export class Game extends Scene {
 							Colliders: new Map(),
 						}
 
+						console.log('set entity: ', id, entry.getX(), entry.getY())
+
 						// set collision objects
 						// offset on layer position
 						const objects = entry.getObjectsList()
 						if (objects.length > 0) {
 							const group = this.physics.add.staticGroup(objects.map((b) => {
+								console.log('set entity collision: ', id, b.getX() + ge.E.getX(), b.getY() + ge.E.getY())
 								return this.physics.add.
 									staticImage(
-										b.getX() + ge.E.getX(),
-										b.getY() + ge.E.getY(),
+										ge.E.getX() + b.getX(),
+										ge.E.getY() + b.getY(),
 										'').
 									setSize(b.getWidth(), b.getHeight()).
-									setRotation(b.getRotation()).
 									setVisible(false).
 									setImmovable(true)
 							}))
-
 
 							const collider = this.physics.add.collider(this.Entity.Body, group)
 

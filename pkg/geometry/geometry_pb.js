@@ -253,8 +253,7 @@ proto.geometry.Rect.toObject = function(includeInstance, msg) {
     x: jspb.Message.getFieldWithDefault(msg, 1, 0),
     y: jspb.Message.getFieldWithDefault(msg, 2, 0),
     height: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    width: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    rotation: jspb.Message.getFieldWithDefault(msg, 5, 0)
+    width: jspb.Message.getFieldWithDefault(msg, 4, 0)
   };
 
   if (includeInstance) {
@@ -306,10 +305,6 @@ proto.geometry.Rect.deserializeBinaryFromReader = function(msg, reader) {
     case 4:
       var value = /** @type {number} */ (reader.readUint64());
       msg.setWidth(value);
-      break;
-    case 5:
-      var value = /** @type {number} */ (reader.readUint64());
-      msg.setRotation(value);
       break;
     default:
       reader.skipField();
@@ -365,13 +360,6 @@ proto.geometry.Rect.serializeBinaryToWriter = function(message, writer) {
   if (f !== 0) {
     writer.writeUint64(
       4,
-      f
-    );
-  }
-  f = message.getRotation();
-  if (f !== 0) {
-    writer.writeUint64(
-      5,
       f
     );
   }
@@ -447,24 +435,6 @@ proto.geometry.Rect.prototype.getWidth = function() {
  */
 proto.geometry.Rect.prototype.setWidth = function(value) {
   return jspb.Message.setProto3IntField(this, 4, value);
-};
-
-
-/**
- * optional uint64 Rotation = 5;
- * @return {number}
- */
-proto.geometry.Rect.prototype.getRotation = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.geometry.Rect} returns this
- */
-proto.geometry.Rect.prototype.setRotation = function(value) {
-  return jspb.Message.setProto3IntField(this, 5, value);
 };
 
 

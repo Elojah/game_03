@@ -62,8 +62,7 @@ CREATE TYPE rect (
     x               bigint,
     y               bigint,
     width           bigint,
-    height          bigint,
-    rotation        bigint
+    height          bigint
 );
 
 -- must replicate main.entity_backup fields

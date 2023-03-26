@@ -23,7 +23,4 @@ message Rect {
     int64 Y               = 2 [(gogoproto.moretags) = "cql:\"y\""];
 	uint64 Height         = 3 [(gogoproto.moretags) = "cql:\"height\""];
 	uint64 Width          = 4 [(gogoproto.moretags) = "cql:\"width\""];
-
-	// degree clockwise
-	uint64 Rotation       = 5 [(gogoproto.moretags) = "cql:\"rotation\""];
 }
