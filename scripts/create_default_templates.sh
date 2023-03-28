@@ -61,12 +61,17 @@ grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '{"Name": 
 grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '{"Name": "Altar", "Entity": {
 	"Radius": 10,
 	"Objects": [
-		{"X": -71, "Y":  -106, "Width": 20, "Height": 63},
-		{"X": 47, "Y":  -106, "Width": 20, "Height": 63},
-		{"X": -71, "Y":  -6, "Width": 20, "Height": 63},
-		{"X": 47, "Y":  -6, "Width": 20, "Height": 63},
-		{"X": -51, "Y":  -82, "Width": 98, "Height": 3},
-		{"X": -96, "Y":  -34, "Width": 3, "Height": 70},
-		{"X": -49, "Y":  74, "Width": 1, "Height": 63},
-		{"X": 45, "Y":  74, "Width": 1, "Height": 63}
+		{"X": -55, "Y": -90, "Width": 20, "Height": 63},
+		{"X": 63, "Y": -90, "Width": 20, "Height": 63},
+		{"X": -55, "Y": 10, "Width": 20, "Height": 63},
+		{"X": 63, "Y": 10, "Width": 20, "Height": 63},
+		{"X": -35, "Y": -66, "Width": 98, "Height": 3},
+		{"X": -80, "Y": -18, "Width": 3, "Height": 70},
+		{"X": -80, "Y": -32, "Width": 24, "Height": 24},
+		{"X": -80, "Y": 52, "Width": 24, "Height": 24},
+		{"X": 107, "Y": -18, "Width": 3, "Height": 70},
+		{"X": 83, "Y": -32, "Width": 24, "Height": 24},
+		{"X": 83, "Y": 52, "Width": 24, "Height": 24},
+		{"X": -33, "Y": 90, "Width": 1, "Height": 63},
+		{"X": 61, "Y": 90, "Width": 1, "Height": 63}
 ]}}' -plaintext localhost:4282 grpc.Admin/CreateTemplate

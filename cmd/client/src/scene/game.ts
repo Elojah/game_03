@@ -1085,7 +1085,8 @@ export class Game extends Scene {
 										'').
 									setSize(b.getWidth(), b.getHeight()).
 									setVisible(false).
-									setImmovable(true)
+									setImmovable(true).
+									setOffset(0, 0)
 							}))
 
 							const collider = this.physics.add.collider(this.Entity.Body, group)
