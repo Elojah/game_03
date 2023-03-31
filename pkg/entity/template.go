@@ -7,10 +7,10 @@ import (
 )
 
 type FilterTemplate struct {
-	ID    ulid.ID
-	IDs   []ulid.ID
-	Name  *string
-	Names []string
+	EntityID  ulid.ID
+	EntityIDs []ulid.ID
+	Name      *string
+	Names     []string
 
 	All bool
 

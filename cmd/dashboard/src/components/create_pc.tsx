@@ -216,7 +216,7 @@ export default () => {
 						{templates.loaded && templates.templates
 							.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 							.map((template) => {
-								const id = template.getId_asU8()
+								const id = template.getEntityid_asU8()
 								const sid = ulid(id)
 								const name = template.getName()
 

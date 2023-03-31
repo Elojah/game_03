@@ -58,7 +58,7 @@ func (h *handler) CreateAnimation(ctx context.Context, req *dto.CreateAnimationR
 			return &types.Empty{}, status.New(codes.Internal, err.Error()).Err()
 		}
 
-		req.Animation.EntityID = template.ID
+		req.Animation.EntityID = template.EntityID
 	} else {
 		err := gerrors.ErrMissingEntity{AnimationID: req.Animation.ID.String()}
 

@@ -5,11 +5,6 @@ import * as jspb from "google-protobuf";
 import * as github_com_gogo_protobuf_gogoproto_gogo_pb from "../../../../../github.com/gogo/protobuf/gogoproto/gogo_pb";
 
 export class Template extends jspb.Message {
-  getId(): Uint8Array | string;
-  getId_asU8(): Uint8Array;
-  getId_asB64(): string;
-  setId(value: Uint8Array | string): void;
-
   getEntityid(): Uint8Array | string;
   getEntityid_asU8(): Uint8Array;
   getEntityid_asB64(): string;
@@ -30,7 +25,6 @@ export class Template extends jspb.Message {
 
 export namespace Template {
   export type AsObject = {
-    id: Uint8Array | string,
     entityid: Uint8Array | string,
     name: string,
   }

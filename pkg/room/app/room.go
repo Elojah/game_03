@@ -19,16 +19,18 @@ type App struct {
 	room.StoreUser
 	room.StoreWorld
 	room.StoreWorldCell
+	room.StoreWorldSpawn
 
 	Entity entity.App
 }
 
 // PopulateWaypoints
-func (a App) PopulateWaypoints(ctx context.Context, ws room.Waypoints) error {
+func (a App) PopulateWaypoints(ctx context.Context, ws room.Waypoints, worldID ulid.ID) error {
 	if a.Entity == nil {
 		return errors.ErrMissingImplementation{Interface: "entity"}
 	}
 
+	// #Create and add altar in each waypoint
 	altar, err := a.Entity.FetchTemplate(ctx, entity.FilterTemplate{
 		// Pick first result (random) of altar template
 		// TODO: Add as parameter to pick specific Altar
@@ -46,7 +48,7 @@ func (a App) PopulateWaypoints(ctx context.Context, ws room.Waypoints) error {
 	}
 
 	ans, _, err := a.Entity.FetchManyAnimation(ctx, entity.FilterAnimation{
-		EntityID: altar.ID,
+		EntityID: altar.EntityID,
 		Size:     1, // TODO: fetch all when more anims available
 	})
 	if err != nil {
@@ -54,13 +56,12 @@ func (a App) PopulateWaypoints(ctx context.Context, ws room.Waypoints) error {
 	}
 
 	if len(ans) == 0 {
-		err := errors.ErrMissingDefaultAnimations{EntityID: altar.ID.String()}
+		err := errors.ErrMissingDefaultAnimations{EntityID: altar.EntityID.String()}
 
 		return err
 	}
 
 	for _, w := range ws {
-
 		entityID := ulid.NewID()
 
 		var main ulid.ID
@@ -94,6 +95,16 @@ func (a App) PopulateWaypoints(ctx context.Context, ws room.Waypoints) error {
 			Objects:     eAltar.Objects,
 		}
 		if err := a.Entity.Insert(ctx, e); err != nil {
+			return err
+		}
+
+		// #Associate entity as world spawn
+		if err := a.StoreWorldSpawn.InsertWorldSpawn(ctx, room.WorldSpawn{
+			ID:       ulid.NewID(),
+			EntityID: e.ID,
+			WorldID:  worldID,
+			OwnerID:  ulid.NewZeroID(),
+		}); err != nil {
 			return err
 		}
 	}

@@ -51,6 +51,7 @@ type App interface {
 	StoreUser
 	StoreWorld
 	StoreWorldCell
+	StoreWorldSpawn
 
-	PopulateWaypoints(context.Context, Waypoints) error
+	PopulateWaypoints(context.Context, Waypoints, ulid.ID) error
 }

@@ -128,16 +128,18 @@ func run(prog string, filename string) {
 		StoreBackup:    entityStore,
 		StorePC:        entityStore,
 		StoreTemplate:  entityStore,
+		StoreSpawn:     entityStore,
 	}
 
 	roomStore := &roomscylla.Store{Service: scyllas}
 	roomApp := roomapp.App{
-		Store:          roomStore,
-		StorePublic:    roomStore,
-		StoreCell:      roomStore,
-		StoreWorld:     roomStore,
-		StoreUser:      roomStore,
-		StoreWorldCell: roomStore,
+		Store:           roomStore,
+		StorePublic:     roomStore,
+		StoreCell:       roomStore,
+		StoreWorld:      roomStore,
+		StoreUser:       roomStore,
+		StoreWorldCell:  roomStore,
+		StoreWorldSpawn: roomStore,
 	}
 
 	userStore := &userscylla.Store{Service: scyllas}

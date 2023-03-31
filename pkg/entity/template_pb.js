@@ -68,9 +68,8 @@ proto.entity.Template.prototype.toObject = function(opt_includeInstance) {
  */
 proto.entity.Template.toObject = function(includeInstance, msg) {
   var f, obj = {
-    id: msg.getId_asB64(),
     entityid: msg.getEntityid_asB64(),
-    name: jspb.Message.getFieldWithDefault(msg, 3, "")
+    name: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -109,13 +108,9 @@ proto.entity.Template.deserializeBinaryFromReader = function(msg, reader) {
     switch (field) {
     case 1:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setId(value);
-      break;
-    case 2:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setEntityid(value);
       break;
-    case 3:
+    case 2:
       var value = /** @type {string} */ (reader.readString());
       msg.setName(value);
       break;
@@ -148,24 +143,17 @@ proto.entity.Template.prototype.serializeBinary = function() {
  */
 proto.entity.Template.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getId_asU8();
+  f = message.getEntityid_asU8();
   if (f.length > 0) {
     writer.writeBytes(
       1,
       f
     );
   }
-  f = message.getEntityid_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      2,
-      f
-    );
-  }
   f = message.getName();
   if (f.length > 0) {
     writer.writeString(
-      3,
+      2,
       f
     );
   }
@@ -173,58 +161,16 @@ proto.entity.Template.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional bytes ID = 1;
+ * optional bytes EntityID = 1;
  * @return {!(string|Uint8Array)}
  */
-proto.entity.Template.prototype.getId = function() {
+proto.entity.Template.prototype.getEntityid = function() {
   return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
- * optional bytes ID = 1;
- * This is a type-conversion wrapper around `getId()`
- * @return {string}
- */
-proto.entity.Template.prototype.getId_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getId()));
-};
-
-
-/**
- * optional bytes ID = 1;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getId()`
- * @return {!Uint8Array}
- */
-proto.entity.Template.prototype.getId_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getId()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
- * @return {!proto.entity.Template} returns this
- */
-proto.entity.Template.prototype.setId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 1, value);
-};
-
-
-/**
- * optional bytes EntityID = 2;
- * @return {!(string|Uint8Array)}
- */
-proto.entity.Template.prototype.getEntityid = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * optional bytes EntityID = 2;
+ * optional bytes EntityID = 1;
  * This is a type-conversion wrapper around `getEntityid()`
  * @return {string}
  */
@@ -235,7 +181,7 @@ proto.entity.Template.prototype.getEntityid_asB64 = function() {
 
 
 /**
- * optional bytes EntityID = 2;
+ * optional bytes EntityID = 1;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getEntityid()`
@@ -252,16 +198,16 @@ proto.entity.Template.prototype.getEntityid_asU8 = function() {
  * @return {!proto.entity.Template} returns this
  */
 proto.entity.Template.prototype.setEntityid = function(value) {
-  return jspb.Message.setProto3BytesField(this, 2, value);
+  return jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
 /**
- * optional string Name = 3;
+ * optional string Name = 2;
  * @return {string}
  */
 proto.entity.Template.prototype.getName = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
@@ -270,7 +216,7 @@ proto.entity.Template.prototype.getName = function() {
  * @return {!proto.entity.Template} returns this
  */
 proto.entity.Template.prototype.setName = function(value) {
-  return jspb.Message.setProto3StringField(this, 3, value);
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 

@@ -120,12 +120,18 @@ CREATE TABLE main.entity_animation (
 CREATE INDEX ON main.entity_animation(entity_id);
 
 CREATE TABLE main.entity_template (
-    id              uuid PRIMARY KEY,
-    entity_id       uuid,
+    entity_id       uuid PRIMARY KEY,
     name            varchar
 );
 
 CREATE INDEX ON main.entity_template(name);
+
+CREATE TABLE main.entity_spawn (
+    entity_id        uuid PRIMARY KEY,
+    spawn_id         uuid
+);
+
+CREATE INDEX ON main.entity_spawn(spawn_id);
 
 -- CHARACTER
 
@@ -135,13 +141,6 @@ CREATE TABLE main.pc (
     world_id        uuid,
     entity_id       uuid,
     PRIMARY KEY(user_id, world_id, id)
-);
-
-CREATE TABLE main.npc (
-    id              uuid,
-    world_id        uuid,
-    entity_id       uuid,
-    PRIMARY KEY(world_id, id)
 );
 
 -- WORLD MANAGEMENT
@@ -156,6 +155,14 @@ CREATE TABLE main.world (
     cell_height     bigint
 );
 
+CREATE TABLE main.cell (
+    id              uuid PRIMARY KEY,
+    contiguous      frozen<map<tinyint, uuid>>,
+    tilemap         uuid,
+    x               bigint,
+    y               bigint
+);
+
 CREATE TABLE main.world_cell (
     world_id        uuid,
     cell_id         uuid,
@@ -164,13 +171,14 @@ CREATE TABLE main.world_cell (
     PRIMARY KEY(world_id, x, y)
 );
 
-CREATE TABLE main.cell (
+CREATE TABLE main.world_spawn (
     id              uuid PRIMARY KEY,
-    contiguous      frozen<map<tinyint, uuid>>,
-    tilemap         uuid,
-    x               bigint,
-    y               bigint
+    world_id        uuid,
+    entity_id       uuid,
+    owner_id        uuid
 );
+
+CREATE INDEX ON main.world_spawn(world_id);
 
 -- TILESET
 -- -------

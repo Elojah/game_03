@@ -5,14 +5,14 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/elojah/game_03/pkg/entity"
 	gerrors "github.com/elojah/game_03/pkg/errors"
+	"github.com/elojah/game_03/pkg/room"
 	"github.com/gocql/gocql"
 )
 
-type filterNPC entity.FilterNPC
+type filterWorldSpawn room.FilterWorldSpawn
 
-func (f filterNPC) where() (string, []any) {
+func (f filterWorldSpawn) where() (string, []any) {
 	var clause []string
 
 	var args []any
@@ -32,6 +32,11 @@ func (f filterNPC) where() (string, []any) {
 		args = append(args, f.WorldID)
 	}
 
+	if len(f.WorldIDs) > 0 {
+		clause = append(clause, `world_id IN ?`)
+		args = append(args, f.WorldIDs)
+	}
+
 	b := strings.Builder{}
 	b.WriteString(" WHERE ")
 
@@ -44,7 +49,7 @@ func (f filterNPC) where() (string, []any) {
 	return b.String(), args
 }
 
-func (f filterNPC) index() string {
+func (f filterWorldSpawn) index() string {
 	var cols []string
 
 	if f.ID != nil {
@@ -64,15 +69,25 @@ func (f filterNPC) index() string {
 		cols = append(cols, f.WorldID.String())
 	}
 
+	if f.WorldIDs != nil {
+		ss := make([]string, 0, len(f.WorldIDs))
+		for _, id := range f.WorldIDs {
+			ss = append(ss, id.String())
+		}
+
+		cols = append(cols, strings.Join(ss, "|"))
+	}
+
 	return strings.Join(cols, " - ")
 }
 
-func (s Store) InsertNPC(ctx context.Context, npc entity.NPC) error {
+func (s Store) InsertWorldSpawn(ctx context.Context, c room.WorldSpawn) error {
 	q := s.Session.Query(
-		`INSERT INTO main.npc (id, world_id, entity_id) VALUES (?, ?, ?)`,
-		npc.ID,
-		npc.WorldID,
-		npc.EntityID,
+		`INSERT INTO main.world_spawn (id, world_id, entity_id, owner_id) VALUES (?, ?, ?, ?)`,
+		c.ID,
+		c.WorldID,
+		c.EntityID,
+		c.OwnerID,
 	).WithContext(ctx)
 
 	defer q.Release()
@@ -84,36 +99,36 @@ func (s Store) InsertNPC(ctx context.Context, npc entity.NPC) error {
 	return nil
 }
 
-func (s Store) FetchNPC(ctx context.Context, f entity.FilterNPC) (entity.NPC, error) {
+func (s Store) FetchWorldSpawn(ctx context.Context, f room.FilterWorldSpawn) (room.WorldSpawn, error) {
 	b := strings.Builder{}
-	b.WriteString(`SELECT id, world_id, entity_id FROM main.npc `)
+	b.WriteString(`SELECT id, world_id, entity_id, owner_id FROM main.world_spawn `)
 
-	clause, args := filterNPC(f).where()
+	clause, args := filterWorldSpawn(f).where()
 	b.WriteString(clause)
 
 	q := s.Session.Query(b.String(), args...).WithContext(ctx)
 
-	var npc entity.NPC
-	if err := q.Scan(&npc.ID, &npc.WorldID, &npc.EntityID); err != nil {
+	var c room.WorldSpawn
+	if err := q.Scan(&c.ID, &c.WorldID, &c.EntityID, &c.OwnerID); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
-			return entity.NPC{}, gerrors.ErrNotFound{Resource: "npc", Index: filterNPC(f).index()}
+			return room.WorldSpawn{}, gerrors.ErrNotFound{Resource: "world_spawn", Index: filterWorldSpawn(f).index()}
 		}
 
-		return entity.NPC{}, err
+		return room.WorldSpawn{}, err
 	}
 
-	return npc, nil
+	return c, nil
 }
 
-func (s Store) FetchManyNPC(ctx context.Context, f entity.FilterNPC) ([]entity.NPC, []byte, error) {
+func (s Store) FetchManyWorldSpawn(ctx context.Context, f room.FilterWorldSpawn) ([]room.WorldSpawn, []byte, error) {
 	if f.Size <= 0 {
 		return nil, nil, nil
 	}
 
 	b := strings.Builder{}
-	b.WriteString(`SELECT id, world_id, entity_id FROM main.npc `)
+	b.WriteString(`SELECT id, world_id, entity_id, owner_id FROM main.world_spawn `)
 
-	clause, args := filterNPC(f).where()
+	clause, args := filterWorldSpawn(f).where()
 	b.WriteString(clause)
 
 	iter := s.Session.Query(b.String(), args...).
@@ -128,15 +143,16 @@ func (s Store) FetchManyNPC(ctx context.Context, f entity.FilterNPC) ([]entity.N
 
 	scanner := iter.Scanner()
 
-	pcs := make([]entity.NPC, f.Size)
+	cells := make([]room.WorldSpawn, f.Size)
 
 	var i int
 
 	for ; scanner.Next(); i++ {
 		if err := scanner.Scan(
-			&pcs[i].ID,
-			&pcs[i].WorldID,
-			&pcs[i].EntityID,
+			&cells[i].ID,
+			&cells[i].WorldID,
+			&cells[i].EntityID,
+			&cells[i].OwnerID,
 		); err != nil {
 			return nil, nil, err
 		}
@@ -146,14 +162,14 @@ func (s Store) FetchManyNPC(ctx context.Context, f entity.FilterNPC) ([]entity.N
 		return nil, nil, err
 	}
 
-	return pcs[:i], state, nil
+	return cells[:i], state, nil
 }
 
-func (s Store) DeleteNPC(ctx context.Context, f entity.FilterNPC) error {
+func (s Store) DeleteWorldSpawn(ctx context.Context, f room.FilterWorldSpawn) error {
 	b := strings.Builder{}
-	b.WriteString(`DELETE FROM main.npc `)
+	b.WriteString(`DELETE FROM main.world_spawn `)
 
-	clause, args := filterNPC(f).where()
+	clause, args := filterWorldSpawn(f).where()
 	b.WriteString(clause)
 
 	q := s.Session.Query(b.String(), args...).WithContext(ctx)

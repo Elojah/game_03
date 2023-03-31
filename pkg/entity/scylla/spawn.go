@@ -10,9 +10,9 @@ import (
 	"github.com/gocql/gocql"
 )
 
-type filterTemplate entity.FilterTemplate
+type filterSpawn entity.FilterSpawn
 
-func (f filterTemplate) where() (string, []any) {
+func (f filterSpawn) where() (string, []any) {
 	var clause []string
 
 	var args []any
@@ -27,14 +27,14 @@ func (f filterTemplate) where() (string, []any) {
 		args = append(args, f.EntityIDs)
 	}
 
-	if f.Name != nil {
-		clause = append(clause, `name = ?`)
-		args = append(args, f.Name)
+	if f.SpawnID != nil {
+		clause = append(clause, `spawn_id = ?`)
+		args = append(args, f.SpawnID)
 	}
 
-	if len(f.Names) > 0 {
-		clause = append(clause, `name IN ?`)
-		args = append(args, f.Names)
+	if len(f.SpawnIDs) > 0 {
+		clause = append(clause, `spawn_id IN ?`)
+		args = append(args, f.SpawnIDs)
 	}
 
 	b := strings.Builder{}
@@ -54,7 +54,7 @@ func (f filterTemplate) where() (string, []any) {
 	return b.String(), args
 }
 
-func (f filterTemplate) index() string {
+func (f filterSpawn) index() string {
 	var cols []string
 
 	if f.EntityID != nil {
@@ -70,14 +70,14 @@ func (f filterTemplate) index() string {
 		cols = append(cols, strings.Join(ss, "|"))
 	}
 
-	if f.Name != nil {
-		cols = append(cols, *f.Name)
+	if f.SpawnID != nil {
+		cols = append(cols, f.SpawnID.String())
 	}
 
-	if f.Names != nil {
-		ss := make([]string, 0, len(f.Names))
-		for _, name := range f.Names {
-			ss = append(ss, name)
+	if f.SpawnIDs != nil {
+		ss := make([]string, 0, len(f.SpawnIDs))
+		for _, id := range f.SpawnIDs {
+			ss = append(ss, id.String())
 		}
 
 		cols = append(cols, strings.Join(ss, "|"))
@@ -90,11 +90,11 @@ func (f filterTemplate) index() string {
 	return strings.Join(cols, " - ")
 }
 
-func (s Store) InsertTemplate(ctx context.Context, t entity.Template) error {
+func (s Store) InsertSpawn(ctx context.Context, t entity.Spawn) error {
 	q := s.Session.Query(
-		`INSERT INTO main.entity_template (entity_id, name) VALUES (?, ?)`,
+		`INSERT INTO main.entity_spawn (entity_id, spawn_id) VALUES (?, ?)`,
 		t.EntityID,
-		t.Name,
+		t.SpawnID,
 	).WithContext(ctx)
 
 	defer q.Release()
@@ -106,36 +106,36 @@ func (s Store) InsertTemplate(ctx context.Context, t entity.Template) error {
 	return nil
 }
 
-func (s Store) FetchTemplate(ctx context.Context, f entity.FilterTemplate) (entity.Template, error) {
+func (s Store) FetchSpawn(ctx context.Context, f entity.FilterSpawn) (entity.Spawn, error) {
 	b := strings.Builder{}
-	b.WriteString(`SELECT entity_id, name FROM main.entity_template `)
+	b.WriteString(`SELECT entity_id, spawn_id FROM main.entity_spawn `)
 
-	clause, args := filterTemplate(f).where()
+	clause, args := filterSpawn(f).where()
 	b.WriteString(clause)
 
 	q := s.Session.Query(b.String(), args...).WithContext(ctx)
 
-	var t entity.Template
-	if err := q.Scan(&t.EntityID, &t.Name); err != nil {
+	var t entity.Spawn
+	if err := q.Scan(&t.EntityID, &t.SpawnID); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
-			return entity.Template{}, gerrors.ErrNotFound{Resource: "template", Index: filterTemplate(f).index()}
+			return entity.Spawn{}, gerrors.ErrNotFound{Resource: "entity_spawn", Index: filterSpawn(f).index()}
 		}
 
-		return entity.Template{}, err
+		return entity.Spawn{}, err
 	}
 
 	return t, nil
 }
 
-func (s Store) FetchManyTemplate(ctx context.Context, f entity.FilterTemplate) ([]entity.Template, []byte, error) {
+func (s Store) FetchManySpawn(ctx context.Context, f entity.FilterSpawn) ([]entity.Spawn, []byte, error) {
 	if f.Size <= 0 {
 		return nil, nil, nil
 	}
 
 	b := strings.Builder{}
-	b.WriteString(`SELECT entity_id, name FROM main.entity_template `)
+	b.WriteString(`SELECT entity_id, spawn_id FROM main.entity_spawn `)
 
-	clause, args := filterTemplate(f).where()
+	clause, args := filterSpawn(f).where()
 	b.WriteString(clause)
 
 	iter := s.Session.Query(b.String(), args...).
@@ -150,14 +150,14 @@ func (s Store) FetchManyTemplate(ctx context.Context, f entity.FilterTemplate) (
 
 	scanner := iter.Scanner()
 
-	ts := make([]entity.Template, f.Size)
+	ts := make([]entity.Spawn, f.Size)
 
 	var i int
 
 	for ; scanner.Next(); i++ {
 		if err := scanner.Scan(
 			&ts[i].EntityID,
-			&ts[i].Name,
+			&ts[i].SpawnID,
 		); err != nil {
 			return nil, nil, err
 		}
@@ -170,11 +170,11 @@ func (s Store) FetchManyTemplate(ctx context.Context, f entity.FilterTemplate) (
 	return ts[:i], state, nil
 }
 
-func (s Store) DeleteTemplate(ctx context.Context, f entity.FilterTemplate) error {
+func (s Store) DeleteSpawn(ctx context.Context, f entity.FilterSpawn) error {
 	b := strings.Builder{}
-	b.WriteString(`DELETE FROM main.entity_template `)
+	b.WriteString(`DELETE FROM main.entity_spawn `)
 
-	clause, args := filterTemplate(f).where()
+	clause, args := filterSpawn(f).where()
 	b.WriteString(clause)
 
 	q := s.Session.Query(b.String(), args...).WithContext(ctx)

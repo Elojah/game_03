@@ -82,6 +82,7 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
+	// #Create entity from template
 	template, err := h.entity.FetchTemplate(ctx, entity.FilterTemplate{
 		Name: &req.EntityTemplate,
 	})
@@ -100,8 +101,9 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
+	// #Create entity animations
 	ans, _, err := h.entity.FetchManyAnimation(ctx, entity.FilterAnimation{
-		EntityID: template.ID,
+		EntityID: template.EntityID,
 		Size:     maxAnimations,
 	})
 	if err != nil {
@@ -111,7 +113,7 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 	}
 
 	if len(ans) == 0 {
-		err := gerrors.ErrMissingDefaultAnimations{EntityID: template.ID.String()}
+		err := gerrors.ErrMissingDefaultAnimations{EntityID: template.EntityID.String()}
 
 		logger.Error().Err(err).Msg("missing animation")
 
@@ -136,6 +138,26 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 
 			return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
 		}
+	}
+
+	// #Create entity spawn
+
+	// Fetch first spawn in world
+	// TODO: pick algo + pick(create ?) ownerID
+	sp, err := h.room.FetchWorldSpawn(ctx, room.FilterWorldSpawn{WorldID: ro.WorldID})
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to fetch world spawn")
+
+		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
+	if err := h.entity.InsertSpawn(ctx, entity.Spawn{
+		EntityID: entityID,
+		SpawnID:  sp.ID,
+	}); err != nil {
+		logger.Error().Err(err).Msg("failed to create entity spawn")
+
+		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
 	// #Insert entity backup

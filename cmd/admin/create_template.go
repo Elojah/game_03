@@ -43,7 +43,6 @@ func (h *handler) CreateTemplate(ctx context.Context, req *dto.CreateTemplateReq
 	}
 
 	t := entity.Template{
-		ID:       ulid.NewID(),
 		EntityID: e.ID,
 		Name:     req.Name,
 	}

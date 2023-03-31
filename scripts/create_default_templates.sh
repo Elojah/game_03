@@ -67,11 +67,13 @@ grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '{"Name": 
 		{"X": 63, "Y": 10, "Width": 20, "Height": 63},
 		{"X": -35, "Y": -66, "Width": 98, "Height": 3},
 		{"X": -80, "Y": -18, "Width": 3, "Height": 70},
-		{"X": -80, "Y": -32, "Width": 24, "Height": 24},
+		{"X": -80, "Y": -38, "Width": 24, "Height": 24},
 		{"X": -80, "Y": 52, "Width": 24, "Height": 24},
 		{"X": 107, "Y": -18, "Width": 3, "Height": 70},
-		{"X": 83, "Y": -32, "Width": 24, "Height": 24},
-		{"X": 83, "Y": 52, "Width": 24, "Height": 24},
+		{"X": 86, "Y": -38, "Width": 24, "Height": 24},
+		{"X": 86, "Y": 52, "Width": 24, "Height": 24},
+		{"X": 64, "Y": 76, "Width": 24, "Height": 24},
+		{"X": -56, "Y": 76, "Width": 24, "Height": 24},
 		{"X": -33, "Y": 90, "Width": 1, "Height": 63},
 		{"X": 61, "Y": 90, "Width": 1, "Height": 63}
 ]}}' -plaintext localhost:4282 grpc.Admin/CreateTemplate

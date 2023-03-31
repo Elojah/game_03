@@ -13,8 +13,6 @@ var _ entity.StoreBackup = (*Store)(nil)
 
 var _ entity.StorePC = (*Store)(nil)
 
-var _ entity.StoreNPC = (*Store)(nil)
-
 type Store struct {
 	scylla.Service
 }

@@ -45,6 +45,6 @@ type App interface {
 	StoreAnimation
 	StoreBackup
 	StorePC
-	StoreNPC
 	StoreTemplate
+	StoreSpawn
 }

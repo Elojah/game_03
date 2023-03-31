@@ -24,6 +24,11 @@ func NewID() ID {
 	return ID(ulid.MustNew(ulid.Timestamp(time.Now()), rand.Reader).Bytes())
 }
 
+// NewZeroID returns a new zero ID.
+func NewZeroID() ID {
+	return make(ID, length)
+}
+
 // MarshalCQL override marshalling to fit CQL UUID.
 func (id ID) MarshalCQL(info gocql.TypeInfo) ([]byte, error) {
 	if len(id) != length {

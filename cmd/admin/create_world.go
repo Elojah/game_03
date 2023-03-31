@@ -146,7 +146,7 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 			// assign cell id to waypoints
 			wps := wi.Waypoints(rect, c.ID)
 
-			if err := h.room.PopulateWaypoints(ctx, wps); err != nil {
+			if err := h.room.PopulateWaypoints(ctx, wps, w.ID); err != nil {
 				logger.Error().Err(err).Msg("failed to populate waypoints")
 
 				return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()

@@ -10,7 +10,7 @@ type App struct {
 	entity.Store
 	entity.StoreAnimation
 	entity.StoreBackup
-	entity.StoreNPC
 	entity.StorePC
 	entity.StoreTemplate
+	entity.StoreSpawn
 }
