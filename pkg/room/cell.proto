@@ -13,6 +13,18 @@ option (gogoproto.goproto_registration) = true;
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
+enum Orientation {
+	None      = 0;
+	Up        = 1;
+	UpRight   = 2;
+	Right     = 3;
+	DownRight = 4;
+	Down      = 5;
+	DownLeft  = 6;
+	Left      = 7;
+	UpLeft    = 8;
+}
+
 message Cell {
     bytes ID                     = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
     map<int32, bytes> Contiguous = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];

@@ -6,20 +6,6 @@ import (
 	"github.com/elojah/game_03/pkg/ulid"
 )
 
-type Orientation int32
-
-const (
-	None Orientation = iota
-	Up
-	UpRight
-	Right
-	DownRight
-	Down
-	DownLeft
-	Left
-	UpLeft
-)
-
 type FilterWorldCell struct {
 	WorldID ulid.ID
 	X       int64

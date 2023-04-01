@@ -26,23 +26,8 @@ import * as WorldDTO from 'pkg/room/dto/world_pb';
 
 const entitySpriteDepth = 42
 
-enum Orientation {
-	None = 0,
-	Up,
-	UpRight,
-	Right,
-	DownRight,
-	Down,
-	DownLeft,
-	Left,
-	UpLeft,
-}
-
-
-interface properties {
-	name: string
-	value: boolean
-}
+type valueof<T> = T[keyof T];
+type Orientation = valueof<Cell.OrientationMap>
 
 type BodyEntity = {
 	E: Entity.E
@@ -142,7 +127,7 @@ export class Game extends Scene {
 			E: e,
 			Body: this.physics.add.sprite(0, 0, ''),
 			Animations: new Map(),
-			Orientation: Orientation.Down
+			Orientation: Cell.Orientation.DOWN
 		}
 		this.EntityID = ulid(this.Entity.E.getId_asU8())
 
@@ -207,7 +192,7 @@ export class Game extends Scene {
 					}).then(() => {
 						return this.loadBackground()
 					}).then(() => {
-						return this.loadMap(Orientation.None)
+						return this.loadMap(Cell.Orientation.NONE)
 					})
 					.then(() => {
 						this.load.start()
@@ -236,35 +221,35 @@ export class Game extends Scene {
 		if (this.Cursors.up.isDown) {
 			animationID = this.Entity.Animations.get('walk_up')
 			this.Entity.Body.body.setVelocityY(-speed)
-			this.Entity.Orientation = Orientation.Up
+			this.Entity.Orientation = Cell.Orientation.UP
 		} else if (this.Cursors.down.isDown) {
 			animationID = this.Entity.Animations.get('walk_down')
 			this.Entity.Body.body.setVelocityY(speed)
-			this.Entity.Orientation = Orientation.Down
+			this.Entity.Orientation = Cell.Orientation.DOWN
 		}
 
 		if (this.Cursors.right.isDown) {
 			animationID = this.Entity.Animations.get('walk_right')
 			this.Entity.Body.body.setVelocityX(speed)
-			this.Entity.Orientation = Orientation.Right
+			this.Entity.Orientation = Cell.Orientation.RIGHT
 		} else if (this.Cursors.left.isDown) {
 			animationID = this.Entity.Animations.get('walk_left')
 			this.Entity.Body.body.setVelocityX(-speed)
-			this.Entity.Orientation = Orientation.Left
+			this.Entity.Orientation = Cell.Orientation.LEFT
 		}
 
 		if (!animationID) {
 			switch (this.Entity.Orientation) {
-				case Orientation.Up:
+				case Cell.Orientation.UP:
 					animationID = this.Entity.Animations.get('idle_up')
 					break
-				case Orientation.Right:
+				case Cell.Orientation.RIGHT:
 					animationID = this.Entity.Animations.get('idle_right')
 					break
-				case Orientation.Down:
+				case Cell.Orientation.DOWN:
 					animationID = this.Entity.Animations.get('idle_down')
 					break
-				case Orientation.Left:
+				case Cell.Orientation.LEFT:
 					animationID = this.Entity.Animations.get('idle_left')
 					break
 			}
@@ -298,41 +283,41 @@ export class Game extends Scene {
 		this.updateBodyEntity()
 		this.updateBackground()
 
-		let o = Orientation.None
+		let o: Orientation = Cell.Orientation.NONE
 		const x = this.Entity.Body.body.x
 		const y = this.Entity.Body.body.y
-		const up = this.Border.get(Orientation.Up)!
-		const right = this.Border.get(Orientation.Right)!
-		const down = this.Border.get(Orientation.Down)!
-		const left = this.Border.get(Orientation.Left)!
+		const up = this.Border.get(Cell.Orientation.UP)!
+		const right = this.Border.get(Cell.Orientation.RIGHT)!
+		const down = this.Border.get(Cell.Orientation.DOWN)!
+		const left = this.Border.get(Cell.Orientation.LEFT)!
 
 		if (y < up) {
 			if (x < left) {
-				o = Orientation.UpLeft
+				o = Cell.Orientation.UPLEFT
 			} else if (x < right) {
-				o = Orientation.Up
+				o = Cell.Orientation.UP
 			} else {
-				o = Orientation.UpRight
+				o = Cell.Orientation.UPRIGHT
 			}
 		} else if (y < down) {
 			if (x < left) {
-				o = Orientation.Left
+				o = Cell.Orientation.LEFT
 			} else if (x < right) {
-				o = Orientation.None
+				o = Cell.Orientation.NONE
 			} else {
-				o = Orientation.Right
+				o = Cell.Orientation.RIGHT
 			}
 		} else {
 			if (x < left) {
-				o = Orientation.DownLeft
+				o = Cell.Orientation.DOWNLEFT
 			} else if (x < right) {
-				o = Orientation.Down
+				o = Cell.Orientation.DOWN
 			} else {
-				o = Orientation.DownRight
+				o = Cell.Orientation.DOWNRIGHT
 			}
 		}
 
-		if (o != Orientation.None && this.Loading == undefined) {
+		if (o != Cell.Orientation.NONE && this.Loading == undefined) {
 			const id = this.Cells.get(o)?.Cell.getId_asU8()
 			this.Loading = id
 
@@ -391,7 +376,7 @@ export class Game extends Scene {
 	}
 
 	// Orientation o uses preload surrounded cells
-	// Orientation.None loads everything
+	// Cell.Orientation.NONE loads everything
 	async loadMap(o: Orientation) {
 		// call current pc cell
 		return this.listCell((() => {
@@ -414,23 +399,23 @@ export class Game extends Scene {
 				let deletedCells: GraphicCell[] = []
 
 				switch (o) {
-					case Orientation.None:
+					case Cell.Orientation.NONE:
 						// assign new cells to load
 						newCellIDs.push(
-							contig.get(Orientation.Up)!,
-							contig.get(Orientation.UpRight)!,
-							contig.get(Orientation.Right)!,
-							contig.get(Orientation.DownRight)!,
-							contig.get(Orientation.Down)!,
-							contig.get(Orientation.DownLeft)!,
-							contig.get(Orientation.Left)!,
-							contig.get(Orientation.UpLeft)!,
+							contig.get(Cell.Orientation.UP)!,
+							contig.get(Cell.Orientation.UPRIGHT)!,
+							contig.get(Cell.Orientation.RIGHT)!,
+							contig.get(Cell.Orientation.DOWNRIGHT)!,
+							contig.get(Cell.Orientation.DOWN)!,
+							contig.get(Cell.Orientation.DOWNLEFT)!,
+							contig.get(Cell.Orientation.LEFT)!,
+							contig.get(Cell.Orientation.UPLEFT)!,
 						)
 
 						// assign cells to delete
 						// deletedCells.push()
 						// create new blank graphic cell from loaded cell
-						this.Cells.set(Orientation.None, {
+						this.Cells.set(Cell.Orientation.NONE, {
 							Cell: c,
 							Tilemap: this.Blank.Tilemap,
 							Layers: this.Blank.Layers,
@@ -438,239 +423,239 @@ export class Game extends Scene {
 							Objects: this.Blank.Objects
 						})
 
-						this.Cells.delete(Orientation.Up)
-						this.Cells.delete(Orientation.UpRight)
-						this.Cells.delete(Orientation.Right)
-						this.Cells.delete(Orientation.DownRight)
-						this.Cells.delete(Orientation.Down)
-						this.Cells.delete(Orientation.DownLeft)
-						this.Cells.delete(Orientation.Left)
-						this.Cells.delete(Orientation.UpLeft)
+						this.Cells.delete(Cell.Orientation.UP)
+						this.Cells.delete(Cell.Orientation.UPRIGHT)
+						this.Cells.delete(Cell.Orientation.RIGHT)
+						this.Cells.delete(Cell.Orientation.DOWNRIGHT)
+						this.Cells.delete(Cell.Orientation.DOWN)
+						this.Cells.delete(Cell.Orientation.DOWNLEFT)
+						this.Cells.delete(Cell.Orientation.LEFT)
+						this.Cells.delete(Cell.Orientation.UPLEFT)
 						break;
-					case Orientation.Up:
+					case Cell.Orientation.UP:
 						// assign new cells to load
 						newCellIDs.push(
-							contig.get(Orientation.UpLeft)!,
-							contig.get(Orientation.Up)!,
-							contig.get(Orientation.UpRight)!,
+							contig.get(Cell.Orientation.UPLEFT)!,
+							contig.get(Cell.Orientation.UP)!,
+							contig.get(Cell.Orientation.UPRIGHT)!,
 						)
 
 						// assign cells to delete
 						deletedCells.push(
-							this.Cells.get(Orientation.DownLeft)!,
-							this.Cells.get(Orientation.Down)!,
-							this.Cells.get(Orientation.DownRight)!,
+							this.Cells.get(Cell.Orientation.DOWNLEFT)!,
+							this.Cells.get(Cell.Orientation.DOWN)!,
+							this.Cells.get(Cell.Orientation.DOWNRIGHT)!,
 						)
 						// shift preloaded
-						this.Cells.set(Orientation.DownLeft, this.Cells.get(Orientation.Left)!)
-						this.Cells.set(Orientation.Down, this.Cells.get(Orientation.None)!)
-						this.Cells.set(Orientation.DownRight, this.Cells.get(Orientation.Right)!)
-						this.Cells.set(Orientation.Left, this.Cells.get(Orientation.UpLeft)!)
-						this.Cells.set(Orientation.None, this.Cells.get(Orientation.Up)!)
-						this.Cells.set(Orientation.Right, this.Cells.get(Orientation.UpRight)!)
-						this.Cells.delete(Orientation.UpLeft)
-						this.Cells.delete(Orientation.Up)
-						this.Cells.delete(Orientation.UpRight)
+						this.Cells.set(Cell.Orientation.DOWNLEFT, this.Cells.get(Cell.Orientation.LEFT)!)
+						this.Cells.set(Cell.Orientation.DOWN, this.Cells.get(Cell.Orientation.NONE)!)
+						this.Cells.set(Cell.Orientation.DOWNRIGHT, this.Cells.get(Cell.Orientation.RIGHT)!)
+						this.Cells.set(Cell.Orientation.LEFT, this.Cells.get(Cell.Orientation.UPLEFT)!)
+						this.Cells.set(Cell.Orientation.NONE, this.Cells.get(Cell.Orientation.UP)!)
+						this.Cells.set(Cell.Orientation.RIGHT, this.Cells.get(Cell.Orientation.UPRIGHT)!)
+						this.Cells.delete(Cell.Orientation.UPLEFT)
+						this.Cells.delete(Cell.Orientation.UP)
+						this.Cells.delete(Cell.Orientation.UPRIGHT)
 						break;
-					case Orientation.UpRight:
+					case Cell.Orientation.UPRIGHT:
 						// assign new cells to load
 						newCellIDs.push(
-							contig.get(Orientation.UpLeft)!,
-							contig.get(Orientation.Up)!,
-							contig.get(Orientation.UpRight)!,
-							contig.get(Orientation.Right)!,
-							contig.get(Orientation.DownRight)!,
+							contig.get(Cell.Orientation.UPLEFT)!,
+							contig.get(Cell.Orientation.UP)!,
+							contig.get(Cell.Orientation.UPRIGHT)!,
+							contig.get(Cell.Orientation.RIGHT)!,
+							contig.get(Cell.Orientation.DOWNRIGHT)!,
 						)
 
 						// assign cells to delete
 						deletedCells.push(
-							this.Cells.get(Orientation.UpLeft)!,
-							this.Cells.get(Orientation.Left)!,
-							this.Cells.get(Orientation.DownLeft)!,
-							this.Cells.get(Orientation.Down)!,
-							this.Cells.get(Orientation.DownRight)!,
+							this.Cells.get(Cell.Orientation.UPLEFT)!,
+							this.Cells.get(Cell.Orientation.LEFT)!,
+							this.Cells.get(Cell.Orientation.DOWNLEFT)!,
+							this.Cells.get(Cell.Orientation.DOWN)!,
+							this.Cells.get(Cell.Orientation.DOWNRIGHT)!,
 						)
 						// shift preloaded
-						this.Cells.set(Orientation.Left, this.Cells.get(Orientation.Up)!)
-						this.Cells.set(Orientation.DownLeft, this.Cells.get(Orientation.None)!)
-						this.Cells.set(Orientation.Down, this.Cells.get(Orientation.Right)!)
-						this.Cells.set(Orientation.None, this.Cells.get(Orientation.UpRight)!)
-						this.Cells.delete(Orientation.UpLeft)
-						this.Cells.delete(Orientation.Up)
-						this.Cells.delete(Orientation.UpRight)
-						this.Cells.delete(Orientation.Right)
-						this.Cells.delete(Orientation.DownRight)
+						this.Cells.set(Cell.Orientation.LEFT, this.Cells.get(Cell.Orientation.UP)!)
+						this.Cells.set(Cell.Orientation.DOWNLEFT, this.Cells.get(Cell.Orientation.NONE)!)
+						this.Cells.set(Cell.Orientation.DOWN, this.Cells.get(Cell.Orientation.RIGHT)!)
+						this.Cells.set(Cell.Orientation.NONE, this.Cells.get(Cell.Orientation.UPRIGHT)!)
+						this.Cells.delete(Cell.Orientation.UPLEFT)
+						this.Cells.delete(Cell.Orientation.UP)
+						this.Cells.delete(Cell.Orientation.UPRIGHT)
+						this.Cells.delete(Cell.Orientation.RIGHT)
+						this.Cells.delete(Cell.Orientation.DOWNRIGHT)
 						break;
-					case Orientation.Right:
+					case Cell.Orientation.RIGHT:
 						// assign new cells to load
 						newCellIDs.push(
-							contig.get(Orientation.UpRight)!,
-							contig.get(Orientation.Right)!,
-							contig.get(Orientation.DownRight)!
+							contig.get(Cell.Orientation.UPRIGHT)!,
+							contig.get(Cell.Orientation.RIGHT)!,
+							contig.get(Cell.Orientation.DOWNRIGHT)!
 						)
 
 						// assign cells to delete
 						deletedCells.push(
-							this.Cells.get(Orientation.UpLeft)!,
-							this.Cells.get(Orientation.Left)!,
-							this.Cells.get(Orientation.DownLeft)!,
+							this.Cells.get(Cell.Orientation.UPLEFT)!,
+							this.Cells.get(Cell.Orientation.LEFT)!,
+							this.Cells.get(Cell.Orientation.DOWNLEFT)!,
 						)
 						// shift preloaded
-						this.Cells.set(Orientation.UpLeft, this.Cells.get(Orientation.Up)!)
-						this.Cells.set(Orientation.Left, this.Cells.get(Orientation.None)!)
-						this.Cells.set(Orientation.DownLeft, this.Cells.get(Orientation.Down)!)
-						this.Cells.set(Orientation.Up, this.Cells.get(Orientation.UpRight)!)
-						this.Cells.set(Orientation.None, this.Cells.get(Orientation.Right)!)
-						this.Cells.set(Orientation.Down, this.Cells.get(Orientation.DownRight)!)
-						this.Cells.delete(Orientation.UpRight)
-						this.Cells.delete(Orientation.Right)
-						this.Cells.delete(Orientation.DownRight)
+						this.Cells.set(Cell.Orientation.UPLEFT, this.Cells.get(Cell.Orientation.UP)!)
+						this.Cells.set(Cell.Orientation.LEFT, this.Cells.get(Cell.Orientation.NONE)!)
+						this.Cells.set(Cell.Orientation.DOWNLEFT, this.Cells.get(Cell.Orientation.DOWN)!)
+						this.Cells.set(Cell.Orientation.UP, this.Cells.get(Cell.Orientation.UPRIGHT)!)
+						this.Cells.set(Cell.Orientation.NONE, this.Cells.get(Cell.Orientation.RIGHT)!)
+						this.Cells.set(Cell.Orientation.DOWN, this.Cells.get(Cell.Orientation.DOWNRIGHT)!)
+						this.Cells.delete(Cell.Orientation.UPRIGHT)
+						this.Cells.delete(Cell.Orientation.RIGHT)
+						this.Cells.delete(Cell.Orientation.DOWNRIGHT)
 						break;
-					case Orientation.DownRight:
+					case Cell.Orientation.DOWNRIGHT:
 						// assign new cells to load
 						newCellIDs.push(
-							contig.get(Orientation.DownLeft)!,
-							contig.get(Orientation.Down)!,
-							contig.get(Orientation.DownRight)!,
-							contig.get(Orientation.Right)!,
-							contig.get(Orientation.UpRight)!,
+							contig.get(Cell.Orientation.DOWNLEFT)!,
+							contig.get(Cell.Orientation.DOWN)!,
+							contig.get(Cell.Orientation.DOWNRIGHT)!,
+							contig.get(Cell.Orientation.RIGHT)!,
+							contig.get(Cell.Orientation.UPRIGHT)!,
 						)
 
 						// assign cells to delete
 						deletedCells.push(
-							this.Cells.get(Orientation.UpLeft)!,
-							this.Cells.get(Orientation.Left)!,
-							this.Cells.get(Orientation.DownLeft)!,
-							this.Cells.get(Orientation.Up)!,
-							this.Cells.get(Orientation.UpRight)!,
+							this.Cells.get(Cell.Orientation.UPLEFT)!,
+							this.Cells.get(Cell.Orientation.LEFT)!,
+							this.Cells.get(Cell.Orientation.DOWNLEFT)!,
+							this.Cells.get(Cell.Orientation.UP)!,
+							this.Cells.get(Cell.Orientation.UPRIGHT)!,
 						)
 						// shift preloaded
-						this.Cells.set(Orientation.Left, this.Cells.get(Orientation.Down)!)
-						this.Cells.set(Orientation.UpLeft, this.Cells.get(Orientation.None)!)
-						this.Cells.set(Orientation.Up, this.Cells.get(Orientation.Right)!)
-						this.Cells.set(Orientation.None, this.Cells.get(Orientation.DownRight)!)
-						this.Cells.delete(Orientation.DownLeft)
-						this.Cells.delete(Orientation.Down)
-						this.Cells.delete(Orientation.DownRight)
-						this.Cells.delete(Orientation.Right)
-						this.Cells.delete(Orientation.UpRight)
+						this.Cells.set(Cell.Orientation.LEFT, this.Cells.get(Cell.Orientation.DOWN)!)
+						this.Cells.set(Cell.Orientation.UPLEFT, this.Cells.get(Cell.Orientation.NONE)!)
+						this.Cells.set(Cell.Orientation.UP, this.Cells.get(Cell.Orientation.RIGHT)!)
+						this.Cells.set(Cell.Orientation.NONE, this.Cells.get(Cell.Orientation.DOWNRIGHT)!)
+						this.Cells.delete(Cell.Orientation.DOWNLEFT)
+						this.Cells.delete(Cell.Orientation.DOWN)
+						this.Cells.delete(Cell.Orientation.DOWNRIGHT)
+						this.Cells.delete(Cell.Orientation.RIGHT)
+						this.Cells.delete(Cell.Orientation.UPRIGHT)
 						break;
-					case Orientation.Down:
+					case Cell.Orientation.DOWN:
 						// assign new cells to load
 						newCellIDs.push(
-							contig.get(Orientation.DownLeft)!,
-							contig.get(Orientation.Down)!,
-							contig.get(Orientation.DownRight)!,
+							contig.get(Cell.Orientation.DOWNLEFT)!,
+							contig.get(Cell.Orientation.DOWN)!,
+							contig.get(Cell.Orientation.DOWNRIGHT)!,
 						)
 
 						// assign cells to delete
 						deletedCells.push(
-							this.Cells.get(Orientation.UpLeft)!,
-							this.Cells.get(Orientation.Up)!,
-							this.Cells.get(Orientation.UpRight)!,
+							this.Cells.get(Cell.Orientation.UPLEFT)!,
+							this.Cells.get(Cell.Orientation.UP)!,
+							this.Cells.get(Cell.Orientation.UPRIGHT)!,
 						)
 						// shift preloaded
-						this.Cells.set(Orientation.UpLeft, this.Cells.get(Orientation.Left)!)
-						this.Cells.set(Orientation.Up, this.Cells.get(Orientation.None)!)
-						this.Cells.set(Orientation.UpRight, this.Cells.get(Orientation.Right)!)
-						this.Cells.set(Orientation.Left, this.Cells.get(Orientation.DownLeft)!)
-						this.Cells.set(Orientation.None, this.Cells.get(Orientation.Down)!)
-						this.Cells.set(Orientation.Right, this.Cells.get(Orientation.DownRight)!)
-						this.Cells.delete(Orientation.DownLeft)
-						this.Cells.delete(Orientation.Down)
-						this.Cells.delete(Orientation.DownRight)
+						this.Cells.set(Cell.Orientation.UPLEFT, this.Cells.get(Cell.Orientation.LEFT)!)
+						this.Cells.set(Cell.Orientation.UP, this.Cells.get(Cell.Orientation.NONE)!)
+						this.Cells.set(Cell.Orientation.UPRIGHT, this.Cells.get(Cell.Orientation.RIGHT)!)
+						this.Cells.set(Cell.Orientation.LEFT, this.Cells.get(Cell.Orientation.DOWNLEFT)!)
+						this.Cells.set(Cell.Orientation.NONE, this.Cells.get(Cell.Orientation.DOWN)!)
+						this.Cells.set(Cell.Orientation.RIGHT, this.Cells.get(Cell.Orientation.DOWNRIGHT)!)
+						this.Cells.delete(Cell.Orientation.DOWNLEFT)
+						this.Cells.delete(Cell.Orientation.DOWN)
+						this.Cells.delete(Cell.Orientation.DOWNRIGHT)
 						break;
-					case Orientation.DownLeft:
+					case Cell.Orientation.DOWNLEFT:
 						// assign new cells to load
 						newCellIDs.push(
-							contig.get(Orientation.DownRight)!,
-							contig.get(Orientation.Down)!,
-							contig.get(Orientation.DownLeft)!,
-							contig.get(Orientation.Left)!,
-							contig.get(Orientation.UpLeft)!,
+							contig.get(Cell.Orientation.DOWNRIGHT)!,
+							contig.get(Cell.Orientation.DOWN)!,
+							contig.get(Cell.Orientation.DOWNLEFT)!,
+							contig.get(Cell.Orientation.LEFT)!,
+							contig.get(Cell.Orientation.UPLEFT)!,
 						)
 
 						// assign cells to delete
 						deletedCells.push(
-							this.Cells.get(Orientation.UpLeft)!,
-							this.Cells.get(Orientation.Up)!,
-							this.Cells.get(Orientation.UpRight)!,
-							this.Cells.get(Orientation.Right)!,
-							this.Cells.get(Orientation.DownRight)!,
+							this.Cells.get(Cell.Orientation.UPLEFT)!,
+							this.Cells.get(Cell.Orientation.UP)!,
+							this.Cells.get(Cell.Orientation.UPRIGHT)!,
+							this.Cells.get(Cell.Orientation.RIGHT)!,
+							this.Cells.get(Cell.Orientation.DOWNRIGHT)!,
 						)
 						// shift preloaded
-						this.Cells.set(Orientation.Right, this.Cells.get(Orientation.Down)!)
-						this.Cells.set(Orientation.UpRight, this.Cells.get(Orientation.None)!)
-						this.Cells.set(Orientation.Up, this.Cells.get(Orientation.Left)!)
-						this.Cells.set(Orientation.None, this.Cells.get(Orientation.DownLeft)!)
-						this.Cells.delete(Orientation.DownRight)
-						this.Cells.delete(Orientation.Down)
-						this.Cells.delete(Orientation.DownLeft)
-						this.Cells.delete(Orientation.Left)
-						this.Cells.delete(Orientation.UpLeft)
+						this.Cells.set(Cell.Orientation.RIGHT, this.Cells.get(Cell.Orientation.DOWN)!)
+						this.Cells.set(Cell.Orientation.UPRIGHT, this.Cells.get(Cell.Orientation.NONE)!)
+						this.Cells.set(Cell.Orientation.UP, this.Cells.get(Cell.Orientation.LEFT)!)
+						this.Cells.set(Cell.Orientation.NONE, this.Cells.get(Cell.Orientation.DOWNLEFT)!)
+						this.Cells.delete(Cell.Orientation.DOWNRIGHT)
+						this.Cells.delete(Cell.Orientation.DOWN)
+						this.Cells.delete(Cell.Orientation.DOWNLEFT)
+						this.Cells.delete(Cell.Orientation.LEFT)
+						this.Cells.delete(Cell.Orientation.UPLEFT)
 						break;
-					case Orientation.Left:
+					case Cell.Orientation.LEFT:
 						// assign new cells to load
 						newCellIDs.push(
-							contig.get(Orientation.UpLeft)!,
-							contig.get(Orientation.Left)!,
-							contig.get(Orientation.DownLeft)!,
+							contig.get(Cell.Orientation.UPLEFT)!,
+							contig.get(Cell.Orientation.LEFT)!,
+							contig.get(Cell.Orientation.DOWNLEFT)!,
 						)
 
 						// assign cells to delete
 						deletedCells.push(
-							this.Cells.get(Orientation.UpRight)!,
-							this.Cells.get(Orientation.Right)!,
-							this.Cells.get(Orientation.DownRight)!,
+							this.Cells.get(Cell.Orientation.UPRIGHT)!,
+							this.Cells.get(Cell.Orientation.RIGHT)!,
+							this.Cells.get(Cell.Orientation.DOWNRIGHT)!,
 						)
 						// shift preloaded
-						this.Cells.set(Orientation.UpRight, this.Cells.get(Orientation.Up)!)
-						this.Cells.set(Orientation.Right, this.Cells.get(Orientation.None)!)
-						this.Cells.set(Orientation.DownRight, this.Cells.get(Orientation.Down)!)
-						this.Cells.set(Orientation.Up, this.Cells.get(Orientation.UpLeft)!)
-						this.Cells.set(Orientation.None, this.Cells.get(Orientation.Left)!)
-						this.Cells.set(Orientation.Down, this.Cells.get(Orientation.DownLeft)!)
-						this.Cells.delete(Orientation.UpLeft)
-						this.Cells.delete(Orientation.Left)
-						this.Cells.delete(Orientation.DownLeft)
+						this.Cells.set(Cell.Orientation.UPRIGHT, this.Cells.get(Cell.Orientation.UP)!)
+						this.Cells.set(Cell.Orientation.RIGHT, this.Cells.get(Cell.Orientation.NONE)!)
+						this.Cells.set(Cell.Orientation.DOWNRIGHT, this.Cells.get(Cell.Orientation.DOWN)!)
+						this.Cells.set(Cell.Orientation.UP, this.Cells.get(Cell.Orientation.UPLEFT)!)
+						this.Cells.set(Cell.Orientation.NONE, this.Cells.get(Cell.Orientation.LEFT)!)
+						this.Cells.set(Cell.Orientation.DOWN, this.Cells.get(Cell.Orientation.DOWNLEFT)!)
+						this.Cells.delete(Cell.Orientation.UPLEFT)
+						this.Cells.delete(Cell.Orientation.LEFT)
+						this.Cells.delete(Cell.Orientation.DOWNLEFT)
 						break;
-					case Orientation.UpLeft:
+					case Cell.Orientation.UPLEFT:
 						// assign new cells to load
 						newCellIDs.push(
-							contig.get(Orientation.UpRight)!,
-							contig.get(Orientation.Up)!,
-							contig.get(Orientation.UpLeft)!,
-							contig.get(Orientation.Left)!,
-							contig.get(Orientation.DownLeft)!,
+							contig.get(Cell.Orientation.UPRIGHT)!,
+							contig.get(Cell.Orientation.UP)!,
+							contig.get(Cell.Orientation.UPLEFT)!,
+							contig.get(Cell.Orientation.LEFT)!,
+							contig.get(Cell.Orientation.DOWNLEFT)!,
 						)
 
 						// assign cells to delete
 						deletedCells.push(
-							this.Cells.get(Orientation.UpRight)!,
-							this.Cells.get(Orientation.Right)!,
-							this.Cells.get(Orientation.DownRight)!,
-							this.Cells.get(Orientation.Down)!,
-							this.Cells.get(Orientation.DownLeft)!,
+							this.Cells.get(Cell.Orientation.UPRIGHT)!,
+							this.Cells.get(Cell.Orientation.RIGHT)!,
+							this.Cells.get(Cell.Orientation.DOWNRIGHT)!,
+							this.Cells.get(Cell.Orientation.DOWN)!,
+							this.Cells.get(Cell.Orientation.DOWNLEFT)!,
 						)
 						// shift preloaded
-						this.Cells.set(Orientation.Right, this.Cells.get(Orientation.Up)!)
-						this.Cells.set(Orientation.DownRight, this.Cells.get(Orientation.None)!)
-						this.Cells.set(Orientation.Down, this.Cells.get(Orientation.Left)!)
-						this.Cells.set(Orientation.None, this.Cells.get(Orientation.UpLeft)!)
-						this.Cells.delete(Orientation.UpRight)
-						this.Cells.delete(Orientation.Up)
-						this.Cells.delete(Orientation.UpLeft)
-						this.Cells.delete(Orientation.Left)
-						this.Cells.delete(Orientation.DownLeft)
+						this.Cells.set(Cell.Orientation.RIGHT, this.Cells.get(Cell.Orientation.UP)!)
+						this.Cells.set(Cell.Orientation.DOWNRIGHT, this.Cells.get(Cell.Orientation.NONE)!)
+						this.Cells.set(Cell.Orientation.DOWN, this.Cells.get(Cell.Orientation.LEFT)!)
+						this.Cells.set(Cell.Orientation.NONE, this.Cells.get(Cell.Orientation.UPLEFT)!)
+						this.Cells.delete(Cell.Orientation.UPRIGHT)
+						this.Cells.delete(Cell.Orientation.UP)
+						this.Cells.delete(Cell.Orientation.UPLEFT)
+						this.Cells.delete(Cell.Orientation.LEFT)
+						this.Cells.delete(Cell.Orientation.DOWNLEFT)
 						break;
 				}
 
 				// update border after none cell is up to date
-				const cn = this.Cells.get(Orientation.None)!
-				this.Border.set(Orientation.Up, cn.Cell.getY() * this.World.getCellheight())
-				this.Border.set(Orientation.Right, (cn.Cell.getX() + 1) * this.World.getCellwidth())
-				this.Border.set(Orientation.Down, (cn.Cell.getY() + 1) * this.World.getCellheight())
-				this.Border.set(Orientation.Left, cn.Cell.getX() * this.World.getCellwidth())
+				const cn = this.Cells.get(Cell.Orientation.NONE)!
+				this.Border.set(Cell.Orientation.UP, cn.Cell.getY() * this.World.getCellheight())
+				this.Border.set(Cell.Orientation.RIGHT, (cn.Cell.getX() + 1) * this.World.getCellwidth())
+				this.Border.set(Cell.Orientation.DOWN, (cn.Cell.getY() + 1) * this.World.getCellheight())
+				this.Border.set(Cell.Orientation.LEFT, cn.Cell.getX() * this.World.getCellwidth())
 
 				this.cleanCells(deletedCells).then(() => { console.log('finish to destroy unused tilemaps') })
 
@@ -697,94 +682,94 @@ export class Game extends Scene {
 				cells.getCellsList().map((v) => {
 					cellMap.set(ulid(v.getId_asU8()), v)
 				})
-				if (o == Orientation.None) {
-					const c = this.Cells.get(Orientation.None)!
+				if (o == Cell.Orientation.NONE) {
+					const c = this.Cells.get(Cell.Orientation.NONE)!
 					cellMap.set(ulid(c?.Cell.getId_asU8()), c.Cell)
 				}
 
-				const contig = this.Cells.get(Orientation.None)?.Cell.getContiguousMap() as jspb.Map<number, Uint8Array>
-				if (o == Orientation.None) {
-					contig.set(Orientation.None, this.Cells.get(Orientation.None)?.Cell.getId_asU8()!)
+				const contig = this.Cells.get(Cell.Orientation.NONE)?.Cell.getContiguousMap() as jspb.Map<number, Uint8Array>
+				if (o == Cell.Orientation.NONE) {
+					contig.set(Cell.Orientation.NONE, this.Cells.get(Cell.Orientation.NONE)?.Cell.getId_asU8()!)
 				}
 
 				// must fit above loaded cells array
 				const loadedCells = new Array<Orientation>()
 				switch (o) {
-					case Orientation.None:
+					case Cell.Orientation.NONE:
 						loadedCells.push(
-							Orientation.None,
-							Orientation.Up,
-							Orientation.UpRight,
-							Orientation.Right,
-							Orientation.DownRight,
-							Orientation.Down,
-							Orientation.DownLeft,
-							Orientation.Left,
-							Orientation.UpLeft
+							Cell.Orientation.NONE,
+							Cell.Orientation.UP,
+							Cell.Orientation.UPRIGHT,
+							Cell.Orientation.RIGHT,
+							Cell.Orientation.DOWNRIGHT,
+							Cell.Orientation.DOWN,
+							Cell.Orientation.DOWNLEFT,
+							Cell.Orientation.LEFT,
+							Cell.Orientation.UPLEFT
 						)
 						break;
-					case Orientation.Up:
+					case Cell.Orientation.UP:
 						loadedCells.push(
-							Orientation.Up,
-							Orientation.UpRight,
-							Orientation.UpLeft
+							Cell.Orientation.UP,
+							Cell.Orientation.UPRIGHT,
+							Cell.Orientation.UPLEFT
 						)
 						break;
-					case Orientation.UpRight:
+					case Cell.Orientation.UPRIGHT:
 						loadedCells.push(
-							Orientation.Up,
-							Orientation.UpRight,
-							Orientation.Right,
-							Orientation.DownRight,
-							Orientation.UpLeft
+							Cell.Orientation.UP,
+							Cell.Orientation.UPRIGHT,
+							Cell.Orientation.RIGHT,
+							Cell.Orientation.DOWNRIGHT,
+							Cell.Orientation.UPLEFT
 						)
 						break;
-					case Orientation.Right:
+					case Cell.Orientation.RIGHT:
 						loadedCells.push(
-							Orientation.UpRight,
-							Orientation.Right,
-							Orientation.DownRight,
+							Cell.Orientation.UPRIGHT,
+							Cell.Orientation.RIGHT,
+							Cell.Orientation.DOWNRIGHT,
 						)
 						break;
-					case Orientation.DownRight:
+					case Cell.Orientation.DOWNRIGHT:
 						loadedCells.push(
-							Orientation.UpRight,
-							Orientation.Right,
-							Orientation.DownRight,
-							Orientation.Down,
-							Orientation.DownLeft,
+							Cell.Orientation.UPRIGHT,
+							Cell.Orientation.RIGHT,
+							Cell.Orientation.DOWNRIGHT,
+							Cell.Orientation.DOWN,
+							Cell.Orientation.DOWNLEFT,
 						)
 						break;
-					case Orientation.Down:
+					case Cell.Orientation.DOWN:
 						loadedCells.push(
-							Orientation.DownRight,
-							Orientation.Down,
-							Orientation.DownLeft,
+							Cell.Orientation.DOWNRIGHT,
+							Cell.Orientation.DOWN,
+							Cell.Orientation.DOWNLEFT,
 						)
 						break;
-					case Orientation.DownLeft:
+					case Cell.Orientation.DOWNLEFT:
 						loadedCells.push(
-							Orientation.DownRight,
-							Orientation.Down,
-							Orientation.DownLeft,
-							Orientation.Left,
-							Orientation.UpLeft
+							Cell.Orientation.DOWNRIGHT,
+							Cell.Orientation.DOWN,
+							Cell.Orientation.DOWNLEFT,
+							Cell.Orientation.LEFT,
+							Cell.Orientation.UPLEFT
 						)
 						break;
-					case Orientation.Left:
+					case Cell.Orientation.LEFT:
 						loadedCells.push(
-							Orientation.DownLeft,
-							Orientation.Left,
-							Orientation.UpLeft
+							Cell.Orientation.DOWNLEFT,
+							Cell.Orientation.LEFT,
+							Cell.Orientation.UPLEFT
 						)
 						break;
-					case Orientation.UpLeft:
+					case Cell.Orientation.UPLEFT:
 						loadedCells.push(
-							Orientation.Up,
-							Orientation.UpRight,
-							Orientation.DownLeft,
-							Orientation.Left,
-							Orientation.UpLeft
+							Cell.Orientation.UP,
+							Cell.Orientation.UPRIGHT,
+							Cell.Orientation.DOWNLEFT,
+							Cell.Orientation.LEFT,
+							Cell.Orientation.UPLEFT
 						)
 						break;
 				}

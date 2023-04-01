@@ -79,3 +79,17 @@ export namespace WorldCell {
   }
 }
 
+export interface OrientationMap {
+  NONE: 0;
+  UP: 1;
+  UPRIGHT: 2;
+  RIGHT: 3;
+  DOWNRIGHT: 4;
+  DOWN: 5;
+  DOWNLEFT: 6;
+  LEFT: 7;
+  UPLEFT: 8;
+}
+
+export const Orientation: OrientationMap;
+

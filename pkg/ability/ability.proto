@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+package ability;
+
+option (gogoproto.testgen_all)  = true;
+option (gogoproto.benchgen_all) = true;
+option (gogoproto.populate_all) = true;
+option (gogoproto.goproto_getters_all) = false;
+option (gogoproto.goproto_stringer_all) = false;
+option (gogoproto.goproto_unrecognized_all) = false;
+option (gogoproto.goproto_enum_prefix_all) = false;
+option (gogoproto.goproto_registration) = true;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+import "github.com/elojah/game_03/pkg/geometry/geometry.proto";
+
+
+// Target(s)/Area geom - entityID(s) + circle or rect(s)
+// Max range
+
+// debuff taunt ? lock target ?
+// clear debuff ? remove debuff ?
+
+// Buff/Debuff - Stat to change + Amount to change + Type
+   // + Cast time - duration
+   // + Mana cost - value
+   // + Cooldown - duration
+   // + Interrupt - boolean ?
+   // + Buff cost(consumption) - target
+   // + Damage/Heal - value + type + targets = Buff/Debuff on HP or shield
+   // + Dot/Hot - tick interval(s) + duration (Repeat type ?)
+   // + Snare/Stun/Slow - duration = Buff/Debuff on mov speed/cast speed ?
+   // + Move - origin: targets + dest: vec2(s) + type (teleport, push, knockback)
+
+enum Element {
+	Fire                          = 0;
+	Water                         = 1;
+	Air                           = 2;
+	Earth                         = 3;
+	Light                         = 4;
+	Dark                          = 5;
+	Time                          = 6;
+}
+
+message Target {
+    bytes ID                           = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+	geometry.Rect Rect                 = 2 [(gogoproto.nullable) = false];
+	geometry.Circle Circle             = 3 [(gogoproto.nullable) = false];
+}
+
+message Effect {
+	string Stat                        = 1;
+	int64 Value                        = 2;
+	Element Element                    = 3;
+
+	int64 TickRate                     = 4;
+	int64 Duration                     = 5;
+}
+
+message Component {
+	int64 CastTime                     = 1;
+	int64 ManaCost                     = 2;
+	int64 Cooldown                     = 3;
+
+	repeated Target Targets            = 4 [(gogoproto.nullable) = false];
+	repeated Effect Effects            = 5 [(gogoproto.nullable) = false];
+}
+
+message Ability {
+    bytes ID                           = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+	string Name                        = 2;
+
+	bytes Icon                         = 3 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+	bytes Animation                    = 4 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+
+	repeated Component Components      = 5 [(gogoproto.nullable) = false];
+}

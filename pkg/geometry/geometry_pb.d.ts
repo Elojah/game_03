@@ -60,3 +60,31 @@ export namespace Rect {
   }
 }
 
+export class Circle extends jspb.Message {
+  getX(): number;
+  setX(value: number): void;
+
+  getY(): number;
+  setY(value: number): void;
+
+  getRadius(): number;
+  setRadius(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): Circle.AsObject;
+  static toObject(includeInstance: boolean, msg: Circle): Circle.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: Circle, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Circle;
+  static deserializeBinaryFromReader(message: Circle, reader: jspb.BinaryReader): Circle;
+}
+
+export namespace Circle {
+  export type AsObject = {
+    x: number,
+    y: number,
+    radius: number,
+  }
+}
+
