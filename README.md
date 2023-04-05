@@ -113,6 +113,10 @@ Instead you can use `scripts/create_default_tilesheets.sh` once from current dir
 - When killing a boss, grant a X power materia/gear for final hit guild -> Boss belongs to guild, can't kill it anymore -> When another guilds kill it (final hit guaranteed), grant a X+1 power materia/gear for guild and so on...
 - How to implement TP, lighthouse ?
 
+- classes:
+  + rage warrior, when conditions that don't follow gameplan (opponent debuff disappearing, debuff on self, distance too long), warrior gain rage (ability ? resource ? buff ?)
+  + mage, long gameplan, need to consume buff on opponent to buff itself and gain big (ability ? resource ? buff ?)
+  + thief, looking for specific timing/conditions (how to make that thief can't trigger himself those conditions, need to be opponent)
 
 ### Unrelated
 ---

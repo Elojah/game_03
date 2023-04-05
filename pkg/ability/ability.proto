@@ -33,17 +33,18 @@ import "github.com/elojah/game_03/pkg/geometry/geometry.proto";
    // + Snare/Stun/Slow - duration = Buff/Debuff on mov speed/cast speed ?
    // + Move - origin: targets + dest: vec2(s) + type (teleport, push, knockback)
 
-enum Element {
-	Fire                          = 0;
-	Water                         = 1;
-	Earth                         = 2;
-}
+// enum Element {
+// 	Fire                          = 0;
+// 	Water                         = 1;
+// 	Earth                         = 2;
+// }
 
 enum Stat {
-	HP                            = 0;
-	MP                            = 1;
-	Damage                        = 2;
-	Defense                       = 3;
+	Damage                        = 0;
+	Defense                       = 1;
+	MoveSpeed                     = 3;
+	CastSpeed                     = 4;
+	CooldownReduction             = 5;
 }
 
 message Target {
@@ -58,86 +59,106 @@ enum Comparison {
 	Equal                          = 2;
 }
 
+message Modifier {
+	// Add cast time
+	int64 CastTime                     = 5;
+	// Add mana cost
+	int64 ManaCost                     = 6;
+	// Add cooldown
+	int64 Cooldown                     = 7;
+	// Change element
+	Element Element                    = 2;
+	// Change affected stat
+	Stat Stat                          = 3;
+	// Add value
+	int64 Value                        = 4;
+	// Change drained stat
+	Stat DrainStat                     = 5;
+	// Add value
+	int64 DrainValue                   = 6;
+	// Add Delay
+	int64 Delay                        = 7;
+	// Change tick rate
+	int64 TickRate                     = 8;
+	// Change duration
+	int64 Duration                     = 9;
+	// Add stacks
+	int64 Stacks                       = 10;
+	// Change max stacks
+	int64 MaxStack                     = 11;
+}
+
 message Trigger {
 	// if
-	bytes EntityID                 = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
-	repeated bytes BuffIDs         = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+	// Condition based on stat
 	Stat Stat                      = 3;
+	// Condition based on buff
+	repeated bytes SelfEffectIDs     = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+	repeated bytes TargetEffectIDs   = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+	repeated Element Elements      = 2;
 
 	// Value applies to BuffIDs (number of) or to Stat (percentage of)
 	int64 Value                    = 4;
 	Comparison Comp                = 5;
 
 	// then
-	bool Consume                                = 6;
-	repeated StatEffect SelfStatEffects     = 7 [(gogoproto.nullable) = false];
-	repeated StatEffect SelfPositionEffects = 8 [(gogoproto.nullable) = false];
+	bool Consume                             = 6;
+	Modifier Modifier                        = 7 [(gogoproto.nullable) = false];
 
-	repeated PositionEffect PositionEffect   = 9 [(gogoproto.nullable) = false];
-	repeated StatEffect StatEffects          = 910 [(gogoproto.nullable) = false];
+	repeated Component Components      = 8 [(gogoproto.nullable) = false];
 };
 
-message EffectStat {
+message OverTime {
     bytes ID                           = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
 
-	// in self trigger, change element
-	Element Element                    = 2;
+	int64 Delay                        = 8;
+	int64 Rate                         = 8;
+	int64 Duration                     = 8;
 
-	// in self trigger, change affected stat
-	Stat Stat                          = 3;
-	// in self trigger, ADD value
-	int64 Value                        = 4;
+	repeated Hit Hits                  = 6 [(gogoproto.nullable) = false];
 
-	// in self trigger, change drained stat
-	Stat DrainStat                     = 5;
-	// in self trigger, ADD value
-	int64 DrainValue                   = 6;
+	// MergeRules ?
+}
 
-	// in self trigger, ADD Delay
-	int64 Delay                        = 7;
+message Effect {
+    bytes ID                           = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
 
-	// #Buff/Debuff params
-	/*
-		if merged, both buffs (with same ID) are merged into one buff (same ID) with:
-		- Additive value
-		- Max Duration
-		- Min TickRate
-	  */
-
-	// in self trigger, change tick rate
-	int64 TickRate                     = 8;
-	// in self trigger, change duration
 	int64 Duration                     = 9;
 
-	// in self trigger, Add stacks
+	Stat Stat                          = 3;
+
+	int64 Value                        = 4;
+	int64 Percentage                   = 5;
+
 	int64 Stacks                       = 10;
-	// in self trigger, change max stacks
 	int64 MaxStack                     = 11;
 
-	repeated Trigger Triggers          = 12 [(gogoproto.nullable) = false];
+	// MergeRules ?
 }
 
-message PositionEffect {
+// Hit affect HP/MP without recovery
+message Hit {
     bytes ID                           = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
 
+	int64 HP                           = 2;
+	int64 MP                           = 3;
+
+	// Movement effect (TP or push back)
 	geometry.Vec2 Position             = 2;
 	geometry.Vec2 Force                = 3; // Teleport if force == 0/0
+
 	int64 Value                        = 4;
-
-	int64 Delay                        = 5;
-
-	int64 TickRate                     = 6;
-	int64 Duration                     = 7;
+	int64 Percentage                   = 4;
 }
 
-message Component {
-	int64 CastTime                           = 1;
-	int64 ManaCost                           = 2;
-	int64 Cooldown                           = 3;
 
-	repeated Target Targets                  = 4 [(gogoproto.nullable) = false];
-	repeated PositionEffect PositionEffect   = 5 [(gogoproto.nullable) = false];
-	repeated StatEffect StatEffects          = 6 [(gogoproto.nullable) = false];
+message Component {
+	repeated Target Targets            = 4 [(gogoproto.nullable) = false];
+	repeated Hit Hits                  = 6 [(gogoproto.nullable) = false];
+	repeated Effect Effects            = 6 [(gogoproto.nullable) = false];
+	repeated OverTime OverTime         = 6 [(gogoproto.nullable) = false];
+
+	// repeated Trigger Triggers          = 12 [(gogoproto.nullable) = false];
 }
 
 message Ability {
@@ -147,5 +168,9 @@ message Ability {
 	bytes Icon                         = 3 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
 	bytes Animation                    = 4 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
 
-	repeated Component Components      = 5 [(gogoproto.nullable) = false];
+	int64 CastTime                     = 5;
+	int64 ManaCost                     = 6;
+	int64 Cooldown                     = 7;
+
+	repeated Component Components      = 8 [(gogoproto.nullable) = false];
 }
