@@ -9,11 +9,13 @@ import (
 	github_com_elojah_game_03_pkg_ulid "github.com/elojah/game_03/pkg/ulid"
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
+	github_com_gogo_protobuf_sortkeys "github.com/gogo/protobuf/sortkeys"
 	golang_proto "github.com/golang/protobuf/proto"
 	io "io"
 	math "math"
 	math_bits "math/bits"
 	reflect "reflect"
+	strconv "strconv"
 	strings "strings"
 )
 
@@ -29,6 +31,95 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+type Stat int32
+
+const (
+	NoneStat          Stat = 0
+	Damage            Stat = 1
+	Defense           Stat = 2
+	MoveSpeed         Stat = 4
+	CastSpeed         Stat = 5
+	CooldownReduction Stat = 6
+	HP                Stat = 7
+	MP                Stat = 8
+	MaxHP             Stat = 9
+	MaxMP             Stat = 10
+)
+
+var Stat_name = map[int32]string{
+	0:  "NoneStat",
+	1:  "Damage",
+	2:  "Defense",
+	4:  "MoveSpeed",
+	5:  "CastSpeed",
+	6:  "CooldownReduction",
+	7:  "HP",
+	8:  "MP",
+	9:  "MaxHP",
+	10: "MaxMP",
+}
+
+var Stat_value = map[string]int32{
+	"NoneStat":          0,
+	"Damage":            1,
+	"Defense":           2,
+	"MoveSpeed":         4,
+	"CastSpeed":         5,
+	"CooldownReduction": 6,
+	"HP":                7,
+	"MP":                8,
+	"MaxHP":             9,
+	"MaxMP":             10,
+}
+
+func (Stat) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_e2701362edd4c296, []int{0}
+}
+
+type Stats struct {
+	Damage            int64 `protobuf:"varint,1,opt,name=Damage,proto3" json:"Damage,omitempty"`
+	Defense           int64 `protobuf:"varint,2,opt,name=Defense,proto3" json:"Defense,omitempty"`
+	MoveSpeed         int64 `protobuf:"varint,3,opt,name=MoveSpeed,proto3" json:"MoveSpeed,omitempty"`
+	CastSpeed         int64 `protobuf:"varint,4,opt,name=CastSpeed,proto3" json:"CastSpeed,omitempty"`
+	CooldownReduction int64 `protobuf:"varint,5,opt,name=CooldownReduction,proto3" json:"CooldownReduction,omitempty"`
+	HP                int64 `protobuf:"varint,6,opt,name=HP,proto3" json:"HP,omitempty"`
+	MP                int64 `protobuf:"varint,7,opt,name=MP,proto3" json:"MP,omitempty"`
+	MaxHP             int64 `protobuf:"varint,8,opt,name=MaxHP,proto3" json:"MaxHP,omitempty"`
+	MaxMP             int64 `protobuf:"varint,9,opt,name=MaxMP,proto3" json:"MaxMP,omitempty"`
+}
+
+func (m *Stats) Reset()      { *m = Stats{} }
+func (*Stats) ProtoMessage() {}
+func (*Stats) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e2701362edd4c296, []int{0}
+}
+func (m *Stats) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *Stats) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_Stats.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *Stats) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Stats.Merge(m, src)
+}
+func (m *Stats) XXX_Size() int {
+	return m.Size()
+}
+func (m *Stats) XXX_DiscardUnknown() {
+	xxx_messageInfo_Stats.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Stats proto.InternalMessageInfo
+
 type E struct {
 	ID          github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,1,opt,name=ID,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"ID"`
 	UserID      github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,2,opt,name=UserID,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"UserID"`
@@ -42,12 +133,14 @@ type E struct {
 	AnimationID github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,10,opt,name=AnimationID,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"AnimationID"`
 	AnimationAt int64                                 `protobuf:"varint,11,opt,name=AnimationAt,proto3" json:"AnimationAt,omitempty"`
 	Objects     []geometry.Rect                       `protobuf:"bytes,12,rep,name=Objects,proto3" json:"Objects"`
+	Stats       Stats                                 `protobuf:"bytes,13,opt,name=Stats,proto3" json:"Stats"`
+	Effects     map[string]int64                      `protobuf:"bytes,14,rep,name=Effects,proto3" json:"Effects" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`
 }
 
 func (m *E) Reset()      { *m = E{} }
 func (*E) ProtoMessage() {}
 func (*E) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e2701362edd4c296, []int{0}
+	return fileDescriptor_e2701362edd4c296, []int{1}
 }
 func (m *E) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -77,8 +170,14 @@ func (m *E) XXX_DiscardUnknown() {
 var xxx_messageInfo_E proto.InternalMessageInfo
 
 func init() {
+	proto.RegisterEnum("entity.Stat", Stat_name, Stat_value)
+	golang_proto.RegisterEnum("entity.Stat", Stat_name, Stat_value)
+	proto.RegisterType((*Stats)(nil), "entity.Stats")
+	golang_proto.RegisterType((*Stats)(nil), "entity.Stats")
 	proto.RegisterType((*E)(nil), "entity.E")
 	golang_proto.RegisterType((*E)(nil), "entity.E")
+	proto.RegisterMapType((map[string]int64)(nil), "entity.E.EffectsEntry")
+	golang_proto.RegisterMapType((map[string]int64)(nil), "entity.E.EffectsEntry")
 }
 
 func init() {
@@ -89,35 +188,106 @@ func init() {
 }
 
 var fileDescriptor_e2701362edd4c296 = []byte{
-	// 408 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x92, 0x31, 0x6b, 0xdb, 0x40,
-	0x1c, 0xc5, 0xef, 0x2f, 0x39, 0x4a, 0x73, 0x36, 0xa1, 0xdc, 0x50, 0x8e, 0x0c, 0xff, 0x88, 0x42,
-	0x41, 0x4b, 0xa4, 0xb6, 0xa1, 0x63, 0x07, 0xbb, 0x0a, 0x54, 0x4b, 0x03, 0x07, 0x85, 0x64, 0x2a,
-	0xb2, 0x73, 0x55, 0x94, 0x5a, 0xbe, 0x60, 0x9f, 0x86, 0x6c, 0xfd, 0x08, 0xfd, 0x18, 0xfd, 0x08,
-	0x1d, 0x33, 0x7a, 0xf4, 0x18, 0x0a, 0x0d, 0xd5, 0x69, 0xe9, 0x98, 0xb1, 0x63, 0xd1, 0xc9, 0x0d,
-	0x9a, 0x3c, 0x78, 0xba, 0xf7, 0xfe, 0x77, 0xef, 0xf7, 0x0e, 0xee, 0xe8, 0xab, 0x2c, 0xd7, 0x97,
-	0xe5, 0x38, 0x9c, 0xa8, 0x22, 0x92, 0x53, 0x75, 0x95, 0x5e, 0x46, 0x59, 0x5a, 0xc8, 0x4f, 0x2f,
-	0x8f, 0xa3, 0xeb, 0x2f, 0x59, 0x24, 0x67, 0x3a, 0xd7, 0x37, 0xeb, 0x25, 0xbc, 0x9e, 0x2b, 0xad,
-	0x98, 0xd7, 0xba, 0x83, 0xa3, 0x4e, 0x34, 0x53, 0x99, 0x8a, 0xec, 0xf6, 0xb8, 0xfc, 0x6c, 0x9d,
-	0x35, 0x56, 0xb5, 0xb1, 0x83, 0x37, 0x9b, 0x9b, 0x32, 0xa9, 0x0a, 0xa9, 0xe7, 0x37, 0x8f, 0xa2,
-	0x8d, 0x3d, 0xff, 0xe5, 0x52, 0x38, 0x61, 0x6f, 0xa9, 0x93, 0xc4, 0x1c, 0x7c, 0x08, 0x06, 0xa3,
-	0xa3, 0xe5, 0xfd, 0x21, 0xf9, 0x79, 0x7f, 0xf8, 0x62, 0x33, 0xb0, 0x9c, 0xe6, 0x17, 0x61, 0x12,
-	0x0b, 0x27, 0x89, 0xd9, 0x09, 0xf5, 0x3e, 0x2e, 0xe4, 0x3c, 0x89, 0xb9, 0xb3, 0x0d, 0x62, 0x1d,
-	0x6e, 0x30, 0xef, 0xe4, 0x74, 0x9a, 0xc4, 0xdc, 0xdd, 0x0a, 0xd3, 0x86, 0x19, 0xa3, 0xbd, 0x0f,
-	0x69, 0x21, 0x79, 0xcf, 0x87, 0x60, 0x4f, 0x58, 0xcd, 0x06, 0x14, 0xce, 0xf8, 0x8e, 0x0f, 0x81,
-	0x2b, 0xe0, 0xac, 0x71, 0xe7, 0xdc, 0x6b, 0xdd, 0x39, 0x7b, 0x4a, 0x5d, 0xa1, 0x34, 0xdf, 0xf5,
-	0x21, 0xd8, 0x11, 0x8d, 0x64, 0xcf, 0xa8, 0x27, 0xd2, 0x8b, 0xbc, 0x5c, 0xf0, 0x27, 0x76, 0xb8,
-	0x76, 0x6c, 0x9f, 0x3a, 0x43, 0xcd, 0xf7, 0x6c, 0xd0, 0x19, 0x6a, 0x76, 0x4a, 0xfb, 0xc3, 0x59,
-	0x5e, 0xa4, 0x3a, 0x57, 0xb3, 0x24, 0xe6, 0x74, 0x9b, 0x5b, 0x77, 0x09, 0xcc, 0xef, 0x00, 0x87,
-	0x9a, 0xf7, 0x6d, 0x53, 0x77, 0xc4, 0x42, 0xba, 0x7b, 0x3a, 0xbe, 0x92, 0x13, 0xbd, 0xe0, 0x03,
-	0xdf, 0x0d, 0xfa, 0xaf, 0xf7, 0xc3, 0xc7, 0x17, 0x15, 0x72, 0xa2, 0x47, 0xbd, 0xa6, 0x5e, 0xfc,
-	0x3f, 0x34, 0x7a, 0xbf, 0xac, 0x90, 0xac, 0x2a, 0x24, 0x77, 0x15, 0x92, 0x87, 0x0a, 0xe1, 0x6f,
-	0x85, 0xf0, 0xd5, 0x20, 0x7c, 0x37, 0x08, 0x3f, 0x0c, 0xc2, 0xad, 0x41, 0x58, 0x1a, 0x84, 0x95,
-	0x41, 0xf8, 0x6d, 0x10, 0xfe, 0x18, 0x24, 0x0f, 0x06, 0xe1, 0x5b, 0x8d, 0xe4, 0xb6, 0x46, 0x58,
-	0xd5, 0x48, 0xee, 0x6a, 0x24, 0x63, 0xcf, 0x7e, 0x98, 0xe3, 0x7f, 0x01, 0x00, 0x00, 0xff, 0xff,
-	0xd1, 0x70, 0xaf, 0x93, 0xd3, 0x02, 0x00, 0x00,
+	// 664 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x54, 0xbf, 0x6f, 0xd3, 0x40,
+	0x14, 0xf6, 0x39, 0x89, 0xd3, 0x5c, 0xd2, 0xca, 0x9c, 0xa0, 0x3a, 0x55, 0xe8, 0x1a, 0x55, 0x42,
+	0x2a, 0x88, 0x3a, 0xd0, 0x0a, 0x84, 0x2a, 0x31, 0xa4, 0x75, 0xa4, 0x64, 0x70, 0x6b, 0xb9, 0x42,
+	0x6a, 0x27, 0xe4, 0x24, 0x17, 0x37, 0x6d, 0xe2, 0xab, 0x92, 0x4b, 0x21, 0x1b, 0x23, 0x23, 0x7f,
+	0x06, 0x7f, 0x02, 0x63, 0xc7, 0x8e, 0x19, 0x2b, 0x86, 0x8a, 0x38, 0x0b, 0x1b, 0x1d, 0x19, 0x18,
+	0xd0, 0x9d, 0x2f, 0xc6, 0x12, 0xa8, 0x52, 0x99, 0xfc, 0xbe, 0xf7, 0xbd, 0x1f, 0xc9, 0xe7, 0xf7,
+	0x19, 0x3e, 0x0f, 0xba, 0xfc, 0x78, 0xd4, 0xb4, 0x5a, 0xac, 0x5f, 0xa1, 0x3d, 0x76, 0xe2, 0x1f,
+	0x57, 0x02, 0xbf, 0x4f, 0xdf, 0x3e, 0xdb, 0xaa, 0x9c, 0x9d, 0x06, 0x15, 0x1a, 0xf2, 0x2e, 0x1f,
+	0xab, 0x87, 0x75, 0x36, 0x60, 0x9c, 0x21, 0x23, 0x46, 0x2b, 0x1b, 0xa9, 0xd6, 0x80, 0x05, 0xac,
+	0x22, 0xe9, 0xe6, 0xa8, 0x23, 0x91, 0x04, 0x32, 0x8a, 0xdb, 0x56, 0x5e, 0xdc, 0xbe, 0x29, 0xa0,
+	0xac, 0x4f, 0xf9, 0x60, 0x9c, 0x04, 0x71, 0xdb, 0xda, 0x0f, 0x00, 0x73, 0x07, 0xdc, 0xe7, 0x43,
+	0xb4, 0x0c, 0x0d, 0xdb, 0xef, 0xfb, 0x01, 0xc5, 0xa0, 0x0c, 0xd6, 0x33, 0x9e, 0x42, 0x08, 0xc3,
+	0xbc, 0x4d, 0x3b, 0x34, 0x1c, 0x52, 0xac, 0x4b, 0x62, 0x0e, 0xd1, 0x43, 0x58, 0x70, 0xd8, 0x39,
+	0x3d, 0x38, 0xa3, 0xb4, 0x8d, 0x33, 0x92, 0xfb, 0x93, 0x10, 0xec, 0xae, 0x3f, 0xe4, 0x31, 0x9b,
+	0x8d, 0xd9, 0x24, 0x81, 0x9e, 0xc2, 0x7b, 0xbb, 0x8c, 0xf5, 0xda, 0xec, 0x5d, 0xe8, 0xd1, 0xf6,
+	0xa8, 0xc5, 0xbb, 0x2c, 0xc4, 0x39, 0x59, 0xf5, 0x37, 0x81, 0x96, 0xa0, 0x5e, 0x77, 0xb1, 0x21,
+	0x69, 0xbd, 0xee, 0x0a, 0xec, 0xb8, 0x38, 0x1f, 0x63, 0xc7, 0x45, 0xf7, 0x61, 0xce, 0xf1, 0xdf,
+	0xd7, 0x5d, 0xbc, 0x20, 0x53, 0x31, 0x50, 0x59, 0xc7, 0xc5, 0x85, 0x24, 0xeb, 0xb8, 0x6b, 0xbf,
+	0xb2, 0x10, 0xd4, 0xd0, 0x6b, 0xa8, 0x37, 0x6c, 0xf9, 0x4f, 0x4b, 0x3b, 0x1b, 0x97, 0xd7, 0xab,
+	0xda, 0xd7, 0xeb, 0xd5, 0x47, 0xb7, 0x4b, 0x38, 0xea, 0x75, 0xdb, 0x56, 0xc3, 0xf6, 0xf4, 0x86,
+	0x8d, 0x6a, 0xd0, 0x78, 0x33, 0xa4, 0x83, 0x86, 0x2d, 0x35, 0xb9, 0xf3, 0x08, 0xd5, 0x2c, 0xc6,
+	0xec, 0xd2, 0x5e, 0xaf, 0x61, 0x4b, 0xf9, 0xee, 0x3e, 0x26, 0x6e, 0x46, 0x08, 0x66, 0xf7, 0xfc,
+	0x3e, 0x95, 0x2a, 0x17, 0x3c, 0x19, 0xa3, 0x12, 0x04, 0x87, 0x4a, 0x50, 0x70, 0x28, 0xd0, 0x91,
+	0xd2, 0x0f, 0x1c, 0x21, 0x13, 0x66, 0x3c, 0xc6, 0xa5, 0x7e, 0x39, 0x4f, 0x84, 0xe2, 0xe5, 0x7b,
+	0x7e, 0xbb, 0x3b, 0x1a, 0x4a, 0x05, 0x73, 0x9e, 0x42, 0x42, 0xe8, 0x2a, 0x57, 0xfa, 0xe9, 0x55,
+	0x8e, 0xf6, 0x61, 0xb1, 0x1a, 0x76, 0xfb, 0xbe, 0x78, 0x2b, 0x0d, 0x1b, 0xc3, 0xff, 0xf9, 0xd5,
+	0xe9, 0x09, 0xa8, 0x9c, 0x1a, 0x58, 0xe5, 0xb8, 0x28, 0x37, 0xa5, 0x53, 0xc8, 0x82, 0xf9, 0xfd,
+	0xe6, 0x09, 0x6d, 0xf1, 0x21, 0x2e, 0x95, 0x33, 0xeb, 0xc5, 0xcd, 0x25, 0x2b, 0xb9, 0x61, 0x8f,
+	0xb6, 0xf8, 0x4e, 0x56, 0xac, 0xf7, 0xe6, 0x45, 0xe8, 0xb1, 0x3a, 0x68, 0xbc, 0x58, 0x06, 0xeb,
+	0xc5, 0xcd, 0x45, 0x4b, 0xb9, 0x4b, 0x26, 0x55, 0xb1, 0x3a, 0xf9, 0x97, 0x30, 0x5f, 0xeb, 0x74,
+	0xe4, 0xe8, 0x25, 0x39, 0x7a, 0x79, 0x5e, 0x5c, 0xb3, 0x14, 0x51, 0x0b, 0xf9, 0x60, 0x3c, 0x5f,
+	0xa1, 0x72, 0x2b, 0xdb, 0xb0, 0x94, 0xa6, 0x85, 0x9e, 0xa7, 0x74, 0x2c, 0xaf, 0xa9, 0xe0, 0x89,
+	0x50, 0x9c, 0xde, 0xb9, 0xdf, 0x1b, 0xcd, 0x2d, 0x13, 0x83, 0x6d, 0xfd, 0x15, 0x78, 0xf2, 0x11,
+	0xc0, 0xac, 0xd8, 0x8e, 0x4a, 0x70, 0x61, 0x8f, 0x85, 0x54, 0xc4, 0xa6, 0x86, 0xe0, 0xdc, 0x7d,
+	0x26, 0x40, 0xc5, 0xc4, 0x71, 0xa6, 0x8e, 0x16, 0x53, 0x26, 0x33, 0xb3, 0x02, 0x26, 0x26, 0x32,
+	0x73, 0xe8, 0xc1, 0x3f, 0x6c, 0x64, 0x1a, 0xc8, 0x10, 0x7e, 0x31, 0xf3, 0xe2, 0xe9, 0xb8, 0xe6,
+	0x02, 0x2a, 0x28, 0x7f, 0x98, 0x05, 0x15, 0x3a, 0xae, 0x09, 0x77, 0xea, 0x97, 0x53, 0xa2, 0x4d,
+	0xa6, 0x44, 0xbb, 0x9a, 0x12, 0xed, 0x66, 0x4a, 0xc0, 0xcf, 0x29, 0x01, 0x1f, 0x22, 0x02, 0x3e,
+	0x47, 0x04, 0x7c, 0x89, 0x08, 0xb8, 0x88, 0x08, 0xb8, 0x8c, 0x08, 0x98, 0x44, 0x04, 0x7c, 0x8b,
+	0x08, 0xf8, 0x1e, 0x11, 0xed, 0x26, 0x22, 0xe0, 0xd3, 0x8c, 0x68, 0x17, 0x33, 0x02, 0x26, 0x33,
+	0xa2, 0x5d, 0xcd, 0x88, 0xd6, 0x34, 0xe4, 0xc7, 0x64, 0xeb, 0x77, 0x00, 0x00, 0x00, 0xff, 0xff,
+	0xf6, 0x0c, 0xd2, 0x06, 0xef, 0x04, 0x00, 0x00,
 }
 
+func (x Stat) String() string {
+	s, ok := Stat_name[int32(x)]
+	if ok {
+		return s
+	}
+	return strconv.Itoa(int(x))
+}
+func (this *Stats) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*Stats)
+	if !ok {
+		that2, ok := that.(Stats)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if this.Damage != that1.Damage {
+		return false
+	}
+	if this.Defense != that1.Defense {
+		return false
+	}
+	if this.MoveSpeed != that1.MoveSpeed {
+		return false
+	}
+	if this.CastSpeed != that1.CastSpeed {
+		return false
+	}
+	if this.CooldownReduction != that1.CooldownReduction {
+		return false
+	}
+	if this.HP != that1.HP {
+		return false
+	}
+	if this.MP != that1.MP {
+		return false
+	}
+	if this.MaxHP != that1.MaxHP {
+		return false
+	}
+	if this.MaxMP != that1.MaxMP {
+		return false
+	}
+	return true
+}
 func (this *E) Equal(that interface{}) bool {
 	if that == nil {
 		return this == nil
@@ -178,13 +348,42 @@ func (this *E) Equal(that interface{}) bool {
 			return false
 		}
 	}
+	if !this.Stats.Equal(&that1.Stats) {
+		return false
+	}
+	if len(this.Effects) != len(that1.Effects) {
+		return false
+	}
+	for i := range this.Effects {
+		if this.Effects[i] != that1.Effects[i] {
+			return false
+		}
+	}
 	return true
+}
+func (this *Stats) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 13)
+	s = append(s, "&entity.Stats{")
+	s = append(s, "Damage: "+fmt.Sprintf("%#v", this.Damage)+",\n")
+	s = append(s, "Defense: "+fmt.Sprintf("%#v", this.Defense)+",\n")
+	s = append(s, "MoveSpeed: "+fmt.Sprintf("%#v", this.MoveSpeed)+",\n")
+	s = append(s, "CastSpeed: "+fmt.Sprintf("%#v", this.CastSpeed)+",\n")
+	s = append(s, "CooldownReduction: "+fmt.Sprintf("%#v", this.CooldownReduction)+",\n")
+	s = append(s, "HP: "+fmt.Sprintf("%#v", this.HP)+",\n")
+	s = append(s, "MP: "+fmt.Sprintf("%#v", this.MP)+",\n")
+	s = append(s, "MaxHP: "+fmt.Sprintf("%#v", this.MaxHP)+",\n")
+	s = append(s, "MaxMP: "+fmt.Sprintf("%#v", this.MaxMP)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
 }
 func (this *E) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 16)
+	s := make([]string, 0, 18)
 	s = append(s, "&entity.E{")
 	s = append(s, "ID: "+fmt.Sprintf("%#v", this.ID)+",\n")
 	s = append(s, "UserID: "+fmt.Sprintf("%#v", this.UserID)+",\n")
@@ -204,6 +403,20 @@ func (this *E) GoString() string {
 		}
 		s = append(s, "Objects: "+fmt.Sprintf("%#v", vs)+",\n")
 	}
+	s = append(s, "Stats: "+strings.Replace(this.Stats.GoString(), `&`, ``, 1)+",\n")
+	keysForEffects := make([]string, 0, len(this.Effects))
+	for k, _ := range this.Effects {
+		keysForEffects = append(keysForEffects, k)
+	}
+	github_com_gogo_protobuf_sortkeys.Strings(keysForEffects)
+	mapStringForEffects := "map[string]int64{"
+	for _, k := range keysForEffects {
+		mapStringForEffects += fmt.Sprintf("%#v: %#v,", k, this.Effects[k])
+	}
+	mapStringForEffects += "}"
+	if this.Effects != nil {
+		s = append(s, "Effects: "+mapStringForEffects+",\n")
+	}
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -215,6 +428,74 @@ func valueToGoStringEntity(v interface{}, typ string) string {
 	pv := reflect.Indirect(rv).Interface()
 	return fmt.Sprintf("func(v %v) *%v { return &v } ( %#v )", typ, typ, pv)
 }
+func (m *Stats) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Stats) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *Stats) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.MaxMP != 0 {
+		i = encodeVarintEntity(dAtA, i, uint64(m.MaxMP))
+		i--
+		dAtA[i] = 0x48
+	}
+	if m.MaxHP != 0 {
+		i = encodeVarintEntity(dAtA, i, uint64(m.MaxHP))
+		i--
+		dAtA[i] = 0x40
+	}
+	if m.MP != 0 {
+		i = encodeVarintEntity(dAtA, i, uint64(m.MP))
+		i--
+		dAtA[i] = 0x38
+	}
+	if m.HP != 0 {
+		i = encodeVarintEntity(dAtA, i, uint64(m.HP))
+		i--
+		dAtA[i] = 0x30
+	}
+	if m.CooldownReduction != 0 {
+		i = encodeVarintEntity(dAtA, i, uint64(m.CooldownReduction))
+		i--
+		dAtA[i] = 0x28
+	}
+	if m.CastSpeed != 0 {
+		i = encodeVarintEntity(dAtA, i, uint64(m.CastSpeed))
+		i--
+		dAtA[i] = 0x20
+	}
+	if m.MoveSpeed != 0 {
+		i = encodeVarintEntity(dAtA, i, uint64(m.MoveSpeed))
+		i--
+		dAtA[i] = 0x18
+	}
+	if m.Defense != 0 {
+		i = encodeVarintEntity(dAtA, i, uint64(m.Defense))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.Damage != 0 {
+		i = encodeVarintEntity(dAtA, i, uint64(m.Damage))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
 func (m *E) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -235,6 +516,33 @@ func (m *E) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.Effects) > 0 {
+		for k := range m.Effects {
+			v := m.Effects[k]
+			baseI := i
+			i = encodeVarintEntity(dAtA, i, uint64(v))
+			i--
+			dAtA[i] = 0x10
+			i -= len(k)
+			copy(dAtA[i:], k)
+			i = encodeVarintEntity(dAtA, i, uint64(len(k)))
+			i--
+			dAtA[i] = 0xa
+			i = encodeVarintEntity(dAtA, i, uint64(baseI-i))
+			i--
+			dAtA[i] = 0x72
+		}
+	}
+	{
+		size, err := m.Stats.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintEntity(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x6a
 	if len(m.Objects) > 0 {
 		for iNdEx := len(m.Objects) - 1; iNdEx >= 0; iNdEx-- {
 			{
@@ -340,6 +648,49 @@ func encodeVarintEntity(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
+func NewPopulatedStats(r randyEntity, easy bool) *Stats {
+	this := &Stats{}
+	this.Damage = int64(r.Int63())
+	if r.Intn(2) == 0 {
+		this.Damage *= -1
+	}
+	this.Defense = int64(r.Int63())
+	if r.Intn(2) == 0 {
+		this.Defense *= -1
+	}
+	this.MoveSpeed = int64(r.Int63())
+	if r.Intn(2) == 0 {
+		this.MoveSpeed *= -1
+	}
+	this.CastSpeed = int64(r.Int63())
+	if r.Intn(2) == 0 {
+		this.CastSpeed *= -1
+	}
+	this.CooldownReduction = int64(r.Int63())
+	if r.Intn(2) == 0 {
+		this.CooldownReduction *= -1
+	}
+	this.HP = int64(r.Int63())
+	if r.Intn(2) == 0 {
+		this.HP *= -1
+	}
+	this.MP = int64(r.Int63())
+	if r.Intn(2) == 0 {
+		this.MP *= -1
+	}
+	this.MaxHP = int64(r.Int63())
+	if r.Intn(2) == 0 {
+		this.MaxHP *= -1
+	}
+	this.MaxMP = int64(r.Int63())
+	if r.Intn(2) == 0 {
+		this.MaxMP *= -1
+	}
+	if !easy && r.Intn(10) != 0 {
+	}
+	return this
+}
+
 func NewPopulatedE(r randyEntity, easy bool) *E {
 	this := &E{}
 	v1 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
@@ -383,6 +734,19 @@ func NewPopulatedE(r randyEntity, easy bool) *E {
 			this.Objects[i] = *v6
 		}
 	}
+	v7 := NewPopulatedStats(r, easy)
+	this.Stats = *v7
+	if r.Intn(5) != 0 {
+		v8 := r.Intn(10)
+		this.Effects = make(map[string]int64)
+		for i := 0; i < v8; i++ {
+			v9 := randStringEntity(r)
+			this.Effects[v9] = int64(r.Int63())
+			if r.Intn(2) == 0 {
+				this.Effects[v9] *= -1
+			}
+		}
+	}
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -407,9 +771,9 @@ func randUTF8RuneEntity(r randyEntity) rune {
 	return rune(ru + 61)
 }
 func randStringEntity(r randyEntity) string {
-	v7 := r.Intn(100)
-	tmps := make([]rune, v7)
-	for i := 0; i < v7; i++ {
+	v10 := r.Intn(100)
+	tmps := make([]rune, v10)
+	for i := 0; i < v10; i++ {
 		tmps[i] = randUTF8RuneEntity(r)
 	}
 	return string(tmps)
@@ -431,11 +795,11 @@ func randFieldEntity(dAtA []byte, r randyEntity, fieldNumber int, wire int) []by
 	switch wire {
 	case 0:
 		dAtA = encodeVarintPopulateEntity(dAtA, uint64(key))
-		v8 := r.Int63()
+		v11 := r.Int63()
 		if r.Intn(2) == 0 {
-			v8 *= -1
+			v11 *= -1
 		}
-		dAtA = encodeVarintPopulateEntity(dAtA, uint64(v8))
+		dAtA = encodeVarintPopulateEntity(dAtA, uint64(v11))
 	case 1:
 		dAtA = encodeVarintPopulateEntity(dAtA, uint64(key))
 		dAtA = append(dAtA, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
@@ -460,6 +824,42 @@ func encodeVarintPopulateEntity(dAtA []byte, v uint64) []byte {
 	dAtA = append(dAtA, uint8(v))
 	return dAtA
 }
+func (m *Stats) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Damage != 0 {
+		n += 1 + sovEntity(uint64(m.Damage))
+	}
+	if m.Defense != 0 {
+		n += 1 + sovEntity(uint64(m.Defense))
+	}
+	if m.MoveSpeed != 0 {
+		n += 1 + sovEntity(uint64(m.MoveSpeed))
+	}
+	if m.CastSpeed != 0 {
+		n += 1 + sovEntity(uint64(m.CastSpeed))
+	}
+	if m.CooldownReduction != 0 {
+		n += 1 + sovEntity(uint64(m.CooldownReduction))
+	}
+	if m.HP != 0 {
+		n += 1 + sovEntity(uint64(m.HP))
+	}
+	if m.MP != 0 {
+		n += 1 + sovEntity(uint64(m.MP))
+	}
+	if m.MaxHP != 0 {
+		n += 1 + sovEntity(uint64(m.MaxHP))
+	}
+	if m.MaxMP != 0 {
+		n += 1 + sovEntity(uint64(m.MaxMP))
+	}
+	return n
+}
+
 func (m *E) Size() (n int) {
 	if m == nil {
 		return 0
@@ -502,6 +902,16 @@ func (m *E) Size() (n int) {
 			n += 1 + l + sovEntity(uint64(l))
 		}
 	}
+	l = m.Stats.Size()
+	n += 1 + l + sovEntity(uint64(l))
+	if len(m.Effects) > 0 {
+		for k, v := range m.Effects {
+			_ = k
+			_ = v
+			mapEntrySize := 1 + len(k) + sovEntity(uint64(len(k))) + 1 + sovEntity(uint64(v))
+			n += mapEntrySize + 1 + sovEntity(uint64(mapEntrySize))
+		}
+	}
 	return n
 }
 
@@ -510,6 +920,24 @@ func sovEntity(x uint64) (n int) {
 }
 func sozEntity(x uint64) (n int) {
 	return sovEntity(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (this *Stats) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&Stats{`,
+		`Damage:` + fmt.Sprintf("%v", this.Damage) + `,`,
+		`Defense:` + fmt.Sprintf("%v", this.Defense) + `,`,
+		`MoveSpeed:` + fmt.Sprintf("%v", this.MoveSpeed) + `,`,
+		`CastSpeed:` + fmt.Sprintf("%v", this.CastSpeed) + `,`,
+		`CooldownReduction:` + fmt.Sprintf("%v", this.CooldownReduction) + `,`,
+		`HP:` + fmt.Sprintf("%v", this.HP) + `,`,
+		`MP:` + fmt.Sprintf("%v", this.MP) + `,`,
+		`MaxHP:` + fmt.Sprintf("%v", this.MaxHP) + `,`,
+		`MaxMP:` + fmt.Sprintf("%v", this.MaxMP) + `,`,
+		`}`,
+	}, "")
+	return s
 }
 func (this *E) String() string {
 	if this == nil {
@@ -520,6 +948,16 @@ func (this *E) String() string {
 		repeatedStringForObjects += fmt.Sprintf("%v", f) + ","
 	}
 	repeatedStringForObjects += "}"
+	keysForEffects := make([]string, 0, len(this.Effects))
+	for k, _ := range this.Effects {
+		keysForEffects = append(keysForEffects, k)
+	}
+	github_com_gogo_protobuf_sortkeys.Strings(keysForEffects)
+	mapStringForEffects := "map[string]int64{"
+	for _, k := range keysForEffects {
+		mapStringForEffects += fmt.Sprintf("%v: %v,", k, this.Effects[k])
+	}
+	mapStringForEffects += "}"
 	s := strings.Join([]string{`&E{`,
 		`ID:` + fmt.Sprintf("%v", this.ID) + `,`,
 		`UserID:` + fmt.Sprintf("%v", this.UserID) + `,`,
@@ -533,6 +971,8 @@ func (this *E) String() string {
 		`AnimationID:` + fmt.Sprintf("%v", this.AnimationID) + `,`,
 		`AnimationAt:` + fmt.Sprintf("%v", this.AnimationAt) + `,`,
 		`Objects:` + repeatedStringForObjects + `,`,
+		`Stats:` + strings.Replace(strings.Replace(this.Stats.String(), "Stats", "Stats", 1), `&`, ``, 1) + `,`,
+		`Effects:` + mapStringForEffects + `,`,
 		`}`,
 	}, "")
 	return s
@@ -544,6 +984,227 @@ func valueToStringEntity(v interface{}) string {
 	}
 	pv := reflect.Indirect(rv).Interface()
 	return fmt.Sprintf("*%v", pv)
+}
+func (m *Stats) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowEntity
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Stats: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Stats: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Damage", wireType)
+			}
+			m.Damage = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEntity
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Damage |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Defense", wireType)
+			}
+			m.Defense = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEntity
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Defense |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MoveSpeed", wireType)
+			}
+			m.MoveSpeed = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEntity
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.MoveSpeed |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CastSpeed", wireType)
+			}
+			m.CastSpeed = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEntity
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.CastSpeed |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CooldownReduction", wireType)
+			}
+			m.CooldownReduction = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEntity
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.CooldownReduction |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 6:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field HP", wireType)
+			}
+			m.HP = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEntity
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.HP |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 7:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MP", wireType)
+			}
+			m.MP = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEntity
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.MP |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 8:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MaxHP", wireType)
+			}
+			m.MaxHP = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEntity
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.MaxHP |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 9:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MaxMP", wireType)
+			}
+			m.MaxMP = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEntity
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.MaxMP |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipEntity(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthEntity
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
 }
 func (m *E) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
@@ -885,6 +1546,152 @@ func (m *E) Unmarshal(dAtA []byte) error {
 			if err := m.Objects[len(m.Objects)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
+			iNdEx = postIndex
+		case 13:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Stats", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEntity
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthEntity
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthEntity
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Stats.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 14:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Effects", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEntity
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthEntity
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthEntity
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Effects == nil {
+				m.Effects = make(map[string]int64)
+			}
+			var mapkey string
+			var mapvalue int64
+			for iNdEx < postIndex {
+				entryPreIndex := iNdEx
+				var wire uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowEntity
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					wire |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				fieldNum := int32(wire >> 3)
+				if fieldNum == 1 {
+					var stringLenmapkey uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowEntity
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						stringLenmapkey |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					intStringLenmapkey := int(stringLenmapkey)
+					if intStringLenmapkey < 0 {
+						return ErrInvalidLengthEntity
+					}
+					postStringIndexmapkey := iNdEx + intStringLenmapkey
+					if postStringIndexmapkey < 0 {
+						return ErrInvalidLengthEntity
+					}
+					if postStringIndexmapkey > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapkey = string(dAtA[iNdEx:postStringIndexmapkey])
+					iNdEx = postStringIndexmapkey
+				} else if fieldNum == 2 {
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowEntity
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						mapvalue |= int64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+				} else {
+					iNdEx = entryPreIndex
+					skippy, err := skipEntity(dAtA[iNdEx:])
+					if err != nil {
+						return err
+					}
+					if (skippy < 0) || (iNdEx+skippy) < 0 {
+						return ErrInvalidLengthEntity
+					}
+					if (iNdEx + skippy) > postIndex {
+						return io.ErrUnexpectedEOF
+					}
+					iNdEx += skippy
+				}
+			}
+			m.Effects[mapkey] = mapvalue
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

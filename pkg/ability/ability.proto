@@ -14,22 +14,7 @@ option (gogoproto.goproto_registration)     = true;
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 import "github.com/elojah/game_03/pkg/geometry/geometry.proto";
-
-enum Stat {
-	NoneStat                                   = 0;
-	Damage                                     = 1;
-	Defense                                    = 2;
-	MoveSpeed                                  = 4;
-	CastSpeed                                  = 5;
-	CooldownReduction                          = 6;
-	HP                                         = 7;
-	MP                                         = 8;
-	MaxHP                                      = 9;
-	MaxMP                                      = 10;
-
-	// only used in drain
-	DamageReceived                             = 11;
-}
+import "github.com/elojah/game_03/pkg/entity/entity.proto";
 
 enum Target {
 	NoneTarget                                 = 0;
@@ -43,39 +28,52 @@ enum Target {
 	Circle                                     = 7;
 }
 
-message Modifier {
+message AbilityModifier {
+	// Cancel ability
+	bool Cancel                                = 1;
 	// Add cast time
-	int64 CastTime                             = 1;
+	int64 CastTime                             = 2;
 	// Add mana cost
-	int64 ManaCost                             = 2;
+	int64 ManaCost                             = 3;
 	// Add cooldown
-	int64 Cooldown                             = 3;
+	int64 Cooldown                             = 4;
+}
+
+message EffectModifier {
+	// Effect modifiers
+	bytes EffectID                             = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+	// Cancel effect
+	bool Cancel                                = 2;
 	// Change affected stat
-	Stat Stat                                  = 4;
+	entity.Stat Stat                           = 3;
 	// Add amount
-	Amount Amount                              = 5;
+	Amount Amount                              = 4 [(gogoproto.nullable) = false];
 	// Change drained stat
-	Amount Drain                               = 6;
+	Amount Drain                               = 5 [(gogoproto.nullable) = false];
 	// Change duration
-	int64 Duration                             = 7;
+	int64 Duration                             = 6;
 	// Add Delay
-	int64 Delay                                = 8;
+	int64 Delay                                = 7;
 	// Change tick rate
-	int64 Repeat                               = 9;
+	int64 Repeat                               = 8;
 	// Add stacks
-	int64 Stacks                               = 10;
+	StackRules StackRules                      = 9 [(gogoproto.nullable) = false];
 }
 
 // Amount used for ability
 message Amount {
-	Target Target                              = 1;
+    bytes ID                                   = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
 
 	int64 Direct                               = 2;
 
-	int64 Stat                                 = 3;
-	int64 Percentage                           = 4;
+	Target Target                              = 3;
 
-    bytes EffectID                             = 5 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+	// stat percentage of target
+	entity.Stat Stat                           = 4;
+	int64 Percentage                           = 5;
+
+	// number of effect stacks on target
+    bytes EffectID                             = 6 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
 }
 
 enum Operator {
@@ -87,61 +85,51 @@ enum Operator {
 }
 
 message Trigger {
-	Operator Operator                          = 1;
-	Amount Amount                              = 2;
-	Amount Treshold                            = 3;
-	// only for effect or stat HP/MP
-	bool ConsumeTreshold                       = 4;
+	Operator Operator                             = 1;
+	Amount Amount                                 = 2;
+	Amount Treshold                               = 3;
 
-	repeated Modifier Modifiers                = 5 [(gogoproto.nullable) = false];
-
-	// logical AND
-	Trigger Trigger                            = 6;
+	map<string, AbilityModifier> AbilityModifiers = 4 [(gogoproto.nullable) = false];
+	map<string, EffectModifier> EffectModifiers   = 5 [(gogoproto.nullable) = false];
 }
 
 message StackRules {
 	int64 Stacks                               = 1;
 	int64 MaxStacks                            = 2;
-	// if true, set to max duration
-	// if false, duration are added
-	bool MaxDuration                           = 3;
+	int64 MaxDuration                          = 3;
 }
 
 message Effect {
-    bytes ID                                   = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
-
 	// if HP/MP, duration is ignored
-	Stat Stat                                  = 2;
+	entity.Stat Stat                           = 1;
 
 	// Movement effect (TP or push back)
-	geometry.Vec2 Position                     = 3;
-	geometry.Vec2 Force                        = 4; // Teleport if force == 0/0
+	geometry.Vec2 Position                     = 2;
+	geometry.Vec2 Force                        = 3; // Teleport if force == 0/0
 
-	Amount Amount                              = 5;
-	Amount Drain                               = 6;
+	Amount Amount                              = 4 [(gogoproto.nullable) = false];
+	Amount Drain                               = 5 [(gogoproto.nullable) = false];
 	// drain is duplicate for all targets
-	repeated Target DrainTargets               = 7;
+	map<string, Target> DrainTargets           = 6 [(gogoproto.nullable) = false];
 
 	// stack rules
 	// if duration 0 or ignored, overtime effects ignored too
-	int64 Duration                             = 8;
-	bytes Icon                                 = 9 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+	int64 Duration                             = 7;
+	bytes Icon                                 = 8 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
 
-	StackRules StackRules                      = 10 [(gogoproto.nullable) = false];
+	StackRules StackRules                      = 9 [(gogoproto.nullable) = false];
 
 	// Tick only if duration > 0 and not ignored
-	int64 Delay                                = 11; // after ms
-	int64 Repeat                               = 12; // each ms
-
-	// logical OR
-	repeated Trigger Triggers                  = 13 [(gogoproto.nullable) = false];
+	int64 Delay                                = 10; // after ms
+	int64 Repeat                               = 11; // each ms
 }
 
 message Component {
-    bytes ID                                   = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
-
-	repeated Target Targets                    = 1;
-	repeated Effect Effects                    = 2 [(gogoproto.nullable) = false];
+	// how to relate targets and effects ? targets[key] key unused ftm
+	map<string, Target> Targets                = 1;
+	map<string, Effect> Effects                = 2 [(gogoproto.nullable) = false];
+	// logical OR
+	map<string, Trigger> Triggers              = 3 [(gogoproto.nullable) = false];
 }
 
 message Ability {
@@ -155,5 +143,5 @@ message Ability {
 	int64 ManaCost                             = 6;
 	int64 Cooldown                             = 7;
 
-	repeated Component Components              = 8 [(gogoproto.nullable) = false];
+	map<string, Component> Components          = 8 [(gogoproto.nullable) = false];
 }

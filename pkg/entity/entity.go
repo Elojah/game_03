@@ -48,3 +48,32 @@ type App interface {
 	StoreTemplate
 	StoreSpawn
 }
+
+// FetchStat should be used when only way to get stat is `Stat` enum.
+// Use direct access if you can.
+func (e E) FetchStat(st Stat) int64 {
+	switch st {
+	case NoneStat:
+		return 0
+	case Damage:
+		return e.Stats.Damage
+	case Defense:
+		return e.Stats.Defense
+	case MoveSpeed:
+		return e.Stats.MoveSpeed
+	case CastSpeed:
+		return e.Stats.CastSpeed
+	case CooldownReduction:
+		return e.Stats.CooldownReduction
+	case HP:
+		return e.Stats.HP
+	case MP:
+		return e.Stats.MP
+	case MaxHP:
+		return e.Stats.MaxHP
+	case MaxMP:
+		return e.Stats.MaxMP
+	}
+
+	return 0
+}

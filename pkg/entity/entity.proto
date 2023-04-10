@@ -15,6 +15,34 @@ import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 import "github.com/elojah/game_03/pkg/geometry/geometry.proto";
 
+enum Stat {
+	NoneStat                            = 0;
+
+	Damage                              = 1;
+	Defense                             = 2;
+	MoveSpeed                           = 4;
+	CastSpeed                           = 5;
+	CooldownReduction                   = 6;
+
+	HP                                  = 7;
+	MP                                  = 8;
+	MaxHP                               = 9;
+	MaxMP                               = 10;
+}
+
+message Stats {
+	int64 Damage                        = 1;
+	int64 Defense                       = 2;
+	int64 MoveSpeed                     = 3;
+	int64 CastSpeed                     = 4;
+	int64 CooldownReduction             = 5;
+
+	int64 HP                            = 6;
+	int64 MP                            = 7;
+	int64 MaxHP                         = 8;
+	int64 MaxMP                         = 9;
+}
+
 message E {
     bytes ID                            = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
     bytes UserID                        = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
@@ -33,4 +61,8 @@ message E {
     int64 AnimationAt                   = 11;
 
     repeated geometry.Rect Objects      = 12 [(gogoproto.nullable) = false];
+
+	Stats Stats                         = 13 [(gogoproto.nullable) = false];
+
+	map<string, int64> Effects          = 14 [(gogoproto.nullable) = false];
 }

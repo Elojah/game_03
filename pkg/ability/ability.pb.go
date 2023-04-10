@@ -5,10 +5,12 @@ package ability
 
 import (
 	fmt "fmt"
+	entity "github.com/elojah/game_03/pkg/entity"
 	geometry "github.com/elojah/game_03/pkg/geometry"
 	github_com_elojah_game_03_pkg_ulid "github.com/elojah/game_03/pkg/ulid"
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
+	github_com_gogo_protobuf_sortkeys "github.com/gogo/protobuf/sortkeys"
 	golang_proto "github.com/golang/protobuf/proto"
 	io "io"
 	math "math"
@@ -29,55 +31,6 @@ var _ = math.Inf
 // A compilation error at this line likely means your copy of the
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
-
-type Stat int32
-
-const (
-	NoneStat          Stat = 0
-	Damage            Stat = 1
-	Defense           Stat = 2
-	MoveSpeed         Stat = 4
-	CastSpeed         Stat = 5
-	CooldownReduction Stat = 6
-	HP                Stat = 7
-	MP                Stat = 8
-	MaxHP             Stat = 9
-	MaxMP             Stat = 10
-	// only used in drain
-	DamageReceived Stat = 11
-)
-
-var Stat_name = map[int32]string{
-	0:  "NoneStat",
-	1:  "Damage",
-	2:  "Defense",
-	4:  "MoveSpeed",
-	5:  "CastSpeed",
-	6:  "CooldownReduction",
-	7:  "HP",
-	8:  "MP",
-	9:  "MaxHP",
-	10: "MaxMP",
-	11: "DamageReceived",
-}
-
-var Stat_value = map[string]int32{
-	"NoneStat":          0,
-	"Damage":            1,
-	"Defense":           2,
-	"MoveSpeed":         4,
-	"CastSpeed":         5,
-	"CooldownReduction": 6,
-	"HP":                7,
-	"MP":                8,
-	"MaxHP":             9,
-	"MaxMP":             10,
-	"DamageReceived":    11,
-}
-
-func (Stat) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_23b56474bae35107, []int{0}
-}
 
 type Target int32
 
@@ -113,7 +66,7 @@ var Target_value = map[string]int32{
 }
 
 func (Target) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_23b56474bae35107, []int{1}
+	return fileDescriptor_23b56474bae35107, []int{0}
 }
 
 type Operator int32
@@ -143,43 +96,31 @@ var Operator_value = map[string]int32{
 }
 
 func (Operator) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_23b56474bae35107, []int{2}
+	return fileDescriptor_23b56474bae35107, []int{1}
 }
 
-type Modifier struct {
+type AbilityModifier struct {
+	// Cancel ability
+	Cancel bool `protobuf:"varint,1,opt,name=Cancel,proto3" json:"Cancel,omitempty"`
 	// Add cast time
-	CastTime int64 `protobuf:"varint,1,opt,name=CastTime,proto3" json:"CastTime,omitempty"`
+	CastTime int64 `protobuf:"varint,2,opt,name=CastTime,proto3" json:"CastTime,omitempty"`
 	// Add mana cost
-	ManaCost int64 `protobuf:"varint,2,opt,name=ManaCost,proto3" json:"ManaCost,omitempty"`
+	ManaCost int64 `protobuf:"varint,3,opt,name=ManaCost,proto3" json:"ManaCost,omitempty"`
 	// Add cooldown
-	Cooldown int64 `protobuf:"varint,3,opt,name=Cooldown,proto3" json:"Cooldown,omitempty"`
-	// Change affected stat
-	Stat Stat `protobuf:"varint,4,opt,name=Stat,proto3,enum=ability.Stat" json:"Stat,omitempty"`
-	// Add amount
-	Amount *Amount `protobuf:"bytes,5,opt,name=Amount,proto3" json:"Amount,omitempty"`
-	// Change drained stat
-	Drain *Amount `protobuf:"bytes,6,opt,name=Drain,proto3" json:"Drain,omitempty"`
-	// Change duration
-	Duration int64 `protobuf:"varint,7,opt,name=Duration,proto3" json:"Duration,omitempty"`
-	// Add Delay
-	Delay int64 `protobuf:"varint,8,opt,name=Delay,proto3" json:"Delay,omitempty"`
-	// Change tick rate
-	Repeat int64 `protobuf:"varint,9,opt,name=Repeat,proto3" json:"Repeat,omitempty"`
-	// Add stacks
-	Stacks int64 `protobuf:"varint,10,opt,name=Stacks,proto3" json:"Stacks,omitempty"`
+	Cooldown int64 `protobuf:"varint,4,opt,name=Cooldown,proto3" json:"Cooldown,omitempty"`
 }
 
-func (m *Modifier) Reset()      { *m = Modifier{} }
-func (*Modifier) ProtoMessage() {}
-func (*Modifier) Descriptor() ([]byte, []int) {
+func (m *AbilityModifier) Reset()      { *m = AbilityModifier{} }
+func (*AbilityModifier) ProtoMessage() {}
+func (*AbilityModifier) Descriptor() ([]byte, []int) {
 	return fileDescriptor_23b56474bae35107, []int{0}
 }
-func (m *Modifier) XXX_Unmarshal(b []byte) error {
+func (m *AbilityModifier) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *Modifier) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *AbilityModifier) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_Modifier.Marshal(b, m, deterministic)
+		return xxx_messageInfo_AbilityModifier.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -189,31 +130,87 @@ func (m *Modifier) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return b[:n], nil
 	}
 }
-func (m *Modifier) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Modifier.Merge(m, src)
+func (m *AbilityModifier) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AbilityModifier.Merge(m, src)
 }
-func (m *Modifier) XXX_Size() int {
+func (m *AbilityModifier) XXX_Size() int {
 	return m.Size()
 }
-func (m *Modifier) XXX_DiscardUnknown() {
-	xxx_messageInfo_Modifier.DiscardUnknown(m)
+func (m *AbilityModifier) XXX_DiscardUnknown() {
+	xxx_messageInfo_AbilityModifier.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_Modifier proto.InternalMessageInfo
+var xxx_messageInfo_AbilityModifier proto.InternalMessageInfo
+
+type EffectModifier struct {
+	// Effect modifiers
+	EffectID github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,1,opt,name=EffectID,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"EffectID"`
+	// Cancel effect
+	Cancel bool `protobuf:"varint,2,opt,name=Cancel,proto3" json:"Cancel,omitempty"`
+	// Change affected stat
+	Stat entity.Stat `protobuf:"varint,3,opt,name=Stat,proto3,enum=entity.Stat" json:"Stat,omitempty"`
+	// Add amount
+	Amount Amount `protobuf:"bytes,4,opt,name=Amount,proto3" json:"Amount"`
+	// Change drained stat
+	Drain Amount `protobuf:"bytes,5,opt,name=Drain,proto3" json:"Drain"`
+	// Change duration
+	Duration int64 `protobuf:"varint,6,opt,name=Duration,proto3" json:"Duration,omitempty"`
+	// Add Delay
+	Delay int64 `protobuf:"varint,7,opt,name=Delay,proto3" json:"Delay,omitempty"`
+	// Change tick rate
+	Repeat int64 `protobuf:"varint,8,opt,name=Repeat,proto3" json:"Repeat,omitempty"`
+	// Add stacks
+	StackRules StackRules `protobuf:"bytes,9,opt,name=StackRules,proto3" json:"StackRules"`
+}
+
+func (m *EffectModifier) Reset()      { *m = EffectModifier{} }
+func (*EffectModifier) ProtoMessage() {}
+func (*EffectModifier) Descriptor() ([]byte, []int) {
+	return fileDescriptor_23b56474bae35107, []int{1}
+}
+func (m *EffectModifier) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *EffectModifier) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_EffectModifier.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *EffectModifier) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EffectModifier.Merge(m, src)
+}
+func (m *EffectModifier) XXX_Size() int {
+	return m.Size()
+}
+func (m *EffectModifier) XXX_DiscardUnknown() {
+	xxx_messageInfo_EffectModifier.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_EffectModifier proto.InternalMessageInfo
 
 // Amount used for ability
 type Amount struct {
-	Target     Target                                `protobuf:"varint,1,opt,name=Target,proto3,enum=ability.Target" json:"Target,omitempty"`
-	Direct     int64                                 `protobuf:"varint,2,opt,name=Direct,proto3" json:"Direct,omitempty"`
-	Stat       int64                                 `protobuf:"varint,3,opt,name=Stat,proto3" json:"Stat,omitempty"`
-	Percentage int64                                 `protobuf:"varint,4,opt,name=Percentage,proto3" json:"Percentage,omitempty"`
-	EffectID   github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,5,opt,name=EffectID,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"EffectID"`
+	ID     github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,1,opt,name=ID,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"ID"`
+	Direct int64                                 `protobuf:"varint,2,opt,name=Direct,proto3" json:"Direct,omitempty"`
+	Target Target                                `protobuf:"varint,3,opt,name=Target,proto3,enum=ability.Target" json:"Target,omitempty"`
+	// stat percentage of target
+	Stat       entity.Stat `protobuf:"varint,4,opt,name=Stat,proto3,enum=entity.Stat" json:"Stat,omitempty"`
+	Percentage int64       `protobuf:"varint,5,opt,name=Percentage,proto3" json:"Percentage,omitempty"`
+	// number of effect stacks on target
+	EffectID github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,6,opt,name=EffectID,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"EffectID"`
 }
 
 func (m *Amount) Reset()      { *m = Amount{} }
 func (*Amount) ProtoMessage() {}
 func (*Amount) Descriptor() ([]byte, []int) {
-	return fileDescriptor_23b56474bae35107, []int{1}
+	return fileDescriptor_23b56474bae35107, []int{2}
 }
 func (m *Amount) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -243,20 +240,17 @@ func (m *Amount) XXX_DiscardUnknown() {
 var xxx_messageInfo_Amount proto.InternalMessageInfo
 
 type Trigger struct {
-	Operator Operator `protobuf:"varint,1,opt,name=Operator,proto3,enum=ability.Operator" json:"Operator,omitempty"`
-	Amount   *Amount  `protobuf:"bytes,2,opt,name=Amount,proto3" json:"Amount,omitempty"`
-	Treshold *Amount  `protobuf:"bytes,3,opt,name=Treshold,proto3" json:"Treshold,omitempty"`
-	// only for effect or stat HP/MP
-	ConsumeTreshold bool       `protobuf:"varint,4,opt,name=ConsumeTreshold,proto3" json:"ConsumeTreshold,omitempty"`
-	Modifiers       []Modifier `protobuf:"bytes,5,rep,name=Modifiers,proto3" json:"Modifiers"`
-	// logical AND
-	Trigger *Trigger `protobuf:"bytes,6,opt,name=Trigger,proto3" json:"Trigger,omitempty"`
+	Operator         Operator                   `protobuf:"varint,1,opt,name=Operator,proto3,enum=ability.Operator" json:"Operator,omitempty"`
+	Amount           *Amount                    `protobuf:"bytes,2,opt,name=Amount,proto3" json:"Amount,omitempty"`
+	Treshold         *Amount                    `protobuf:"bytes,3,opt,name=Treshold,proto3" json:"Treshold,omitempty"`
+	AbilityModifiers map[string]AbilityModifier `protobuf:"bytes,4,rep,name=AbilityModifiers,proto3" json:"AbilityModifiers" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	EffectModifiers  map[string]EffectModifier  `protobuf:"bytes,5,rep,name=EffectModifiers,proto3" json:"EffectModifiers" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
 func (m *Trigger) Reset()      { *m = Trigger{} }
 func (*Trigger) ProtoMessage() {}
 func (*Trigger) Descriptor() ([]byte, []int) {
-	return fileDescriptor_23b56474bae35107, []int{2}
+	return fileDescriptor_23b56474bae35107, []int{3}
 }
 func (m *Trigger) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -285,34 +279,68 @@ func (m *Trigger) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Trigger proto.InternalMessageInfo
 
+type StackRules struct {
+	Stacks      int64 `protobuf:"varint,1,opt,name=Stacks,proto3" json:"Stacks,omitempty"`
+	MaxStacks   int64 `protobuf:"varint,2,opt,name=MaxStacks,proto3" json:"MaxStacks,omitempty"`
+	MaxDuration int64 `protobuf:"varint,3,opt,name=MaxDuration,proto3" json:"MaxDuration,omitempty"`
+}
+
+func (m *StackRules) Reset()      { *m = StackRules{} }
+func (*StackRules) ProtoMessage() {}
+func (*StackRules) Descriptor() ([]byte, []int) {
+	return fileDescriptor_23b56474bae35107, []int{4}
+}
+func (m *StackRules) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *StackRules) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_StackRules.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *StackRules) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_StackRules.Merge(m, src)
+}
+func (m *StackRules) XXX_Size() int {
+	return m.Size()
+}
+func (m *StackRules) XXX_DiscardUnknown() {
+	xxx_messageInfo_StackRules.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_StackRules proto.InternalMessageInfo
+
 type Effect struct {
-	ID github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,1,opt,name=ID,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"ID"`
 	// if HP/MP, duration is ignored
-	Stat Stat `protobuf:"varint,2,opt,name=Stat,proto3,enum=ability.Stat" json:"Stat,omitempty"`
+	Stat entity.Stat `protobuf:"varint,1,opt,name=Stat,proto3,enum=entity.Stat" json:"Stat,omitempty"`
 	// Movement effect (TP or push back)
-	Position *geometry.Vec2 `protobuf:"bytes,3,opt,name=Position,proto3" json:"Position,omitempty"`
-	Force    *geometry.Vec2 `protobuf:"bytes,4,opt,name=Force,proto3" json:"Force,omitempty"`
-	Amount   *Amount        `protobuf:"bytes,5,opt,name=Amount,proto3" json:"Amount,omitempty"`
-	Drain    *Amount        `protobuf:"bytes,6,opt,name=Drain,proto3" json:"Drain,omitempty"`
-	// drain is fairly split between targets
-	DrainTargets []Target `protobuf:"varint,7,rep,packed,name=DrainTargets,proto3,enum=ability.Target" json:"DrainTargets,omitempty"`
+	Position *geometry.Vec2 `protobuf:"bytes,2,opt,name=Position,proto3" json:"Position,omitempty"`
+	Force    *geometry.Vec2 `protobuf:"bytes,3,opt,name=Force,proto3" json:"Force,omitempty"`
+	Amount   Amount         `protobuf:"bytes,4,opt,name=Amount,proto3" json:"Amount"`
+	Drain    Amount         `protobuf:"bytes,5,opt,name=Drain,proto3" json:"Drain"`
+	// drain is duplicate for all targets
+	DrainTargets map[string]Target `protobuf:"bytes,6,rep,name=DrainTargets,proto3" json:"DrainTargets" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3,enum=ability.Target"`
 	// stack rules
 	// if duration 0 or ignored, overtime effects ignored too
-	Duration int64                                 `protobuf:"varint,8,opt,name=Duration,proto3" json:"Duration,omitempty"`
-	Icon     github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,9,opt,name=Icon,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"Icon"`
-	Stacks   int64                                 `protobuf:"varint,10,opt,name=Stacks,proto3" json:"Stacks,omitempty"`
-	MaxStack int64                                 `protobuf:"varint,11,opt,name=MaxStack,proto3" json:"MaxStack,omitempty"`
+	Duration   int64                                 `protobuf:"varint,7,opt,name=Duration,proto3" json:"Duration,omitempty"`
+	Icon       github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,8,opt,name=Icon,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"Icon"`
+	StackRules StackRules                            `protobuf:"bytes,9,opt,name=StackRules,proto3" json:"StackRules"`
 	// Tick only if duration > 0 and not ignored
-	Delay  int64 `protobuf:"varint,12,opt,name=Delay,proto3" json:"Delay,omitempty"`
-	Repeat int64 `protobuf:"varint,13,opt,name=Repeat,proto3" json:"Repeat,omitempty"`
-	// logical OR
-	Triggers []Trigger `protobuf:"bytes,14,rep,name=Triggers,proto3" json:"Triggers"`
+	Delay  int64 `protobuf:"varint,10,opt,name=Delay,proto3" json:"Delay,omitempty"`
+	Repeat int64 `protobuf:"varint,11,opt,name=Repeat,proto3" json:"Repeat,omitempty"`
 }
 
 func (m *Effect) Reset()      { *m = Effect{} }
 func (*Effect) ProtoMessage() {}
 func (*Effect) Descriptor() ([]byte, []int) {
-	return fileDescriptor_23b56474bae35107, []int{3}
+	return fileDescriptor_23b56474bae35107, []int{5}
 }
 func (m *Effect) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -342,14 +370,17 @@ func (m *Effect) XXX_DiscardUnknown() {
 var xxx_messageInfo_Effect proto.InternalMessageInfo
 
 type Component struct {
-	Targets []Target `protobuf:"varint,1,rep,packed,name=Targets,proto3,enum=ability.Target" json:"Targets,omitempty"`
-	Effects []Effect `protobuf:"bytes,2,rep,name=Effects,proto3" json:"Effects"`
+	// how to relate targets and effects ? targets[key] key unused ftm
+	Targets map[string]Target `protobuf:"bytes,1,rep,name=Targets,proto3" json:"Targets,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3,enum=ability.Target"`
+	Effects map[string]Effect `protobuf:"bytes,2,rep,name=Effects,proto3" json:"Effects" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	// logical OR
+	Triggers map[string]Trigger `protobuf:"bytes,3,rep,name=Triggers,proto3" json:"Triggers" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
 func (m *Component) Reset()      { *m = Component{} }
 func (*Component) ProtoMessage() {}
 func (*Component) Descriptor() ([]byte, []int) {
-	return fileDescriptor_23b56474bae35107, []int{4}
+	return fileDescriptor_23b56474bae35107, []int{6}
 }
 func (m *Component) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -386,13 +417,13 @@ type Ability struct {
 	CastTime   int64                                 `protobuf:"varint,5,opt,name=CastTime,proto3" json:"CastTime,omitempty"`
 	ManaCost   int64                                 `protobuf:"varint,6,opt,name=ManaCost,proto3" json:"ManaCost,omitempty"`
 	Cooldown   int64                                 `protobuf:"varint,7,opt,name=Cooldown,proto3" json:"Cooldown,omitempty"`
-	Components []Component                           `protobuf:"bytes,8,rep,name=Components,proto3" json:"Components"`
+	Components map[string]Component                  `protobuf:"bytes,8,rep,name=Components,proto3" json:"Components" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
 func (m *Ability) Reset()      { *m = Ability{} }
 func (*Ability) ProtoMessage() {}
 func (*Ability) Descriptor() ([]byte, []int) {
-	return fileDescriptor_23b56474bae35107, []int{5}
+	return fileDescriptor_23b56474bae35107, []int{7}
 }
 func (m *Ability) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -422,24 +453,40 @@ func (m *Ability) XXX_DiscardUnknown() {
 var xxx_messageInfo_Ability proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterEnum("ability.Stat", Stat_name, Stat_value)
-	golang_proto.RegisterEnum("ability.Stat", Stat_name, Stat_value)
 	proto.RegisterEnum("ability.Target", Target_name, Target_value)
 	golang_proto.RegisterEnum("ability.Target", Target_name, Target_value)
 	proto.RegisterEnum("ability.Operator", Operator_name, Operator_value)
 	golang_proto.RegisterEnum("ability.Operator", Operator_name, Operator_value)
-	proto.RegisterType((*Modifier)(nil), "ability.Modifier")
-	golang_proto.RegisterType((*Modifier)(nil), "ability.Modifier")
+	proto.RegisterType((*AbilityModifier)(nil), "ability.AbilityModifier")
+	golang_proto.RegisterType((*AbilityModifier)(nil), "ability.AbilityModifier")
+	proto.RegisterType((*EffectModifier)(nil), "ability.EffectModifier")
+	golang_proto.RegisterType((*EffectModifier)(nil), "ability.EffectModifier")
 	proto.RegisterType((*Amount)(nil), "ability.Amount")
 	golang_proto.RegisterType((*Amount)(nil), "ability.Amount")
 	proto.RegisterType((*Trigger)(nil), "ability.Trigger")
 	golang_proto.RegisterType((*Trigger)(nil), "ability.Trigger")
+	proto.RegisterMapType((map[string]AbilityModifier)(nil), "ability.Trigger.AbilityModifiersEntry")
+	golang_proto.RegisterMapType((map[string]AbilityModifier)(nil), "ability.Trigger.AbilityModifiersEntry")
+	proto.RegisterMapType((map[string]EffectModifier)(nil), "ability.Trigger.EffectModifiersEntry")
+	golang_proto.RegisterMapType((map[string]EffectModifier)(nil), "ability.Trigger.EffectModifiersEntry")
+	proto.RegisterType((*StackRules)(nil), "ability.StackRules")
+	golang_proto.RegisterType((*StackRules)(nil), "ability.StackRules")
 	proto.RegisterType((*Effect)(nil), "ability.Effect")
 	golang_proto.RegisterType((*Effect)(nil), "ability.Effect")
+	proto.RegisterMapType((map[string]Target)(nil), "ability.Effect.DrainTargetsEntry")
+	golang_proto.RegisterMapType((map[string]Target)(nil), "ability.Effect.DrainTargetsEntry")
 	proto.RegisterType((*Component)(nil), "ability.Component")
 	golang_proto.RegisterType((*Component)(nil), "ability.Component")
+	proto.RegisterMapType((map[string]Effect)(nil), "ability.Component.EffectsEntry")
+	golang_proto.RegisterMapType((map[string]Effect)(nil), "ability.Component.EffectsEntry")
+	proto.RegisterMapType((map[string]Target)(nil), "ability.Component.TargetsEntry")
+	golang_proto.RegisterMapType((map[string]Target)(nil), "ability.Component.TargetsEntry")
+	proto.RegisterMapType((map[string]Trigger)(nil), "ability.Component.TriggersEntry")
+	golang_proto.RegisterMapType((map[string]Trigger)(nil), "ability.Component.TriggersEntry")
 	proto.RegisterType((*Ability)(nil), "ability.Ability")
 	golang_proto.RegisterType((*Ability)(nil), "ability.Ability")
+	proto.RegisterMapType((map[string]Component)(nil), "ability.Ability.ComponentsEntry")
+	golang_proto.RegisterMapType((map[string]Component)(nil), "ability.Ability.ComponentsEntry")
 }
 
 func init() {
@@ -450,80 +497,82 @@ func init() {
 }
 
 var fileDescriptor_23b56474bae35107 = []byte{
-	// 1020 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x56, 0xcf, 0x6f, 0xe3, 0x44,
-	0x14, 0xb6, 0x1d, 0x27, 0x76, 0x5e, 0xba, 0xe9, 0xec, 0x08, 0x90, 0xd5, 0x83, 0xb7, 0x44, 0xac,
-	0x28, 0x45, 0x6d, 0x50, 0xab, 0x95, 0xb8, 0x70, 0x68, 0x93, 0x5d, 0x1a, 0x41, 0x4b, 0xe4, 0x56,
-	0x5c, 0xd1, 0xd4, 0x79, 0x71, 0xcd, 0x26, 0x9e, 0x60, 0x4f, 0x96, 0xed, 0x8d, 0x3f, 0x81, 0x3b,
-	0xfc, 0x01, 0xdc, 0x91, 0x10, 0xc7, 0x3d, 0xf6, 0xd8, 0xe3, 0x8a, 0xc3, 0x8a, 0xa6, 0x17, 0x8e,
-	0x7b, 0x44, 0x9c, 0xd0, 0xcc, 0xd8, 0x4e, 0xda, 0xed, 0x56, 0xda, 0x85, 0x53, 0xe6, 0x7b, 0x3f,
-	0x3c, 0xef, 0x7d, 0xf3, 0xbd, 0x99, 0xc0, 0x76, 0x14, 0x8b, 0x93, 0xe9, 0xf1, 0x66, 0xc8, 0xc7,
-	0x6d, 0x1c, 0xf1, 0x6f, 0xd9, 0x49, 0x3b, 0x62, 0x63, 0xfc, 0xe6, 0x93, 0xed, 0xf6, 0xe4, 0x71,
-	0xd4, 0x66, 0xc7, 0xf1, 0x28, 0x16, 0xa7, 0xc5, 0xef, 0xe6, 0x24, 0xe5, 0x82, 0x53, 0x27, 0x87,
-	0x2b, 0x1b, 0x0b, 0xd9, 0x11, 0x8f, 0x78, 0x5b, 0xf9, 0x8f, 0xa7, 0x43, 0x85, 0x14, 0x50, 0x2b,
-	0x9d, 0xb7, 0xf2, 0xe0, 0xf6, 0xcd, 0x22, 0xe4, 0x63, 0x14, 0xe9, 0x69, 0xb9, 0xd0, 0x69, 0xad,
-	0x5f, 0x2d, 0x70, 0xf7, 0xf9, 0x20, 0x1e, 0xc6, 0x98, 0xd2, 0x15, 0x70, 0x3b, 0x2c, 0x13, 0x47,
-	0xf1, 0x18, 0x3d, 0x73, 0xd5, 0x5c, 0xab, 0x04, 0x25, 0x96, 0xbe, 0x7d, 0x96, 0xb0, 0x0e, 0xcf,
-	0x84, 0x67, 0x69, 0x5f, 0x81, 0x55, 0x1e, 0xe7, 0xa3, 0x01, 0xff, 0x3e, 0xf1, 0x2a, 0x79, 0x5e,
-	0x8e, 0xe9, 0xfb, 0x60, 0x1f, 0x0a, 0x26, 0x3c, 0x7b, 0xd5, 0x5c, 0x6b, 0x6e, 0xdd, 0xd9, 0x2c,
-	0xba, 0x95, 0xc6, 0x40, 0xb9, 0xe8, 0x87, 0x50, 0xdb, 0x19, 0xf3, 0x69, 0x22, 0xbc, 0xea, 0xaa,
-	0xb9, 0xd6, 0xd8, 0x5a, 0x2e, 0x83, 0xb4, 0x39, 0xc8, 0xdd, 0xf4, 0x3e, 0x54, 0xbb, 0x29, 0x8b,
-	0x13, 0xaf, 0x76, 0x73, 0x9c, 0xf6, 0xca, 0x72, 0xba, 0xd3, 0x94, 0x89, 0x98, 0x27, 0x9e, 0xa3,
-	0xcb, 0x29, 0x30, 0x7d, 0x07, 0xaa, 0x5d, 0x1c, 0xb1, 0x53, 0xcf, 0x55, 0x0e, 0x0d, 0xe8, 0x7b,
-	0x50, 0x0b, 0x70, 0x82, 0x4c, 0x78, 0x75, 0x65, 0xce, 0x91, 0xb4, 0x1f, 0x0a, 0x16, 0x3e, 0xce,
-	0x3c, 0xd0, 0x76, 0x8d, 0x5a, 0x67, 0x66, 0x51, 0xb2, 0x2c, 0xfe, 0x88, 0xa5, 0x11, 0x0a, 0xc5,
-	0x58, 0x73, 0xa1, 0x28, 0x6d, 0x0e, 0x72, 0xb7, 0xfc, 0x56, 0x37, 0x4e, 0x31, 0x2c, 0xe8, 0xcb,
-	0x11, 0xa5, 0x39, 0x41, 0x9a, 0x38, 0xcd, 0x88, 0x0f, 0xd0, 0xc7, 0x34, 0xc4, 0x44, 0xb0, 0x08,
-	0x15, 0x75, 0x95, 0x60, 0xc1, 0x42, 0x7b, 0xe0, 0x3e, 0x1c, 0x0e, 0x31, 0x14, 0xbd, 0xae, 0xe2,
-	0x6c, 0x69, 0x77, 0xe3, 0xec, 0xc5, 0x3d, 0xe3, 0x8f, 0x17, 0xf7, 0xee, 0xdf, 0x2e, 0x83, 0xe9,
-	0x28, 0x1e, 0x6c, 0xf6, 0xba, 0x41, 0x99, 0xde, 0xfa, 0xc9, 0x02, 0xe7, 0x28, 0x8d, 0xa3, 0x08,
-	0x53, 0xba, 0x01, 0xee, 0x57, 0x13, 0x4c, 0x99, 0xe0, 0x69, 0xde, 0xcd, 0xdd, 0xb2, 0x9b, 0xc2,
-	0x11, 0x94, 0x21, 0x0b, 0xe7, 0x66, 0xdd, 0x7e, 0x6e, 0x1f, 0x83, 0x7b, 0x94, 0x62, 0x76, 0xc2,
-	0x47, 0x03, 0xd5, 0xe6, 0x0d, 0xa1, 0x65, 0x00, 0x5d, 0x83, 0xe5, 0x0e, 0x4f, 0xb2, 0xe9, 0x18,
-	0xcb, 0x1c, 0x49, 0x80, 0x1b, 0x5c, 0x37, 0xd3, 0x07, 0x50, 0x2f, 0xa4, 0x9b, 0x79, 0xd5, 0xd5,
-	0xca, 0x5a, 0x63, 0xa1, 0xde, 0xc2, 0xb3, 0x6b, 0x4b, 0x66, 0x82, 0x79, 0x24, 0x5d, 0x2f, 0x1b,
-	0xce, 0x75, 0x44, 0xe6, 0x47, 0xa6, 0xed, 0x41, 0x11, 0xd0, 0xfa, 0xcd, 0x86, 0x9a, 0xa6, 0x8a,
-	0x7e, 0x06, 0x56, 0xaf, 0xab, 0x68, 0x79, 0x63, 0xb6, 0xad, 0x5e, 0xb7, 0x9c, 0x03, 0xeb, 0xf5,
-	0x73, 0xb0, 0x0e, 0x6e, 0x9f, 0x67, 0xb1, 0xd2, 0xad, 0xa6, 0xa9, 0xb9, 0x59, 0x8e, 0xeb, 0xd7,
-	0x18, 0x6e, 0x05, 0xa5, 0x9f, 0x7e, 0x00, 0xd5, 0x47, 0x3c, 0x0d, 0xb5, 0x38, 0x5e, 0x0d, 0xd4,
-	0xce, 0xff, 0x7d, 0xb2, 0xb6, 0x61, 0x49, 0x2d, 0xb4, 0xa4, 0x33, 0xcf, 0x59, 0xad, 0xdc, 0x24,
-	0xf9, 0x2b, 0x41, 0x57, 0xc6, 0xd1, 0xbd, 0x36, 0x8e, 0x3b, 0x60, 0xf7, 0x42, 0x9e, 0xa8, 0xb1,
-	0x7b, 0x63, 0x5a, 0x55, 0xea, 0xeb, 0x66, 0x54, 0x5f, 0x58, 0x4f, 0x15, 0xf0, 0x1a, 0xc5, 0x85,
-	0xa5, 0xf1, 0xfc, 0x16, 0x58, 0xba, 0xf9, 0x16, 0xb8, 0x73, 0xe5, 0x16, 0xd8, 0x92, 0xf2, 0x55,
-	0x7a, 0xc8, 0xbc, 0xa6, 0x92, 0xd9, 0x2b, 0x8a, 0xc9, 0x55, 0x56, 0xc6, 0xb5, 0x22, 0xa8, 0x77,
-	0xf8, 0x78, 0xc2, 0x13, 0x4c, 0x04, 0xfd, 0x08, 0x9c, 0x82, 0x31, 0xf3, 0x66, 0xc6, 0x0a, 0x3f,
-	0x6d, 0x83, 0xa3, 0xf5, 0x96, 0x79, 0x96, 0xda, 0x6a, 0x1e, 0xaa, 0xed, 0xf9, 0x4e, 0x45, 0x54,
-	0xeb, 0x1f, 0x0b, 0x9c, 0x1d, 0x1d, 0xf1, 0x5f, 0x25, 0x4a, 0xc1, 0x3e, 0x60, 0x63, 0x54, 0x12,
-	0xad, 0x07, 0x6a, 0x5d, 0x1e, 0x50, 0xe5, 0xed, 0x0f, 0xe8, 0x0b, 0xa8, 0xef, 0x24, 0xf1, 0x58,
-	0x0b, 0xc0, 0x7e, 0x9b, 0xef, 0xcc, 0xf3, 0xaf, 0x3c, 0x51, 0xd5, 0x5b, 0x9e, 0xa8, 0xda, 0x2d,
-	0x4f, 0x94, 0x73, 0xed, 0x89, 0xfa, 0x14, 0xa0, 0x3c, 0xab, 0xcc, 0x73, 0x15, 0xed, 0xb4, 0xa4,
-	0xbd, 0x74, 0xe5, 0xcc, 0x2f, 0xc4, 0xae, 0xff, 0x6c, 0xea, 0xa9, 0xa6, 0x4b, 0xe0, 0x1e, 0xf0,
-	0x04, 0xe5, 0x9a, 0x18, 0x14, 0xa0, 0xd6, 0x65, 0x63, 0x16, 0x21, 0x31, 0x69, 0x03, 0x9c, 0x2e,
-	0x0e, 0x31, 0xc9, 0x90, 0x58, 0xf4, 0x8e, 0xbc, 0xb1, 0x9e, 0xe0, 0xe1, 0x04, 0x71, 0x40, 0x6c,
-	0x09, 0x65, 0xf1, 0x1a, 0x56, 0xe9, 0xbb, 0x70, 0xb7, 0xa8, 0x29, 0xc0, 0xc1, 0x34, 0x94, 0x0d,
-	0x93, 0x1a, 0xad, 0x81, 0xb5, 0xd7, 0x27, 0x8e, 0xfc, 0xdd, 0xef, 0x13, 0x97, 0xd6, 0xa1, 0xba,
-	0xcf, 0x9e, 0xee, 0xf5, 0x49, 0x3d, 0x5f, 0xee, 0xf7, 0x09, 0x50, 0x0a, 0x4d, 0xbd, 0x67, 0x80,
-	0x21, 0xc6, 0x4f, 0x70, 0x40, 0x1a, 0xeb, 0xc7, 0xc5, 0xdb, 0x44, 0x9b, 0x00, 0xb2, 0x3e, 0x8d,
-	0x88, 0x41, 0x5d, 0xb0, 0x0f, 0x71, 0x34, 0x24, 0x26, 0x75, 0xa0, 0xf2, 0x88, 0x23, 0xa9, 0xd0,
-	0x65, 0x68, 0x74, 0x46, 0x3c, 0xc3, 0x4c, 0x28, 0x8f, 0x2d, 0x73, 0x72, 0x83, 0x0c, 0xa8, 0xca,
-	0x9c, 0x00, 0x43, 0x41, 0x6a, 0xb2, 0xbf, 0x4e, 0x9c, 0x86, 0x23, 0x24, 0xce, 0xfa, 0xc1, 0xfc,
-	0xcd, 0xa0, 0x04, 0x96, 0xe4, 0x2e, 0x05, 0x26, 0x86, 0x2c, 0xf0, 0xe1, 0x77, 0x53, 0x36, 0x22,
-	0xa6, 0xa6, 0x48, 0x68, 0x64, 0x49, 0x5a, 0x3e, 0x4f, 0x91, 0x09, 0x4c, 0x49, 0x45, 0x7e, 0xef,
-	0x4b, 0xcc, 0x32, 0x4c, 0x89, 0xbd, 0xbb, 0x77, 0x76, 0xe1, 0x1b, 0xe7, 0x17, 0xbe, 0xf1, 0xfc,
-	0xc2, 0x37, 0x5e, 0x5e, 0xf8, 0xe6, 0xdf, 0x17, 0xbe, 0xf9, 0xc3, 0xcc, 0x37, 0x7f, 0x99, 0xf9,
-	0xe6, 0xef, 0x33, 0xdf, 0x7c, 0x36, 0xf3, 0xcd, 0xb3, 0x99, 0x6f, 0x9e, 0xcf, 0x7c, 0xf3, 0xcf,
-	0x99, 0x6f, 0xfe, 0x35, 0xf3, 0x8d, 0x97, 0x33, 0xdf, 0xfc, 0xf1, 0xd2, 0x37, 0x9e, 0x5d, 0xfa,
-	0xe6, 0xf9, 0xa5, 0x6f, 0x3c, 0xbf, 0xf4, 0x8d, 0xe3, 0x9a, 0xfa, 0x87, 0xb3, 0xfd, 0x6f, 0x00,
-	0x00, 0x00, 0xff, 0xff, 0x3a, 0x0f, 0x8d, 0x8d, 0x87, 0x09, 0x00, 0x00,
+	// 1157 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x57, 0x41, 0x6f, 0xe3, 0xc4,
+	0x17, 0x8f, 0x63, 0x27, 0x4e, 0x5e, 0xf2, 0x6f, 0xbd, 0xf3, 0x5f, 0xc0, 0x8a, 0x90, 0x37, 0x44,
+	0xec, 0x52, 0x15, 0x35, 0x85, 0x56, 0x48, 0x80, 0x84, 0x50, 0x9b, 0xb4, 0x50, 0x95, 0x96, 0xe2,
+	0x16, 0x84, 0x84, 0x10, 0x9a, 0xba, 0xd3, 0xd4, 0xd4, 0xf1, 0x14, 0xdb, 0x81, 0xed, 0x01, 0x89,
+	0x8f, 0xc0, 0x85, 0xef, 0xc0, 0x07, 0xe0, 0xc0, 0x8d, 0x3d, 0xf6, 0xd8, 0xe3, 0x0a, 0xa4, 0x15,
+	0x4d, 0x2f, 0x1c, 0xf7, 0x84, 0x90, 0xb8, 0x20, 0xcf, 0x8c, 0x9d, 0xb1, 0xeb, 0x06, 0xd1, 0xc2,
+	0xa9, 0x7e, 0xf3, 0xde, 0xef, 0x37, 0x6f, 0xde, 0xfb, 0xcd, 0xcb, 0x14, 0x96, 0x07, 0x6e, 0x74,
+	0x34, 0xda, 0xef, 0x3a, 0x74, 0xb8, 0x48, 0x3c, 0xfa, 0x39, 0x3e, 0x5a, 0x1c, 0xe0, 0x21, 0xf9,
+	0xec, 0x95, 0xe5, 0xc5, 0x93, 0xe3, 0xc1, 0x22, 0xde, 0x77, 0x3d, 0x37, 0x3a, 0x4d, 0xfe, 0x76,
+	0x4f, 0x02, 0x1a, 0x51, 0xa4, 0x0b, 0xb3, 0xb5, 0x20, 0xa1, 0x07, 0x74, 0x40, 0x17, 0x99, 0x7f,
+	0x7f, 0x74, 0xc8, 0x2c, 0x66, 0xb0, 0x2f, 0x8e, 0x6b, 0xbd, 0x36, 0x7d, 0xb3, 0x01, 0xa1, 0x43,
+	0x12, 0x05, 0xa7, 0xe9, 0x87, 0x80, 0xbd, 0x3a, 0x1d, 0x46, 0xfc, 0x28, 0x4e, 0x91, 0xff, 0xe1,
+	0x90, 0xce, 0xd7, 0x30, 0xbb, 0xc2, 0x73, 0xdc, 0xa2, 0x07, 0xee, 0xa1, 0x4b, 0x02, 0xf4, 0x2c,
+	0x54, 0x7b, 0xd8, 0x77, 0x88, 0x67, 0x2a, 0x6d, 0x65, 0xae, 0x66, 0x0b, 0x0b, 0xb5, 0xa0, 0xd6,
+	0xc3, 0x61, 0xb4, 0xe7, 0x0e, 0x89, 0x59, 0x6e, 0x2b, 0x73, 0xaa, 0x9d, 0xda, 0xb1, 0x6f, 0x0b,
+	0xfb, 0xb8, 0x47, 0xc3, 0xc8, 0x54, 0xb9, 0x2f, 0xb1, 0x19, 0x8e, 0x52, 0xef, 0x80, 0x7e, 0xe5,
+	0x9b, 0x9a, 0xc0, 0x09, 0xbb, 0xf3, 0x7b, 0x19, 0x66, 0xd6, 0x0e, 0x0f, 0x89, 0x13, 0xa5, 0xdb,
+	0x6f, 0x40, 0x8d, 0xaf, 0x6c, 0xf4, 0x59, 0x02, 0xcd, 0xd5, 0x85, 0xb3, 0x27, 0xf7, 0x4a, 0x3f,
+	0x3f, 0xb9, 0x77, 0x7f, 0xfa, 0xf1, 0x46, 0x9e, 0x7b, 0xd0, 0xdd, 0xe8, 0xdb, 0x29, 0x5c, 0x3a,
+	0x49, 0x39, 0x73, 0x92, 0x36, 0x68, 0xbb, 0x11, 0xe6, 0x99, 0xce, 0x2c, 0x35, 0xbb, 0xa2, 0x22,
+	0xf1, 0x9a, 0xcd, 0x3c, 0x68, 0x01, 0xaa, 0x2b, 0x43, 0x3a, 0xf2, 0x23, 0x96, 0x71, 0x63, 0x69,
+	0xb6, 0x9b, 0x34, 0x96, 0x2f, 0xaf, 0x6a, 0x71, 0x4e, 0xb6, 0x08, 0x42, 0x2f, 0x43, 0xa5, 0x1f,
+	0x60, 0xd7, 0x37, 0x2b, 0xd3, 0xa2, 0x79, 0x4c, 0x5c, 0x8f, 0xfe, 0x28, 0xc0, 0x91, 0x4b, 0x7d,
+	0xb3, 0xca, 0xeb, 0x91, 0xd8, 0xe8, 0x2e, 0x54, 0xfa, 0xc4, 0xc3, 0xa7, 0xa6, 0xce, 0x1c, 0xdc,
+	0x88, 0xcf, 0x61, 0x93, 0x13, 0x82, 0x23, 0xb3, 0xc6, 0x96, 0x85, 0x85, 0xde, 0x00, 0xd8, 0x8d,
+	0xb0, 0x73, 0x6c, 0x8f, 0x3c, 0x12, 0x9a, 0x75, 0xb6, 0xf7, 0xff, 0xd3, 0xbd, 0x27, 0x2e, 0xb1,
+	0xbf, 0x14, 0xdc, 0xf9, 0xae, 0x9c, 0x9c, 0x10, 0xbd, 0x05, 0xe5, 0x9b, 0x96, 0xba, 0xcc, 0x8b,
+	0xdc, 0x77, 0x03, 0xe2, 0x44, 0x42, 0x14, 0xc2, 0x42, 0x2f, 0x41, 0x75, 0x0f, 0x07, 0x03, 0x92,
+	0x94, 0x79, 0x52, 0x14, 0xbe, 0x6c, 0x0b, 0x77, 0xda, 0x0d, 0xed, 0xda, 0x6e, 0x58, 0x00, 0x3b,
+	0x24, 0x70, 0x88, 0x1f, 0xe1, 0x01, 0x61, 0x35, 0x56, 0x6d, 0x69, 0x25, 0x23, 0x99, 0xea, 0xad,
+	0x24, 0xd3, 0xf9, 0x53, 0x05, 0x7d, 0x2f, 0x70, 0x07, 0x03, 0x12, 0xa0, 0x05, 0xa8, 0xbd, 0x7f,
+	0x42, 0x02, 0x1c, 0xd1, 0x80, 0x95, 0x67, 0x66, 0xe9, 0x4e, 0x7a, 0x86, 0xc4, 0x61, 0xa7, 0x21,
+	0xf1, 0x81, 0x85, 0x66, 0xca, 0x85, 0x2a, 0x90, 0xd4, 0x52, 0xdb, 0x0b, 0x48, 0x78, 0x44, 0xbd,
+	0x03, 0x56, 0x9b, 0x82, 0xd0, 0x34, 0x00, 0x7d, 0x0c, 0x46, 0xee, 0x82, 0x86, 0xa6, 0xd6, 0x56,
+	0xe7, 0x1a, 0x4b, 0x0f, 0x26, 0x05, 0xe5, 0x09, 0x77, 0xf3, 0x81, 0x6b, 0x7e, 0x14, 0x9c, 0x8a,
+	0xe6, 0x5f, 0x61, 0x41, 0x1f, 0xc2, 0x6c, 0xf6, 0xea, 0x85, 0x66, 0x85, 0x11, 0xdf, 0xbf, 0x42,
+	0x9c, 0x8b, 0x93, 0x79, 0xf3, 0x1c, 0xad, 0x4f, 0xe1, 0x99, 0xc2, 0x3c, 0x90, 0x01, 0xea, 0x31,
+	0x39, 0x65, 0x95, 0xac, 0xdb, 0xf1, 0x27, 0xea, 0x42, 0xe5, 0x4b, 0xec, 0x8d, 0x88, 0x28, 0x98,
+	0x39, 0xa9, 0x42, 0x96, 0xc0, 0xe6, 0x61, 0x6f, 0x96, 0x5f, 0x57, 0x5a, 0x9f, 0xc0, 0xdd, 0xa2,
+	0x6c, 0x0a, 0xd8, 0x17, 0xb2, 0xec, 0xcf, 0xa5, 0xec, 0x59, 0xbc, 0x44, 0xde, 0x39, 0x90, 0x2f,
+	0x54, 0xac, 0x6c, 0x66, 0x85, 0x8c, 0x55, 0xb5, 0x85, 0x85, 0x9e, 0x87, 0xfa, 0x16, 0x7e, 0x28,
+	0x5c, 0x5c, 0xf4, 0x93, 0x05, 0xd4, 0x86, 0xc6, 0x16, 0x7e, 0x98, 0xde, 0x70, 0x3e, 0x0d, 0xe5,
+	0xa5, 0xce, 0x4f, 0x1a, 0x54, 0x79, 0x0e, 0xa9, 0xf6, 0x95, 0x6b, 0xb5, 0x3f, 0x0f, 0xb5, 0x1d,
+	0x1a, 0xba, 0x8c, 0x8b, 0x1f, 0x64, 0xa6, 0x9b, 0x8e, 0xfd, 0x8f, 0x88, 0xb3, 0x64, 0xa7, 0x7e,
+	0xf4, 0x22, 0x54, 0xd6, 0x69, 0xe0, 0x10, 0xa1, 0xaa, 0x7c, 0x20, 0x77, 0xfe, 0xa7, 0xb3, 0x6d,
+	0x13, 0x9a, 0xec, 0x83, 0x5f, 0xed, 0xd0, 0xac, 0x32, 0x41, 0xbd, 0x90, 0x2b, 0x7d, 0x57, 0x8e,
+	0x91, 0xc5, 0x94, 0x01, 0x67, 0x06, 0xa5, 0x9e, 0x1b, 0x94, 0x2b, 0xa0, 0x6d, 0x38, 0xd4, 0x67,
+	0x03, 0xf1, 0x1f, 0x5f, 0x77, 0x06, 0xbd, 0xc5, 0xf4, 0x9c, 0x8c, 0x69, 0x28, 0x1e, 0xd3, 0x0d,
+	0x79, 0x4c, 0xb7, 0x76, 0xe0, 0xce, 0x95, 0x03, 0x17, 0xe8, 0xf5, 0xbe, 0xac, 0xd7, 0x82, 0x79,
+	0x29, 0xe9, 0xf4, 0x07, 0x15, 0xea, 0x3d, 0x3a, 0x3c, 0xa1, 0x3e, 0xf1, 0xe3, 0x9f, 0x01, 0x3d,
+	0xa9, 0xb7, 0xc2, 0xea, 0x7d, 0x2f, 0x85, 0xa6, 0x41, 0x5d, 0x79, 0x73, 0x3b, 0x89, 0x47, 0x6f,
+	0x83, 0xce, 0x5b, 0x12, 0x0b, 0xf9, 0x3a, 0xa8, 0x88, 0x90, 0x1b, 0x95, 0xa0, 0xd0, 0x6a, 0x3c,
+	0xcb, 0xd8, 0x90, 0x08, 0x4d, 0x95, 0x31, 0xb4, 0x8b, 0x36, 0x17, 0x21, 0x32, 0x45, 0x8a, 0x6b,
+	0x6d, 0x42, 0xf3, 0x5f, 0x2b, 0x4d, 0x4c, 0x26, 0xe7, 0xfb, 0x77, 0x64, 0xb2, 0xa0, 0x39, 0x4e,
+	0x26, 0xdb, 0x82, 0xff, 0x65, 0x52, 0x2f, 0x60, 0x7b, 0x90, 0x65, 0x33, 0xf2, 0xb3, 0x53, 0x6e,
+	0xdb, 0x2f, 0x2a, 0xe8, 0x62, 0xb4, 0xdd, 0xf6, 0x57, 0x17, 0x81, 0xb6, 0x8d, 0xc5, 0x43, 0xac,
+	0x6e, 0xb3, 0xef, 0xf4, 0x4e, 0xa8, 0x37, 0xbf, 0x13, 0x9b, 0x50, 0x5f, 0xf1, 0xdd, 0x21, 0xbf,
+	0x73, 0xda, 0x4d, 0x78, 0x26, 0xf8, 0xcc, 0x83, 0xb1, 0x32, 0xe5, 0xc1, 0x58, 0x9d, 0xf2, 0x60,
+	0xd4, 0xb3, 0x0f, 0x46, 0xb4, 0x0e, 0x90, 0xca, 0x2a, 0x34, 0x6b, 0x39, 0xc5, 0xad, 0xe4, 0x95,
+	0x97, 0x51, 0x9c, 0x84, 0x6c, 0x7d, 0x00, 0xb3, 0xb9, 0xa0, 0x82, 0xde, 0xce, 0x65, 0x7b, 0x8b,
+	0xae, 0x2a, 0x5b, 0xea, 0xee, 0xfc, 0x7e, 0xf2, 0xe0, 0x41, 0x33, 0x00, 0xdb, 0xd4, 0x27, 0xdc,
+	0x32, 0x4a, 0xa8, 0x06, 0xda, 0x2e, 0xf1, 0x0e, 0x0d, 0x05, 0xe9, 0xa0, 0xae, 0x53, 0x62, 0xa8,
+	0x68, 0x16, 0x1a, 0x3d, 0x8f, 0x86, 0x24, 0x8c, 0x98, 0x47, 0x8b, 0x31, 0x62, 0x21, 0x0e, 0xa8,
+	0xc4, 0x18, 0x9b, 0x38, 0x91, 0x51, 0x45, 0x00, 0xd5, 0x9e, 0x1b, 0x38, 0x1e, 0x31, 0xf4, 0xf9,
+	0xed, 0xc9, 0x93, 0x04, 0x19, 0xd0, 0x8c, 0x77, 0x49, 0x6c, 0xa3, 0x84, 0xea, 0x50, 0x59, 0xfb,
+	0x62, 0x84, 0x3d, 0x43, 0x41, 0x4d, 0xa8, 0x6d, 0xd3, 0x88, 0x5b, 0x65, 0xd4, 0x00, 0xfd, 0x9d,
+	0x80, 0xe0, 0x88, 0x04, 0x86, 0x1a, 0xf3, 0xbd, 0x47, 0xc2, 0x90, 0x04, 0x86, 0xb6, 0xfa, 0xee,
+	0xd9, 0x85, 0x55, 0x3a, 0xbf, 0xb0, 0x4a, 0x8f, 0x2f, 0xac, 0xd2, 0xd3, 0x0b, 0x4b, 0xf9, 0xe3,
+	0xc2, 0x52, 0xbe, 0x19, 0x5b, 0xca, 0xf7, 0x63, 0x4b, 0xf9, 0x71, 0x6c, 0x29, 0x8f, 0xc6, 0x96,
+	0x72, 0x36, 0xb6, 0x94, 0xf3, 0xb1, 0xa5, 0xfc, 0x3a, 0xb6, 0x94, 0xdf, 0xc6, 0x56, 0xe9, 0xe9,
+	0xd8, 0x52, 0xbe, 0xbd, 0xb4, 0x4a, 0x8f, 0x2e, 0x2d, 0xe5, 0xfc, 0xd2, 0x2a, 0x3d, 0xbe, 0xb4,
+	0x4a, 0xfb, 0x55, 0xf6, 0xff, 0xc4, 0xf2, 0x5f, 0x01, 0x00, 0x00, 0xff, 0xff, 0x6a, 0xbb, 0xd3,
+	0xc7, 0x28, 0x0d, 0x00, 0x00,
 }
 
-func (x Stat) String() string {
-	s, ok := Stat_name[int32(x)]
-	if ok {
-		return s
-	}
-	return strconv.Itoa(int(x))
-}
 func (x Target) String() string {
 	s, ok := Target_name[int32(x)]
 	if ok {
@@ -538,14 +587,14 @@ func (x Operator) String() string {
 	}
 	return strconv.Itoa(int(x))
 }
-func (this *Modifier) Equal(that interface{}) bool {
+func (this *AbilityModifier) Equal(that interface{}) bool {
 	if that == nil {
 		return this == nil
 	}
 
-	that1, ok := that.(*Modifier)
+	that1, ok := that.(*AbilityModifier)
 	if !ok {
-		that2, ok := that.(Modifier)
+		that2, ok := that.(AbilityModifier)
 		if ok {
 			that1 = &that2
 		} else {
@@ -557,6 +606,9 @@ func (this *Modifier) Equal(that interface{}) bool {
 	} else if this == nil {
 		return false
 	}
+	if this.Cancel != that1.Cancel {
+		return false
+	}
 	if this.CastTime != that1.CastTime {
 		return false
 	}
@@ -566,13 +618,40 @@ func (this *Modifier) Equal(that interface{}) bool {
 	if this.Cooldown != that1.Cooldown {
 		return false
 	}
+	return true
+}
+func (this *EffectModifier) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*EffectModifier)
+	if !ok {
+		that2, ok := that.(EffectModifier)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if !this.EffectID.Equal(that1.EffectID) {
+		return false
+	}
+	if this.Cancel != that1.Cancel {
+		return false
+	}
 	if this.Stat != that1.Stat {
 		return false
 	}
-	if !this.Amount.Equal(that1.Amount) {
+	if !this.Amount.Equal(&that1.Amount) {
 		return false
 	}
-	if !this.Drain.Equal(that1.Drain) {
+	if !this.Drain.Equal(&that1.Drain) {
 		return false
 	}
 	if this.Duration != that1.Duration {
@@ -584,7 +663,7 @@ func (this *Modifier) Equal(that interface{}) bool {
 	if this.Repeat != that1.Repeat {
 		return false
 	}
-	if this.Stacks != that1.Stacks {
+	if !this.StackRules.Equal(&that1.StackRules) {
 		return false
 	}
 	return true
@@ -608,10 +687,13 @@ func (this *Amount) Equal(that interface{}) bool {
 	} else if this == nil {
 		return false
 	}
-	if this.Target != that1.Target {
+	if !this.ID.Equal(that1.ID) {
 		return false
 	}
 	if this.Direct != that1.Direct {
+		return false
+	}
+	if this.Target != that1.Target {
 		return false
 	}
 	if this.Stat != that1.Stat {
@@ -653,18 +735,54 @@ func (this *Trigger) Equal(that interface{}) bool {
 	if !this.Treshold.Equal(that1.Treshold) {
 		return false
 	}
-	if this.ConsumeTreshold != that1.ConsumeTreshold {
+	if len(this.AbilityModifiers) != len(that1.AbilityModifiers) {
 		return false
 	}
-	if len(this.Modifiers) != len(that1.Modifiers) {
-		return false
-	}
-	for i := range this.Modifiers {
-		if !this.Modifiers[i].Equal(&that1.Modifiers[i]) {
+	for i := range this.AbilityModifiers {
+		a := this.AbilityModifiers[i]
+		b := that1.AbilityModifiers[i]
+		if !(&a).Equal(&b) {
 			return false
 		}
 	}
-	if !this.Trigger.Equal(that1.Trigger) {
+	if len(this.EffectModifiers) != len(that1.EffectModifiers) {
+		return false
+	}
+	for i := range this.EffectModifiers {
+		a := this.EffectModifiers[i]
+		b := that1.EffectModifiers[i]
+		if !(&a).Equal(&b) {
+			return false
+		}
+	}
+	return true
+}
+func (this *StackRules) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*StackRules)
+	if !ok {
+		that2, ok := that.(StackRules)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if this.Stacks != that1.Stacks {
+		return false
+	}
+	if this.MaxStacks != that1.MaxStacks {
+		return false
+	}
+	if this.MaxDuration != that1.MaxDuration {
 		return false
 	}
 	return true
@@ -688,9 +806,6 @@ func (this *Effect) Equal(that interface{}) bool {
 	} else if this == nil {
 		return false
 	}
-	if !this.ID.Equal(that1.ID) {
-		return false
-	}
 	if this.Stat != that1.Stat {
 		return false
 	}
@@ -700,10 +815,10 @@ func (this *Effect) Equal(that interface{}) bool {
 	if !this.Force.Equal(that1.Force) {
 		return false
 	}
-	if !this.Amount.Equal(that1.Amount) {
+	if !this.Amount.Equal(&that1.Amount) {
 		return false
 	}
-	if !this.Drain.Equal(that1.Drain) {
+	if !this.Drain.Equal(&that1.Drain) {
 		return false
 	}
 	if len(this.DrainTargets) != len(that1.DrainTargets) {
@@ -720,10 +835,7 @@ func (this *Effect) Equal(that interface{}) bool {
 	if !this.Icon.Equal(that1.Icon) {
 		return false
 	}
-	if this.Stacks != that1.Stacks {
-		return false
-	}
-	if this.MaxStack != that1.MaxStack {
+	if !this.StackRules.Equal(&that1.StackRules) {
 		return false
 	}
 	if this.Delay != that1.Delay {
@@ -731,14 +843,6 @@ func (this *Effect) Equal(that interface{}) bool {
 	}
 	if this.Repeat != that1.Repeat {
 		return false
-	}
-	if len(this.Triggers) != len(that1.Triggers) {
-		return false
-	}
-	for i := range this.Triggers {
-		if !this.Triggers[i].Equal(&that1.Triggers[i]) {
-			return false
-		}
 	}
 	return true
 }
@@ -773,7 +877,19 @@ func (this *Component) Equal(that interface{}) bool {
 		return false
 	}
 	for i := range this.Effects {
-		if !this.Effects[i].Equal(&that1.Effects[i]) {
+		a := this.Effects[i]
+		b := that1.Effects[i]
+		if !(&a).Equal(&b) {
+			return false
+		}
+	}
+	if len(this.Triggers) != len(that1.Triggers) {
+		return false
+	}
+	for i := range this.Triggers {
+		a := this.Triggers[i]
+		b := that1.Triggers[i]
+		if !(&a).Equal(&b) {
 			return false
 		}
 	}
@@ -823,32 +939,42 @@ func (this *Ability) Equal(that interface{}) bool {
 		return false
 	}
 	for i := range this.Components {
-		if !this.Components[i].Equal(&that1.Components[i]) {
+		a := this.Components[i]
+		b := that1.Components[i]
+		if !(&a).Equal(&b) {
 			return false
 		}
 	}
 	return true
 }
-func (this *Modifier) GoString() string {
+func (this *AbilityModifier) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 14)
-	s = append(s, "&ability.Modifier{")
+	s := make([]string, 0, 8)
+	s = append(s, "&ability.AbilityModifier{")
+	s = append(s, "Cancel: "+fmt.Sprintf("%#v", this.Cancel)+",\n")
 	s = append(s, "CastTime: "+fmt.Sprintf("%#v", this.CastTime)+",\n")
 	s = append(s, "ManaCost: "+fmt.Sprintf("%#v", this.ManaCost)+",\n")
 	s = append(s, "Cooldown: "+fmt.Sprintf("%#v", this.Cooldown)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *EffectModifier) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 13)
+	s = append(s, "&ability.EffectModifier{")
+	s = append(s, "EffectID: "+fmt.Sprintf("%#v", this.EffectID)+",\n")
+	s = append(s, "Cancel: "+fmt.Sprintf("%#v", this.Cancel)+",\n")
 	s = append(s, "Stat: "+fmt.Sprintf("%#v", this.Stat)+",\n")
-	if this.Amount != nil {
-		s = append(s, "Amount: "+fmt.Sprintf("%#v", this.Amount)+",\n")
-	}
-	if this.Drain != nil {
-		s = append(s, "Drain: "+fmt.Sprintf("%#v", this.Drain)+",\n")
-	}
+	s = append(s, "Amount: "+strings.Replace(this.Amount.GoString(), `&`, ``, 1)+",\n")
+	s = append(s, "Drain: "+strings.Replace(this.Drain.GoString(), `&`, ``, 1)+",\n")
 	s = append(s, "Duration: "+fmt.Sprintf("%#v", this.Duration)+",\n")
 	s = append(s, "Delay: "+fmt.Sprintf("%#v", this.Delay)+",\n")
 	s = append(s, "Repeat: "+fmt.Sprintf("%#v", this.Repeat)+",\n")
-	s = append(s, "Stacks: "+fmt.Sprintf("%#v", this.Stacks)+",\n")
+	s = append(s, "StackRules: "+strings.Replace(this.StackRules.GoString(), `&`, ``, 1)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -856,10 +982,11 @@ func (this *Amount) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 9)
+	s := make([]string, 0, 10)
 	s = append(s, "&ability.Amount{")
-	s = append(s, "Target: "+fmt.Sprintf("%#v", this.Target)+",\n")
+	s = append(s, "ID: "+fmt.Sprintf("%#v", this.ID)+",\n")
 	s = append(s, "Direct: "+fmt.Sprintf("%#v", this.Direct)+",\n")
+	s = append(s, "Target: "+fmt.Sprintf("%#v", this.Target)+",\n")
 	s = append(s, "Stat: "+fmt.Sprintf("%#v", this.Stat)+",\n")
 	s = append(s, "Percentage: "+fmt.Sprintf("%#v", this.Percentage)+",\n")
 	s = append(s, "EffectID: "+fmt.Sprintf("%#v", this.EffectID)+",\n")
@@ -870,7 +997,7 @@ func (this *Trigger) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 10)
+	s := make([]string, 0, 9)
 	s = append(s, "&ability.Trigger{")
 	s = append(s, "Operator: "+fmt.Sprintf("%#v", this.Operator)+",\n")
 	if this.Amount != nil {
@@ -879,17 +1006,44 @@ func (this *Trigger) GoString() string {
 	if this.Treshold != nil {
 		s = append(s, "Treshold: "+fmt.Sprintf("%#v", this.Treshold)+",\n")
 	}
-	s = append(s, "ConsumeTreshold: "+fmt.Sprintf("%#v", this.ConsumeTreshold)+",\n")
-	if this.Modifiers != nil {
-		vs := make([]Modifier, len(this.Modifiers))
-		for i := range vs {
-			vs[i] = this.Modifiers[i]
-		}
-		s = append(s, "Modifiers: "+fmt.Sprintf("%#v", vs)+",\n")
+	keysForAbilityModifiers := make([]string, 0, len(this.AbilityModifiers))
+	for k, _ := range this.AbilityModifiers {
+		keysForAbilityModifiers = append(keysForAbilityModifiers, k)
 	}
-	if this.Trigger != nil {
-		s = append(s, "Trigger: "+fmt.Sprintf("%#v", this.Trigger)+",\n")
+	github_com_gogo_protobuf_sortkeys.Strings(keysForAbilityModifiers)
+	mapStringForAbilityModifiers := "map[string]AbilityModifier{"
+	for _, k := range keysForAbilityModifiers {
+		mapStringForAbilityModifiers += fmt.Sprintf("%#v: %#v,", k, this.AbilityModifiers[k])
 	}
+	mapStringForAbilityModifiers += "}"
+	if this.AbilityModifiers != nil {
+		s = append(s, "AbilityModifiers: "+mapStringForAbilityModifiers+",\n")
+	}
+	keysForEffectModifiers := make([]string, 0, len(this.EffectModifiers))
+	for k, _ := range this.EffectModifiers {
+		keysForEffectModifiers = append(keysForEffectModifiers, k)
+	}
+	github_com_gogo_protobuf_sortkeys.Strings(keysForEffectModifiers)
+	mapStringForEffectModifiers := "map[string]EffectModifier{"
+	for _, k := range keysForEffectModifiers {
+		mapStringForEffectModifiers += fmt.Sprintf("%#v: %#v,", k, this.EffectModifiers[k])
+	}
+	mapStringForEffectModifiers += "}"
+	if this.EffectModifiers != nil {
+		s = append(s, "EffectModifiers: "+mapStringForEffectModifiers+",\n")
+	}
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *StackRules) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 7)
+	s = append(s, "&ability.StackRules{")
+	s = append(s, "Stacks: "+fmt.Sprintf("%#v", this.Stacks)+",\n")
+	s = append(s, "MaxStacks: "+fmt.Sprintf("%#v", this.MaxStacks)+",\n")
+	s = append(s, "MaxDuration: "+fmt.Sprintf("%#v", this.MaxDuration)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -897,9 +1051,8 @@ func (this *Effect) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 18)
+	s := make([]string, 0, 15)
 	s = append(s, "&ability.Effect{")
-	s = append(s, "ID: "+fmt.Sprintf("%#v", this.ID)+",\n")
 	s = append(s, "Stat: "+fmt.Sprintf("%#v", this.Stat)+",\n")
 	if this.Position != nil {
 		s = append(s, "Position: "+fmt.Sprintf("%#v", this.Position)+",\n")
@@ -907,26 +1060,26 @@ func (this *Effect) GoString() string {
 	if this.Force != nil {
 		s = append(s, "Force: "+fmt.Sprintf("%#v", this.Force)+",\n")
 	}
-	if this.Amount != nil {
-		s = append(s, "Amount: "+fmt.Sprintf("%#v", this.Amount)+",\n")
+	s = append(s, "Amount: "+strings.Replace(this.Amount.GoString(), `&`, ``, 1)+",\n")
+	s = append(s, "Drain: "+strings.Replace(this.Drain.GoString(), `&`, ``, 1)+",\n")
+	keysForDrainTargets := make([]string, 0, len(this.DrainTargets))
+	for k, _ := range this.DrainTargets {
+		keysForDrainTargets = append(keysForDrainTargets, k)
 	}
-	if this.Drain != nil {
-		s = append(s, "Drain: "+fmt.Sprintf("%#v", this.Drain)+",\n")
+	github_com_gogo_protobuf_sortkeys.Strings(keysForDrainTargets)
+	mapStringForDrainTargets := "map[string]Target{"
+	for _, k := range keysForDrainTargets {
+		mapStringForDrainTargets += fmt.Sprintf("%#v: %#v,", k, this.DrainTargets[k])
 	}
-	s = append(s, "DrainTargets: "+fmt.Sprintf("%#v", this.DrainTargets)+",\n")
+	mapStringForDrainTargets += "}"
+	if this.DrainTargets != nil {
+		s = append(s, "DrainTargets: "+mapStringForDrainTargets+",\n")
+	}
 	s = append(s, "Duration: "+fmt.Sprintf("%#v", this.Duration)+",\n")
 	s = append(s, "Icon: "+fmt.Sprintf("%#v", this.Icon)+",\n")
-	s = append(s, "Stacks: "+fmt.Sprintf("%#v", this.Stacks)+",\n")
-	s = append(s, "MaxStack: "+fmt.Sprintf("%#v", this.MaxStack)+",\n")
+	s = append(s, "StackRules: "+strings.Replace(this.StackRules.GoString(), `&`, ``, 1)+",\n")
 	s = append(s, "Delay: "+fmt.Sprintf("%#v", this.Delay)+",\n")
 	s = append(s, "Repeat: "+fmt.Sprintf("%#v", this.Repeat)+",\n")
-	if this.Triggers != nil {
-		vs := make([]Trigger, len(this.Triggers))
-		for i := range vs {
-			vs[i] = this.Triggers[i]
-		}
-		s = append(s, "Triggers: "+fmt.Sprintf("%#v", vs)+",\n")
-	}
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -934,15 +1087,46 @@ func (this *Component) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 6)
+	s := make([]string, 0, 7)
 	s = append(s, "&ability.Component{")
-	s = append(s, "Targets: "+fmt.Sprintf("%#v", this.Targets)+",\n")
+	keysForTargets := make([]string, 0, len(this.Targets))
+	for k, _ := range this.Targets {
+		keysForTargets = append(keysForTargets, k)
+	}
+	github_com_gogo_protobuf_sortkeys.Strings(keysForTargets)
+	mapStringForTargets := "map[string]Target{"
+	for _, k := range keysForTargets {
+		mapStringForTargets += fmt.Sprintf("%#v: %#v,", k, this.Targets[k])
+	}
+	mapStringForTargets += "}"
+	if this.Targets != nil {
+		s = append(s, "Targets: "+mapStringForTargets+",\n")
+	}
+	keysForEffects := make([]string, 0, len(this.Effects))
+	for k, _ := range this.Effects {
+		keysForEffects = append(keysForEffects, k)
+	}
+	github_com_gogo_protobuf_sortkeys.Strings(keysForEffects)
+	mapStringForEffects := "map[string]Effect{"
+	for _, k := range keysForEffects {
+		mapStringForEffects += fmt.Sprintf("%#v: %#v,", k, this.Effects[k])
+	}
+	mapStringForEffects += "}"
 	if this.Effects != nil {
-		vs := make([]Effect, len(this.Effects))
-		for i := range vs {
-			vs[i] = this.Effects[i]
-		}
-		s = append(s, "Effects: "+fmt.Sprintf("%#v", vs)+",\n")
+		s = append(s, "Effects: "+mapStringForEffects+",\n")
+	}
+	keysForTriggers := make([]string, 0, len(this.Triggers))
+	for k, _ := range this.Triggers {
+		keysForTriggers = append(keysForTriggers, k)
+	}
+	github_com_gogo_protobuf_sortkeys.Strings(keysForTriggers)
+	mapStringForTriggers := "map[string]Trigger{"
+	for _, k := range keysForTriggers {
+		mapStringForTriggers += fmt.Sprintf("%#v: %#v,", k, this.Triggers[k])
+	}
+	mapStringForTriggers += "}"
+	if this.Triggers != nil {
+		s = append(s, "Triggers: "+mapStringForTriggers+",\n")
 	}
 	s = append(s, "}")
 	return strings.Join(s, "")
@@ -960,12 +1144,18 @@ func (this *Ability) GoString() string {
 	s = append(s, "CastTime: "+fmt.Sprintf("%#v", this.CastTime)+",\n")
 	s = append(s, "ManaCost: "+fmt.Sprintf("%#v", this.ManaCost)+",\n")
 	s = append(s, "Cooldown: "+fmt.Sprintf("%#v", this.Cooldown)+",\n")
+	keysForComponents := make([]string, 0, len(this.Components))
+	for k, _ := range this.Components {
+		keysForComponents = append(keysForComponents, k)
+	}
+	github_com_gogo_protobuf_sortkeys.Strings(keysForComponents)
+	mapStringForComponents := "map[string]Component{"
+	for _, k := range keysForComponents {
+		mapStringForComponents += fmt.Sprintf("%#v: %#v,", k, this.Components[k])
+	}
+	mapStringForComponents += "}"
 	if this.Components != nil {
-		vs := make([]Component, len(this.Components))
-		for i := range vs {
-			vs[i] = this.Components[i]
-		}
-		s = append(s, "Components: "+fmt.Sprintf("%#v", vs)+",\n")
+		s = append(s, "Components: "+mapStringForComponents+",\n")
 	}
 	s = append(s, "}")
 	return strings.Join(s, "")
@@ -978,7 +1168,7 @@ func valueToGoStringAbility(v interface{}, typ string) string {
 	pv := reflect.Indirect(rv).Interface()
 	return fmt.Sprintf("func(v %v) *%v { return &v } ( %#v )", typ, typ, pv)
 }
-func (m *Modifier) Marshal() (dAtA []byte, err error) {
+func (m *AbilityModifier) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -988,80 +1178,134 @@ func (m *Modifier) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *Modifier) MarshalTo(dAtA []byte) (int, error) {
+func (m *AbilityModifier) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *Modifier) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *AbilityModifier) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if m.Stacks != 0 {
-		i = encodeVarintAbility(dAtA, i, uint64(m.Stacks))
-		i--
-		dAtA[i] = 0x50
-	}
-	if m.Repeat != 0 {
-		i = encodeVarintAbility(dAtA, i, uint64(m.Repeat))
-		i--
-		dAtA[i] = 0x48
-	}
-	if m.Delay != 0 {
-		i = encodeVarintAbility(dAtA, i, uint64(m.Delay))
-		i--
-		dAtA[i] = 0x40
-	}
-	if m.Duration != 0 {
-		i = encodeVarintAbility(dAtA, i, uint64(m.Duration))
-		i--
-		dAtA[i] = 0x38
-	}
-	if m.Drain != nil {
-		{
-			size, err := m.Drain.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintAbility(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0x32
-	}
-	if m.Amount != nil {
-		{
-			size, err := m.Amount.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintAbility(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0x2a
-	}
-	if m.Stat != 0 {
-		i = encodeVarintAbility(dAtA, i, uint64(m.Stat))
-		i--
-		dAtA[i] = 0x20
-	}
 	if m.Cooldown != 0 {
 		i = encodeVarintAbility(dAtA, i, uint64(m.Cooldown))
 		i--
-		dAtA[i] = 0x18
+		dAtA[i] = 0x20
 	}
 	if m.ManaCost != 0 {
 		i = encodeVarintAbility(dAtA, i, uint64(m.ManaCost))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x18
 	}
 	if m.CastTime != 0 {
 		i = encodeVarintAbility(dAtA, i, uint64(m.CastTime))
 		i--
+		dAtA[i] = 0x10
+	}
+	if m.Cancel {
+		i--
+		if m.Cancel {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
 		dAtA[i] = 0x8
 	}
+	return len(dAtA) - i, nil
+}
+
+func (m *EffectModifier) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *EffectModifier) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *EffectModifier) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size, err := m.StackRules.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintAbility(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x4a
+	if m.Repeat != 0 {
+		i = encodeVarintAbility(dAtA, i, uint64(m.Repeat))
+		i--
+		dAtA[i] = 0x40
+	}
+	if m.Delay != 0 {
+		i = encodeVarintAbility(dAtA, i, uint64(m.Delay))
+		i--
+		dAtA[i] = 0x38
+	}
+	if m.Duration != 0 {
+		i = encodeVarintAbility(dAtA, i, uint64(m.Duration))
+		i--
+		dAtA[i] = 0x30
+	}
+	{
+		size, err := m.Drain.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintAbility(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x2a
+	{
+		size, err := m.Amount.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintAbility(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x22
+	if m.Stat != 0 {
+		i = encodeVarintAbility(dAtA, i, uint64(m.Stat))
+		i--
+		dAtA[i] = 0x18
+	}
+	if m.Cancel {
+		i--
+		if m.Cancel {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x10
+	}
+	{
+		size := m.EffectID.Size()
+		i -= size
+		if _, err := m.EffectID.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintAbility(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
 	return len(dAtA) - i, nil
 }
 
@@ -1094,14 +1338,19 @@ func (m *Amount) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintAbility(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0x2a
+	dAtA[i] = 0x32
 	if m.Percentage != 0 {
 		i = encodeVarintAbility(dAtA, i, uint64(m.Percentage))
 		i--
-		dAtA[i] = 0x20
+		dAtA[i] = 0x28
 	}
 	if m.Stat != 0 {
 		i = encodeVarintAbility(dAtA, i, uint64(m.Stat))
+		i--
+		dAtA[i] = 0x20
+	}
+	if m.Target != 0 {
+		i = encodeVarintAbility(dAtA, i, uint64(m.Target))
 		i--
 		dAtA[i] = 0x18
 	}
@@ -1110,11 +1359,16 @@ func (m *Amount) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x10
 	}
-	if m.Target != 0 {
-		i = encodeVarintAbility(dAtA, i, uint64(m.Target))
-		i--
-		dAtA[i] = 0x8
+	{
+		size := m.ID.Size()
+		i -= size
+		if _, err := m.ID.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintAbility(dAtA, i, uint64(size))
 	}
+	i--
+	dAtA[i] = 0xa
 	return len(dAtA) - i, nil
 }
 
@@ -1138,22 +1392,12 @@ func (m *Trigger) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Trigger != nil {
-		{
-			size, err := m.Trigger.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintAbility(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0x32
-	}
-	if len(m.Modifiers) > 0 {
-		for iNdEx := len(m.Modifiers) - 1; iNdEx >= 0; iNdEx-- {
+	if len(m.EffectModifiers) > 0 {
+		for k := range m.EffectModifiers {
+			v := m.EffectModifiers[k]
+			baseI := i
 			{
-				size, err := m.Modifiers[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				size, err := (&v).MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -1161,18 +1405,40 @@ func (m *Trigger) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 				i = encodeVarintAbility(dAtA, i, uint64(size))
 			}
 			i--
+			dAtA[i] = 0x12
+			i -= len(k)
+			copy(dAtA[i:], k)
+			i = encodeVarintAbility(dAtA, i, uint64(len(k)))
+			i--
+			dAtA[i] = 0xa
+			i = encodeVarintAbility(dAtA, i, uint64(baseI-i))
+			i--
 			dAtA[i] = 0x2a
 		}
 	}
-	if m.ConsumeTreshold {
-		i--
-		if m.ConsumeTreshold {
-			dAtA[i] = 1
-		} else {
-			dAtA[i] = 0
+	if len(m.AbilityModifiers) > 0 {
+		for k := range m.AbilityModifiers {
+			v := m.AbilityModifiers[k]
+			baseI := i
+			{
+				size, err := (&v).MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintAbility(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x12
+			i -= len(k)
+			copy(dAtA[i:], k)
+			i = encodeVarintAbility(dAtA, i, uint64(len(k)))
+			i--
+			dAtA[i] = 0xa
+			i = encodeVarintAbility(dAtA, i, uint64(baseI-i))
+			i--
+			dAtA[i] = 0x22
 		}
-		i--
-		dAtA[i] = 0x20
 	}
 	if m.Treshold != nil {
 		{
@@ -1206,6 +1472,44 @@ func (m *Trigger) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *StackRules) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *StackRules) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *StackRules) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.MaxDuration != 0 {
+		i = encodeVarintAbility(dAtA, i, uint64(m.MaxDuration))
+		i--
+		dAtA[i] = 0x18
+	}
+	if m.MaxStacks != 0 {
+		i = encodeVarintAbility(dAtA, i, uint64(m.MaxStacks))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.Stacks != 0 {
+		i = encodeVarintAbility(dAtA, i, uint64(m.Stacks))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
 func (m *Effect) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -1226,40 +1530,26 @@ func (m *Effect) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Triggers) > 0 {
-		for iNdEx := len(m.Triggers) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Triggers[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintAbility(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x72
-		}
-	}
 	if m.Repeat != 0 {
 		i = encodeVarintAbility(dAtA, i, uint64(m.Repeat))
 		i--
-		dAtA[i] = 0x68
+		dAtA[i] = 0x58
 	}
 	if m.Delay != 0 {
 		i = encodeVarintAbility(dAtA, i, uint64(m.Delay))
 		i--
-		dAtA[i] = 0x60
-	}
-	if m.MaxStack != 0 {
-		i = encodeVarintAbility(dAtA, i, uint64(m.MaxStack))
-		i--
-		dAtA[i] = 0x58
-	}
-	if m.Stacks != 0 {
-		i = encodeVarintAbility(dAtA, i, uint64(m.Stacks))
-		i--
 		dAtA[i] = 0x50
 	}
+	{
+		size, err := m.StackRules.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintAbility(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x4a
 	{
 		size := m.Icon.Size()
 		i -= size
@@ -1269,54 +1559,49 @@ func (m *Effect) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintAbility(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0x4a
+	dAtA[i] = 0x42
 	if m.Duration != 0 {
 		i = encodeVarintAbility(dAtA, i, uint64(m.Duration))
 		i--
-		dAtA[i] = 0x40
+		dAtA[i] = 0x38
 	}
 	if len(m.DrainTargets) > 0 {
-		dAtA7 := make([]byte, len(m.DrainTargets)*10)
-		var j6 int
-		for _, num := range m.DrainTargets {
-			for num >= 1<<7 {
-				dAtA7[j6] = uint8(uint64(num)&0x7f | 0x80)
-				num >>= 7
-				j6++
-			}
-			dAtA7[j6] = uint8(num)
-			j6++
+		for k := range m.DrainTargets {
+			v := m.DrainTargets[k]
+			baseI := i
+			i = encodeVarintAbility(dAtA, i, uint64(v))
+			i--
+			dAtA[i] = 0x10
+			i -= len(k)
+			copy(dAtA[i:], k)
+			i = encodeVarintAbility(dAtA, i, uint64(len(k)))
+			i--
+			dAtA[i] = 0xa
+			i = encodeVarintAbility(dAtA, i, uint64(baseI-i))
+			i--
+			dAtA[i] = 0x32
 		}
-		i -= j6
-		copy(dAtA[i:], dAtA7[:j6])
-		i = encodeVarintAbility(dAtA, i, uint64(j6))
-		i--
-		dAtA[i] = 0x3a
 	}
-	if m.Drain != nil {
-		{
-			size, err := m.Drain.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintAbility(dAtA, i, uint64(size))
+	{
+		size, err := m.Drain.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
 		}
-		i--
-		dAtA[i] = 0x32
+		i -= size
+		i = encodeVarintAbility(dAtA, i, uint64(size))
 	}
-	if m.Amount != nil {
-		{
-			size, err := m.Amount.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintAbility(dAtA, i, uint64(size))
+	i--
+	dAtA[i] = 0x2a
+	{
+		size, err := m.Amount.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
 		}
-		i--
-		dAtA[i] = 0x2a
+		i -= size
+		i = encodeVarintAbility(dAtA, i, uint64(size))
 	}
+	i--
+	dAtA[i] = 0x22
 	if m.Force != nil {
 		{
 			size, err := m.Force.MarshalToSizedBuffer(dAtA[:i])
@@ -1327,7 +1612,7 @@ func (m *Effect) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			i = encodeVarintAbility(dAtA, i, uint64(size))
 		}
 		i--
-		dAtA[i] = 0x22
+		dAtA[i] = 0x1a
 	}
 	if m.Position != nil {
 		{
@@ -1339,23 +1624,13 @@ func (m *Effect) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			i = encodeVarintAbility(dAtA, i, uint64(size))
 		}
 		i--
-		dAtA[i] = 0x1a
+		dAtA[i] = 0x12
 	}
 	if m.Stat != 0 {
 		i = encodeVarintAbility(dAtA, i, uint64(m.Stat))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x8
 	}
-	{
-		size := m.ID.Size()
-		i -= size
-		if _, err := m.ID.MarshalTo(dAtA[i:]); err != nil {
-			return 0, err
-		}
-		i = encodeVarintAbility(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0xa
 	return len(dAtA) - i, nil
 }
 
@@ -1379,10 +1654,12 @@ func (m *Component) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Effects) > 0 {
-		for iNdEx := len(m.Effects) - 1; iNdEx >= 0; iNdEx-- {
+	if len(m.Triggers) > 0 {
+		for k := range m.Triggers {
+			v := m.Triggers[k]
+			baseI := i
 			{
-				size, err := m.Effects[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				size, err := (&v).MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -1391,25 +1668,56 @@ func (m *Component) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			}
 			i--
 			dAtA[i] = 0x12
+			i -= len(k)
+			copy(dAtA[i:], k)
+			i = encodeVarintAbility(dAtA, i, uint64(len(k)))
+			i--
+			dAtA[i] = 0xa
+			i = encodeVarintAbility(dAtA, i, uint64(baseI-i))
+			i--
+			dAtA[i] = 0x1a
+		}
+	}
+	if len(m.Effects) > 0 {
+		for k := range m.Effects {
+			v := m.Effects[k]
+			baseI := i
+			{
+				size, err := (&v).MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintAbility(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x12
+			i -= len(k)
+			copy(dAtA[i:], k)
+			i = encodeVarintAbility(dAtA, i, uint64(len(k)))
+			i--
+			dAtA[i] = 0xa
+			i = encodeVarintAbility(dAtA, i, uint64(baseI-i))
+			i--
+			dAtA[i] = 0x12
 		}
 	}
 	if len(m.Targets) > 0 {
-		dAtA13 := make([]byte, len(m.Targets)*10)
-		var j12 int
-		for _, num := range m.Targets {
-			for num >= 1<<7 {
-				dAtA13[j12] = uint8(uint64(num)&0x7f | 0x80)
-				num >>= 7
-				j12++
-			}
-			dAtA13[j12] = uint8(num)
-			j12++
+		for k := range m.Targets {
+			v := m.Targets[k]
+			baseI := i
+			i = encodeVarintAbility(dAtA, i, uint64(v))
+			i--
+			dAtA[i] = 0x10
+			i -= len(k)
+			copy(dAtA[i:], k)
+			i = encodeVarintAbility(dAtA, i, uint64(len(k)))
+			i--
+			dAtA[i] = 0xa
+			i = encodeVarintAbility(dAtA, i, uint64(baseI-i))
+			i--
+			dAtA[i] = 0xa
 		}
-		i -= j12
-		copy(dAtA[i:], dAtA13[:j12])
-		i = encodeVarintAbility(dAtA, i, uint64(j12))
-		i--
-		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -1435,15 +1743,25 @@ func (m *Ability) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	var l int
 	_ = l
 	if len(m.Components) > 0 {
-		for iNdEx := len(m.Components) - 1; iNdEx >= 0; iNdEx-- {
+		for k := range m.Components {
+			v := m.Components[k]
+			baseI := i
 			{
-				size, err := m.Components[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				size, err := (&v).MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
 				i -= size
 				i = encodeVarintAbility(dAtA, i, uint64(size))
 			}
+			i--
+			dAtA[i] = 0x12
+			i -= len(k)
+			copy(dAtA[i:], k)
+			i = encodeVarintAbility(dAtA, i, uint64(len(k)))
+			i--
+			dAtA[i] = 0xa
+			i = encodeVarintAbility(dAtA, i, uint64(baseI-i))
 			i--
 			dAtA[i] = 0x42
 		}
@@ -1514,8 +1832,9 @@ func encodeVarintAbility(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func NewPopulatedModifier(r randyAbility, easy bool) *Modifier {
-	this := &Modifier{}
+func NewPopulatedAbilityModifier(r randyAbility, easy bool) *AbilityModifier {
+	this := &AbilityModifier{}
+	this.Cancel = bool(bool(r.Intn(2) == 0))
 	this.CastTime = int64(r.Int63())
 	if r.Intn(2) == 0 {
 		this.CastTime *= -1
@@ -1528,13 +1847,21 @@ func NewPopulatedModifier(r randyAbility, easy bool) *Modifier {
 	if r.Intn(2) == 0 {
 		this.Cooldown *= -1
 	}
-	this.Stat = Stat([]int32{0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11}[r.Intn(11)])
-	if r.Intn(5) != 0 {
-		this.Amount = NewPopulatedAmount(r, easy)
+	if !easy && r.Intn(10) != 0 {
 	}
-	if r.Intn(5) != 0 {
-		this.Drain = NewPopulatedAmount(r, easy)
-	}
+	return this
+}
+
+func NewPopulatedEffectModifier(r randyAbility, easy bool) *EffectModifier {
+	this := &EffectModifier{}
+	v1 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
+	this.EffectID = *v1
+	this.Cancel = bool(bool(r.Intn(2) == 0))
+	this.Stat = entity.Stat([]int32{0, 1, 2, 4, 5, 6, 7, 8, 9, 10}[r.Intn(10)])
+	v2 := NewPopulatedAmount(r, easy)
+	this.Amount = *v2
+	v3 := NewPopulatedAmount(r, easy)
+	this.Drain = *v3
 	this.Duration = int64(r.Int63())
 	if r.Intn(2) == 0 {
 		this.Duration *= -1
@@ -1547,10 +1874,8 @@ func NewPopulatedModifier(r randyAbility, easy bool) *Modifier {
 	if r.Intn(2) == 0 {
 		this.Repeat *= -1
 	}
-	this.Stacks = int64(r.Int63())
-	if r.Intn(2) == 0 {
-		this.Stacks *= -1
-	}
+	v4 := NewPopulatedStackRules(r, easy)
+	this.StackRules = *v4
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -1558,21 +1883,20 @@ func NewPopulatedModifier(r randyAbility, easy bool) *Modifier {
 
 func NewPopulatedAmount(r randyAbility, easy bool) *Amount {
 	this := &Amount{}
-	this.Target = Target([]int32{0, 1, 3, 4, 5, 6, 7}[r.Intn(7)])
+	v5 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
+	this.ID = *v5
 	this.Direct = int64(r.Int63())
 	if r.Intn(2) == 0 {
 		this.Direct *= -1
 	}
-	this.Stat = int64(r.Int63())
-	if r.Intn(2) == 0 {
-		this.Stat *= -1
-	}
+	this.Target = Target([]int32{0, 1, 3, 4, 5, 6, 7}[r.Intn(7)])
+	this.Stat = entity.Stat([]int32{0, 1, 2, 4, 5, 6, 7, 8, 9, 10}[r.Intn(10)])
 	this.Percentage = int64(r.Int63())
 	if r.Intn(2) == 0 {
 		this.Percentage *= -1
 	}
-	v1 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
-	this.EffectID = *v1
+	v6 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
+	this.EffectID = *v6
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -1587,17 +1911,38 @@ func NewPopulatedTrigger(r randyAbility, easy bool) *Trigger {
 	if r.Intn(5) != 0 {
 		this.Treshold = NewPopulatedAmount(r, easy)
 	}
-	this.ConsumeTreshold = bool(bool(r.Intn(2) == 0))
 	if r.Intn(5) != 0 {
-		v2 := r.Intn(5)
-		this.Modifiers = make([]Modifier, v2)
-		for i := 0; i < v2; i++ {
-			v3 := NewPopulatedModifier(r, easy)
-			this.Modifiers[i] = *v3
+		v7 := r.Intn(10)
+		this.AbilityModifiers = make(map[string]AbilityModifier)
+		for i := 0; i < v7; i++ {
+			this.AbilityModifiers[randStringAbility(r)] = *NewPopulatedAbilityModifier(r, easy)
 		}
 	}
-	if r.Intn(5) == 0 {
-		this.Trigger = NewPopulatedTrigger(r, easy)
+	if r.Intn(5) != 0 {
+		v8 := r.Intn(10)
+		this.EffectModifiers = make(map[string]EffectModifier)
+		for i := 0; i < v8; i++ {
+			this.EffectModifiers[randStringAbility(r)] = *NewPopulatedEffectModifier(r, easy)
+		}
+	}
+	if !easy && r.Intn(10) != 0 {
+	}
+	return this
+}
+
+func NewPopulatedStackRules(r randyAbility, easy bool) *StackRules {
+	this := &StackRules{}
+	this.Stacks = int64(r.Int63())
+	if r.Intn(2) == 0 {
+		this.Stacks *= -1
+	}
+	this.MaxStacks = int64(r.Int63())
+	if r.Intn(2) == 0 {
+		this.MaxStacks *= -1
+	}
+	this.MaxDuration = int64(r.Int63())
+	if r.Intn(2) == 0 {
+		this.MaxDuration *= -1
 	}
 	if !easy && r.Intn(10) != 0 {
 	}
@@ -1606,40 +1951,32 @@ func NewPopulatedTrigger(r randyAbility, easy bool) *Trigger {
 
 func NewPopulatedEffect(r randyAbility, easy bool) *Effect {
 	this := &Effect{}
-	v4 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
-	this.ID = *v4
-	this.Stat = Stat([]int32{0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11}[r.Intn(11)])
+	this.Stat = entity.Stat([]int32{0, 1, 2, 4, 5, 6, 7, 8, 9, 10}[r.Intn(10)])
 	if r.Intn(5) != 0 {
 		this.Position = geometry.NewPopulatedVec2(r, easy)
 	}
 	if r.Intn(5) != 0 {
 		this.Force = geometry.NewPopulatedVec2(r, easy)
 	}
+	v9 := NewPopulatedAmount(r, easy)
+	this.Amount = *v9
+	v10 := NewPopulatedAmount(r, easy)
+	this.Drain = *v10
 	if r.Intn(5) != 0 {
-		this.Amount = NewPopulatedAmount(r, easy)
-	}
-	if r.Intn(5) != 0 {
-		this.Drain = NewPopulatedAmount(r, easy)
-	}
-	v5 := r.Intn(10)
-	this.DrainTargets = make([]Target, v5)
-	for i := 0; i < v5; i++ {
-		this.DrainTargets[i] = Target([]int32{0, 1, 3, 4, 5, 6, 7}[r.Intn(7)])
+		v11 := r.Intn(10)
+		this.DrainTargets = make(map[string]Target)
+		for i := 0; i < v11; i++ {
+			this.DrainTargets[randStringAbility(r)] = Target([]int32{0, 1, 3, 4, 5, 6, 7}[r.Intn(7)])
+		}
 	}
 	this.Duration = int64(r.Int63())
 	if r.Intn(2) == 0 {
 		this.Duration *= -1
 	}
-	v6 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
-	this.Icon = *v6
-	this.Stacks = int64(r.Int63())
-	if r.Intn(2) == 0 {
-		this.Stacks *= -1
-	}
-	this.MaxStack = int64(r.Int63())
-	if r.Intn(2) == 0 {
-		this.MaxStack *= -1
-	}
+	v12 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
+	this.Icon = *v12
+	v13 := NewPopulatedStackRules(r, easy)
+	this.StackRules = *v13
 	this.Delay = int64(r.Int63())
 	if r.Intn(2) == 0 {
 		this.Delay *= -1
@@ -1648,14 +1985,6 @@ func NewPopulatedEffect(r randyAbility, easy bool) *Effect {
 	if r.Intn(2) == 0 {
 		this.Repeat *= -1
 	}
-	if r.Intn(5) == 0 {
-		v7 := r.Intn(5)
-		this.Triggers = make([]Trigger, v7)
-		for i := 0; i < v7; i++ {
-			v8 := NewPopulatedTrigger(r, easy)
-			this.Triggers[i] = *v8
-		}
-	}
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -1663,17 +1992,25 @@ func NewPopulatedEffect(r randyAbility, easy bool) *Effect {
 
 func NewPopulatedComponent(r randyAbility, easy bool) *Component {
 	this := &Component{}
-	v9 := r.Intn(10)
-	this.Targets = make([]Target, v9)
-	for i := 0; i < v9; i++ {
-		this.Targets[i] = Target([]int32{0, 1, 3, 4, 5, 6, 7}[r.Intn(7)])
+	if r.Intn(5) != 0 {
+		v14 := r.Intn(10)
+		this.Targets = make(map[string]Target)
+		for i := 0; i < v14; i++ {
+			this.Targets[randStringAbility(r)] = Target([]int32{0, 1, 3, 4, 5, 6, 7}[r.Intn(7)])
+		}
 	}
-	if r.Intn(5) == 0 {
-		v10 := r.Intn(5)
-		this.Effects = make([]Effect, v10)
-		for i := 0; i < v10; i++ {
-			v11 := NewPopulatedEffect(r, easy)
-			this.Effects[i] = *v11
+	if r.Intn(5) != 0 {
+		v15 := r.Intn(10)
+		this.Effects = make(map[string]Effect)
+		for i := 0; i < v15; i++ {
+			this.Effects[randStringAbility(r)] = *NewPopulatedEffect(r, easy)
+		}
+	}
+	if r.Intn(5) != 0 {
+		v16 := r.Intn(10)
+		this.Triggers = make(map[string]Trigger)
+		for i := 0; i < v16; i++ {
+			this.Triggers[randStringAbility(r)] = *NewPopulatedTrigger(r, easy)
 		}
 	}
 	if !easy && r.Intn(10) != 0 {
@@ -1683,13 +2020,13 @@ func NewPopulatedComponent(r randyAbility, easy bool) *Component {
 
 func NewPopulatedAbility(r randyAbility, easy bool) *Ability {
 	this := &Ability{}
-	v12 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
-	this.ID = *v12
+	v17 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
+	this.ID = *v17
 	this.Name = string(randStringAbility(r))
-	v13 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
-	this.Icon = *v13
-	v14 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
-	this.Animation = *v14
+	v18 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
+	this.Icon = *v18
+	v19 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
+	this.Animation = *v19
 	this.CastTime = int64(r.Int63())
 	if r.Intn(2) == 0 {
 		this.CastTime *= -1
@@ -1702,12 +2039,11 @@ func NewPopulatedAbility(r randyAbility, easy bool) *Ability {
 	if r.Intn(2) == 0 {
 		this.Cooldown *= -1
 	}
-	if r.Intn(5) == 0 {
-		v15 := r.Intn(5)
-		this.Components = make([]Component, v15)
-		for i := 0; i < v15; i++ {
-			v16 := NewPopulatedComponent(r, easy)
-			this.Components[i] = *v16
+	if r.Intn(5) != 0 {
+		v20 := r.Intn(10)
+		this.Components = make(map[string]Component)
+		for i := 0; i < v20; i++ {
+			this.Components[randStringAbility(r)] = *NewPopulatedComponent(r, easy)
 		}
 	}
 	if !easy && r.Intn(10) != 0 {
@@ -1734,9 +2070,9 @@ func randUTF8RuneAbility(r randyAbility) rune {
 	return rune(ru + 61)
 }
 func randStringAbility(r randyAbility) string {
-	v17 := r.Intn(100)
-	tmps := make([]rune, v17)
-	for i := 0; i < v17; i++ {
+	v21 := r.Intn(100)
+	tmps := make([]rune, v21)
+	for i := 0; i < v21; i++ {
 		tmps[i] = randUTF8RuneAbility(r)
 	}
 	return string(tmps)
@@ -1758,11 +2094,11 @@ func randFieldAbility(dAtA []byte, r randyAbility, fieldNumber int, wire int) []
 	switch wire {
 	case 0:
 		dAtA = encodeVarintPopulateAbility(dAtA, uint64(key))
-		v18 := r.Int63()
+		v22 := r.Int63()
 		if r.Intn(2) == 0 {
-			v18 *= -1
+			v22 *= -1
 		}
-		dAtA = encodeVarintPopulateAbility(dAtA, uint64(v18))
+		dAtA = encodeVarintPopulateAbility(dAtA, uint64(v22))
 	case 1:
 		dAtA = encodeVarintPopulateAbility(dAtA, uint64(key))
 		dAtA = append(dAtA, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
@@ -1787,12 +2123,15 @@ func encodeVarintPopulateAbility(dAtA []byte, v uint64) []byte {
 	dAtA = append(dAtA, uint8(v))
 	return dAtA
 }
-func (m *Modifier) Size() (n int) {
+func (m *AbilityModifier) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
+	if m.Cancel {
+		n += 2
+	}
 	if m.CastTime != 0 {
 		n += 1 + sovAbility(uint64(m.CastTime))
 	}
@@ -1802,17 +2141,27 @@ func (m *Modifier) Size() (n int) {
 	if m.Cooldown != 0 {
 		n += 1 + sovAbility(uint64(m.Cooldown))
 	}
+	return n
+}
+
+func (m *EffectModifier) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.EffectID.Size()
+	n += 1 + l + sovAbility(uint64(l))
+	if m.Cancel {
+		n += 2
+	}
 	if m.Stat != 0 {
 		n += 1 + sovAbility(uint64(m.Stat))
 	}
-	if m.Amount != nil {
-		l = m.Amount.Size()
-		n += 1 + l + sovAbility(uint64(l))
-	}
-	if m.Drain != nil {
-		l = m.Drain.Size()
-		n += 1 + l + sovAbility(uint64(l))
-	}
+	l = m.Amount.Size()
+	n += 1 + l + sovAbility(uint64(l))
+	l = m.Drain.Size()
+	n += 1 + l + sovAbility(uint64(l))
 	if m.Duration != 0 {
 		n += 1 + sovAbility(uint64(m.Duration))
 	}
@@ -1822,9 +2171,8 @@ func (m *Modifier) Size() (n int) {
 	if m.Repeat != 0 {
 		n += 1 + sovAbility(uint64(m.Repeat))
 	}
-	if m.Stacks != 0 {
-		n += 1 + sovAbility(uint64(m.Stacks))
-	}
+	l = m.StackRules.Size()
+	n += 1 + l + sovAbility(uint64(l))
 	return n
 }
 
@@ -1834,11 +2182,13 @@ func (m *Amount) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.Target != 0 {
-		n += 1 + sovAbility(uint64(m.Target))
-	}
+	l = m.ID.Size()
+	n += 1 + l + sovAbility(uint64(l))
 	if m.Direct != 0 {
 		n += 1 + sovAbility(uint64(m.Direct))
+	}
+	if m.Target != 0 {
+		n += 1 + sovAbility(uint64(m.Target))
 	}
 	if m.Stat != 0 {
 		n += 1 + sovAbility(uint64(m.Stat))
@@ -1868,18 +2218,41 @@ func (m *Trigger) Size() (n int) {
 		l = m.Treshold.Size()
 		n += 1 + l + sovAbility(uint64(l))
 	}
-	if m.ConsumeTreshold {
-		n += 2
-	}
-	if len(m.Modifiers) > 0 {
-		for _, e := range m.Modifiers {
-			l = e.Size()
-			n += 1 + l + sovAbility(uint64(l))
+	if len(m.AbilityModifiers) > 0 {
+		for k, v := range m.AbilityModifiers {
+			_ = k
+			_ = v
+			l = v.Size()
+			mapEntrySize := 1 + len(k) + sovAbility(uint64(len(k))) + 1 + l + sovAbility(uint64(l))
+			n += mapEntrySize + 1 + sovAbility(uint64(mapEntrySize))
 		}
 	}
-	if m.Trigger != nil {
-		l = m.Trigger.Size()
-		n += 1 + l + sovAbility(uint64(l))
+	if len(m.EffectModifiers) > 0 {
+		for k, v := range m.EffectModifiers {
+			_ = k
+			_ = v
+			l = v.Size()
+			mapEntrySize := 1 + len(k) + sovAbility(uint64(len(k))) + 1 + l + sovAbility(uint64(l))
+			n += mapEntrySize + 1 + sovAbility(uint64(mapEntrySize))
+		}
+	}
+	return n
+}
+
+func (m *StackRules) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Stacks != 0 {
+		n += 1 + sovAbility(uint64(m.Stacks))
+	}
+	if m.MaxStacks != 0 {
+		n += 1 + sovAbility(uint64(m.MaxStacks))
+	}
+	if m.MaxDuration != 0 {
+		n += 1 + sovAbility(uint64(m.MaxDuration))
 	}
 	return n
 }
@@ -1890,8 +2263,6 @@ func (m *Effect) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = m.ID.Size()
-	n += 1 + l + sovAbility(uint64(l))
 	if m.Stat != 0 {
 		n += 1 + sovAbility(uint64(m.Stat))
 	}
@@ -1903,43 +2274,30 @@ func (m *Effect) Size() (n int) {
 		l = m.Force.Size()
 		n += 1 + l + sovAbility(uint64(l))
 	}
-	if m.Amount != nil {
-		l = m.Amount.Size()
-		n += 1 + l + sovAbility(uint64(l))
-	}
-	if m.Drain != nil {
-		l = m.Drain.Size()
-		n += 1 + l + sovAbility(uint64(l))
-	}
+	l = m.Amount.Size()
+	n += 1 + l + sovAbility(uint64(l))
+	l = m.Drain.Size()
+	n += 1 + l + sovAbility(uint64(l))
 	if len(m.DrainTargets) > 0 {
-		l = 0
-		for _, e := range m.DrainTargets {
-			l += sovAbility(uint64(e))
+		for k, v := range m.DrainTargets {
+			_ = k
+			_ = v
+			mapEntrySize := 1 + len(k) + sovAbility(uint64(len(k))) + 1 + sovAbility(uint64(v))
+			n += mapEntrySize + 1 + sovAbility(uint64(mapEntrySize))
 		}
-		n += 1 + sovAbility(uint64(l)) + l
 	}
 	if m.Duration != 0 {
 		n += 1 + sovAbility(uint64(m.Duration))
 	}
 	l = m.Icon.Size()
 	n += 1 + l + sovAbility(uint64(l))
-	if m.Stacks != 0 {
-		n += 1 + sovAbility(uint64(m.Stacks))
-	}
-	if m.MaxStack != 0 {
-		n += 1 + sovAbility(uint64(m.MaxStack))
-	}
+	l = m.StackRules.Size()
+	n += 1 + l + sovAbility(uint64(l))
 	if m.Delay != 0 {
 		n += 1 + sovAbility(uint64(m.Delay))
 	}
 	if m.Repeat != 0 {
 		n += 1 + sovAbility(uint64(m.Repeat))
-	}
-	if len(m.Triggers) > 0 {
-		for _, e := range m.Triggers {
-			l = e.Size()
-			n += 1 + l + sovAbility(uint64(l))
-		}
 	}
 	return n
 }
@@ -1951,16 +2309,29 @@ func (m *Component) Size() (n int) {
 	var l int
 	_ = l
 	if len(m.Targets) > 0 {
-		l = 0
-		for _, e := range m.Targets {
-			l += sovAbility(uint64(e))
+		for k, v := range m.Targets {
+			_ = k
+			_ = v
+			mapEntrySize := 1 + len(k) + sovAbility(uint64(len(k))) + 1 + sovAbility(uint64(v))
+			n += mapEntrySize + 1 + sovAbility(uint64(mapEntrySize))
 		}
-		n += 1 + sovAbility(uint64(l)) + l
 	}
 	if len(m.Effects) > 0 {
-		for _, e := range m.Effects {
-			l = e.Size()
-			n += 1 + l + sovAbility(uint64(l))
+		for k, v := range m.Effects {
+			_ = k
+			_ = v
+			l = v.Size()
+			mapEntrySize := 1 + len(k) + sovAbility(uint64(len(k))) + 1 + l + sovAbility(uint64(l))
+			n += mapEntrySize + 1 + sovAbility(uint64(mapEntrySize))
+		}
+	}
+	if len(m.Triggers) > 0 {
+		for k, v := range m.Triggers {
+			_ = k
+			_ = v
+			l = v.Size()
+			mapEntrySize := 1 + len(k) + sovAbility(uint64(len(k))) + 1 + l + sovAbility(uint64(l))
+			n += mapEntrySize + 1 + sovAbility(uint64(mapEntrySize))
 		}
 	}
 	return n
@@ -1992,9 +2363,12 @@ func (m *Ability) Size() (n int) {
 		n += 1 + sovAbility(uint64(m.Cooldown))
 	}
 	if len(m.Components) > 0 {
-		for _, e := range m.Components {
-			l = e.Size()
-			n += 1 + l + sovAbility(uint64(l))
+		for k, v := range m.Components {
+			_ = k
+			_ = v
+			l = v.Size()
+			mapEntrySize := 1 + len(k) + sovAbility(uint64(len(k))) + 1 + l + sovAbility(uint64(l))
+			n += mapEntrySize + 1 + sovAbility(uint64(mapEntrySize))
 		}
 	}
 	return n
@@ -2006,21 +2380,33 @@ func sovAbility(x uint64) (n int) {
 func sozAbility(x uint64) (n int) {
 	return sovAbility(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (this *Modifier) String() string {
+func (this *AbilityModifier) String() string {
 	if this == nil {
 		return "nil"
 	}
-	s := strings.Join([]string{`&Modifier{`,
+	s := strings.Join([]string{`&AbilityModifier{`,
+		`Cancel:` + fmt.Sprintf("%v", this.Cancel) + `,`,
 		`CastTime:` + fmt.Sprintf("%v", this.CastTime) + `,`,
 		`ManaCost:` + fmt.Sprintf("%v", this.ManaCost) + `,`,
 		`Cooldown:` + fmt.Sprintf("%v", this.Cooldown) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *EffectModifier) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&EffectModifier{`,
+		`EffectID:` + fmt.Sprintf("%v", this.EffectID) + `,`,
+		`Cancel:` + fmt.Sprintf("%v", this.Cancel) + `,`,
 		`Stat:` + fmt.Sprintf("%v", this.Stat) + `,`,
-		`Amount:` + strings.Replace(this.Amount.String(), "Amount", "Amount", 1) + `,`,
-		`Drain:` + strings.Replace(this.Drain.String(), "Amount", "Amount", 1) + `,`,
+		`Amount:` + strings.Replace(strings.Replace(this.Amount.String(), "Amount", "Amount", 1), `&`, ``, 1) + `,`,
+		`Drain:` + strings.Replace(strings.Replace(this.Drain.String(), "Amount", "Amount", 1), `&`, ``, 1) + `,`,
 		`Duration:` + fmt.Sprintf("%v", this.Duration) + `,`,
 		`Delay:` + fmt.Sprintf("%v", this.Delay) + `,`,
 		`Repeat:` + fmt.Sprintf("%v", this.Repeat) + `,`,
-		`Stacks:` + fmt.Sprintf("%v", this.Stacks) + `,`,
+		`StackRules:` + strings.Replace(strings.Replace(this.StackRules.String(), "StackRules", "StackRules", 1), `&`, ``, 1) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -2030,8 +2416,9 @@ func (this *Amount) String() string {
 		return "nil"
 	}
 	s := strings.Join([]string{`&Amount{`,
-		`Target:` + fmt.Sprintf("%v", this.Target) + `,`,
+		`ID:` + fmt.Sprintf("%v", this.ID) + `,`,
 		`Direct:` + fmt.Sprintf("%v", this.Direct) + `,`,
+		`Target:` + fmt.Sprintf("%v", this.Target) + `,`,
 		`Stat:` + fmt.Sprintf("%v", this.Stat) + `,`,
 		`Percentage:` + fmt.Sprintf("%v", this.Percentage) + `,`,
 		`EffectID:` + fmt.Sprintf("%v", this.EffectID) + `,`,
@@ -2043,18 +2430,44 @@ func (this *Trigger) String() string {
 	if this == nil {
 		return "nil"
 	}
-	repeatedStringForModifiers := "[]Modifier{"
-	for _, f := range this.Modifiers {
-		repeatedStringForModifiers += strings.Replace(strings.Replace(f.String(), "Modifier", "Modifier", 1), `&`, ``, 1) + ","
+	keysForAbilityModifiers := make([]string, 0, len(this.AbilityModifiers))
+	for k, _ := range this.AbilityModifiers {
+		keysForAbilityModifiers = append(keysForAbilityModifiers, k)
 	}
-	repeatedStringForModifiers += "}"
+	github_com_gogo_protobuf_sortkeys.Strings(keysForAbilityModifiers)
+	mapStringForAbilityModifiers := "map[string]AbilityModifier{"
+	for _, k := range keysForAbilityModifiers {
+		mapStringForAbilityModifiers += fmt.Sprintf("%v: %v,", k, this.AbilityModifiers[k])
+	}
+	mapStringForAbilityModifiers += "}"
+	keysForEffectModifiers := make([]string, 0, len(this.EffectModifiers))
+	for k, _ := range this.EffectModifiers {
+		keysForEffectModifiers = append(keysForEffectModifiers, k)
+	}
+	github_com_gogo_protobuf_sortkeys.Strings(keysForEffectModifiers)
+	mapStringForEffectModifiers := "map[string]EffectModifier{"
+	for _, k := range keysForEffectModifiers {
+		mapStringForEffectModifiers += fmt.Sprintf("%v: %v,", k, this.EffectModifiers[k])
+	}
+	mapStringForEffectModifiers += "}"
 	s := strings.Join([]string{`&Trigger{`,
 		`Operator:` + fmt.Sprintf("%v", this.Operator) + `,`,
 		`Amount:` + strings.Replace(this.Amount.String(), "Amount", "Amount", 1) + `,`,
 		`Treshold:` + strings.Replace(this.Treshold.String(), "Amount", "Amount", 1) + `,`,
-		`ConsumeTreshold:` + fmt.Sprintf("%v", this.ConsumeTreshold) + `,`,
-		`Modifiers:` + repeatedStringForModifiers + `,`,
-		`Trigger:` + strings.Replace(this.Trigger.String(), "Trigger", "Trigger", 1) + `,`,
+		`AbilityModifiers:` + mapStringForAbilityModifiers + `,`,
+		`EffectModifiers:` + mapStringForEffectModifiers + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *StackRules) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&StackRules{`,
+		`Stacks:` + fmt.Sprintf("%v", this.Stacks) + `,`,
+		`MaxStacks:` + fmt.Sprintf("%v", this.MaxStacks) + `,`,
+		`MaxDuration:` + fmt.Sprintf("%v", this.MaxDuration) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -2063,26 +2476,28 @@ func (this *Effect) String() string {
 	if this == nil {
 		return "nil"
 	}
-	repeatedStringForTriggers := "[]Trigger{"
-	for _, f := range this.Triggers {
-		repeatedStringForTriggers += strings.Replace(strings.Replace(f.String(), "Trigger", "Trigger", 1), `&`, ``, 1) + ","
+	keysForDrainTargets := make([]string, 0, len(this.DrainTargets))
+	for k, _ := range this.DrainTargets {
+		keysForDrainTargets = append(keysForDrainTargets, k)
 	}
-	repeatedStringForTriggers += "}"
+	github_com_gogo_protobuf_sortkeys.Strings(keysForDrainTargets)
+	mapStringForDrainTargets := "map[string]Target{"
+	for _, k := range keysForDrainTargets {
+		mapStringForDrainTargets += fmt.Sprintf("%v: %v,", k, this.DrainTargets[k])
+	}
+	mapStringForDrainTargets += "}"
 	s := strings.Join([]string{`&Effect{`,
-		`ID:` + fmt.Sprintf("%v", this.ID) + `,`,
 		`Stat:` + fmt.Sprintf("%v", this.Stat) + `,`,
 		`Position:` + strings.Replace(fmt.Sprintf("%v", this.Position), "Vec2", "geometry.Vec2", 1) + `,`,
 		`Force:` + strings.Replace(fmt.Sprintf("%v", this.Force), "Vec2", "geometry.Vec2", 1) + `,`,
-		`Amount:` + strings.Replace(this.Amount.String(), "Amount", "Amount", 1) + `,`,
-		`Drain:` + strings.Replace(this.Drain.String(), "Amount", "Amount", 1) + `,`,
-		`DrainTargets:` + fmt.Sprintf("%v", this.DrainTargets) + `,`,
+		`Amount:` + strings.Replace(strings.Replace(this.Amount.String(), "Amount", "Amount", 1), `&`, ``, 1) + `,`,
+		`Drain:` + strings.Replace(strings.Replace(this.Drain.String(), "Amount", "Amount", 1), `&`, ``, 1) + `,`,
+		`DrainTargets:` + mapStringForDrainTargets + `,`,
 		`Duration:` + fmt.Sprintf("%v", this.Duration) + `,`,
 		`Icon:` + fmt.Sprintf("%v", this.Icon) + `,`,
-		`Stacks:` + fmt.Sprintf("%v", this.Stacks) + `,`,
-		`MaxStack:` + fmt.Sprintf("%v", this.MaxStack) + `,`,
+		`StackRules:` + strings.Replace(strings.Replace(this.StackRules.String(), "StackRules", "StackRules", 1), `&`, ``, 1) + `,`,
 		`Delay:` + fmt.Sprintf("%v", this.Delay) + `,`,
 		`Repeat:` + fmt.Sprintf("%v", this.Repeat) + `,`,
-		`Triggers:` + repeatedStringForTriggers + `,`,
 		`}`,
 	}, "")
 	return s
@@ -2091,14 +2506,40 @@ func (this *Component) String() string {
 	if this == nil {
 		return "nil"
 	}
-	repeatedStringForEffects := "[]Effect{"
-	for _, f := range this.Effects {
-		repeatedStringForEffects += strings.Replace(strings.Replace(f.String(), "Effect", "Effect", 1), `&`, ``, 1) + ","
+	keysForTargets := make([]string, 0, len(this.Targets))
+	for k, _ := range this.Targets {
+		keysForTargets = append(keysForTargets, k)
 	}
-	repeatedStringForEffects += "}"
+	github_com_gogo_protobuf_sortkeys.Strings(keysForTargets)
+	mapStringForTargets := "map[string]Target{"
+	for _, k := range keysForTargets {
+		mapStringForTargets += fmt.Sprintf("%v: %v,", k, this.Targets[k])
+	}
+	mapStringForTargets += "}"
+	keysForEffects := make([]string, 0, len(this.Effects))
+	for k, _ := range this.Effects {
+		keysForEffects = append(keysForEffects, k)
+	}
+	github_com_gogo_protobuf_sortkeys.Strings(keysForEffects)
+	mapStringForEffects := "map[string]Effect{"
+	for _, k := range keysForEffects {
+		mapStringForEffects += fmt.Sprintf("%v: %v,", k, this.Effects[k])
+	}
+	mapStringForEffects += "}"
+	keysForTriggers := make([]string, 0, len(this.Triggers))
+	for k, _ := range this.Triggers {
+		keysForTriggers = append(keysForTriggers, k)
+	}
+	github_com_gogo_protobuf_sortkeys.Strings(keysForTriggers)
+	mapStringForTriggers := "map[string]Trigger{"
+	for _, k := range keysForTriggers {
+		mapStringForTriggers += fmt.Sprintf("%v: %v,", k, this.Triggers[k])
+	}
+	mapStringForTriggers += "}"
 	s := strings.Join([]string{`&Component{`,
-		`Targets:` + fmt.Sprintf("%v", this.Targets) + `,`,
-		`Effects:` + repeatedStringForEffects + `,`,
+		`Targets:` + mapStringForTargets + `,`,
+		`Effects:` + mapStringForEffects + `,`,
+		`Triggers:` + mapStringForTriggers + `,`,
 		`}`,
 	}, "")
 	return s
@@ -2107,11 +2548,16 @@ func (this *Ability) String() string {
 	if this == nil {
 		return "nil"
 	}
-	repeatedStringForComponents := "[]Component{"
-	for _, f := range this.Components {
-		repeatedStringForComponents += strings.Replace(strings.Replace(f.String(), "Component", "Component", 1), `&`, ``, 1) + ","
+	keysForComponents := make([]string, 0, len(this.Components))
+	for k, _ := range this.Components {
+		keysForComponents = append(keysForComponents, k)
 	}
-	repeatedStringForComponents += "}"
+	github_com_gogo_protobuf_sortkeys.Strings(keysForComponents)
+	mapStringForComponents := "map[string]Component{"
+	for _, k := range keysForComponents {
+		mapStringForComponents += fmt.Sprintf("%v: %v,", k, this.Components[k])
+	}
+	mapStringForComponents += "}"
 	s := strings.Join([]string{`&Ability{`,
 		`ID:` + fmt.Sprintf("%v", this.ID) + `,`,
 		`Name:` + fmt.Sprintf("%v", this.Name) + `,`,
@@ -2120,7 +2566,7 @@ func (this *Ability) String() string {
 		`CastTime:` + fmt.Sprintf("%v", this.CastTime) + `,`,
 		`ManaCost:` + fmt.Sprintf("%v", this.ManaCost) + `,`,
 		`Cooldown:` + fmt.Sprintf("%v", this.Cooldown) + `,`,
-		`Components:` + repeatedStringForComponents + `,`,
+		`Components:` + mapStringForComponents + `,`,
 		`}`,
 	}, "")
 	return s
@@ -2133,7 +2579,7 @@ func valueToStringAbility(v interface{}) string {
 	pv := reflect.Indirect(rv).Interface()
 	return fmt.Sprintf("*%v", pv)
 }
-func (m *Modifier) Unmarshal(dAtA []byte) error {
+func (m *AbilityModifier) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2156,13 +2602,33 @@ func (m *Modifier) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: Modifier: wiretype end group for non-group")
+			return fmt.Errorf("proto: AbilityModifier: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: Modifier: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: AbilityModifier: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Cancel", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAbility
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Cancel = bool(v != 0)
+		case 2:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CastTime", wireType)
 			}
@@ -2181,7 +2647,7 @@ func (m *Modifier) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 2:
+		case 3:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ManaCost", wireType)
 			}
@@ -2200,7 +2666,7 @@ func (m *Modifier) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 3:
+		case 4:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Cooldown", wireType)
 			}
@@ -2219,7 +2685,110 @@ func (m *Modifier) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 4:
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAbility(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthAbility
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *EffectModifier) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAbility
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: EffectModifier: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: EffectModifier: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field EffectID", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAbility
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthAbility
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAbility
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.EffectID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Cancel", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAbility
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Cancel = bool(v != 0)
+		case 3:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Stat", wireType)
 			}
@@ -2233,12 +2802,12 @@ func (m *Modifier) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Stat |= Stat(b&0x7F) << shift
+				m.Stat |= entity.Stat(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-		case 5:
+		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
 			}
@@ -2267,14 +2836,11 @@ func (m *Modifier) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.Amount == nil {
-				m.Amount = &Amount{}
-			}
 			if err := m.Amount.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
-		case 6:
+		case 5:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Drain", wireType)
 			}
@@ -2303,14 +2869,11 @@ func (m *Modifier) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.Drain == nil {
-				m.Drain = &Amount{}
-			}
 			if err := m.Drain.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
-		case 7:
+		case 6:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Duration", wireType)
 			}
@@ -2329,7 +2892,7 @@ func (m *Modifier) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 8:
+		case 7:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Delay", wireType)
 			}
@@ -2348,7 +2911,7 @@ func (m *Modifier) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 9:
+		case 8:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Repeat", wireType)
 			}
@@ -2367,11 +2930,11 @@ func (m *Modifier) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 10:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Stacks", wireType)
+		case 9:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field StackRules", wireType)
 			}
-			m.Stacks = 0
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowAbility
@@ -2381,11 +2944,25 @@ func (m *Modifier) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Stacks |= int64(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			if msglen < 0 {
+				return ErrInvalidLengthAbility
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthAbility
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.StackRules.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipAbility(dAtA[iNdEx:])
@@ -2437,10 +3014,10 @@ func (m *Amount) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Target", wireType)
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
 			}
-			m.Target = 0
+			var byteLen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowAbility
@@ -2450,11 +3027,25 @@ func (m *Amount) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Target |= Target(b&0x7F) << shift
+				byteLen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			if byteLen < 0 {
+				return ErrInvalidLengthAbility
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAbility
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.ID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Direct", wireType)
@@ -2476,6 +3067,25 @@ func (m *Amount) Unmarshal(dAtA []byte) error {
 			}
 		case 3:
 			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Target", wireType)
+			}
+			m.Target = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAbility
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Target |= Target(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Stat", wireType)
 			}
 			m.Stat = 0
@@ -2488,12 +3098,12 @@ func (m *Amount) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Stat |= int64(b&0x7F) << shift
+				m.Stat |= entity.Stat(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-		case 4:
+		case 5:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Percentage", wireType)
 			}
@@ -2512,7 +3122,7 @@ func (m *Amount) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 5:
+		case 6:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field EffectID", wireType)
 			}
@@ -2687,10 +3297,10 @@ func (m *Trigger) Unmarshal(dAtA []byte) error {
 			}
 			iNdEx = postIndex
 		case 4:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ConsumeTreshold", wireType)
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AbilityModifiers", wireType)
 			}
-			var v int
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowAbility
@@ -2700,15 +3310,124 @@ func (m *Trigger) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				v |= int(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			m.ConsumeTreshold = bool(v != 0)
+			if msglen < 0 {
+				return ErrInvalidLengthAbility
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthAbility
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.AbilityModifiers == nil {
+				m.AbilityModifiers = make(map[string]AbilityModifier)
+			}
+			var mapkey string
+			mapvalue := &AbilityModifier{}
+			for iNdEx < postIndex {
+				entryPreIndex := iNdEx
+				var wire uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowAbility
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					wire |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				fieldNum := int32(wire >> 3)
+				if fieldNum == 1 {
+					var stringLenmapkey uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowAbility
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						stringLenmapkey |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					intStringLenmapkey := int(stringLenmapkey)
+					if intStringLenmapkey < 0 {
+						return ErrInvalidLengthAbility
+					}
+					postStringIndexmapkey := iNdEx + intStringLenmapkey
+					if postStringIndexmapkey < 0 {
+						return ErrInvalidLengthAbility
+					}
+					if postStringIndexmapkey > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapkey = string(dAtA[iNdEx:postStringIndexmapkey])
+					iNdEx = postStringIndexmapkey
+				} else if fieldNum == 2 {
+					var mapmsglen int
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowAbility
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						mapmsglen |= int(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					if mapmsglen < 0 {
+						return ErrInvalidLengthAbility
+					}
+					postmsgIndex := iNdEx + mapmsglen
+					if postmsgIndex < 0 {
+						return ErrInvalidLengthAbility
+					}
+					if postmsgIndex > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapvalue = &AbilityModifier{}
+					if err := mapvalue.Unmarshal(dAtA[iNdEx:postmsgIndex]); err != nil {
+						return err
+					}
+					iNdEx = postmsgIndex
+				} else {
+					iNdEx = entryPreIndex
+					skippy, err := skipAbility(dAtA[iNdEx:])
+					if err != nil {
+						return err
+					}
+					if (skippy < 0) || (iNdEx+skippy) < 0 {
+						return ErrInvalidLengthAbility
+					}
+					if (iNdEx + skippy) > postIndex {
+						return io.ErrUnexpectedEOF
+					}
+					iNdEx += skippy
+				}
+			}
+			m.AbilityModifiers[mapkey] = *mapvalue
+			iNdEx = postIndex
 		case 5:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Modifiers", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field EffectModifiers", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -2735,16 +3454,161 @@ func (m *Trigger) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Modifiers = append(m.Modifiers, Modifier{})
-			if err := m.Modifiers[len(m.Modifiers)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if m.EffectModifiers == nil {
+				m.EffectModifiers = make(map[string]EffectModifier)
+			}
+			var mapkey string
+			mapvalue := &EffectModifier{}
+			for iNdEx < postIndex {
+				entryPreIndex := iNdEx
+				var wire uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowAbility
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					wire |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				fieldNum := int32(wire >> 3)
+				if fieldNum == 1 {
+					var stringLenmapkey uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowAbility
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						stringLenmapkey |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					intStringLenmapkey := int(stringLenmapkey)
+					if intStringLenmapkey < 0 {
+						return ErrInvalidLengthAbility
+					}
+					postStringIndexmapkey := iNdEx + intStringLenmapkey
+					if postStringIndexmapkey < 0 {
+						return ErrInvalidLengthAbility
+					}
+					if postStringIndexmapkey > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapkey = string(dAtA[iNdEx:postStringIndexmapkey])
+					iNdEx = postStringIndexmapkey
+				} else if fieldNum == 2 {
+					var mapmsglen int
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowAbility
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						mapmsglen |= int(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					if mapmsglen < 0 {
+						return ErrInvalidLengthAbility
+					}
+					postmsgIndex := iNdEx + mapmsglen
+					if postmsgIndex < 0 {
+						return ErrInvalidLengthAbility
+					}
+					if postmsgIndex > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapvalue = &EffectModifier{}
+					if err := mapvalue.Unmarshal(dAtA[iNdEx:postmsgIndex]); err != nil {
+						return err
+					}
+					iNdEx = postmsgIndex
+				} else {
+					iNdEx = entryPreIndex
+					skippy, err := skipAbility(dAtA[iNdEx:])
+					if err != nil {
+						return err
+					}
+					if (skippy < 0) || (iNdEx+skippy) < 0 {
+						return ErrInvalidLengthAbility
+					}
+					if (iNdEx + skippy) > postIndex {
+						return io.ErrUnexpectedEOF
+					}
+					iNdEx += skippy
+				}
+			}
+			m.EffectModifiers[mapkey] = *mapvalue
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAbility(dAtA[iNdEx:])
+			if err != nil {
 				return err
 			}
-			iNdEx = postIndex
-		case 6:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Trigger", wireType)
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthAbility
 			}
-			var msglen int
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *StackRules) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAbility
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: StackRules: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: StackRules: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Stacks", wireType)
+			}
+			m.Stacks = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowAbility
@@ -2754,28 +3618,49 @@ func (m *Trigger) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= int(b&0x7F) << shift
+				m.Stacks |= int64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if msglen < 0 {
-				return ErrInvalidLengthAbility
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MaxStacks", wireType)
 			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthAbility
+			m.MaxStacks = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAbility
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.MaxStacks |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
 			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MaxDuration", wireType)
 			}
-			if m.Trigger == nil {
-				m.Trigger = &Trigger{}
+			m.MaxDuration = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAbility
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.MaxDuration |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
 			}
-			if err := m.Trigger.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipAbility(dAtA[iNdEx:])
@@ -2827,39 +3712,6 @@ func (m *Effect) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
-			}
-			var byteLen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowAbility
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				byteLen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if byteLen < 0 {
-				return ErrInvalidLengthAbility
-			}
-			postIndex := iNdEx + byteLen
-			if postIndex < 0 {
-				return ErrInvalidLengthAbility
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.ID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 2:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Stat", wireType)
 			}
@@ -2873,12 +3725,12 @@ func (m *Effect) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Stat |= Stat(b&0x7F) << shift
+				m.Stat |= entity.Stat(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-		case 3:
+		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Position", wireType)
 			}
@@ -2914,7 +3766,7 @@ func (m *Effect) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 4:
+		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Force", wireType)
 			}
@@ -2950,7 +3802,7 @@ func (m *Effect) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 5:
+		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
 			}
@@ -2979,14 +3831,11 @@ func (m *Effect) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.Amount == nil {
-				m.Amount = &Amount{}
-			}
 			if err := m.Amount.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
-		case 6:
+		case 5:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Drain", wireType)
 			}
@@ -3015,63 +3864,64 @@ func (m *Effect) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.Drain == nil {
-				m.Drain = &Amount{}
-			}
 			if err := m.Drain.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
-		case 7:
-			if wireType == 0 {
-				var v Target
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowAbility
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					v |= Target(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DrainTargets", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAbility
 				}
-				m.DrainTargets = append(m.DrainTargets, v)
-			} else if wireType == 2 {
-				var packedLen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowAbility
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					packedLen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if packedLen < 0 {
-					return ErrInvalidLengthAbility
-				}
-				postIndex := iNdEx + packedLen
-				if postIndex < 0 {
-					return ErrInvalidLengthAbility
-				}
-				if postIndex > l {
+				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				var elementCount int
-				if elementCount != 0 && len(m.DrainTargets) == 0 {
-					m.DrainTargets = make([]Target, 0, elementCount)
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
 				}
-				for iNdEx < postIndex {
-					var v Target
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthAbility
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthAbility
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.DrainTargets == nil {
+				m.DrainTargets = make(map[string]Target)
+			}
+			var mapkey string
+			var mapvalue Target
+			for iNdEx < postIndex {
+				entryPreIndex := iNdEx
+				var wire uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowAbility
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					wire |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				fieldNum := int32(wire >> 3)
+				if fieldNum == 1 {
+					var stringLenmapkey uint64
 					for shift := uint(0); ; shift += 7 {
 						if shift >= 64 {
 							return ErrIntOverflowAbility
@@ -3081,17 +3931,57 @@ func (m *Effect) Unmarshal(dAtA []byte) error {
 						}
 						b := dAtA[iNdEx]
 						iNdEx++
-						v |= Target(b&0x7F) << shift
+						stringLenmapkey |= uint64(b&0x7F) << shift
 						if b < 0x80 {
 							break
 						}
 					}
-					m.DrainTargets = append(m.DrainTargets, v)
+					intStringLenmapkey := int(stringLenmapkey)
+					if intStringLenmapkey < 0 {
+						return ErrInvalidLengthAbility
+					}
+					postStringIndexmapkey := iNdEx + intStringLenmapkey
+					if postStringIndexmapkey < 0 {
+						return ErrInvalidLengthAbility
+					}
+					if postStringIndexmapkey > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapkey = string(dAtA[iNdEx:postStringIndexmapkey])
+					iNdEx = postStringIndexmapkey
+				} else if fieldNum == 2 {
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowAbility
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						mapvalue |= Target(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+				} else {
+					iNdEx = entryPreIndex
+					skippy, err := skipAbility(dAtA[iNdEx:])
+					if err != nil {
+						return err
+					}
+					if (skippy < 0) || (iNdEx+skippy) < 0 {
+						return ErrInvalidLengthAbility
+					}
+					if (iNdEx + skippy) > postIndex {
+						return io.ErrUnexpectedEOF
+					}
+					iNdEx += skippy
 				}
-			} else {
-				return fmt.Errorf("proto: wrong wireType = %d for field DrainTargets", wireType)
 			}
-		case 8:
+			m.DrainTargets[mapkey] = mapvalue
+			iNdEx = postIndex
+		case 7:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Duration", wireType)
 			}
@@ -3110,7 +4000,7 @@ func (m *Effect) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 9:
+		case 8:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Icon", wireType)
 			}
@@ -3143,85 +4033,9 @@ func (m *Effect) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 10:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Stacks", wireType)
-			}
-			m.Stacks = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowAbility
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Stacks |= int64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 11:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MaxStack", wireType)
-			}
-			m.MaxStack = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowAbility
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.MaxStack |= int64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 12:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Delay", wireType)
-			}
-			m.Delay = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowAbility
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Delay |= int64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 13:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Repeat", wireType)
-			}
-			m.Repeat = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowAbility
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Repeat |= int64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 14:
+		case 9:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Triggers", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field StackRules", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -3248,11 +4062,48 @@ func (m *Effect) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Triggers = append(m.Triggers, Trigger{})
-			if err := m.Triggers[len(m.Triggers)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.StackRules.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
+		case 10:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Delay", wireType)
+			}
+			m.Delay = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAbility
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Delay |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 11:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Repeat", wireType)
+			}
+			m.Repeat = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAbility
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Repeat |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipAbility(dAtA[iNdEx:])
@@ -3304,55 +4155,59 @@ func (m *Component) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType == 0 {
-				var v Target
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowAbility
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					v |= Target(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Targets", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAbility
 				}
-				m.Targets = append(m.Targets, v)
-			} else if wireType == 2 {
-				var packedLen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowAbility
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					packedLen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if packedLen < 0 {
-					return ErrInvalidLengthAbility
-				}
-				postIndex := iNdEx + packedLen
-				if postIndex < 0 {
-					return ErrInvalidLengthAbility
-				}
-				if postIndex > l {
+				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				var elementCount int
-				if elementCount != 0 && len(m.Targets) == 0 {
-					m.Targets = make([]Target, 0, elementCount)
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
 				}
-				for iNdEx < postIndex {
-					var v Target
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthAbility
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthAbility
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Targets == nil {
+				m.Targets = make(map[string]Target)
+			}
+			var mapkey string
+			var mapvalue Target
+			for iNdEx < postIndex {
+				entryPreIndex := iNdEx
+				var wire uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowAbility
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					wire |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				fieldNum := int32(wire >> 3)
+				if fieldNum == 1 {
+					var stringLenmapkey uint64
 					for shift := uint(0); ; shift += 7 {
 						if shift >= 64 {
 							return ErrIntOverflowAbility
@@ -3362,16 +4217,56 @@ func (m *Component) Unmarshal(dAtA []byte) error {
 						}
 						b := dAtA[iNdEx]
 						iNdEx++
-						v |= Target(b&0x7F) << shift
+						stringLenmapkey |= uint64(b&0x7F) << shift
 						if b < 0x80 {
 							break
 						}
 					}
-					m.Targets = append(m.Targets, v)
+					intStringLenmapkey := int(stringLenmapkey)
+					if intStringLenmapkey < 0 {
+						return ErrInvalidLengthAbility
+					}
+					postStringIndexmapkey := iNdEx + intStringLenmapkey
+					if postStringIndexmapkey < 0 {
+						return ErrInvalidLengthAbility
+					}
+					if postStringIndexmapkey > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapkey = string(dAtA[iNdEx:postStringIndexmapkey])
+					iNdEx = postStringIndexmapkey
+				} else if fieldNum == 2 {
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowAbility
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						mapvalue |= Target(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+				} else {
+					iNdEx = entryPreIndex
+					skippy, err := skipAbility(dAtA[iNdEx:])
+					if err != nil {
+						return err
+					}
+					if (skippy < 0) || (iNdEx+skippy) < 0 {
+						return ErrInvalidLengthAbility
+					}
+					if (iNdEx + skippy) > postIndex {
+						return io.ErrUnexpectedEOF
+					}
+					iNdEx += skippy
 				}
-			} else {
-				return fmt.Errorf("proto: wrong wireType = %d for field Targets", wireType)
 			}
+			m.Targets[mapkey] = mapvalue
+			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Effects", wireType)
@@ -3401,10 +4296,234 @@ func (m *Component) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Effects = append(m.Effects, Effect{})
-			if err := m.Effects[len(m.Effects)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
+			if m.Effects == nil {
+				m.Effects = make(map[string]Effect)
 			}
+			var mapkey string
+			mapvalue := &Effect{}
+			for iNdEx < postIndex {
+				entryPreIndex := iNdEx
+				var wire uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowAbility
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					wire |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				fieldNum := int32(wire >> 3)
+				if fieldNum == 1 {
+					var stringLenmapkey uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowAbility
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						stringLenmapkey |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					intStringLenmapkey := int(stringLenmapkey)
+					if intStringLenmapkey < 0 {
+						return ErrInvalidLengthAbility
+					}
+					postStringIndexmapkey := iNdEx + intStringLenmapkey
+					if postStringIndexmapkey < 0 {
+						return ErrInvalidLengthAbility
+					}
+					if postStringIndexmapkey > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapkey = string(dAtA[iNdEx:postStringIndexmapkey])
+					iNdEx = postStringIndexmapkey
+				} else if fieldNum == 2 {
+					var mapmsglen int
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowAbility
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						mapmsglen |= int(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					if mapmsglen < 0 {
+						return ErrInvalidLengthAbility
+					}
+					postmsgIndex := iNdEx + mapmsglen
+					if postmsgIndex < 0 {
+						return ErrInvalidLengthAbility
+					}
+					if postmsgIndex > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapvalue = &Effect{}
+					if err := mapvalue.Unmarshal(dAtA[iNdEx:postmsgIndex]); err != nil {
+						return err
+					}
+					iNdEx = postmsgIndex
+				} else {
+					iNdEx = entryPreIndex
+					skippy, err := skipAbility(dAtA[iNdEx:])
+					if err != nil {
+						return err
+					}
+					if (skippy < 0) || (iNdEx+skippy) < 0 {
+						return ErrInvalidLengthAbility
+					}
+					if (iNdEx + skippy) > postIndex {
+						return io.ErrUnexpectedEOF
+					}
+					iNdEx += skippy
+				}
+			}
+			m.Effects[mapkey] = *mapvalue
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Triggers", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAbility
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthAbility
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthAbility
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Triggers == nil {
+				m.Triggers = make(map[string]Trigger)
+			}
+			var mapkey string
+			mapvalue := &Trigger{}
+			for iNdEx < postIndex {
+				entryPreIndex := iNdEx
+				var wire uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowAbility
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					wire |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				fieldNum := int32(wire >> 3)
+				if fieldNum == 1 {
+					var stringLenmapkey uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowAbility
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						stringLenmapkey |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					intStringLenmapkey := int(stringLenmapkey)
+					if intStringLenmapkey < 0 {
+						return ErrInvalidLengthAbility
+					}
+					postStringIndexmapkey := iNdEx + intStringLenmapkey
+					if postStringIndexmapkey < 0 {
+						return ErrInvalidLengthAbility
+					}
+					if postStringIndexmapkey > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapkey = string(dAtA[iNdEx:postStringIndexmapkey])
+					iNdEx = postStringIndexmapkey
+				} else if fieldNum == 2 {
+					var mapmsglen int
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowAbility
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						mapmsglen |= int(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					if mapmsglen < 0 {
+						return ErrInvalidLengthAbility
+					}
+					postmsgIndex := iNdEx + mapmsglen
+					if postmsgIndex < 0 {
+						return ErrInvalidLengthAbility
+					}
+					if postmsgIndex > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapvalue = &Trigger{}
+					if err := mapvalue.Unmarshal(dAtA[iNdEx:postmsgIndex]); err != nil {
+						return err
+					}
+					iNdEx = postmsgIndex
+				} else {
+					iNdEx = entryPreIndex
+					skippy, err := skipAbility(dAtA[iNdEx:])
+					if err != nil {
+						return err
+					}
+					if (skippy < 0) || (iNdEx+skippy) < 0 {
+						return ErrInvalidLengthAbility
+					}
+					if (iNdEx + skippy) > postIndex {
+						return io.ErrUnexpectedEOF
+					}
+					iNdEx += skippy
+				}
+			}
+			m.Triggers[mapkey] = *mapvalue
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -3673,10 +4792,105 @@ func (m *Ability) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Components = append(m.Components, Component{})
-			if err := m.Components[len(m.Components)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
+			if m.Components == nil {
+				m.Components = make(map[string]Component)
 			}
+			var mapkey string
+			mapvalue := &Component{}
+			for iNdEx < postIndex {
+				entryPreIndex := iNdEx
+				var wire uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowAbility
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					wire |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				fieldNum := int32(wire >> 3)
+				if fieldNum == 1 {
+					var stringLenmapkey uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowAbility
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						stringLenmapkey |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					intStringLenmapkey := int(stringLenmapkey)
+					if intStringLenmapkey < 0 {
+						return ErrInvalidLengthAbility
+					}
+					postStringIndexmapkey := iNdEx + intStringLenmapkey
+					if postStringIndexmapkey < 0 {
+						return ErrInvalidLengthAbility
+					}
+					if postStringIndexmapkey > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapkey = string(dAtA[iNdEx:postStringIndexmapkey])
+					iNdEx = postStringIndexmapkey
+				} else if fieldNum == 2 {
+					var mapmsglen int
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowAbility
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						mapmsglen |= int(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					if mapmsglen < 0 {
+						return ErrInvalidLengthAbility
+					}
+					postmsgIndex := iNdEx + mapmsglen
+					if postmsgIndex < 0 {
+						return ErrInvalidLengthAbility
+					}
+					if postmsgIndex > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapvalue = &Component{}
+					if err := mapvalue.Unmarshal(dAtA[iNdEx:postmsgIndex]); err != nil {
+						return err
+					}
+					iNdEx = postmsgIndex
+				} else {
+					iNdEx = entryPreIndex
+					skippy, err := skipAbility(dAtA[iNdEx:])
+					if err != nil {
+						return err
+					}
+					if (skippy < 0) || (iNdEx+skippy) < 0 {
+						return ErrInvalidLengthAbility
+					}
+					if (iNdEx + skippy) > postIndex {
+						return io.ErrUnexpectedEOF
+					}
+					iNdEx += skippy
+				}
+			}
+			m.Components[mapkey] = *mapvalue
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

@@ -64,10 +64,13 @@ $ go run ./scripts/write_tileset/main.go 'assets/external/Tilesets' 'assets/tile
     + [x] NPC entity have lower z index
     + [ ] [HD] NPC entity static/dynamic collision -> Add manual (in code ?) collisions for altar in room/app
     + [ ] implement spawn mechanic
+	+ [ ] implement skill mechanic
+	  + [ ] AbilityModifier + EffectModifier
+	  + [ ] Triggers at component level
+	  + [ ] Eval triggers first, then modify effects then apply effects
   + [x] [p0] refresh token dashboard (+ client ?)
   + [x] [p0] Remove player from other clients when disconnect
   + [x] [p0] Fix player sprite not loaded
-
 
 # FLOW
 ---
