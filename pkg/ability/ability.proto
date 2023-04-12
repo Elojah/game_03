@@ -122,14 +122,8 @@ message Effect {
 	// Tick only if duration > 0 and not ignored
 	int64 Delay                                = 10; // after ms
 	int64 Repeat                               = 11; // each ms
-}
 
-message Component {
-	// how to relate targets and effects ? targets[key] key unused ftm
-	map<string, Target> Targets                = 1;
-	map<string, Effect> Effects                = 2 [(gogoproto.nullable) = false];
-	// logical OR
-	map<string, Trigger> Triggers              = 3 [(gogoproto.nullable) = false];
+	map<string, Target> Targets                = 12;
 }
 
 message Ability {
@@ -143,5 +137,7 @@ message Ability {
 	int64 ManaCost                             = 6;
 	int64 Cooldown                             = 7;
 
-	map<string, Component> Components          = 8 [(gogoproto.nullable) = false];
+	map<string, Effect> Effects                = 9 [(gogoproto.nullable) = false];
+	// logical OR
+	map<string, Trigger> Triggers              = 10 [(gogoproto.nullable) = false];
 }

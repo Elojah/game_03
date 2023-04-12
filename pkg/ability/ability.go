@@ -1,14 +1,18 @@
 package ability
 
 import (
+	"time"
+
 	"github.com/elojah/game_03/pkg/entity"
 	"github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/ulid"
 )
 
 var (
-	tmpFetchEntity  = func(ulid.ID) (entity.E, error) { return entity.E{}, nil }
-	tmpUpdateEntity = func(entity.E) error { return nil }
+	tmpFetchEntity         = func(ulid.ID) (entity.E, error) { return entity.E{}, nil }
+	tmpUpdateEntity        = func(entity.E) error { return nil }
+	tmpFetchEntityAbility  = func(ulid.ID, ulid.ID) (entity.Ability, error) { return entity.Ability{}, nil }
+	tmpUpdateEntityAbility = func(entity.Ability) error { return nil }
 
 	operators = map[Operator]func(a int64, b int64) bool{
 		NoneOperator: func(a, b int64) bool { return false },
@@ -20,93 +24,123 @@ var (
 )
 
 func (a Ability) Cast(cast Cast) error {
-	for compID, comp := range a.Components {
-		for _, trigger := range comp.Triggers {
-			abilityM, effectM := trigger.Eval()
+	now := time.Now()
+
+	// Check if entity is casting
+	e, err := tmpFetchEntity(cast.SourceID) // now
+	if err != nil {
+		return err
+	}
+
+	// Evaluate triggers and modify
+	for _, trigger := range a.Triggers {
+		ok, err := trigger.Eval(cast)
+		if err != nil {
+			// compose error ?
+			return err
 		}
 
-		for effectID, effect := range comp.Effects {
-			cts, ok := cast.Targets[effectID]
-			if !ok {
-				continue
+		if ok {
+			a.Modify(trigger.AbilityModifiers)
+			a.ModifyEffect(trigger.EffectModifiers)
+		}
+	}
+
+	// Check mana cost and cooldown
+	// TODO: consider mana buffs/debuffs here ?
+	if e.Stats.MP < a.ManaCost {
+		return errors.ErrNotEnoughMP{
+			Required:  a.ManaCost,
+			MP:        e.Stats.MP,
+			AbilityID: a.ID.String(),
+		}
+	}
+
+	ea, err := tmpFetchEntityAbility(e.ID, a.ID)
+	if err != nil {
+		return err
+	}
+
+	// TODO: consider cooldown buffs/debuffs here ?
+	// # Formula Cooldown
+	if now.UnixMilli()-ea.LastCast <
+		(a.Cooldown * (1 - (e.Stats.CooldownReduction / 100))) {
+		return errors.ErrCooldownInProgress{
+			At:        now.UnixMilli(),
+			LastCast:  ea.LastCast,
+			Cooldown:  a.Cooldown,
+			AbilityID: a.ID.String(),
+		}
+	}
+
+	// TODO: Cast time how to manage ?
+
+	// Cast effects
+	for effectID, effect := range a.Effects {
+		cts, ok := cast.Targets[effectID]
+		if !ok {
+			continue
+		}
+
+		for _, t := range cts.Targets {
+			/*
+				check validity of targets (number, type, range)
+			*/
+			e, err := tmpFetchEntity(t.ID)
+			if err != nil {
+				// compose error ?
+				return err
 			}
 
-			for _, t := range cts.Targets {
-				/*
-					check validity of targets (number, type, range)
-				*/
-				e, err := tmpFetchEntity(t.ID)
-				if err != nil {
-					// compose error ?
-				}
-
-				ms, err := effect.Apply(e, cast)
-				if err != nil {
-					// compose error ?
-				}
-
-				if err := a.ApplyModifiers(compID, ms); err != nil {
-					// compose error ?
-				}
-
-			}
 		}
 	}
 
 	return nil
 }
 
-func (a *Ability) ApplyModifiers(compID string, ms []Modifier) error {
+func (a *Ability) Modify(ms map[string]AbilityModifier) {
 	for _, m := range ms {
 		a.CastTime += m.CastTime
 		a.ManaCost += m.ManaCost
 		a.Cooldown += m.Cooldown
-
-		comp, ok := a.Components[compID]
-		if !ok {
-			// return err
-		}
-
-		effectID := m.Amount.EffectID.String()
-		if effect, ok := comp.Effects[effectID]; ok {
-			if m.Cancel {
-				// TODO ?
-			}
-
-			// modifier rules, change only in a first step
-			effect.Amount = m.Amount
-			effect.Drain = m.Drain
-			effect.Duration = m.Duration
-			effect.Delay = m.Delay
-			effect.Repeat = m.Repeat
-			effect.StackRules = m.StackRules
-
-			a.Components[compID].Effects[effectID] = effect
-		}
-
 	}
-
-	return nil
 }
 
-func (effect Effect) Apply(e entity.E, c Cast) ([]Modifier, error) {
-	var result []Modifier
+func (a *Ability) ModifyEffect(ms map[string]EffectModifier) {
+	for _, m := range ms {
+		id := m.EffectID.String()
 
-	for _, trigger := range effect.Triggers {
-		trigger.Eval()
-		// apply on effects ?
+		e, ok := a.Effects[id]
+		if !ok {
+			continue
+		}
+
+		if m.Cancel {
+			delete(a.Effects, id)
+			continue
+		}
+
+		e.Stat = m.Stat
+		e.Amount = m.Amount
+		e.Drain = m.Drain
+
+		e.Duration += m.Duration
+		e.Delay += m.Delay
+		e.Repeat += m.Repeat
+
+		e.StackRules = m.StackRules
+
+		a.Effects[id] = e
 	}
-
-	return result, nil
 }
 
 func (t Trigger) Eval(c Cast) (bool, error) {
-	amount, err := t.Amount.Compute(c)
+	amount, err := t.Amount.Eval(c)
 	if err != nil {
 		return false, err
 	}
 
-	treshold, err := t.Treshold.Compute(c)
+	treshold, err := t.Treshold.Eval(c)
 	if err != nil {
 		return false, err
 	}
@@ -124,7 +158,7 @@ func (t Trigger) Eval(c Cast) (bool, error) {
 	return true, nil
 }
 
-func (amount Amount) Compute(c Cast) (int64, error) {
+func (amount Amount) Eval(c Cast) (int64, error) {
 	result := amount.Direct
 
 	if amount.Percentage == 0 && amount.EffectID.IsZero() {

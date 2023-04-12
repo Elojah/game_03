@@ -279,31 +279,6 @@ export namespace Effect {
   }
 }
 
-export class Component extends jspb.Message {
-  getTargetsMap(): jspb.Map<string, TargetMap[keyof TargetMap]>;
-  clearTargetsMap(): void;
-  getEffectsMap(): jspb.Map<string, Effect>;
-  clearEffectsMap(): void;
-  getTriggersMap(): jspb.Map<string, Trigger>;
-  clearTriggersMap(): void;
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): Component.AsObject;
-  static toObject(includeInstance: boolean, msg: Component): Component.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: Component, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): Component;
-  static deserializeBinaryFromReader(message: Component, reader: jspb.BinaryReader): Component;
-}
-
-export namespace Component {
-  export type AsObject = {
-    targetsMap: Array<[string, TargetMap[keyof TargetMap]]>,
-    effectsMap: Array<[string, Effect.AsObject]>,
-    triggersMap: Array<[string, Trigger.AsObject]>,
-  }
-}
-
 export class Ability extends jspb.Message {
   getId(): Uint8Array | string;
   getId_asU8(): Uint8Array;
@@ -332,8 +307,12 @@ export class Ability extends jspb.Message {
   getCooldown(): number;
   setCooldown(value: number): void;
 
-  getComponentsMap(): jspb.Map<string, Component>;
-  clearComponentsMap(): void;
+  getTargetsMap(): jspb.Map<string, TargetMap[keyof TargetMap]>;
+  clearTargetsMap(): void;
+  getEffectsMap(): jspb.Map<string, Effect>;
+  clearEffectsMap(): void;
+  getTriggersMap(): jspb.Map<string, Trigger>;
+  clearTriggersMap(): void;
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Ability.AsObject;
   static toObject(includeInstance: boolean, msg: Ability): Ability.AsObject;
@@ -353,7 +332,9 @@ export namespace Ability {
     casttime: number,
     manacost: number,
     cooldown: number,
-    componentsMap: Array<[string, Component.AsObject]>,
+    targetsMap: Array<[string, TargetMap[keyof TargetMap]]>,
+    effectsMap: Array<[string, Effect.AsObject]>,
+    triggersMap: Array<[string, Trigger.AsObject]>,
   }
 }
 

@@ -22,13 +22,9 @@ message CastTarget {
 	geometry.Circle Circle                = 3;
 }
 
-message CastTargets {
-	repeated CastTarget Targets           = 1 [(gogoproto.nullable) = false];
-}
-
 message Cast {
     bytes SourceID                        = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
     bytes AbilityID                       = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
 
-	map<string, CastTargets> Targets      = 3 [(gogoproto.nullable) = false];
+	map<string, CastTarget> Targets      = 3 [(gogoproto.nullable) = false];
 }
