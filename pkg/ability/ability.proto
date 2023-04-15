@@ -48,16 +48,14 @@ message EffectModifier {
 	entity.Stat Stat                           = 3;
 	// Add amount
 	Amount Amount                              = 4 [(gogoproto.nullable) = false];
-	// Change drained stat
-	Amount Drain                               = 5 [(gogoproto.nullable) = false];
 	// Change duration
-	int64 Duration                             = 6;
+	int64 Duration                             = 5;
 	// Add Delay
-	int64 Delay                                = 7;
+	int64 Delay                                = 6;
 	// Change tick rate
-	int64 Repeat                               = 8;
+	int64 Repeat                               = 7;
 	// Add stacks
-	StackRules StackRules                      = 9 [(gogoproto.nullable) = false];
+	StackRules StackRules                      = 8 [(gogoproto.nullable) = false];
 }
 
 // Amount used for ability
@@ -68,12 +66,17 @@ message Amount {
 
 	Target Target                              = 3;
 
-	// stat percentage of target
+	// Stat percentage of target
 	entity.Stat Stat                           = 4;
 	int64 Percentage                           = 5;
 
 	// number of effect stacks on target
     bytes EffectID                             = 6 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+
+	// StatOutcome indicates if we use stat diff of outcome effect
+	// if false, use e.Stat/effect value, if true, use e.PrevStat - e.NewStat post effect.
+	// if true in first effect map (no diff yet), amount is invalid == 0
+	bool StatOutcome                           = 7;
 }
 
 enum Operator {
@@ -108,22 +111,25 @@ message Effect {
 	geometry.Vec2 Force                        = 3; // Teleport if force == 0/0
 
 	Amount Amount                              = 4 [(gogoproto.nullable) = false];
-	Amount Drain                               = 5 [(gogoproto.nullable) = false];
-	// drain is duplicate for all targets
-	map<string, Target> DrainTargets           = 6 [(gogoproto.nullable) = false];
 
 	// stack rules
 	// if duration 0 or ignored, overtime effects ignored too
-	int64 Duration                             = 7;
-	bytes Icon                                 = 8 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+	int64 Duration                             = 5;
+	bytes Icon                                 = 6 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+
+	// Tick only if duration > 0 and not ignored
+	int64 Delay                                = 7; // after ms
+	int64 Repeat                               = 8; // each ms
 
 	StackRules StackRules                      = 9 [(gogoproto.nullable) = false];
 
-	// Tick only if duration > 0 and not ignored
-	int64 Delay                                = 10; // after ms
-	int64 Repeat                               = 11; // each ms
+	map<string, Target> Targets                = 10;
 
-	map<string, Target> Targets                = 12;
+	// preventive triggers before applying this effect
+	map<string, Trigger> Triggers              = 11 [(gogoproto.nullable) = false];
+
+	// recursive effects to run after this effect
+	map<string, Effect> Effects                = 12 [(gogoproto.nullable) = false];
 }
 
 message Ability {
@@ -137,7 +143,5 @@ message Ability {
 	int64 ManaCost                             = 6;
 	int64 Cooldown                             = 7;
 
-	map<string, Effect> Effects                = 9 [(gogoproto.nullable) = false];
-	// logical OR
-	map<string, Trigger> Triggers              = 10 [(gogoproto.nullable) = false];
+	map<string, Effect> Effects                = 8 [(gogoproto.nullable) = false];
 }

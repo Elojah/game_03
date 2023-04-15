@@ -32,6 +32,11 @@ func (a Ability) Cast(cast Cast) error {
 		return err
 	}
 
+	ea, err := tmpFetchEntityAbility(e.ID, a.ID)
+	if err != nil {
+		return err
+	}
+
 	// Evaluate triggers and modify
 	for _, trigger := range a.Triggers {
 		ok, err := trigger.Eval(cast)
@@ -56,11 +61,6 @@ func (a Ability) Cast(cast Cast) error {
 		}
 	}
 
-	ea, err := tmpFetchEntityAbility(e.ID, a.ID)
-	if err != nil {
-		return err
-	}
-
 	// TODO: consider cooldown buffs/debuffs here ?
 	// # Formula Cooldown
 	if now.UnixMilli()-ea.LastCast <
@@ -76,26 +76,40 @@ func (a Ability) Cast(cast Cast) error {
 	// TODO: Cast time how to manage ?
 
 	// Cast effects
-	for effectID, effect := range a.Effects {
-		cts, ok := cast.Targets[effectID]
-		if !ok {
-			continue
-		}
+	a.EvalEffects()
 
-		for _, t := range cts.Targets {
+	return nil
+}
+
+func (a *Ability) EvalEffects(effects map[string]Effect, cast Cast) {
+	for effectID, effect := range effects {
+		for targetID, target := range effect.Targets {
+			_ = target
 			/*
 				check validity of targets (number, type, range)
 			*/
+			t, ok := cast.Targets[targetID]
+			if !ok {
+				continue
+			}
+
 			e, err := tmpFetchEntity(t.ID)
 			if err != nil {
 				// compose error ?
 				return err
 			}
 
+			e = effect.Eval(e)
+			if err := tmpUpdateEntity(e); err != nil {
+
+			}
 		}
 	}
+}
 
-	return nil
+func (ef Effect) Eval(e entity.E) (entity.E, error) {
+
+	return e, nil
 }
 
 func (a *Ability) Modify(ms map[string]AbilityModifier) {
@@ -122,7 +136,6 @@ func (a *Ability) ModifyEffect(ms map[string]EffectModifier) {
 
 		e.Stat = m.Stat
 		e.Amount = m.Amount
-		e.Drain = m.Drain
 
 		e.Duration += m.Duration
 		e.Delay += m.Delay
@@ -151,7 +164,7 @@ func (t Trigger) Eval(c Cast) (bool, error) {
 	}
 
 	if !comp(amount, treshold) {
-		// trigger not fulfilled
+		// trigger not raised
 		return false, nil
 	}
 
@@ -165,12 +178,12 @@ func (amount Amount) Eval(c Cast) (int64, error) {
 		return result, nil
 	}
 
-	targets, ok := c.Targets[amount.ID.String()]
-	if !ok || len(targets.Targets) == 0 {
+	target, ok := c.Targets[amount.ID.String()]
+	if !ok {
 		return result, nil // error ?
 	}
 
-	e, err := tmpFetchEntity(targets.Targets[0].ID)
+	e, err := tmpFetchEntity(target.ID)
 	if err != nil {
 		return result, err
 	}

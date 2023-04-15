@@ -39,28 +39,6 @@ export namespace CastTarget {
   }
 }
 
-export class CastTargets extends jspb.Message {
-  clearTargetsList(): void;
-  getTargetsList(): Array<CastTarget>;
-  setTargetsList(value: Array<CastTarget>): void;
-  addTargets(value?: CastTarget, index?: number): CastTarget;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): CastTargets.AsObject;
-  static toObject(includeInstance: boolean, msg: CastTargets): CastTargets.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: CastTargets, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): CastTargets;
-  static deserializeBinaryFromReader(message: CastTargets, reader: jspb.BinaryReader): CastTargets;
-}
-
-export namespace CastTargets {
-  export type AsObject = {
-    targetsList: Array<CastTarget.AsObject>,
-  }
-}
-
 export class Cast extends jspb.Message {
   getSourceid(): Uint8Array | string;
   getSourceid_asU8(): Uint8Array;
@@ -72,7 +50,7 @@ export class Cast extends jspb.Message {
   getAbilityid_asB64(): string;
   setAbilityid(value: Uint8Array | string): void;
 
-  getTargetsMap(): jspb.Map<string, CastTargets>;
+  getTargetsMap(): jspb.Map<string, CastTarget>;
   clearTargetsMap(): void;
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Cast.AsObject;
@@ -88,7 +66,7 @@ export namespace Cast {
   export type AsObject = {
     sourceid: Uint8Array | string,
     abilityid: Uint8Array | string,
-    targetsMap: Array<[string, CastTargets.AsObject]>,
+    targetsMap: Array<[string, CastTarget.AsObject]>,
   }
 }
 
