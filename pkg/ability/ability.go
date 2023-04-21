@@ -32,24 +32,15 @@ func (a Ability) Cast(cast Cast) error {
 		return err
 	}
 
-	ea, err := tmpFetchEntityAbility(e.ID, a.ID)
+	// check if entity owns ability + last cast
+	ea, err := tmpFetchEntityAbility(cast.SourceID, a.ID)
 	if err != nil {
 		return err
 	}
 
-	// Evaluate triggers and modify
-	for _, trigger := range a.Triggers {
-		ok, err := trigger.Eval(cast)
-		if err != nil {
-			// compose error ?
-			return err
-		}
-
-		if ok {
-			a.Modify(trigger.AbilityModifiers)
-			a.ModifyEffect(trigger.EffectModifiers)
-		}
-	}
+	// TODO: Cast time how to manage ?
+	// Cast effects
+	a.Eval(cast)
 
 	// Check mana cost and cooldown
 	// TODO: consider mana buffs/debuffs here ?
@@ -73,43 +64,75 @@ func (a Ability) Cast(cast Cast) error {
 		}
 	}
 
-	// TODO: Cast time how to manage ?
-
-	// Cast effects
-	a.EvalEffects()
-
 	return nil
 }
 
-func (a *Ability) EvalEffects(effects map[string]Effect, cast Cast) {
-	for effectID, effect := range effects {
-		for targetID, target := range effect.Targets {
-			_ = target
-			/*
-				check validity of targets (number, type, range)
-			*/
-			t, ok := cast.Targets[targetID]
-			if !ok {
-				continue
-			}
+func (a *Ability) Eval(cast Cast) ([]entity.E, error) {
+	entities := make(map[string]entity.E)
 
-			e, err := tmpFetchEntity(t.ID)
-			if err != nil {
-				// compose error ?
-				return err
-			}
+	for _, effect := range a.Effects {
+		es, am, err := effect.Eval(cast)
+	}
 
-			e = effect.Eval(e)
-			if err := tmpUpdateEntity(e); err != nil {
+	// if err := tmpUpdateEntity(e); err != nil {
+	// }
 
+	return nil, nil
+}
+
+func (ef *Effect) Eval(c Cast) (map[string]entity.E, map[string]AbilityModifier, error) {
+	am := make(map[string]AbilityModifier)
+
+	// Evaluate triggers and modify
+	for _, trigger := range ef.Triggers {
+		ok, err := trigger.Eval(c)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		if !ok {
+			continue
+		}
+
+		for key, modifier := range trigger.AbilityModifiers {
+			am[key] = modifier
+		}
+
+		for key, m := range trigger.EffectModifiers {
+			// apply on self
+			if key == "" {
+				ef.Modify(m)
+			} else if child, ok := ef.Effects[key]; ok {
+				child.Modify(m)
+
+				// reassign in map
+				ef.Effects[key] = child
 			}
 		}
 	}
+
+	for tid, t := range ef.Targets {
+		ct, ok := c.Targets[tid]
+		if !ok {
+			// no defined target, pass ?
+		}
+
+		e, err := tmpFetchEntity(ct.ID)
+		if err != nil {
+			return nil, nil, err
+		}
+	}
+
+	return nil, am, nil
 }
 
-func (ef Effect) Eval(e entity.E) (entity.E, error) {
-
-	return e, nil
+func (ef *Effect) Modify(m EffectModifier) {
+	ef.Stat = m.Stat
+	ef.Amount = m.Amount
+	ef.Duration += m.Duration
+	ef.Delay += m.Delay
+	ef.Repeat += m.Repeat
+	ef.StackRules = m.StackRules
 }
 
 func (a *Ability) Modify(ms map[string]AbilityModifier) {
@@ -117,33 +140,6 @@ func (a *Ability) Modify(ms map[string]AbilityModifier) {
 		a.CastTime += m.CastTime
 		a.ManaCost += m.ManaCost
 		a.Cooldown += m.Cooldown
-	}
-}
-
-func (a *Ability) ModifyEffect(ms map[string]EffectModifier) {
-	for _, m := range ms {
-		id := m.EffectID.String()
-
-		e, ok := a.Effects[id]
-		if !ok {
-			continue
-		}
-
-		if m.Cancel {
-			delete(a.Effects, id)
-			continue
-		}
-
-		e.Stat = m.Stat
-		e.Amount = m.Amount
-
-		e.Duration += m.Duration
-		e.Delay += m.Delay
-		e.Repeat += m.Repeat
-
-		e.StackRules = m.StackRules
-
-		a.Effects[id] = e
 	}
 }
 

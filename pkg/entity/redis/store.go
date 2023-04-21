@@ -4,6 +4,6 @@ import (
 	"github.com/elojah/go-redis"
 )
 
-type Cache struct {
+type Store struct {
 	redis.Service
 }

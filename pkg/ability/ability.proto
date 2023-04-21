@@ -125,7 +125,7 @@ message Effect {
 
 	map<string, Target> Targets                = 10;
 
-	// preventive triggers before applying this effect
+	// Triggers to check before applying this effect and can run on this effect or children only.
 	map<string, Trigger> Triggers              = 11 [(gogoproto.nullable) = false];
 
 	// recursive effects to run after this effect

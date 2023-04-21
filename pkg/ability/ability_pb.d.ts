@@ -55,11 +55,6 @@ export class EffectModifier extends jspb.Message {
   getAmount(): Amount | undefined;
   setAmount(value?: Amount): void;
 
-  hasDrain(): boolean;
-  clearDrain(): void;
-  getDrain(): Amount | undefined;
-  setDrain(value?: Amount): void;
-
   getDuration(): number;
   setDuration(value: number): void;
 
@@ -90,7 +85,6 @@ export namespace EffectModifier {
     cancel: boolean,
     stat: github_com_elojah_game_03_pkg_entity_entity_pb.StatMap[keyof github_com_elojah_game_03_pkg_entity_entity_pb.StatMap],
     amount?: Amount.AsObject,
-    drain?: Amount.AsObject,
     duration: number,
     delay: number,
     repeat: number,
@@ -121,6 +115,9 @@ export class Amount extends jspb.Message {
   getEffectid_asB64(): string;
   setEffectid(value: Uint8Array | string): void;
 
+  getStatoutcome(): boolean;
+  setStatoutcome(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Amount.AsObject;
   static toObject(includeInstance: boolean, msg: Amount): Amount.AsObject;
@@ -139,6 +136,7 @@ export namespace Amount {
     stat: github_com_elojah_game_03_pkg_entity_entity_pb.StatMap[keyof github_com_elojah_game_03_pkg_entity_entity_pb.StatMap],
     percentage: number,
     effectid: Uint8Array | string,
+    statoutcome: boolean,
   }
 }
 
@@ -235,19 +233,23 @@ export class Effect extends jspb.Message {
   getIcon_asB64(): string;
   setIcon(value: Uint8Array | string): void;
 
-  hasStackrules(): boolean;
-  clearStackrules(): void;
-  getStackrules(): StackRules | undefined;
-  setStackrules(value?: StackRules): void;
-
   getDelay(): number;
   setDelay(value: number): void;
 
   getRepeat(): number;
   setRepeat(value: number): void;
 
+  hasStackrules(): boolean;
+  clearStackrules(): void;
+  getStackrules(): StackRules | undefined;
+  setStackrules(value?: StackRules): void;
+
   getTargetsMap(): jspb.Map<string, TargetMap[keyof TargetMap]>;
   clearTargetsMap(): void;
+  getTriggersMap(): jspb.Map<string, Trigger>;
+  clearTriggersMap(): void;
+  getEffectsMap(): jspb.Map<string, Effect>;
+  clearEffectsMap(): void;
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Effect.AsObject;
   static toObject(includeInstance: boolean, msg: Effect): Effect.AsObject;
@@ -266,50 +268,12 @@ export namespace Effect {
     amount?: Amount.AsObject,
     duration: number,
     icon: Uint8Array | string,
-    stackrules?: StackRules.AsObject,
     delay: number,
     repeat: number,
+    stackrules?: StackRules.AsObject,
     targetsMap: Array<[string, TargetMap[keyof TargetMap]]>,
-  }
-}
-
-export class Outcome extends jspb.Message {
-  hasStats(): boolean;
-  clearStats(): void;
-  getStats(): github_com_elojah_game_03_pkg_entity_entity_pb.Stats | undefined;
-  setStats(value?: github_com_elojah_game_03_pkg_entity_entity_pb.Stats): void;
-
-  hasStatsmodified(): boolean;
-  clearStatsmodified(): void;
-  getStatsmodified(): github_com_elojah_game_03_pkg_entity_entity_pb.Stats | undefined;
-  setStatsmodified(value?: github_com_elojah_game_03_pkg_entity_entity_pb.Stats): void;
-
-  hasStacks(): boolean;
-  clearStacks(): void;
-  getStacks(): StackRules | undefined;
-  setStacks(value?: StackRules): void;
-
-  hasStacksmodified(): boolean;
-  clearStacksmodified(): void;
-  getStacksmodified(): StackRules | undefined;
-  setStacksmodified(value?: StackRules): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): Outcome.AsObject;
-  static toObject(includeInstance: boolean, msg: Outcome): Outcome.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: Outcome, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): Outcome;
-  static deserializeBinaryFromReader(message: Outcome, reader: jspb.BinaryReader): Outcome;
-}
-
-export namespace Outcome {
-  export type AsObject = {
-    stats?: github_com_elojah_game_03_pkg_entity_entity_pb.Stats.AsObject,
-    statsmodified?: github_com_elojah_game_03_pkg_entity_entity_pb.Stats.AsObject,
-    stacks?: StackRules.AsObject,
-    stacksmodified?: StackRules.AsObject,
+    triggersMap: Array<[string, Trigger.AsObject]>,
+    effectsMap: Array<[string, Effect.AsObject]>,
   }
 }
 
@@ -343,10 +307,6 @@ export class Ability extends jspb.Message {
 
   getEffectsMap(): jspb.Map<string, Effect>;
   clearEffectsMap(): void;
-  getTriggersMap(): jspb.Map<string, Trigger>;
-  clearTriggersMap(): void;
-  getTriggersoutcomeMap(): jspb.Map<string, Trigger>;
-  clearTriggersoutcomeMap(): void;
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Ability.AsObject;
   static toObject(includeInstance: boolean, msg: Ability): Ability.AsObject;
@@ -367,8 +327,6 @@ export namespace Ability {
     manacost: number,
     cooldown: number,
     effectsMap: Array<[string, Effect.AsObject]>,
-    triggersMap: Array<[string, Trigger.AsObject]>,
-    triggersoutcomeMap: Array<[string, Trigger.AsObject]>,
   }
 }
 

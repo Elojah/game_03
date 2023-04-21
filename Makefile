@@ -3,10 +3,10 @@ DATE      ?= $(shell date +%FT%T%z)
 VERSION   ?= $(shell echo $(shell cat $(PWD)/.version)-$(shell git describe --tags --always))
 DIR        = $(strip $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
 
-GO         = go
-GOROOT     ?= $(shell go env GOROOT)
-GODOC      = godoc
-GOFMT      = gofmt
+GO          = go
+GOROOT      ?= $(shell go env GOROOT)
+GODOC       = godoc
+GOFMT       = gofmt
 
 # For CI
 ifneq ($(wildcard ./bin/golangci-lint),)
@@ -23,6 +23,7 @@ GO_PACKAGE        = github.com/elojah/game_03
 API               = api
 ADMIN             = admin
 AUTH              = auth
+CORE              = core
 WEB_CLIENT        = web_client
 CLIENT            = client
 DASHBOARD         = dashboard
@@ -39,7 +40,7 @@ GEN_PB_SERVICE_GO  = protoc -I=$(GEN_PARENT_PATH) -I=$(GOPATH)/src --gogoslick_o
 GEN_PB_SERVICE_TS  = protoc -I=$(GEN_PARENT_PATH) -I=$(GOPATH)/src --plugin=protoc-gen-ts=$(PROTOC_GEN_TS) --js_out=import_style=client,binary:$(GOPATH)/src --ts_out=service=grpc-web:$(GOPATH)/src
 
 .PHONY: all
-all: api admin auth client web_client dashboard web_dashboard
+all: api admin auth core client web_client dashboard web_dashboard
 
 .PHONY: api
 api:  ## Build api binary
@@ -70,6 +71,16 @@ auth:  ## Build auth binary
 		-ldflags '-X main.version=$(VERSION)' \
 		-o ../../bin/$(PACKAGE)_$(AUTH)_$(VERSION)
 	$Q cp bin/$(PACKAGE)_$(AUTH)_$(VERSION) bin/$(PACKAGE)_$(AUTH)
+
+.PHONY: core
+core:  ## Build core binary
+	$(info $(M) building executable core…) @
+	$Q cd cmd/$(CORE) && $(GO) build \
+		-mod=readonly \
+		-tags release \
+		-ldflags '-X main.version=$(VERSION)' \
+		-o ../../bin/$(PACKAGE)_$(CORE)_$(VERSION)
+	$Q cp bin/$(PACKAGE)_$(CORE)_$(VERSION) bin/$(PACKAGE)_$(CORE)
 
 .PHONY: web_client
 web_client: ## Build web_client binary
