@@ -68,11 +68,11 @@ func (a Ability) Cast(cast Cast) error {
 }
 
 func (a *Ability) Eval(cast Cast) ([]entity.E, error) {
-	entities := make(map[string]entity.E)
+	// entities := make(map[string]entity.E)
 
-	for _, effect := range a.Effects {
-		es, am, err := effect.Eval(cast)
-	}
+	// for _, effect := range a.Effects {
+	// 	es, am, err := effect.Eval(cast)
+	// }
 
 	// if err := tmpUpdateEntity(e); err != nil {
 	// }

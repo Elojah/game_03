@@ -335,7 +335,7 @@ type Effect struct {
 	Repeat     int64             `protobuf:"varint,8,opt,name=Repeat,proto3" json:"Repeat,omitempty"`
 	StackRules StackRules        `protobuf:"bytes,9,opt,name=StackRules,proto3" json:"StackRules"`
 	Targets    map[string]Target `protobuf:"bytes,10,rep,name=Targets,proto3" json:"Targets,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3,enum=ability.Target"`
-	// preventive triggers before applying this effect
+	// Triggers to check before applying this effect and can run on this effect or children only.
 	Triggers map[string]Trigger `protobuf:"bytes,11,rep,name=Triggers,proto3" json:"Triggers" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// recursive effects to run after this effect
 	Effects map[string]Effect `protobuf:"bytes,12,rep,name=Effects,proto3" json:"Effects" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`

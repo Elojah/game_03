@@ -37,6 +37,15 @@ type APIUpdateEntity = {
   readonly responseType: typeof google_protobuf_empty_pb.Empty;
 };
 
+type APIRTCConnectPC = {
+  readonly methodName: string;
+  readonly service: typeof API;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof github_com_elojah_game_03_pkg_user_dto_session_pb.SDP;
+  readonly responseType: typeof google_protobuf_empty_pb.Empty;
+};
+
 type APICreateSession = {
   readonly methodName: string;
   readonly service: typeof API;
@@ -185,6 +194,7 @@ export class API {
   static readonly serviceName: string;
   static readonly ConnectPC: APIConnectPC;
   static readonly UpdateEntity: APIUpdateEntity;
+  static readonly RTCConnectPC: APIRTCConnectPC;
   static readonly CreateSession: APICreateSession;
   static readonly ListEntity: APIListEntity;
   static readonly ListAnimation: APIListAnimation;
@@ -237,6 +247,15 @@ export class APIClient {
   constructor(serviceHost: string, options?: grpc.RpcOptions);
   connectPC(requestMessage: github_com_elojah_game_03_pkg_entity_pc_pb.PC, metadata?: grpc.Metadata): ResponseStream<github_com_elojah_game_03_pkg_entity_dto_entity_pb.ListEntityResp>;
   updateEntity(metadata?: grpc.Metadata): RequestStream<github_com_elojah_game_03_pkg_entity_entity_pb.E>;
+  rTCConnectPC(
+    requestMessage: github_com_elojah_game_03_pkg_user_dto_session_pb.SDP,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: google_protobuf_empty_pb.Empty|null) => void
+  ): UnaryResponse;
+  rTCConnectPC(
+    requestMessage: github_com_elojah_game_03_pkg_user_dto_session_pb.SDP,
+    callback: (error: ServiceError|null, responseMessage: google_protobuf_empty_pb.Empty|null) => void
+  ): UnaryResponse;
   createSession(
     requestMessage: github_com_elojah_game_03_pkg_user_dto_session_pb.CreateSessionReq,
     metadata: grpc.Metadata,

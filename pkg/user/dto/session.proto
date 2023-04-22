@@ -21,3 +21,7 @@ message CreateSessionReq {
 message CreateSessionResp {
     bytes Token        = 1;
 }
+
+message SDP {
+	string Encoded     = 1;
+}
