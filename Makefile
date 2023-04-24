@@ -1,12 +1,12 @@
-PACKAGE    = game_03
-DATE      ?= $(shell date +%FT%T%z)
-VERSION   ?= $(shell echo $(shell cat $(PWD)/.version)-$(shell git describe --tags --always))
-DIR        = $(strip $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
+PACKAGE            = game_03
+DATE              ?= $(shell date +%FT%T%z)
+VERSION           ?= $(shell echo $(shell cat $(PWD)/.version)-$(shell git describe --tags --always))
+DIR                = $(strip $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
 
-GO          = go
-GOROOT      ?= $(shell go env GOROOT)
-GODOC       = godoc
-GOFMT       = gofmt
+GO                 = go
+GOROOT             ?= $(shell go env GOROOT)
+GODOC              = godoc
+GOFMT              = gofmt
 
 # For CI
 ifneq ($(wildcard ./bin/golangci-lint),)
@@ -15,9 +15,9 @@ else
 	GOLINT = golangci-lint
 endif
 
-V          = 0
-Q          = $(if $(filter 1,$V),,@)
-M          = $(shell printf "\033[0;35m▶\033[0m")
+V                 = 0
+Q                 = $(if $(filter 1,$V),,@)
+M                 = $(shell printf "\033[0;35m▶\033[0m")
 
 GO_PACKAGE        = github.com/elojah/game_03
 API               = api
@@ -169,14 +169,20 @@ proto-go proto-ts: ## Regenerate protobuf files
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/room/dto/room.proto
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/room/dto/user.proto
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/room/dto/world.proto
-	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/twitch/dto/follow.proto
+	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/rtc/dto/rtc.proto
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/tile/dto/set.proto
+	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/twitch/dto/follow.proto
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/user/dto/session.proto
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/user/dto/user.proto
 	$(info $(M) generate services…) @
-	$Q $(GEN_PB_SERVICE_$(PB_LANG)) $(GO_PACKAGE)/cmd/$(API)/grpc/$(API).proto
+	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/cmd/$(ADMIN)/grpc/$(ADMIN).proto
+	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/cmd/$(API)/grpc/$(API).proto
+	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/cmd/$(AUTH)/grpc/$(AUTH).proto
+	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/cmd/$(CORE)/grpc/$(CORE).proto
 	$Q $(GEN_PB_SERVICE_$(PB_LANG)) $(GO_PACKAGE)/cmd/$(ADMIN)/grpc/$(ADMIN).proto
+	$Q $(GEN_PB_SERVICE_$(PB_LANG)) $(GO_PACKAGE)/cmd/$(API)/grpc/$(API).proto
 	$Q $(GEN_PB_SERVICE_$(PB_LANG)) $(GO_PACKAGE)/cmd/$(AUTH)/grpc/$(AUTH).proto
+	$Q $(GEN_PB_SERVICE_$(PB_LANG)) $(GO_PACKAGE)/cmd/$(CORE)/grpc/$(CORE).proto
 
 # Proto
 .PHONY: proto
@@ -217,6 +223,7 @@ clean:
 	$Q rm -rf bin/$(PACKAGE)_$(API)*
 	$Q rm -rf bin/$(PACKAGE)_$(ADMIN)*
 	$Q rm -rf bin/$(PACKAGE)_$(AUTH)*
+	$Q rm -rf bin/$(PACKAGE)_$(CORE)*
 	$Q rm -rf bin/$(PACKAGE)_$(WEB_CLIENT)*
 	$Q rm -rf bin/$(PACKAGE)_$(CLIENT)*
 	$Q rm -rf bin/$(PACKAGE)_$(WEB_DASHBOARD)*

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package dto;
+package grpc;
 
 option (gogoproto.testgen_all)  = true;
 option (gogoproto.benchgen_all) = true;
@@ -13,11 +13,16 @@ option (gogoproto.goproto_registration) = true;
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
-message CreateSessionReq {
-    bytes PCID         = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
-    bytes WorldID      = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
-}
+import "google/protobuf/empty.proto";
 
-message CreateSessionResp {
-    bytes Token        = 1;
+import "github.com/elojah/game_03/pkg/rtc/dto/rtc.proto";
+
+service Core {
+	// Signal
+    rpc Connect(dto.SDP) returns (dto.SDP);
+    rpc SendICE(stream dto.ICECandidate) returns (google.protobuf.Empty);
+    rpc ReceiveICE(google.protobuf.Empty) returns (stream dto.ICECandidate);
+
+    // Ping
+    rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
 }

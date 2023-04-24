@@ -54,23 +54,3 @@ export namespace CreateSessionResp {
   }
 }
 
-export class SDP extends jspb.Message {
-  getEncoded(): string;
-  setEncoded(value: string): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): SDP.AsObject;
-  static toObject(includeInstance: boolean, msg: SDP): SDP.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: SDP, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): SDP;
-  static deserializeBinaryFromReader(message: SDP, reader: jspb.BinaryReader): SDP;
-}
-
-export namespace SDP {
-  export type AsObject = {
-    encoded: string,
-  }
-}
-

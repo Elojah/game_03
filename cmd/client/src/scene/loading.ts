@@ -6,8 +6,12 @@ import { parse } from '../lib/ulid'
 import { Buffer } from 'buffer'
 
 import { API } from 'cmd/api/grpc/api_pb_service';
-import { CreateSessionReq, CreateSessionResp, SDP } from 'pkg/user/dto/session_pb';
+import { Core } from 'cmd/core/grpc/core_pb_service';
+import { ICECandidate, SDP } from 'pkg/rtc/dto/rtc_pb';
+import { CreateSessionReq, CreateSessionResp } from 'pkg/user/dto/session_pb';
 import { GetPCReq, PC } from 'pkg/entity/dto/pc_pb';
+
+import { Empty } from "google-protobuf/google/protobuf/empty_pb";
 
 export class Loading extends Scene {
 
@@ -72,63 +76,117 @@ export class Loading extends Scene {
 		dc.onclose = () => { console.log('channel closed') }
 		dc.onmessage = (m) => { console.log('message received:', m) }
 
-		local.oniceconnectionstatechange = e => console.log(local.iceConnectionState)
-		local.onicecandidate = event => {
-			if (event.candidate === null) {
-				console.log(JSON.stringify(local.localDescription))
-			}
-		}
+		local.oniceconnectionstatechange = e => console.log('peer connection state change', local.iceConnectionState)
 
-		local.onnegotiationneeded = e => local.createOffer()
+		local.onnegotiationneeded = (e) => local.createOffer()
 			.then(d => {
-				console.log(d)
 				local.setLocalDescription(d)
-				remote.setRemoteDescription(d)
 
 				const req = new SDP()
 				req.setEncoded(Buffer.from(JSON.stringify(d), 'binary').toString('base64'))
-				this.rtcConnectPC(req)
-					.then(() => {
-						console.log('sent rtc sdp')
+				this.connect(req)
+					.then((resp) => {
+						const answer = Buffer.from(resp.getEncoded(), 'base64').toString('ascii')
+						local.setRemoteDescription(JSON.parse(answer))
+
+						console.log('connect success')
 					})
+					.then(() => {
+						this.receiveICE((candidate) => {
+							const ic = Buffer.from(candidate.getEncoded(), 'base64').toString('ascii')
+
+							console.log('ice candidate received from signal', ic)
+
+							local.addIceCandidate(JSON.parse(ic))
+						})
+					})
+					.then(() => {
+						const send = this.sendICE()
+						local.onicecandidate = (ic) => {
+							if (!ic.candidate) {
+								return
+							}
+
+							console.log('ice candidate received', ic.candidate)
+
+							const req = new ICECandidate()
+							req.setEncoded(Buffer.from(JSON.stringify(ic.candidate), 'binary').toString('base64'))
+							send.send(req)
+
+							console.log('ice candidate sent to signal', ic.candidate)
+						}
+
+					})
+					.catch((err) => { console.log('failed to connect rtc', err) });
 			})
-			.then(() => remote.createAnswer())
-			.then((answer) => {
-				console.log(answer)
-				remote.setLocalDescription(answer)
-				local.setRemoteDescription(answer)
-			})
-			.catch((err) => { console.log('6', err) });
-
-		const remote = new RTCPeerConnection({
-			iceServers: [{
-				urls: 'stun:stun.l.google.com:19302'
-			}]
-		});
-		remote.ondatachannel = () => { console.log('3') }
-
-		local.onicecandidate = (e) =>
-			!e.candidate ||
-			remote.addIceCandidate(e.candidate).catch(() => { console.log('4') });
-		remote.onicecandidate = (e) =>
-			!e.candidate ||
-			local.addIceCandidate(e.candidate).catch(() => { console.log('5') });
-
-
-		// window.copySDP = () => {
-		// 	const browserSDP = document.getElementById('localSessionDescription')
-
-		// 	browserSDP.focus()
-		// 	browserSDP.select()
-
-		// 	try {
-		// 		const successful = document.execCommand('copy')
-		// 		const msg = successful ? 'successful' : 'unsuccessful'
-		// 		log('Copying SDP was ' + msg)
-		// 	} catch (err) {
-		// 		log('Unable to copy SDP ' + err)
-		// 	}
+			.catch((err) => { console.log('failed to setup negotiation', err) });
 	}
+
+	sendICE(): grpc.Client<grpc.ProtobufMessage, grpc.ProtobufMessage> {
+		let client = grpc.client(Core.SendICE, {
+			host: 'https://core.legacyfactory.com:8083',
+			// transport: grpc.WebsocketTransport(),
+		});
+
+		let md = new grpc.Metadata()
+		md.set('token', getCookie('access')!)
+		client.start(md)
+
+		return client
+	}
+
+	receiveICE(callback: (message: ICECandidate) => void) {
+		let md = new grpc.Metadata()
+		md.set('token', getCookie('access')!)
+
+		const prom = new Promise<string>((resolve, reject) => {
+			grpc.invoke(Core.ReceiveICE, {
+				metadata: md,
+				request: new Empty(),
+				host: 'https://core.legacyfactory.com:8083',
+				onMessage: (message: ICECandidate) => {
+					callback(message)
+				},
+				onEnd: (code: grpc.Code, message: string | undefined, trailers: grpc.Metadata) => {
+					if (code !== grpc.Code.OK || !message) {
+						reject('receive ICE:' + message)
+
+						return
+					}
+
+					resolve(message)
+				}
+			});
+		})
+
+		return prom
+	}
+
+	connect(req: SDP) {
+		let md = new grpc.Metadata()
+		md.set('token', getCookie('access')!)
+
+		const prom = new Promise<SDP>((resolve, reject) => {
+			grpc.unary(Core.Connect, {
+				metadata: md,
+				request: req,
+				host: 'https://core.legacyfactory.com:8083',
+				onEnd: res => {
+					const { status, statusMessage, headers, message, trailers } = res;
+					if (status !== grpc.Code.OK || !message) {
+						reject(res)
+
+						return
+					}
+
+					resolve(message as SDP)
+				}
+			});
+		})
+
+		return prom
+	}
+
 
 	getPC(req: GetPCReq) {
 		let md = new grpc.Metadata()
@@ -173,32 +231,6 @@ export class Loading extends Scene {
 					}
 
 					resolve(message as CreateSessionResp)
-				}
-			});
-		})
-
-		return prom
-	}
-
-
-	rtcConnectPC(req: SDP) {
-		let md = new grpc.Metadata()
-		md.set('token', getCookie('access')!)
-
-		const prom = new Promise<null>((resolve, reject) => {
-			grpc.unary(API.RTCConnectPC, {
-				metadata: md,
-				request: req,
-				host: 'https://api.legacyfactory.com:8082',
-				onEnd: res => {
-					const { status, statusMessage, headers, message, trailers } = res;
-					if (status !== grpc.Code.OK || !message) {
-						reject(res)
-
-						return
-					}
-
-					resolve(null)
 				}
 			});
 		})

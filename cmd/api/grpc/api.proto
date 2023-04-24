@@ -31,12 +31,6 @@ import "github.com/elojah/game_03/pkg/twitch/dto/follow.proto";
 import "github.com/elojah/game_03/pkg/user/dto/session.proto";
 
 service API {
-    // STREAM LOOPS
-    rpc ConnectPC(entity.PC) returns (stream dto.ListEntityResp);
-    rpc UpdateEntity(stream entity.E) returns (google.protobuf.Empty);
-	// WIP
-    rpc RTCConnectPC(dto.SDP) returns (google.protobuf.Empty);
-
 	// Session
 	rpc CreateSession(dto.CreateSessionReq) returns (dto.CreateSessionResp);
 

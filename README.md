@@ -109,6 +109,7 @@ Instead you can use `scripts/create_default_tilesheets.sh` once from current dir
 - `api` -> `http:8082` `grpc:4280`
 - `auth` -> `4281`
 - `admin` -> `4282`
+- `core` -> `http:8083` `grpc:4283`
 
 
 ### IDEAS

@@ -1192,14 +1192,14 @@ export class Game extends Scene {
 	// Connect server update
 	connectUpdate() {
 		// call update entity
-		this.EntityClient = grpc.client(API.UpdateEntity, {
-			host: 'https://api.legacyfactory.com:8082',
-			// transport: grpc.WebsocketTransport(),
-		});
+		// this.EntityClient = grpc.client(API.UpdateEntity, {
+		// 	host: 'https://api.legacyfactory.com:8082',
+		// 	// transport: grpc.WebsocketTransport(),
+		// });
 
-		let md = new grpc.Metadata()
-		md.set('token', this.registry.get('token'))
-		this.EntityClient.start(md)
+		// let md = new grpc.Metadata()
+		// md.set('token', this.registry.get('token'))
+		// this.EntityClient.start(md)
 	}
 
 	// API PC
@@ -1209,23 +1209,23 @@ export class Game extends Scene {
 		md.set('token', this.registry.get('token'))
 
 		const prom = new Promise<string>((resolve, reject) => {
-			grpc.invoke(API.ConnectPC, {
-				metadata: md,
-				request: req,
-				host: 'https://api.legacyfactory.com:8082',
-				onMessage: (message: EntityDTO.ListEntityResp) => {
-					callback(message)
-				},
-				onEnd: (code: grpc.Code, message: string | undefined, trailers: grpc.Metadata) => {
-					if (code !== grpc.Code.OK || !message) {
-						reject('connectPC:' + message)
+			// grpc.invoke(API.ConnectPC, {
+			// 	metadata: md,
+			// 	request: req,
+			// 	host: 'https://api.legacyfactory.com:8082',
+			// 	onMessage: (message: EntityDTO.ListEntityResp) => {
+			// 		callback(message)
+			// 	},
+			// 	onEnd: (code: grpc.Code, message: string | undefined, trailers: grpc.Metadata) => {
+			// 		if (code !== grpc.Code.OK || !message) {
+			// 			reject('connectPC:' + message)
 
-						return
-					}
+			// 			return
+			// 		}
 
-					resolve(message)
-				}
-			});
+			// 		resolve(message)
+			// 	}
+			// });
 		})
 
 		return prom

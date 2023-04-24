@@ -13,11 +13,10 @@ option (gogoproto.goproto_registration) = true;
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
-message CreateSessionReq {
-    bytes PCID         = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
-    bytes WorldID      = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+message SDP {
+	string Encoded     = 1;
 }
 
-message CreateSessionResp {
-    bytes Token        = 1;
+message ICECandidate {
+	string Encoded     = 1;
 }

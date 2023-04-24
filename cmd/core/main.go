@@ -2,15 +2,32 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
+	coregrpc "github.com/elojah/game_03/cmd/core/grpc"
+	cookieapp "github.com/elojah/game_03/pkg/cookie/app"
+	cookieredis "github.com/elojah/game_03/pkg/cookie/redis"
+	rtcapp "github.com/elojah/game_03/pkg/rtc/app"
+	rtcmem "github.com/elojah/game_03/pkg/rtc/mem"
+	userapp "github.com/elojah/game_03/pkg/user/app"
+	userredis "github.com/elojah/game_03/pkg/user/redis"
+	userscylla "github.com/elojah/game_03/pkg/user/scylla"
+	ggrpc "github.com/elojah/go-grpc"
+	"github.com/elojah/go-grpcweb"
+	ghttp "github.com/elojah/go-http"
 	glog "github.com/elojah/go-log"
+	"github.com/elojah/go-redis"
+	"github.com/elojah/go-scylla"
 	"github.com/hashicorp/go-multierror"
 	"github.com/rs/zerolog/log"
+	_ "google.golang.org/grpc/encoding/gzip"
+	"google.golang.org/grpc/reflection"
 )
 
 const (
@@ -66,8 +83,135 @@ func run(prog string, filename string) {
 		return
 	}
 
-	/*
-	 */
+	// init Scylla storage
+	scyllas := scylla.Service{}
+	if err := scyllas.Dial(ctx, cfg.Scylla); err != nil {
+		log.Error().Err(err).Msg("failed to dial scylla")
+
+		return
+	}
+
+	cs = append(cs, &scyllas)
+
+	// init redis storage
+	rediss := redis.Service{}
+	if err := rediss.Dial(ctx, cfg.Redis); err != nil {
+		log.Error().Err(err).Msg("failed to dial redis")
+
+		return
+	}
+
+	cs = append(cs, &rediss)
+
+	cookieStore := &cookieredis.Store{Service: rediss}
+	cookieApp := &cookieapp.A{
+		StoreKeys: cookieStore,
+	}
+
+	// init http core server
+	https := ghttp.Service{}
+
+	if err := https.Dial(ctx, cfg.HTTP); err != nil {
+		log.Error().Err(err).Msg("failed to dial http")
+
+		return
+	}
+
+	cs = append(cs, &https)
+
+	// entityStore := &entityscylla.Store{Service: scyllas}
+	// entityApp := entityapp.App{
+	// 	Store:          entityStore,
+	// 	StoreAnimation: entityStore,
+	// 	StoreBackup:    entityStore,
+	// 	StorePC:        entityStore,
+	// 	StoreTemplate:  entityStore,
+	// 	StoreSpawn:     entityStore,
+	// }
+
+	// roomStore := &roomscylla.Store{Service: scyllas}
+	// roomApp := roomapp.App{
+	// 	Store:           roomStore,
+	// 	StorePublic:     roomStore,
+	// 	StoreCell:       roomStore,
+	// 	StoreWorld:      roomStore,
+	// 	StoreUser:       roomStore,
+	// 	StoreWorldCell:  roomStore,
+	// 	StoreWorldSpawn: roomStore,
+	// }
+
+	userStore := &userscylla.Store{Service: scyllas}
+	userCache := &userredis.Cache{Service: rediss}
+	userApp := userapp.App{
+		Store:        userStore,
+		StoreSession: userStore,
+		CacheSession: userCache,
+		Cookie:       cookieApp,
+	}
+	if err := userApp.Dial(ctx, cfg.Session); err != nil {
+		log.Error().Err(err).Msg("failed to dial user application")
+
+		return
+	}
+
+	rtcStore := rtcmem.NewStore()
+	rtcApp := rtcapp.App{
+		Store: &rtcStore,
+	}
+
+	// init handler
+	h := handler{
+		user: userApp,
+		rtc:  rtcApp,
+	}
+
+	// init grpc ONLY server
+	grpccore := ggrpc.Service{}
+	grpccore.Register = func() {
+		reflection.Register(grpccore.Server)
+		coregrpc.RegisterCoreServer(grpccore.Server, &h)
+	}
+
+	if err := grpccore.Dial(ctx, cfg.GRPC); err != nil {
+		log.Error().Err(err).Msg("failed to dial grpc")
+
+		return
+	}
+
+	cs = append(cs, &grpccore)
+
+	go func() {
+		if err := grpccore.Serve(ctx); err != nil {
+			log.Error().Err(err).Msg("failed to serve grpc")
+		}
+	}()
+
+	// init grpc core server
+	grpcwcore := grpcweb.Service{}
+	grpcwcore.Register = func() {
+		coregrpc.RegisterCoreServer(grpcwcore.Server, &h)
+		// reflection.Register(grpcwcore.Server)
+		https.Handler = grpcwcore.WrappedGrpcServer
+	}
+
+	if err := grpcwcore.Dial(ctx, cfg.GRPCWeb); err != nil {
+		log.Error().Err(err).Msg("failed to dial grpcweb")
+
+		return
+	}
+
+	cs = append(cs, &grpcwcore)
+
+	// serve grpcweb core
+	go func() {
+		if err := https.Server.ListenAndServeTLS("", ""); err != nil {
+			if errors.Is(err, http.ErrServerClosed) {
+				log.Info().Msg("http server closed")
+			} else {
+				log.Error().Err(err).Msg("failed to serve http")
+			}
+		}
+	}()
 
 	log.Info().Msg("core up")
 
