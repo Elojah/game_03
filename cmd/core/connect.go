@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"errors"
-	"time"
 
+	"github.com/elojah/game_03/pkg/entity"
 	gerrors "github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/rtc"
 	"github.com/elojah/game_03/pkg/rtc/dto"
@@ -120,16 +120,27 @@ func (h *handler) Connect(ctx context.Context, req *dto.SDP) (*dto.SDP, error) {
 
 		logger.Info().Str("label", d.Label()).Msg("received data channel")
 
-		d.OnOpen(func() {
-			for range time.Tick(time.Second) {
-				if err := d.SendText(time.Now().String()); err != nil {
-					logger.Error().Err(err).Msg("failed to send text")
+		d.OnMessage(func(msg webrtc.DataChannelMessage) {
+			var e entity.E
 
-					continue
-				}
+			if err := e.Unmarshal(msg.Data); err != nil {
+				logger.Error().Err(err).Msg("failed to read entity")
 
-				logger.Info().Msg("message sent")
+				return
 			}
+
+			if err := h.entity.Update(ctx, entity.Filter{
+				ID: e.ID,
+			}, entity.Patch{
+				X:           &e.X,
+				Y:           &e.Y,
+				AnimationID: e.AnimationID,
+				CellID:      e.CellID,
+			}); err != nil {
+				logger.Error().Err(err).Msg("failed to update entity")
+			}
+
+			logger.Info().Msg("success")
 		})
 	})
 

@@ -1,13 +1,20 @@
 import { GameObjects, Scene } from 'phaser';
 import { grpc } from '@improbable-eng/grpc-web';
 
+import { getCookie } from 'typescript-cookie'
+
 import { Mutex } from 'async-mutex';
+
+import { Buffer } from 'buffer'
 
 import * as jspb from 'google-protobuf';
 
 import { ulid, parse } from '../lib/ulid'
 
 import { API } from 'cmd/api/grpc/api_pb_service';
+import { Core } from 'cmd/core/grpc/core_pb_service';
+
+import { ICECandidate, SDP } from 'pkg/rtc/dto/rtc_pb';
 
 import * as Animation from 'pkg/entity/animation_pb';
 import * as AnimationDTO from 'pkg/entity/dto/animation_pb';
@@ -23,6 +30,8 @@ import * as CellDTO from 'pkg/room/dto/cell_pb';
 
 import * as World from 'pkg/room/world_pb';
 import * as WorldDTO from 'pkg/room/dto/world_pb';
+
+import { Empty } from "google-protobuf/google/protobuf/empty_pb";
 
 const entitySpriteDepth = 42
 
@@ -100,8 +109,6 @@ export class Game extends Scene {
 	Entities: Map<string, GraphicEntity>
 	// Specific loader for entities
 	EntityLoader: Phaser.Loader.LoaderPlugin
-	// Grpc client to send entity updates to server
-	EntityClient: grpc.Client<Entity.E, Entity.E>
 	// Entity update map to detect disconnect
 	EntityLastTick: Map<string, number>
 	cleanEntitiesDelay: number
@@ -120,6 +127,88 @@ export class Game extends Scene {
 	constructor(config: string | Phaser.Types.Scenes.SettingsConfig) {
 		super(config);
 	}
+
+	initConnection() {
+		const local = new RTCPeerConnection({
+			iceServers: [{
+				urls: [
+					'stun:stun.l.google.com:19302',
+					'stun:stun1.l.google.com:19302',
+					'stun:stun2.l.google.com:19302',
+					'stun:stun3.l.google.com:19302',
+					'stun:stun4.l.google.com:19302',
+					'stun:stun.ekiga.net',
+					'stun:stun.ideasip.com',
+					'stun:stun.rixtelecom.se',
+					'stun:stun.schlund.de',
+					'stun:stun.stunprotocol.org:3478',
+					'stun:stun.voiparound.com',
+					'stun:stun.voipbuster.com',
+					'stun:stun.voipstunt.com',
+					'stun:stun.voxgratia.org',
+				]
+			}]
+		});
+
+		const dc = local.createDataChannel('update_entity')
+		dc.onopen = () => {
+			this.SyncTimer = window.setInterval(() => {
+				console.log('update_entity')
+				dc.send(this.Entity.E.serializeBinary())
+			}, 500)
+		}
+		dc.onclose = () => { console.log('channel closed') }
+		dc.onmessage = (m) => { console.log('message received:', m) }
+
+		local.oniceconnectionstatechange = e => console.log('peer connection state change', local.iceConnectionState)
+
+		local.onnegotiationneeded = (e) => local.createOffer()
+			.then(d => {
+				local.setLocalDescription(d)
+
+				const req = new SDP()
+				req.setEncoded(Buffer.from(JSON.stringify(d), 'binary').toString('base64'))
+				this.coreConnect(req)
+					.then((resp) => {
+						const answer = Buffer.from(resp.getEncoded(), 'base64').toString('ascii')
+						local.setRemoteDescription(JSON.parse(answer))
+
+						console.log('connect success')
+					})
+					.then(() => {
+						this.receiveICE((candidate) => {
+							const ic = Buffer.from(candidate.getEncoded(), 'base64').toString('ascii')
+
+							console.log('ice candidate received from signal', ic)
+
+							local.addIceCandidate(JSON.parse(ic))
+						})
+					})
+					.then(() => {
+						const send = this.sendICE()
+						local.onicecandidate = (ic) => {
+							if (!ic.candidate) {
+								return
+							}
+
+							console.log('ice candidate received', ic.candidate)
+
+							const req = new ICECandidate()
+							req.setEncoded(Buffer.from(JSON.stringify(ic.candidate)).toString('base64'))
+							send.send(req)
+
+							console.log('ice candidate sent to signal', ic.candidate)
+						}
+					})
+					.then(() => {
+						console.log('ICE trickle setup')
+					})
+					.catch((err) => { console.log('failed to connect rtc', err) });
+			})
+			.catch((err) => { console.log('failed to setup negotiation', err) });
+	}
+
+
 	init(pc: PCDTO.PC) {
 		this.PC = pc.getPc() as PC.PC;
 		const e = pc.getEntity() as Entity.E;
@@ -165,7 +254,7 @@ export class Game extends Scene {
 			})
 
 		// Connect for entity send
-		this.connectUpdate()
+		this.initConnection()
 
 		this.Loading = this.Entity.E.getCellid_asU8()
 
@@ -1038,7 +1127,6 @@ export class Game extends Scene {
 							Colliders: new Map(),
 						})
 
-						this.syncEntity()
 						release()
 					} else {
 						const sprite = this.add.sprite(entry.getX(), entry.getY(), id)
@@ -1176,32 +1264,6 @@ export class Game extends Scene {
 		})
 	}
 
-	// Start local entity sync at regular intervals
-	syncEntity() {
-		this.SyncTimer = window.setInterval(() => {
-			this.EntityClient.send(this.Entity.E)
-		}, 500)
-	}
-
-	// Stop local entity sync at regular intervals
-	stopSyncEntity() {
-		clearInterval(this.SyncTimer)
-		this.EntityClient.finishSend()
-	}
-
-	// Connect server update
-	connectUpdate() {
-		// call update entity
-		// this.EntityClient = grpc.client(API.UpdateEntity, {
-		// 	host: 'https://api.legacyfactory.com:8082',
-		// 	// transport: grpc.WebsocketTransport(),
-		// });
-
-		// let md = new grpc.Metadata()
-		// md.set('token', this.registry.get('token'))
-		// this.EntityClient.start(md)
-	}
-
 	// API PC
 	connectPC(callback: (message: EntityDTO.ListEntityResp) => void) {
 		let req = this.PC;
@@ -1328,6 +1390,72 @@ export class Game extends Scene {
 					}
 
 					resolve(message as WorldDTO.ListWorldResp)
+				}
+			});
+		})
+
+		return prom
+	}
+
+	// RTC connection
+	sendICE(): grpc.Client<grpc.ProtobufMessage, grpc.ProtobufMessage> {
+		let client = grpc.client(Core.SendICE, {
+			host: 'https://core.legacyfactory.com:8083',
+			// transport: grpc.WebsocketTransport(),
+		});
+
+		let md = new grpc.Metadata()
+		md.set('token', getCookie('access')!)
+		client.start(md)
+
+		return client
+	}
+
+	receiveICE(callback: (message: ICECandidate) => void) {
+		let md = new grpc.Metadata()
+		md.set('token', getCookie('access')!)
+
+		const prom = new Promise<string>((resolve, reject) => {
+			grpc.invoke(Core.ReceiveICE, {
+				metadata: md,
+				request: new Empty(),
+				host: 'https://core.legacyfactory.com:8083',
+				onMessage: (message: ICECandidate) => {
+					callback(message)
+				},
+				onEnd: (code: grpc.Code, message: string | undefined, trailers: grpc.Metadata) => {
+					if (code !== grpc.Code.OK || !message) {
+						reject('receive ICE:' + message)
+
+						return
+					}
+
+					resolve(message)
+				}
+			});
+		})
+
+		return prom
+	}
+
+	coreConnect(req: SDP) {
+		let md = new grpc.Metadata()
+		md.set('token', getCookie('access')!)
+
+		const prom = new Promise<SDP>((resolve, reject) => {
+			grpc.unary(Core.Connect, {
+				metadata: md,
+				request: req,
+				host: 'https://core.legacyfactory.com:8083',
+				onEnd: res => {
+					const { status, statusMessage, headers, message, trailers } = res;
+					if (status !== grpc.Code.OK || !message) {
+						reject(res)
+
+						return
+					}
+
+					resolve(message as SDP)
 				}
 			});
 		})

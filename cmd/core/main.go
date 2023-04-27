@@ -13,6 +13,8 @@ import (
 	coregrpc "github.com/elojah/game_03/cmd/core/grpc"
 	cookieapp "github.com/elojah/game_03/pkg/cookie/app"
 	cookieredis "github.com/elojah/game_03/pkg/cookie/redis"
+	entityapp "github.com/elojah/game_03/pkg/entity/app"
+	entityscylla "github.com/elojah/game_03/pkg/entity/scylla"
 	rtcapp "github.com/elojah/game_03/pkg/rtc/app"
 	rtcmem "github.com/elojah/game_03/pkg/rtc/mem"
 	userapp "github.com/elojah/game_03/pkg/user/app"
@@ -119,15 +121,15 @@ func run(prog string, filename string) {
 
 	cs = append(cs, &https)
 
-	// entityStore := &entityscylla.Store{Service: scyllas}
-	// entityApp := entityapp.App{
-	// 	Store:          entityStore,
-	// 	StoreAnimation: entityStore,
-	// 	StoreBackup:    entityStore,
-	// 	StorePC:        entityStore,
-	// 	StoreTemplate:  entityStore,
-	// 	StoreSpawn:     entityStore,
-	// }
+	entityStore := &entityscylla.Store{Service: scyllas}
+	entityApp := entityapp.App{
+		Store:          entityStore,
+		StoreAnimation: entityStore,
+		StoreBackup:    entityStore,
+		StorePC:        entityStore,
+		StoreTemplate:  entityStore,
+		StoreSpawn:     entityStore,
+	}
 
 	// roomStore := &roomscylla.Store{Service: scyllas}
 	// roomApp := roomapp.App{
@@ -161,8 +163,9 @@ func run(prog string, filename string) {
 
 	// init handler
 	h := handler{
-		user: userApp,
-		rtc:  rtcApp,
+		entity: entityApp,
+		rtc:    rtcApp,
+		user:   userApp,
 	}
 
 	// init grpc ONLY server

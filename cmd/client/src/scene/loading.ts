@@ -3,15 +3,10 @@ import { grpc } from '@improbable-eng/grpc-web';
 
 import { getCookie } from 'typescript-cookie'
 import { parse } from '../lib/ulid'
-import { Buffer } from 'buffer'
 
 import { API } from 'cmd/api/grpc/api_pb_service';
-import { Core } from 'cmd/core/grpc/core_pb_service';
-import { ICECandidate, SDP } from 'pkg/rtc/dto/rtc_pb';
 import { CreateSessionReq, CreateSessionResp } from 'pkg/user/dto/session_pb';
 import { GetPCReq, PC } from 'pkg/entity/dto/pc_pb';
-
-import { Empty } from "google-protobuf/google/protobuf/empty_pb";
 
 export class Loading extends Scene {
 
@@ -24,10 +19,6 @@ export class Loading extends Scene {
 	preload() { }
 
 	create() {
-		this.setupRTC()
-
-		return
-
 		this.add.image(0, 0, 'home_background_00').setOrigin(0)
 
 		const urlParams = new URLSearchParams(window.location.search)
@@ -63,148 +54,6 @@ export class Loading extends Scene {
 	}
 
 	update() { }
-
-	setupRTC() {
-		const local = new RTCPeerConnection({
-			iceServers: [{
-				urls: [
-					'stun:stun.l.google.com:19302',
-					'stun:stun1.l.google.com:19302',
-					'stun:stun2.l.google.com:19302',
-					'stun:stun3.l.google.com:19302',
-					'stun:stun4.l.google.com:19302',
-					'stun:stun.ekiga.net',
-					'stun:stun.ideasip.com',
-					'stun:stun.rixtelecom.se',
-					'stun:stun.schlund.de',
-					'stun:stun.stunprotocol.org:3478',
-					'stun:stun.voiparound.com',
-					'stun:stun.voipbuster.com',
-					'stun:stun.voipstunt.com',
-					'stun:stun.voxgratia.org',
-				]
-			}]
-		});
-
-		const dc = local.createDataChannel('update_entity')
-		dc.onopen = () => { console.log('channel opened') }
-		dc.onclose = () => { console.log('channel closed') }
-		dc.onmessage = (m) => { console.log('message received:', m) }
-
-		local.oniceconnectionstatechange = e => console.log('peer connection state change', local.iceConnectionState)
-
-		local.onnegotiationneeded = (e) => local.createOffer()
-			.then(d => {
-				local.setLocalDescription(d)
-
-				const req = new SDP()
-				req.setEncoded(Buffer.from(JSON.stringify(d), 'binary').toString('base64'))
-				this.connect(req)
-					.then((resp) => {
-						const answer = Buffer.from(resp.getEncoded(), 'base64').toString('ascii')
-						local.setRemoteDescription(JSON.parse(answer))
-
-						console.log('connect success')
-					})
-					.then(() => {
-						this.receiveICE((candidate) => {
-							const ic = Buffer.from(candidate.getEncoded(), 'base64').toString('ascii')
-
-							console.log('ice candidate received from signal', ic)
-
-							local.addIceCandidate(JSON.parse(ic))
-						})
-					})
-					.then(() => {
-						const send = this.sendICE()
-						local.onicecandidate = (ic) => {
-							if (!ic.candidate) {
-								return
-							}
-
-							console.log('ice candidate received', ic.candidate)
-
-							const req = new ICECandidate()
-							console.log(ic.candidate)
-							req.setEncoded(Buffer.from(JSON.stringify(ic.candidate)).toString('base64'))
-							send.send(req)
-
-							console.log('ice candidate sent to signal', ic.candidate)
-						}
-					})
-					.then(() => {
-						console.log('ICE trickle setup')
-					})
-					.catch((err) => { console.log('failed to connect rtc', err) });
-			})
-			.catch((err) => { console.log('failed to setup negotiation', err) });
-	}
-
-	sendICE(): grpc.Client<grpc.ProtobufMessage, grpc.ProtobufMessage> {
-		let client = grpc.client(Core.SendICE, {
-			host: 'https://core.legacyfactory.com:8083',
-			// transport: grpc.WebsocketTransport(),
-		});
-
-		let md = new grpc.Metadata()
-		md.set('token', getCookie('access')!)
-		client.start(md)
-
-		return client
-	}
-
-	receiveICE(callback: (message: ICECandidate) => void) {
-		let md = new grpc.Metadata()
-		md.set('token', getCookie('access')!)
-
-		const prom = new Promise<string>((resolve, reject) => {
-			grpc.invoke(Core.ReceiveICE, {
-				metadata: md,
-				request: new Empty(),
-				host: 'https://core.legacyfactory.com:8083',
-				onMessage: (message: ICECandidate) => {
-					callback(message)
-				},
-				onEnd: (code: grpc.Code, message: string | undefined, trailers: grpc.Metadata) => {
-					if (code !== grpc.Code.OK || !message) {
-						reject('receive ICE:' + message)
-
-						return
-					}
-
-					resolve(message)
-				}
-			});
-		})
-
-		return prom
-	}
-
-	connect(req: SDP) {
-		let md = new grpc.Metadata()
-		md.set('token', getCookie('access')!)
-
-		const prom = new Promise<SDP>((resolve, reject) => {
-			grpc.unary(Core.Connect, {
-				metadata: md,
-				request: req,
-				host: 'https://core.legacyfactory.com:8083',
-				onEnd: res => {
-					const { status, statusMessage, headers, message, trailers } = res;
-					if (status !== grpc.Code.OK || !message) {
-						reject(res)
-
-						return
-					}
-
-					resolve(message as SDP)
-				}
-			});
-		})
-
-		return prom
-	}
-
 
 	getPC(req: GetPCReq) {
 		let md = new grpc.Metadata()
