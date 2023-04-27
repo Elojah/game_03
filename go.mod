@@ -3,8 +3,8 @@ module github.com/elojah/game_03
 go 1.19
 
 require (
-	github.com/elojah/go-grpc v0.0.0-20220923151913-aded6fb6558f
-	github.com/elojah/go-grpcweb v0.0.0-20220923154857-84f3d2e4043f
+	github.com/elojah/go-grpc v0.0.0-20230424170718-b977a940029a
+	github.com/elojah/go-grpcweb v0.0.0-20230425083110-6aa79dc8ae56
 	github.com/elojah/go-http v0.0.0-20221021094117-ce108391552b
 	github.com/elojah/go-log v0.0.0-20201121131125-8f1993f08a4b
 	github.com/elojah/go-redis v0.0.0-20201121123746-6614a554c9b4
@@ -19,7 +19,6 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/ilyakaznacheev/cleanenv v1.3.0
 	github.com/oklog/ulid/v2 v2.1.0
-	github.com/panjf2000/ants/v2 v2.5.0
 	github.com/pion/webrtc/v3 v3.1.60
 	github.com/redis/go-redis/v9 v9.0.3
 	github.com/rs/zerolog v1.28.0

@@ -64,12 +64,12 @@ func (h *handler) SendICE(stream ggrpc.Core_SendICEServer) error {
 			continue
 		}
 
-		if err := pc.AddICECandidate(webrtc.ICECandidate(ic).ToJSON()); err != nil {
+		if err := pc.AddICECandidate(webrtc.ICECandidateInit(ic)); err != nil {
 			logger.Error().Err(err).Msg("failed to add candidate")
 
 			continue
 		}
 
-		logger.Info().Msg("success")
+		logger.Info().Str("candidate", ic.Candidate).Msg("candidate added")
 	}
 }

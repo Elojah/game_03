@@ -137,10 +137,10 @@ github.com/eapache/go-resiliency v1.1.0/go.mod h1:kFI+JgMyC7bLPUVY133qvEBtVayf5m
 github.com/eapache/go-xerial-snappy v0.0.0-20180814174437-776d5712da21/go.mod h1:+020luEh2TKB4/GOp8oxxtq0Daoen/Cii55CzbTV6DU=
 github.com/eapache/queue v1.1.0/go.mod h1:6eCeP0CKFpHLu8blIFXhExK/dRa7WDZfr6jVFPTqq+I=
 github.com/edsrzf/mmap-go v1.0.0/go.mod h1:YO35OhQPt3KJa3ryjFM5Bs14WD66h8eGKpfaBNrHW5M=
-github.com/elojah/go-grpc v0.0.0-20220923151913-aded6fb6558f h1:5On9q3W1Jr6y0reUGBs4O8dO8DvaFkxAehE+4UPdtH4=
-github.com/elojah/go-grpc v0.0.0-20220923151913-aded6fb6558f/go.mod h1:9IAl8P/WBob2NLR4ABvOwNCxP8CcaAMkD9HqQ4HeYTg=
-github.com/elojah/go-grpcweb v0.0.0-20220923154857-84f3d2e4043f h1:b2HlnxATNQpkyvfEL0NMrWEOn5W5Q0k7yPOmgJktDn4=
-github.com/elojah/go-grpcweb v0.0.0-20220923154857-84f3d2e4043f/go.mod h1:UsGEg1uJ9OocwJTGvdUeGBGsb564x3qWphT7NGtqB60=
+github.com/elojah/go-grpc v0.0.0-20230424170718-b977a940029a h1:cXTMo6btjs8PsqA1Kc9QraaVNG9Q1HFa0A8Q/cv98Hs=
+github.com/elojah/go-grpc v0.0.0-20230424170718-b977a940029a/go.mod h1:9IAl8P/WBob2NLR4ABvOwNCxP8CcaAMkD9HqQ4HeYTg=
+github.com/elojah/go-grpcweb v0.0.0-20230425083110-6aa79dc8ae56 h1:1L/s1++BAV8WP+ZsXzRk4DSK0jZJ+/+8vkpZlh+SOnk=
+github.com/elojah/go-grpcweb v0.0.0-20230425083110-6aa79dc8ae56/go.mod h1:UsGEg1uJ9OocwJTGvdUeGBGsb564x3qWphT7NGtqB60=
 github.com/elojah/go-http v0.0.0-20221021094117-ce108391552b h1:W/DKhLRyF2L68GS6UQHhSEQ02XRy5YB5/fhldcaJfxY=
 github.com/elojah/go-http v0.0.0-20221021094117-ce108391552b/go.mod h1:M1Hd1uKasBCAEgmyVXyUEOJYajlfPBEOLL2+bdDGYtc=
 github.com/elojah/go-log v0.0.0-20201121131125-8f1993f08a4b h1:Lh0A9JtmlhwA3Pt7ByTNaPZMoeTaZ6ImA5/JpibomOo=
@@ -462,8 +462,6 @@ github.com/openzipkin/zipkin-go v0.1.6/go.mod h1:QgAqvLzwWbR/WpD4A3cGpPtJrZXNIiJ
 github.com/openzipkin/zipkin-go v0.2.1/go.mod h1:NaW6tEwdmWMaCDZzg8sh+IBNOxHMPnhQw8ySjnjRyN4=
 github.com/openzipkin/zipkin-go v0.2.2/go.mod h1:NaW6tEwdmWMaCDZzg8sh+IBNOxHMPnhQw8ySjnjRyN4=
 github.com/pact-foundation/pact-go v1.0.4/go.mod h1:uExwJY4kCzNPcHRj+hCR/HBbOOIwwtUjcrb0b5/5kLM=
-github.com/panjf2000/ants/v2 v2.5.0 h1:1rWGWSnxCsQBga+nQbA4/iY6VMeNoOIAM0ZWh9u3q2Q=
-github.com/panjf2000/ants/v2 v2.5.0/go.mod h1:cU93usDlihJZ5CfRGNDYsiBYvoilLvBF5Qp/BT2GNRE=
 github.com/pascaldekloe/goe v0.0.0-20180627143212-57f6aae5913c/go.mod h1:lzWF7FIEvWOWxwDKqyGYQf6ZUaNfKdP144TG7ZOy1lc=
 github.com/pborman/getopt v0.0.0-20170112200414-7148bc3a4c30/go.mod h1:85jBQOZwpVEaDAr341tbn15RS4fCAsIst0qp7i8ex1o=
 github.com/pborman/uuid v1.2.0/go.mod h1:X/NO0urCmaxf9VXbdlT7C2Yzkj2IKimNn4k+gtPdI/k=

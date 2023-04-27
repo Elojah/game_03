@@ -11,6 +11,8 @@ type SDP webrtc.SessionDescription
 
 type ICECandidate webrtc.ICECandidate
 
+type ICECandidateInit webrtc.ICECandidateInit
+
 type PC struct {
 	*webrtc.PeerConnection
 

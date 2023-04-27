@@ -54,6 +54,7 @@ $ go run ./scripts/write_tileset/main.go 'assets/external/Tilesets' 'assets/tile
 - [EPIC] Manage map creation
   + [ ] [p4] Fix collision values gaps in `.json` adding useless rectangles in min dissection
   + [ ] [p4] Add sky background (bonus: animated tiles) -> as parameter (different background possible in same map too ?)
+  + [ ] [p4] Fix core crtl+c context error (grpc panic drain ?)
   + [ ] [p3] Change dashboard/rooms to display post login (event/state propag)
   + [ ] [p2] !!! Feature remove one-tile grass paths frustrating in generation
   + [ ] [p2] Fix interpolation speed in game.ts (corresponding actual player speed)
@@ -68,6 +69,7 @@ $ go run ./scripts/write_tileset/main.go 'assets/external/Tilesets' 'assets/tile
 	  + [ ] AbilityModifier + EffectModifier
 	  + [ ] Triggers at component level
 	  + [ ] Eval triggers first, then modify effects then apply effects
+  + [ ] [p0] Implement RTC both directions
   + [x] [p0] refresh token dashboard (+ client ?)
   + [x] [p0] Remove player from other clients when disconnect
   + [x] [p0] Fix player sprite not loaded

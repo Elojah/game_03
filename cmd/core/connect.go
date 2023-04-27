@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	gerrors "github.com/elojah/game_03/pkg/errors"
@@ -30,7 +31,23 @@ func (h *handler) Connect(ctx context.Context, req *dto.SDP) (*dto.SDP, error) {
 	config := webrtc.Configuration{
 		ICEServers: []webrtc.ICEServer{
 			{
-				URLs: []string{"stun:stun.l.google.com:19302"}, // HD: set in config
+				// HD: set in config
+				URLs: []string{
+					"stun:stun.l.google.com:19302",
+					"stun:stun1.l.google.com:19302",
+					"stun:stun2.l.google.com:19302",
+					"stun:stun3.l.google.com:19302",
+					"stun:stun4.l.google.com:19302",
+					"stun:stun.ekiga.net",
+					"stun:stun.ideasip.com",
+					"stun:stun.rixtelecom.se",
+					"stun:stun.schlund.de",
+					"stun:stun.stunprotocol.org:3478",
+					"stun:stun.voiparound.com",
+					"stun:stun.voipbuster.com",
+					"stun:stun.voipstunt.com",
+					"stun:stun.voxgratia.org",
+				},
 			},
 		},
 	}
@@ -43,9 +60,33 @@ func (h *handler) Connect(ctx context.Context, req *dto.SDP) (*dto.SDP, error) {
 		return &dto.SDP{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
+	if err := h.rtc.Insert(ctx, rtc.PC{
+		ID:             u.ID,
+		PeerConnection: pc,
+	}); err != nil {
+		if errors.As(err, &gerrors.ErrConflict{}) {
+			if err := h.rtc.Delete(ctx, rtc.Filter{ID: u.ID}); err != nil {
+				if err := h.rtc.Insert(ctx, rtc.PC{
+					ID:             u.ID,
+					PeerConnection: pc,
+				}); err != nil {
+					logger.Error().Err(err).Msg("failed to create peer connection")
+
+					return &dto.SDP{}, status.New(codes.Internal, err.Error()).Err()
+				}
+			}
+		} else {
+			logger.Error().Err(err).Msg("failed to create peer connection")
+
+			return &dto.SDP{}, status.New(codes.Internal, err.Error()).Err()
+		}
+	}
+
 	// Set the handler for Peer connection state
 	// This will notify you when the peer has connected/disconnected
 	pc.OnConnectionStateChange(func(s webrtc.PeerConnectionState) {
+		logger := log.With().Str("method", "on_connection_state_change").Logger()
+
 		logger.Info().Str("state", s.String()).Msg("peer connection state change")
 
 		if s == webrtc.PeerConnectionStateFailed {
@@ -64,11 +105,21 @@ func (h *handler) Connect(ctx context.Context, req *dto.SDP) (*dto.SDP, error) {
 
 	// Add handlers for setting up the connection.
 	pc.OnICEConnectionStateChange(func(state webrtc.ICEConnectionState) {
+		logger := log.With().Str("method", "on_ice_connection_state_change").Logger()
+
 		logger.Info().Str("state", state.String()).Msg("ICE connection state change")
 	})
 
 	// Send the current time via a DataChannel to the remote peer every 3 seconds
 	pc.OnDataChannel(func(d *webrtc.DataChannel) {
+		if d == nil {
+			return
+		}
+
+		logger := log.With().Str("method", "on_data_channel").Logger()
+
+		logger.Info().Str("label", d.Label()).Msg("received data channel")
+
 		d.OnOpen(func() {
 			for range time.Tick(time.Second) {
 				if err := d.SendText(time.Now().String()); err != nil {
@@ -81,6 +132,7 @@ func (h *handler) Connect(ctx context.Context, req *dto.SDP) (*dto.SDP, error) {
 			}
 		})
 	})
+
 	// #Read and set remote description
 	remoteSDP, err := req.MarshalRTC()
 	if err != nil {
@@ -106,15 +158,6 @@ func (h *handler) Connect(ctx context.Context, req *dto.SDP) (*dto.SDP, error) {
 	// Sets the LocalDescription, and starts our UDP listeners
 	if err = pc.SetLocalDescription(answer); err != nil {
 		logger.Error().Err(err).Msg("failed to set local description")
-
-		return &dto.SDP{}, status.New(codes.Internal, err.Error()).Err()
-	}
-
-	if err := h.rtc.Insert(ctx, rtc.PC{
-		ID:             u.ID,
-		PeerConnection: pc,
-	}); err != nil {
-		logger.Error().Err(err).Msg("failed to create peer connection")
 
 		return &dto.SDP{}, status.New(codes.Internal, err.Error()).Err()
 	}

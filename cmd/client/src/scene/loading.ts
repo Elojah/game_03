@@ -67,11 +67,26 @@ export class Loading extends Scene {
 	setupRTC() {
 		const local = new RTCPeerConnection({
 			iceServers: [{
-				urls: 'stun:stun.l.google.com:19302'
+				urls: [
+					'stun:stun.l.google.com:19302',
+					'stun:stun1.l.google.com:19302',
+					'stun:stun2.l.google.com:19302',
+					'stun:stun3.l.google.com:19302',
+					'stun:stun4.l.google.com:19302',
+					'stun:stun.ekiga.net',
+					'stun:stun.ideasip.com',
+					'stun:stun.rixtelecom.se',
+					'stun:stun.schlund.de',
+					'stun:stun.stunprotocol.org:3478',
+					'stun:stun.voiparound.com',
+					'stun:stun.voipbuster.com',
+					'stun:stun.voipstunt.com',
+					'stun:stun.voxgratia.org',
+				]
 			}]
 		});
 
-		const dc = local.createDataChannel('update_entity');
+		const dc = local.createDataChannel('update_entity')
 		dc.onopen = () => { console.log('channel opened') }
 		dc.onclose = () => { console.log('channel closed') }
 		dc.onmessage = (m) => { console.log('message received:', m) }
@@ -110,12 +125,15 @@ export class Loading extends Scene {
 							console.log('ice candidate received', ic.candidate)
 
 							const req = new ICECandidate()
-							req.setEncoded(Buffer.from(JSON.stringify(ic.candidate), 'binary').toString('base64'))
+							console.log(ic.candidate)
+							req.setEncoded(Buffer.from(JSON.stringify(ic.candidate)).toString('base64'))
 							send.send(req)
 
 							console.log('ice candidate sent to signal', ic.candidate)
 						}
-
+					})
+					.then(() => {
+						console.log('ICE trickle setup')
 					})
 					.catch((err) => { console.log('failed to connect rtc', err) });
 			})

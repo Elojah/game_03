@@ -34,19 +34,19 @@ func (s *SDP) UnmarshalRTC(sdp rtc.SDP) error {
 	return nil
 }
 
-func (ic ICECandidate) MarshalRTC() (rtc.ICECandidate, error) {
-	var result webrtc.ICECandidate
+func (ic ICECandidate) MarshalRTC() (rtc.ICECandidateInit, error) {
+	var result webrtc.ICECandidateInit
 
 	b, err := base64.StdEncoding.DecodeString(ic.Encoded)
 	if err != nil {
-		return rtc.ICECandidate{}, err
+		return rtc.ICECandidateInit{}, err
 	}
 
 	if err := json.Unmarshal(b, &result); err != nil {
-		return rtc.ICECandidate{}, err
+		return rtc.ICECandidateInit{}, err
 	}
 
-	return rtc.ICECandidate(result), nil
+	return rtc.ICECandidateInit(result), nil
 }
 
 func (ic *ICECandidate) UnmarshalRTC(candidate rtc.ICECandidate) error {
