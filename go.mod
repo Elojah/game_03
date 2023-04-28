@@ -19,6 +19,8 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/ilyakaznacheev/cleanenv v1.3.0
 	github.com/oklog/ulid/v2 v2.1.0
+	github.com/panjf2000/ants/v2 v2.7.3
+	github.com/pion/datachannel v1.5.5
 	github.com/pion/webrtc/v3 v3.1.60
 	github.com/redis/go-redis/v9 v9.0.3
 	github.com/rs/zerolog v1.28.0
@@ -49,7 +51,6 @@ require (
 	github.com/klauspost/compress v1.15.10 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
-	github.com/pion/datachannel v1.5.5 // indirect
 	github.com/pion/dtls/v2 v2.2.6 // indirect
 	github.com/pion/ice/v2 v2.3.2 // indirect
 	github.com/pion/interceptor v0.1.12 // indirect

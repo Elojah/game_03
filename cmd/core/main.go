@@ -15,6 +15,8 @@ import (
 	cookieredis "github.com/elojah/game_03/pkg/cookie/redis"
 	entityapp "github.com/elojah/game_03/pkg/entity/app"
 	entityscylla "github.com/elojah/game_03/pkg/entity/scylla"
+	roomapp "github.com/elojah/game_03/pkg/room/app"
+	roomscylla "github.com/elojah/game_03/pkg/room/scylla"
 	rtcapp "github.com/elojah/game_03/pkg/rtc/app"
 	rtcmem "github.com/elojah/game_03/pkg/rtc/mem"
 	userapp "github.com/elojah/game_03/pkg/user/app"
@@ -131,16 +133,16 @@ func run(prog string, filename string) {
 		StoreSpawn:     entityStore,
 	}
 
-	// roomStore := &roomscylla.Store{Service: scyllas}
-	// roomApp := roomapp.App{
-	// 	Store:           roomStore,
-	// 	StorePublic:     roomStore,
-	// 	StoreCell:       roomStore,
-	// 	StoreWorld:      roomStore,
-	// 	StoreUser:       roomStore,
-	// 	StoreWorldCell:  roomStore,
-	// 	StoreWorldSpawn: roomStore,
-	// }
+	roomStore := &roomscylla.Store{Service: scyllas}
+	roomApp := roomapp.App{
+		Store:           roomStore,
+		StorePublic:     roomStore,
+		StoreCell:       roomStore,
+		StoreWorld:      roomStore,
+		StoreUser:       roomStore,
+		StoreWorldCell:  roomStore,
+		StoreWorldSpawn: roomStore,
+	}
 
 	userStore := &userscylla.Store{Service: scyllas}
 	userCache := &userredis.Cache{Service: rediss}
@@ -164,8 +166,15 @@ func run(prog string, filename string) {
 	// init handler
 	h := handler{
 		entity: entityApp,
+		room:   roomApp,
 		rtc:    rtcApp,
 		user:   userApp,
+	}
+
+	if err := h.Dial(ctx); err != nil {
+		log.Error().Err(err).Msg("failed to dial handler")
+
+		return
 	}
 
 	// init grpc ONLY server

@@ -11,7 +11,7 @@ type CoreConnect = {
   readonly service: typeof Core;
   readonly requestStream: false;
   readonly responseStream: false;
-  readonly requestType: typeof github_com_elojah_game_03_pkg_rtc_dto_rtc_pb.SDP;
+  readonly requestType: typeof github_com_elojah_game_03_pkg_rtc_dto_rtc_pb.ConnectReq;
   readonly responseType: typeof github_com_elojah_game_03_pkg_rtc_dto_rtc_pb.SDP;
 };
 
@@ -83,12 +83,12 @@ export class CoreClient {
 
   constructor(serviceHost: string, options?: grpc.RpcOptions);
   connect(
-    requestMessage: github_com_elojah_game_03_pkg_rtc_dto_rtc_pb.SDP,
+    requestMessage: github_com_elojah_game_03_pkg_rtc_dto_rtc_pb.ConnectReq,
     metadata: grpc.Metadata,
     callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_rtc_dto_rtc_pb.SDP|null) => void
   ): UnaryResponse;
   connect(
-    requestMessage: github_com_elojah_game_03_pkg_rtc_dto_rtc_pb.SDP,
+    requestMessage: github_com_elojah_game_03_pkg_rtc_dto_rtc_pb.ConnectReq,
     callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_rtc_dto_rtc_pb.SDP|null) => void
   ): UnaryResponse;
   sendICE(metadata?: grpc.Metadata): RequestStream<github_com_elojah_game_03_pkg_rtc_dto_rtc_pb.ICECandidate>;

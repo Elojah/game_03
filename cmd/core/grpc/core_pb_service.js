@@ -17,7 +17,7 @@ Core.Connect = {
   service: Core,
   requestStream: false,
   responseStream: false,
-  requestType: github_com_elojah_game_03_pkg_rtc_dto_rtc_pb.SDP,
+  requestType: github_com_elojah_game_03_pkg_rtc_dto_rtc_pb.ConnectReq,
   responseType: github_com_elojah_game_03_pkg_rtc_dto_rtc_pb.SDP
 };
 

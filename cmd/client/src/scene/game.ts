@@ -7,14 +7,14 @@ import { Mutex } from 'async-mutex';
 
 import { Buffer } from 'buffer'
 
-import * as jspb from 'google-protobuf';
+import { Map as pbmap } from 'google-protobuf';
 
 import { ulid, parse } from '../lib/ulid'
 
 import { API } from 'cmd/api/grpc/api_pb_service';
 import { Core } from 'cmd/core/grpc/core_pb_service';
 
-import { ICECandidate, SDP } from 'pkg/rtc/dto/rtc_pb';
+import { ConnectReq, ICECandidate, SDP } from 'pkg/rtc/dto/rtc_pb';
 
 import * as Animation from 'pkg/entity/animation_pb';
 import * as AnimationDTO from 'pkg/entity/dto/animation_pb';
@@ -150,15 +150,28 @@ export class Game extends Scene {
 			}]
 		});
 
-		const dc = local.createDataChannel('update_entity')
-		dc.onopen = () => {
+		const se = local.createDataChannel('send_entity')
+		se.onopen = () => {
+			console.log('channel send_entity opened')
 			this.SyncTimer = window.setInterval(() => {
-				console.log('update_entity')
-				dc.send(this.Entity.E.serializeBinary())
+				se.send(this.Entity.E.serializeBinary())
+				console.log('send entity')
 			}, 500)
 		}
-		dc.onclose = () => { console.log('channel closed') }
-		dc.onmessage = (m) => { console.log('message received:', m) }
+		se.onclose = () => { console.log('channel send_entity closed') }
+		se.onmessage = (m) => { console.log('message received on send_entity:', m) }
+
+		const re = local.createDataChannel('receive_entity')
+		re.onopen = () => { console.log('channel receive_entity opened') }
+		re.onclose = () => { console.log('channel receive_entity closed') }
+		re.onmessage = (m) => {
+			console.log('message received on receive_entity')
+			const resp = EntityDTO.ListEntityResp.deserializeBinary(m.data)
+
+			console.log(resp)
+
+			this.displayEntities(resp)
+		}
 
 		local.oniceconnectionstatechange = e => console.log('peer connection state change', local.iceConnectionState)
 
@@ -166,8 +179,13 @@ export class Game extends Scene {
 			.then(d => {
 				local.setLocalDescription(d)
 
-				const req = new SDP()
-				req.setEncoded(Buffer.from(JSON.stringify(d), 'binary').toString('base64'))
+				const req = new ConnectReq()
+				const sdp = new SDP()
+				sdp.setEncoded(Buffer.from(JSON.stringify(d), 'binary').toString('base64'))
+				req.setSdp(sdp)
+				req.setPcid(this.PC.getId_asU8())
+				req.setWorldid(this.PC.getWorldid_asU8())
+
 				this.coreConnect(req)
 					.then((resp) => {
 						const answer = Buffer.from(resp.getEncoded(), 'base64').toString('ascii')
@@ -176,6 +194,7 @@ export class Game extends Scene {
 						console.log('connect success')
 					})
 					.then(() => {
+						// receive ICE
 						this.receiveICE((candidate) => {
 							const ic = Buffer.from(candidate.getEncoded(), 'base64').toString('ascii')
 
@@ -183,8 +202,8 @@ export class Game extends Scene {
 
 							local.addIceCandidate(JSON.parse(ic))
 						})
-					})
-					.then(() => {
+
+						// send ICE
 						const send = this.sendICE()
 						local.onicecandidate = (ic) => {
 							if (!ic.candidate) {
@@ -247,57 +266,51 @@ export class Game extends Scene {
 	}
 	preload() { }
 	create() {
-		// Connect for entity sync
-		this.connect()
-			.then(() => {
-				console.log('disconnect from server')
-			})
-
-		// Connect for entity send
+		// Connect for entity send/receive
 		this.initConnection()
 
 		this.Loading = this.Entity.E.getCellid_asU8()
 
 		this.Cursors = this.input.keyboard!.createCursorKeys();
 
-		this.LoadMapMutex.waitForUnlock()
-			.then(() => {
+		// this.LoadMapMutex.waitForUnlock()
+		// 	.then(() => {
 
-				// Load world & cell sync
-				this.listWorld((() => {
-					const req = new WorldDTO.ListWorldReq()
+		// Load world & cell sync
+		this.listWorld((() => {
+			const req = new WorldDTO.ListWorldReq()
 
-					req.setIdsList([this.PC.getWorldid_asU8()])
-					req.setSize(1)
+			req.setIdsList([this.PC.getWorldid_asU8()])
+			req.setSize(1)
 
-					return req
-				})())
-					.then((ws: WorldDTO.ListWorldResp) => {
-						if (ws.getWorldsList().length != 1) {
-							console.log('failed to load world')
-						} else {
-							this.World = ws.getWorldsList()[0]
-						}
-					}).then(() => {
-						return this.loadBackground()
-					}).then(() => {
-						return this.loadMap(Cell.Orientation.NONE)
-					})
-					.then(() => {
-						this.load.start()
-						this.load.on('complete', () => {
-							console.log('load complete')
-						})
-					}).then(() => {
-						// post first loading launch
-						setInterval(() => {
-							this.cleanEntities()
-						}, this.cleanEntitiesDelay)
-					})
-					.catch((err) => {
-						console.log('setup error', err)
-					})
+			return req
+		})())
+			.then((ws: WorldDTO.ListWorldResp) => {
+				if (ws.getWorldsList().length != 1) {
+					console.log('failed to load world')
+				} else {
+					this.World = ws.getWorldsList()[0]
+				}
+			}).then(() => {
+				return this.loadBackground()
+			}).then(() => {
+				return this.loadMap(Cell.Orientation.NONE)
 			})
+			.then(() => {
+				this.load.start()
+				this.load.on('complete', () => {
+					console.log('load complete')
+				})
+			}).then(() => {
+				// post first loading launch
+				setInterval(() => {
+					this.cleanEntities()
+				}, this.cleanEntitiesDelay)
+			})
+			.catch((err) => {
+				console.log('setup error', err)
+			})
+		// })
 	}
 
 	updateBodyEntity() {
@@ -482,7 +495,7 @@ export class Game extends Scene {
 				}
 
 				const c = cells.getCellsList()[0]
-				const contig = c.getContiguousMap() as jspb.Map<number, Uint8Array>
+				const contig = c.getContiguousMap() as pbmap<number, Uint8Array>
 
 				let newCellIDs: Uint8Array[] = []
 				let deletedCells: GraphicCell[] = []
@@ -776,7 +789,7 @@ export class Game extends Scene {
 					cellMap.set(ulid(c?.Cell.getId_asU8()), c.Cell)
 				}
 
-				const contig = this.Cells.get(Cell.Orientation.NONE)?.Cell.getContiguousMap() as jspb.Map<number, Uint8Array>
+				const contig = this.Cells.get(Cell.Orientation.NONE)?.Cell.getContiguousMap() as pbmap<number, Uint8Array>
 				if (o == Cell.Orientation.NONE) {
 					contig.set(Cell.Orientation.NONE, this.Cells.get(Cell.Orientation.NONE)?.Cell.getId_asU8()!)
 				}
@@ -1070,227 +1083,195 @@ export class Game extends Scene {
 		})
 	}
 
-	// Connect
-	async connect() {
-		const release = await this.LoadMapMutex.acquire()
-		// call list entities on current cell
-		return this.connectPC((message: EntityDTO.ListEntityResp) => {
-			// load all entities
-			let entityIDs: Uint8Array[] = []
+	async displayEntities(message: EntityDTO.ListEntityResp) {
+		// const release = await this.LoadMapMutex.acquire()
 
-			message.getEntitiesList().forEach((entry: Entity.E) => {
-				const id = ulid(entry.getId_asU8())
+		// load all entities
+		let entityIDs: Uint8Array[] = []
 
-				// Set last tick to 0
-				this.EntityLastTick.set(id, (this.EntityLastTick.get(id) || 0) + 1)
+		message.getEntitiesList().forEach((entry: Entity.E) => {
+			const id = ulid(entry.getId_asU8())
 
-				if (this.Entities.has(id)) {
-					// update state only
-					const x = entry.getX() //+ (this.Cells.get(this.CellsByID.get(ulid(entry.getCellid_asU8()))!)?.Cell.getX()! * this.World.getCellwidth())
-					const y = entry.getY() //+ (this.Cells.get(this.CellsByID.get(ulid(entry.getCellid_asU8()))!)?.Cell.getY()! * this.World.getCellheight())
-					updateGraphicEntity(this.Entities.get(id)!, x, y)
+			// Set last tick to 0
+			this.EntityLastTick.set(id, (this.EntityLastTick.get(id) || 0) + 1)
 
-					this.Entities.get(id)!.E = entry
-				} else {
-					// create associated sprite
-					// receive own entity from server once and initialize
-					if (id == ulid(this.Entity.E.getId_asU8())) {
-						this.Entity.Body.destroy()
+			if (this.Entities.has(id)) {
+				// update state only
+				const x = entry.getX() //+ (this.Cells.get(this.CellsByID.get(ulid(entry.getCellid_asU8()))!)?.Cell.getX()! * this.World.getCellwidth())
+				const y = entry.getY() //+ (this.Cells.get(this.CellsByID.get(ulid(entry.getCellid_asU8()))!)?.Cell.getY()! * this.World.getCellheight())
+				updateGraphicEntity(this.Entities.get(id)!, x, y)
 
-						if (entry.getObjectsList().length == 0) {
-							console.log('player entity has no collision body. set default')
-							this.Entity.Body = this.physics.add.sprite(entry.getX(), entry.getY(), id).setSize(16, 16).setOffset(0, 0)
-						} else {
-							// pick first dynamic body from list to assign as main collision object
-							const obj = entry.getObjectsList().at(0)!
-							this.Entity.Body = this.physics.add.sprite(entry.getX(), entry.getY(), id).
-								setSize(obj.getWidth(), obj.getHeight()).
-								setOffset(obj.getX(), obj.getY())
-						}
+				this.Entities.get(id)!.E = entry
+			} else {
+				// create associated sprite
+				// receive own entity from server once and initialize
+				if (id == ulid(this.Entity.E.getId_asU8())) {
+					this.Entity.Body.destroy()
 
-						console.log('set body from server info')
-						this.Entity.E.setX(entry.getX())
-						this.Entity.E.setY(entry.getY())
-
-						// local player sprite loaded, start camera follow
-						this.cameras.main.startFollow(this.Entity.Body)
-						this.Entity.Body.setDepth(entitySpriteDepth)
-
-						this.Entities.set(id, {
-							E: entry,
-							Animations: new Map(),
-							Direction: new Phaser.Geom.Point(entry.getX(), entry.getY()),
-							Interpolation: 0.00,
-							Sprite: this.Entity.Body,
-
-							Objects: new Map(),
-							Colliders: new Map(),
-						})
-
-						release()
+					if (entry.getObjectsList().length == 0) {
+						console.log('player entity has no collision body. set default')
+						this.Entity.Body = this.physics.add.sprite(entry.getX(), entry.getY(), id).setSize(16, 16).setOffset(0, 0)
 					} else {
-						const sprite = this.add.sprite(entry.getX(), entry.getY(), id)
-						sprite.setDepth(entitySpriteDepth - 1)
-
-						let ge: GraphicEntity = {
-							E: entry,
-							Animations: new Map(),
-							Direction: new Phaser.Geom.Point(entry.getX(), entry.getY()),
-							Interpolation: 0.00, // default speed
-							Sprite: sprite,
-
-							Objects: new Map(),
-							Colliders: new Map(),
-						}
-
-						console.log('set entity: ', id, entry.getX(), entry.getY())
-
-						// set collision objects
-						// offset on layer position
-						const objects = entry.getObjectsList()
-						if (objects.length > 0) {
-							const group = this.physics.add.staticGroup(objects.map((b) => {
-								console.log('set entity collision: ', id, b.getX() + ge.E.getX(), b.getY() + ge.E.getY())
-								return this.physics.add.
-									staticImage(
-										ge.E.getX() + b.getX(),
-										ge.E.getY() + b.getY(),
-										'').
-									setSize(b.getWidth(), b.getHeight()).
-									setVisible(false).
-									setImmovable(true).
-									setOffset(0, 0)
-							}))
-
-							const collider = this.physics.add.collider(this.Entity.Body, group)
-
-							ge.Objects.set(id, group)
-							ge.Colliders.set(id, collider)
-							console.log('created entity collision:', id)
-						}
-
-						this.Entities.set(id, ge)
+						// pick first dynamic body from list to assign as main collision object
+						const obj = entry.getObjectsList().at(0)!
+						this.Entity.Body = this.physics.add.sprite(entry.getX(), entry.getY(), id).
+							setSize(obj.getWidth(), obj.getHeight()).
+							setOffset(obj.getX(), obj.getY())
 					}
 
-					// load entity animations
-					entityIDs.push(entry.getId_asU8())
+					console.log('set body from server info')
+					this.Entity.E.setX(entry.getX())
+					this.Entity.E.setY(entry.getY())
+
+					// local player sprite loaded, start camera follow
+					this.cameras.main.startFollow(this.Entity.Body)
+					this.Entity.Body.setDepth(entitySpriteDepth)
+
+					this.Entities.set(id, {
+						E: entry,
+						Animations: new Map(),
+						Direction: new Phaser.Geom.Point(entry.getX(), entry.getY()),
+						Interpolation: 0.00,
+						Sprite: this.Entity.Body,
+
+						Objects: new Map(),
+						Colliders: new Map(),
+					})
+
+					// release()
+				} else {
+					const sprite = this.add.sprite(entry.getX(), entry.getY(), id)
+					sprite.setDepth(entitySpriteDepth - 1)
+
+					let ge: GraphicEntity = {
+						E: entry,
+						Animations: new Map(),
+						Direction: new Phaser.Geom.Point(entry.getX(), entry.getY()),
+						Interpolation: 0.00, // default speed
+						Sprite: sprite,
+
+						Objects: new Map(),
+						Colliders: new Map(),
+					}
+
+					console.log('set entity: ', id, entry.getX(), entry.getY())
+
+					// set collision objects
+					// offset on layer position
+					const objects = entry.getObjectsList()
+					if (objects.length > 0) {
+						const group = this.physics.add.staticGroup(objects.map((b) => {
+							console.log('set entity collision: ', id, b.getX() + ge.E.getX(), b.getY() + ge.E.getY())
+							return this.physics.add.
+								staticImage(
+									ge.E.getX() + b.getX(),
+									ge.E.getY() + b.getY(),
+									'').
+								setSize(b.getWidth(), b.getHeight()).
+								setVisible(false).
+								setImmovable(true).
+								setOffset(0, 0)
+						}))
+
+						const collider = this.physics.add.collider(this.Entity.Body, group)
+
+						ge.Objects.set(id, group)
+						ge.Colliders.set(id, collider)
+						console.log('created entity collision:', id)
+					}
+
+					this.Entities.set(id, ge)
 				}
-			})
 
-			if (entityIDs.length == 0) {
-				return
+				// load entity animations
+				entityIDs.push(entry.getId_asU8())
 			}
+		})
 
-			// load all animations
-			this.listAnimation((() => {
-				const req = new AnimationDTO.ListAnimationReq()
+		if (entityIDs.length == 0) {
+			return
+		}
 
-				req.setEntityidsList(entityIDs)
-				req.setSize(1000) // TODO: less random
+		// load all animations
+		this.listAnimation((() => {
+			const req = new AnimationDTO.ListAnimationReq()
 
-				return req
-			})())
-				.then((animations: AnimationDTO.ListAnimationResp) => {
-					// load all current animations
-					animations.getAnimationsList().forEach((an: Animation.Animation) => {
-						const id = ulid(an.getId_asU8())
-						const sheetID = ulid(an.getSheetid_asU8())
-						const duplicateID = ulid(an.getDuplicateid_asU8())
-						const entityID = ulid(an.getEntityid_asU8())
+			req.setEntityidsList(entityIDs)
+			req.setSize(1000) // TODO: less random
 
-						let anims = this.Entities.get(entityID)?.Animations!
+			return req
+		})())
+			.then((animations: AnimationDTO.ListAnimationResp) => {
+				// load all current animations
+				animations.getAnimationsList().forEach((an: Animation.Animation) => {
+					const id = ulid(an.getId_asU8())
+					const sheetID = ulid(an.getSheetid_asU8())
+					const duplicateID = ulid(an.getDuplicateid_asU8())
+					const entityID = ulid(an.getEntityid_asU8())
 
-						// loading self animations, change object + add named animations
-						if (entityID == ulid(this.Entity.E.getId_asU8())) {
-							anims = this.Entity.Animations
+					let anims = this.Entities.get(entityID)?.Animations!
 
-							console.log('set named animation:', an.getName(), id)
-							anims.set(an.getName(), id)
-						}
+					// loading self animations, change object + add named animations
+					if (entityID == ulid(this.Entity.E.getId_asU8())) {
+						anims = this.Entity.Animations
+
+						console.log('set named animation:', an.getName(), id)
+						anims.set(an.getName(), id)
+					}
 
 
-						// return if already loaded
-						if (this.anims.exists(duplicateID)) {
-							anims.set(id, duplicateID)
+					// return if already loaded
+					if (this.anims.exists(duplicateID)) {
+						anims.set(id, duplicateID)
+
+						return
+					}
+
+					const loadAnim = () => {
+						// Create animation
+						const seq = an.getSequenceList().length > 0 ? { frames: an.getSequenceList() } : { start: an.getStart(), end: an.getEnd() };
+						const newAnim = this.anims.create({
+							key: duplicateID,
+							frames: this.anims.generateFrameNumbers(
+								sheetID,
+								seq,
+							),
+							frameRate: an.getRate(),
+							repeat: -1,
+						})
+						if (!newAnim) {
+							console.log('failed to load animation ' + duplicateID)
 
 							return
 						}
 
-						const loadAnim = () => {
-							// Create animation
-							const seq = an.getSequenceList().length > 0 ? { frames: an.getSequenceList() } : { start: an.getStart(), end: an.getEnd() };
-							const newAnim = this.anims.create({
-								key: duplicateID,
-								frames: this.anims.generateFrameNumbers(
-									sheetID,
-									seq,
-								),
-								frameRate: an.getRate(),
-								repeat: -1,
-							})
-							if (!newAnim) {
-								console.log('failed to load animation ' + duplicateID)
+						console.log('set animation:', id, duplicateID)
 
-								return
-							}
+						// Add animation to entity animations
+						anims.set(id, duplicateID)
+					}
 
-							console.log('set animation:', id, duplicateID)
+					if (!this.SpriteSheets.get(sheetID)) {
+						// load sprite sheet
 
-							// Add animation to entity animations
-							anims.set(id, duplicateID)
-						}
+						this.EntityLoader.spritesheet(sheetID, 'img/assets/' + sheetID + '.png', {
+							frameWidth: an.getFramewidth(),
+							frameHeight: an.getFrameheight(),
+							startFrame: an.getFramestart(),
+							endFrame: an.getFrameend(),
+							margin: an.getFramemargin(),
+							spacing: an.getFramespacing(),
+						}).once('filecomplete-spritesheet-' + sheetID, () => {
+							// Add spritesheet to loaded
+							this.SpriteSheets.set(sheetID, 1)
 
-						if (!this.SpriteSheets.get(sheetID)) {
-							// load sprite sheet
-
-							this.EntityLoader.spritesheet(sheetID, 'img/assets/' + sheetID + '.png', {
-								frameWidth: an.getFramewidth(),
-								frameHeight: an.getFrameheight(),
-								startFrame: an.getFramestart(),
-								endFrame: an.getFrameend(),
-								margin: an.getFramemargin(),
-								spacing: an.getFramespacing(),
-							}).once('filecomplete-spritesheet-' + sheetID, () => {
-								// Add spritesheet to loaded
-								this.SpriteSheets.set(sheetID, 1)
-
-								loadAnim()
-							}).start()
-						} else {
 							loadAnim()
-						}
-					})
+						}).start()
+					} else {
+						loadAnim()
+					}
 				})
-		})
-	}
-
-	// API PC
-	connectPC(callback: (message: EntityDTO.ListEntityResp) => void) {
-		let req = this.PC;
-		let md = new grpc.Metadata()
-		md.set('token', this.registry.get('token'))
-
-		const prom = new Promise<string>((resolve, reject) => {
-			// grpc.invoke(API.ConnectPC, {
-			// 	metadata: md,
-			// 	request: req,
-			// 	host: 'https://api.legacyfactory.com:8082',
-			// 	onMessage: (message: EntityDTO.ListEntityResp) => {
-			// 		callback(message)
-			// 	},
-			// 	onEnd: (code: grpc.Code, message: string | undefined, trailers: grpc.Metadata) => {
-			// 		if (code !== grpc.Code.OK || !message) {
-			// 			reject('connectPC:' + message)
-
-			// 			return
-			// 		}
-
-			// 		resolve(message)
-			// 	}
-			// });
-		})
-
-		return prom
+			})
 	}
 
 	// API Cell
@@ -1438,7 +1419,7 @@ export class Game extends Scene {
 		return prom
 	}
 
-	coreConnect(req: SDP) {
+	coreConnect(req: ConnectReq) {
 		let md = new grpc.Metadata()
 		md.set('token', getCookie('access')!)
 

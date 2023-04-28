@@ -19,7 +19,7 @@ import "github.com/elojah/game_03/pkg/rtc/dto/rtc.proto";
 
 service Core {
 	// Signal
-    rpc Connect(dto.SDP) returns (dto.SDP);
+    rpc Connect(dto.ConnectReq) returns (dto.SDP);
     rpc SendICE(stream dto.ICECandidate) returns (google.protobuf.Empty);
     rpc ReceiveICE(google.protobuf.Empty) returns (stream dto.ICECandidate);
 

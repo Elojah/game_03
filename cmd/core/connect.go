@@ -14,7 +14,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (h *handler) Connect(ctx context.Context, req *dto.SDP) (*dto.SDP, error) {
+func (h *handler) Connect(ctx context.Context, req *dto.ConnectReq) (*dto.SDP, error) {
 	logger := log.With().Str("method", "connect").Logger()
 
 	if req == nil {
@@ -25,6 +25,19 @@ func (h *handler) Connect(ctx context.Context, req *dto.SDP) (*dto.SDP, error) {
 	u, err := h.user.Auth(ctx, "access")
 	if err != nil {
 		return &dto.SDP{}, status.New(codes.Unauthenticated, err.Error()).Err()
+	}
+
+	// #Fetch PC
+	pc, err := h.entity.FetchPC(ctx, entity.FilterPC{
+		ID:      req.PCID,
+		WorldID: req.WorldID,
+
+		UserID: u.ID,
+	})
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to fetch pc")
+
+		return &dto.SDP{}, status.New(codes.InvalidArgument, err.Error()).Err()
 	}
 
 	// Prepare the configuration
@@ -53,7 +66,7 @@ func (h *handler) Connect(ctx context.Context, req *dto.SDP) (*dto.SDP, error) {
 	}
 
 	// Create a new RTCPeerConnection
-	pc, err := webrtc.NewPeerConnection(config)
+	pco, err := h.api.NewPeerConnection(config)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to create peer connection")
 
@@ -62,13 +75,13 @@ func (h *handler) Connect(ctx context.Context, req *dto.SDP) (*dto.SDP, error) {
 
 	if err := h.rtc.Insert(ctx, rtc.PC{
 		ID:             u.ID,
-		PeerConnection: pc,
+		PeerConnection: pco,
 	}); err != nil {
 		if errors.As(err, &gerrors.ErrConflict{}) {
 			if err := h.rtc.Delete(ctx, rtc.Filter{ID: u.ID}); err != nil {
 				if err := h.rtc.Insert(ctx, rtc.PC{
 					ID:             u.ID,
-					PeerConnection: pc,
+					PeerConnection: pco,
 				}); err != nil {
 					logger.Error().Err(err).Msg("failed to create peer connection")
 
@@ -84,7 +97,7 @@ func (h *handler) Connect(ctx context.Context, req *dto.SDP) (*dto.SDP, error) {
 
 	// Set the handler for Peer connection state
 	// This will notify you when the peer has connected/disconnected
-	pc.OnConnectionStateChange(func(s webrtc.PeerConnectionState) {
+	pco.OnConnectionStateChange(func(s webrtc.PeerConnectionState) {
 		logger := log.With().Str("method", "on_connection_state_change").Logger()
 
 		logger.Info().Str("state", s.String()).Msg("peer connection state change")
@@ -104,62 +117,62 @@ func (h *handler) Connect(ctx context.Context, req *dto.SDP) (*dto.SDP, error) {
 	})
 
 	// Add handlers for setting up the connection.
-	pc.OnICEConnectionStateChange(func(state webrtc.ICEConnectionState) {
+	pco.OnICEConnectionStateChange(func(state webrtc.ICEConnectionState) {
 		logger := log.With().Str("method", "on_ice_connection_state_change").Logger()
 
 		logger.Info().Str("state", state.String()).Msg("ICE connection state change")
 	})
 
-	// Send the current time via a DataChannel to the remote peer every 3 seconds
-	pc.OnDataChannel(func(d *webrtc.DataChannel) {
+	// Data channel created
+	pco.OnDataChannel(func(d *webrtc.DataChannel) {
+		pc := pc
+
 		if d == nil {
 			return
 		}
 
-		logger := log.With().Str("method", "on_data_channel").Logger()
+		switch d.Label() {
+		case "receive_entity":
+			ctx := context.Background()
 
-		logger.Info().Str("label", d.Label()).Msg("received data channel")
+			logger := log.With().Str("method", "on_data_channel").Logger()
+			logger.Info().Str("label", d.Label()).Msg("channel receive_entity created")
 
-		d.OnMessage(func(msg webrtc.DataChannelMessage) {
-			var e entity.E
-
-			if err := e.Unmarshal(msg.Data); err != nil {
-				logger.Error().Err(err).Msg("failed to read entity")
+			if err := h.SendEntity(ctx, d, pc); err != nil {
+				logger.Error().Err(err).Msg("failed to send entity")
 
 				return
 			}
+		case "send_entity":
+			ctx := context.Background()
 
-			if err := h.entity.Update(ctx, entity.Filter{
-				ID: e.ID,
-			}, entity.Patch{
-				X:           &e.X,
-				Y:           &e.Y,
-				AnimationID: e.AnimationID,
-				CellID:      e.CellID,
-			}); err != nil {
-				logger.Error().Err(err).Msg("failed to update entity")
+			logger := log.With().Str("method", "on_data_channel").Logger()
+			logger.Info().Str("label", d.Label()).Msg("channel send_entity created")
+
+			if err := h.ReceiveEntity(ctx, d, pc); err != nil {
+				logger.Error().Err(err).Msg("failed to receive entity")
+
+				return
 			}
-
-			logger.Info().Msg("success")
-		})
+		}
 	})
 
 	// #Read and set remote description
-	remoteSDP, err := req.MarshalRTC()
+	remoteSDP, err := req.SDP.MarshalRTC()
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to read remote description")
 
 		return &dto.SDP{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
-	if err := pc.SetRemoteDescription(webrtc.SessionDescription(remoteSDP)); err != nil {
+	if err := pco.SetRemoteDescription(webrtc.SessionDescription(remoteSDP)); err != nil {
 		logger.Error().Err(err).Msg("failed to set remote description")
 
 		return &dto.SDP{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
 	// #Set and write local description
-	answer, err := pc.CreateAnswer(nil)
+	answer, err := pco.CreateAnswer(nil)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to create answer")
 
@@ -167,7 +180,7 @@ func (h *handler) Connect(ctx context.Context, req *dto.SDP) (*dto.SDP, error) {
 	}
 
 	// Sets the LocalDescription, and starts our UDP listeners
-	if err = pc.SetLocalDescription(answer); err != nil {
+	if err = pco.SetLocalDescription(answer); err != nil {
 		logger.Error().Err(err).Msg("failed to set local description")
 
 		return &dto.SDP{}, status.New(codes.Internal, err.Error()).Err()

@@ -13,6 +13,13 @@ option (gogoproto.goproto_registration) = true;
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
+message ConnectReq {
+	SDP SDP            = 1;
+
+    bytes PCID         = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    bytes WorldID      = 3 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+}
+
 message SDP {
 	string Encoded     = 1;
 }
