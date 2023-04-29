@@ -3,7 +3,7 @@ import { grpc } from '@improbable-eng/grpc-web';
 
 import { getCookie } from 'typescript-cookie'
 
-import { Mutex } from 'async-mutex';
+import { Mutex, MutexInterface } from 'async-mutex';
 
 import { Buffer } from 'buffer'
 
@@ -124,11 +124,15 @@ export class Game extends Scene {
 	// Start load pc mutex before map
 	LoadMapMutex: Mutex
 
+	Connected: MutexInterface.Releaser
+
 	constructor(config: string | Phaser.Types.Scenes.SettingsConfig) {
 		super(config);
 	}
 
-	initConnection() {
+	async initConnection() {
+		this.Connected = await this.LoadMapMutex.acquire()
+
 		const local = new RTCPeerConnection({
 			iceServers: [{
 				urls: [
@@ -266,51 +270,52 @@ export class Game extends Scene {
 	}
 	preload() { }
 	create() {
-		// Connect for entity send/receive
-		this.initConnection()
 
 		this.Loading = this.Entity.E.getCellid_asU8()
 
 		this.Cursors = this.input.keyboard!.createCursorKeys();
 
-		// this.LoadMapMutex.waitForUnlock()
-		// 	.then(() => {
-
 		// Load world & cell sync
-		this.listWorld((() => {
-			const req = new WorldDTO.ListWorldReq()
-
-			req.setIdsList([this.PC.getWorldid_asU8()])
-			req.setSize(1)
-
-			return req
-		})())
-			.then((ws: WorldDTO.ListWorldResp) => {
-				if (ws.getWorldsList().length != 1) {
-					console.log('failed to load world')
-				} else {
-					this.World = ws.getWorldsList()[0]
-				}
-			}).then(() => {
-				return this.loadBackground()
-			}).then(() => {
-				return this.loadMap(Cell.Orientation.NONE)
+		// Connect for entity send/receive
+		this.initConnection()
+			.then(() => {
+				return this.LoadMapMutex.waitForUnlock()
 			})
 			.then(() => {
-				this.load.start()
-				this.load.on('complete', () => {
-					console.log('load complete')
-				})
-			}).then(() => {
-				// post first loading launch
-				setInterval(() => {
-					this.cleanEntities()
-				}, this.cleanEntitiesDelay)
+				this.listWorld((() => {
+					const req = new WorldDTO.ListWorldReq()
+
+					req.setIdsList([this.PC.getWorldid_asU8()])
+					req.setSize(1)
+
+					return req
+				})())
+					.then((ws: WorldDTO.ListWorldResp) => {
+						if (ws.getWorldsList().length != 1) {
+							console.log('failed to load world')
+						} else {
+							this.World = ws.getWorldsList()[0]
+						}
+					}).then(() => {
+						return this.loadBackground()
+					}).then(() => {
+						return this.loadMap(Cell.Orientation.NONE)
+					})
+					.then(() => {
+						this.load.start()
+						this.load.on('complete', () => {
+							console.log('load complete')
+						})
+					}).then(() => {
+						// post first loading launch
+						setInterval(() => {
+							this.cleanEntities()
+						}, this.cleanEntitiesDelay)
+					})
+					.catch((err) => {
+						console.log('setup error', err)
+					})
 			})
-			.catch((err) => {
-				console.log('setup error', err)
-			})
-		// })
 	}
 
 	updateBodyEntity() {
@@ -366,20 +371,6 @@ export class Game extends Scene {
 			}
 		}
 	}
-
-	// positionServerToClient(ge: GraphicEntity): Phaser.Geom.Point {
-	// 	const id = ulid(ge.E.getCellid_asU8())
-
-	// 	this.Cells.get(id)
-	// 	// return
-	// }
-
-	// positionClientToServer(ge: GraphicEntity): Phaser.Geom.Point {
-	// 	const id = ulid(ge.E.getCellid_asU8())
-
-	// 	this.Cells.get(id)
-	// 	// return
-	// }
 
 	update(time: number, deltaTime: number) {
 		this.updateBodyEntity()
@@ -1084,13 +1075,12 @@ export class Game extends Scene {
 	}
 
 	async displayEntities(message: EntityDTO.ListEntityResp) {
-		// const release = await this.LoadMapMutex.acquire()
-
 		// load all entities
 		let entityIDs: Uint8Array[] = []
 
 		message.getEntitiesList().forEach((entry: Entity.E) => {
 			const id = ulid(entry.getId_asU8())
+			const meid = ulid(this.Entity.E.getId_asU8())
 
 			// Set last tick to 0
 			this.EntityLastTick.set(id, (this.EntityLastTick.get(id) || 0) + 1)
@@ -1105,7 +1095,7 @@ export class Game extends Scene {
 			} else {
 				// create associated sprite
 				// receive own entity from server once and initialize
-				if (id == ulid(this.Entity.E.getId_asU8())) {
+				if (id == meid) {
 					this.Entity.Body.destroy()
 
 					if (entry.getObjectsList().length == 0) {
@@ -1138,8 +1128,8 @@ export class Game extends Scene {
 						Colliders: new Map(),
 					})
 
-					// release()
-				} else {
+					this.Connected()
+				} else if (this.Entities.has(meid)) {
 					const sprite = this.add.sprite(entry.getX(), entry.getY(), id)
 					sprite.setDepth(entitySpriteDepth - 1)
 
@@ -1181,6 +1171,9 @@ export class Game extends Scene {
 					}
 
 					this.Entities.set(id, ge)
+				} else {
+					// this.Entity.Body not initialized yet, don't load anything until we have it (for collisions)
+					return
 				}
 
 				// load entity animations

@@ -29,6 +29,12 @@ func (l *antsLogger) Printf(format string, args ...any) {
 }
 
 func (h *handler) SendEntity(ctx context.Context, d *webrtc.DataChannel, pc entity.PC) error { //nolint: gocognit
+	ctx, cancel := context.WithCancel(ctx)
+
+	d.OnClose(func() {
+		cancel()
+	})
+
 	d.OnOpen(func() {
 		logger := log.With().Str("method", "send_entity").Logger()
 
