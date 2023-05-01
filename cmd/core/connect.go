@@ -95,25 +95,40 @@ func (h *handler) Connect(ctx context.Context, req *dto.ConnectReq) (*dto.SDP, e
 		}
 	}
 
+	// #Create entity in world
+	e, err := h.entity.CreateEntityFromBackup(ctx, pc.EntityID)
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to create entity from backup")
+
+		return &dto.SDP{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
+	_ = e
+
+	cctx, cancel := context.WithCancel(context.Background())
+
 	// Set the handler for Peer connection state
 	// This will notify you when the peer has connected/disconnected
-	pco.OnConnectionStateChange(func(s webrtc.PeerConnectionState) {
+	pco.OnConnectionStateChange(func(state webrtc.PeerConnectionState) {
 		logger := log.With().Str("method", "on_connection_state_change").Logger()
 
-		logger.Info().Str("state", s.String()).Msg("peer connection state change")
+		logger.Info().Str("state", state.String()).Msg("peer connection state change")
 
-		if s == webrtc.PeerConnectionStateFailed {
-			// Wait until PeerConnection has had no network activity for 30 seconds or another failure. It may be reconnected using an ICE Restart.
-			// Use webrtc.PeerConnectionStateDisconnected if you are interested in detecting faster timeout.
-			// Note that the PeerConnection may come back from PeerConnectionStateDisconnected.
-			// fmt.Println("Peer Connection has gone to failed exiting")
-			// os.Exit(0)
+		if state == webrtc.PeerConnectionStateClosed ||
+			state == webrtc.PeerConnectionStateDisconnected ||
+			state == webrtc.PeerConnectionStateFailed {
+			logger.Error().Str("state", state.String()).Msg("disconnect connection")
 
-			// close ?
-			logger.Info().Str("state", s.String()).Msg("peer connection failed")
+			cancel()
 
 			return
 		}
+
+		// Wait until PeerConnection has had no network activity for 30 seconds or another failure. It may be reconnected using an ICE Restart.
+		// Use webrtc.PeerConnectionStateDisconnected if you are interested in detecting faster timeout.
+		// Note that the PeerConnection may come back from PeerConnectionStateDisconnected.
+		// fmt.Println("Peer Connection has gone to failed exiting")
+		// os.Exit(0)
 	})
 
 	// Add handlers for setting up the connection.
@@ -121,6 +136,14 @@ func (h *handler) Connect(ctx context.Context, req *dto.ConnectReq) (*dto.SDP, e
 		logger := log.With().Str("method", "on_ice_connection_state_change").Logger()
 
 		logger.Info().Str("state", state.String()).Msg("ICE connection state change")
+
+		if state == webrtc.ICEConnectionStateClosed {
+			logger.Error().Str("state", state.String()).Msg("disconnect ice connection")
+
+			cancel()
+
+			return
+		}
 	})
 
 	// Data channel created
@@ -133,23 +156,19 @@ func (h *handler) Connect(ctx context.Context, req *dto.ConnectReq) (*dto.SDP, e
 
 		switch d.Label() {
 		case "receive_entity":
-			ctx := context.Background()
-
 			logger := log.With().Str("method", "on_data_channel").Logger()
 			logger.Info().Str("label", d.Label()).Msg("channel receive_entity created")
 
-			if err := h.SendEntity(ctx, d, pc); err != nil {
+			if err := h.SendEntity(cctx, d, pc); err != nil {
 				logger.Error().Err(err).Msg("failed to send entity")
 
 				return
 			}
 		case "send_entity":
-			ctx := context.Background()
-
 			logger := log.With().Str("method", "on_data_channel").Logger()
 			logger.Info().Str("label", d.Label()).Msg("channel send_entity created")
 
-			if err := h.ReceiveEntity(ctx, d, pc); err != nil {
+			if err := h.ReceiveEntity(cctx, d, pc); err != nil {
 				logger.Error().Err(err).Msg("failed to receive entity")
 
 				return

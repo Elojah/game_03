@@ -8,7 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (h *handler) ReceiveEntity(ctx context.Context, d *webrtc.DataChannel, pc entity.PC) error { //nolint: gocognit
+func (h *handler) ReceiveEntity(ctx context.Context, d *webrtc.DataChannel, pc entity.PC) error {
 	d.OnMessage(func(msg webrtc.DataChannelMessage) {
 		logger := log.With().Str("method", "receive_entity").Logger()
 
@@ -16,6 +16,12 @@ func (h *handler) ReceiveEntity(ctx context.Context, d *webrtc.DataChannel, pc e
 
 		if err := e.Unmarshal(msg.Data); err != nil {
 			logger.Error().Err(err).Msg("failed to read entity")
+
+			return
+		}
+
+		if !pc.EntityID.Equal(e.ID) {
+			logger.Error().Msg("unauthorized entity update")
 
 			return
 		}

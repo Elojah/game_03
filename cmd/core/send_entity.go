@@ -7,6 +7,7 @@ import (
 	"github.com/elojah/game_03/pkg/entity"
 	"github.com/elojah/game_03/pkg/entity/dto"
 	"github.com/elojah/game_03/pkg/room"
+	"github.com/elojah/game_03/pkg/rtc"
 	"github.com/elojah/game_03/pkg/ulid"
 	"github.com/panjf2000/ants/v2"
 	"github.com/pion/webrtc/v3"
@@ -31,73 +32,26 @@ func (l *antsLogger) Printf(format string, args ...any) {
 func (h *handler) SendEntity(ctx context.Context, d *webrtc.DataChannel, pc entity.PC) error { //nolint: gocognit
 	ctx, cancel := context.WithCancel(ctx)
 
+	d.OnError(func(err error) {
+		logger := log.With().Str("method", "send_entity").Str("pc", pc.ID.String()).Logger()
+
+		logger.Error().Err(err).Msg("data channel error")
+
+		cancel()
+	})
+
 	d.OnClose(func() {
+		logger := log.With().Str("method", "send_entity").Str("pc", pc.ID.String()).Logger()
+
+		logger.Info().Msg("data channel closed")
+
 		cancel()
 	})
 
 	d.OnOpen(func() {
-		logger := log.With().Str("method", "send_entity").Logger()
+		logger := log.With().Str("method", "send_entity").Str("pc", pc.ID.String()).Logger()
 
 		logger.Info().Msg("channel opened")
-
-		// #Fetch entity backup from PC
-		e, err := h.entity.FetchBackup(ctx, entity.FilterBackup{
-			ID: pc.EntityID,
-		})
-		if err != nil {
-			logger.Error().Err(err).Msg("failed to create entity")
-
-			return
-		}
-
-		// Insert real entity
-		e.At = time.Now().UnixNano()
-		if err := h.entity.Insert(ctx, e); err != nil {
-			logger.Error().Err(err).Msg("failed to create entity")
-
-			return
-		}
-
-		// defer clean
-		defer func(id ulid.ID) {
-			// New context
-			ctx := context.Background()
-			logger = logger.With().
-				Str("defer", "clean_entity").
-				Str("entity_id", id.String()).
-				Logger()
-
-			// #Fetch entity
-			e, err := h.entity.Fetch(ctx, entity.Filter{
-				ID: id,
-			})
-			if err != nil {
-				logger.Error().Err(err).Msg("failed to fetch entity")
-
-				return
-			}
-
-			// Insert backup entity
-			e.At = time.Now().UnixNano()
-			if err := h.entity.UpdateBackup(ctx, entity.Filter{
-				ID: id,
-			}, e); err != nil {
-				logger.Error().Err(err).Msg("failed to update backup")
-
-				return
-			}
-
-			// #Delete entity
-			if err := h.entity.Delete(ctx, entity.Filter{
-				ID: id,
-			}); err != nil {
-				logger.Error().Err(err).Msg("failed to delete entity")
-
-				return
-			}
-
-			logger.Info().Msg("done")
-		}(pc.EntityID)
 
 		p, err := ants.NewPool(
 			nRoutines,
@@ -111,7 +65,7 @@ func (h *handler) SendEntity(ctx context.Context, d *webrtc.DataChannel, pc enti
 			return
 		}
 
-		logger = logger.With().Str("entity_id", e.ID.String()).Logger()
+		logger = logger.With().Str("entity_id", pc.EntityID.String()).Logger()
 
 		logger.Info().Msg("connected")
 
@@ -122,12 +76,37 @@ func (h *handler) SendEntity(ctx context.Context, d *webrtc.DataChannel, pc enti
 			case _ = <-ctx.Done():
 				logger.Info().Err(ctx.Err()).Msg("done")
 
+				// New context
+				ctx := context.Background()
+
+				logger = logger.With().
+					Str("context", "clean_entity").
+					Str("entity_id", pc.EntityID.String()).
+					Logger()
+
+				if err := h.entity.CreateBackupFromEntity(ctx, pc.EntityID); err != nil {
+					logger.Error().Err(err).Msg("failed to create backup from entity")
+
+					return
+				}
+
+				// #Delete connection
+				if err := h.rtc.Delete(ctx, rtc.Filter{
+					ID: pc.UserID,
+				}); err != nil {
+					logger.Error().Err(err).Msg("failed to delete rtc connection")
+
+					return
+				}
+
+				logger.Info().Msg("done")
+
 				return
 			case _ = <-t.C:
 				// Fetch current entity
 				current, err := h.entity.Fetch(ctx,
 					entity.Filter{
-						ID: e.ID,
+						ID: pc.EntityID,
 					},
 				)
 				if err != nil {

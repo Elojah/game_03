@@ -47,6 +47,9 @@ type App interface {
 	StorePC
 	StoreTemplate
 	StoreSpawn
+
+	CreateEntityFromBackup(context.Context, ulid.ID) (E, error)
+	CreateBackupFromEntity(context.Context, ulid.ID) error
 }
 
 // FetchStat should be used when only way to get stat is `Stat` enum.

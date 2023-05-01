@@ -157,10 +157,13 @@ export class Game extends Scene {
 		const se = local.createDataChannel('send_entity')
 		se.onopen = () => {
 			console.log('channel send_entity opened')
-			this.SyncTimer = window.setInterval(() => {
-				se.send(this.Entity.E.serializeBinary())
-				console.log('send entity')
-			}, 500)
+			this.LoadMapMutex.waitForUnlock().then(() => {
+				console.log('ticker send_entity start')
+				this.SyncTimer = window.setInterval(() => {
+					se.send(this.Entity.E.serializeBinary())
+					console.log('send entity')
+				}, 500)
+			})
 		}
 		se.onclose = () => { console.log('channel send_entity closed') }
 		se.onmessage = (m) => { console.log('message received on send_entity:', m) }
@@ -171,8 +174,6 @@ export class Game extends Scene {
 		re.onmessage = (m) => {
 			console.log('message received on receive_entity')
 			const resp = EntityDTO.ListEntityResp.deserializeBinary(m.data)
-
-			console.log(resp)
 
 			this.displayEntities(resp)
 		}
@@ -1127,6 +1128,8 @@ export class Game extends Scene {
 						Objects: new Map(),
 						Colliders: new Map(),
 					})
+
+					console.log("receive position from server:", this.Entity.E.getX(), this.Entity.E.getY())
 
 					this.Connected()
 				} else if (this.Entities.has(meid)) {

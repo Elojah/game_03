@@ -70,7 +70,9 @@ $ go run ./scripts/write_tileset/main.go 'assets/external/Tilesets' 'assets/tile
 	  + [ ] Triggers at component level
 	  + [ ] Eval triggers first, then modify effects then apply effects
   + [ ] [p0] Implement RTC both directions
-	  + [ ] [p0] Clean cancel of send_entity
+	  + [x] Clean cancel of send_entity
+	  + [ ] When ctrl+c -> cancel ctx clean
+	  + [ ] RTC peer connectin not found 1/2 refresh (delete/recreate mechanism)
   + [ ] [BUG] [p0] Collision on entity don't happen (entity loaded before pc ?)
 
 # FLOW
