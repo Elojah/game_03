@@ -101,13 +101,6 @@ func run(prog string, filename string) {
 		StoreKeys: cookieStore,
 	}
 
-	// sync local keys every 60 seconds
-	go func() {
-		if err := cookieApp.AutoSyncKeys(context.Background(), 60); err != nil { //nolint: gomnd
-			log.Error().Err(err).Msg("failed to auto sync keys")
-		}
-	}()
-
 	authclient := ggrpc.Client{}
 	if err := authclient.Dial(ctx, cfg.AuthClient); err != nil {
 		log.Error().Err(err).Msg("failed to dial auth")

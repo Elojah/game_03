@@ -11,6 +11,7 @@ import (
 var _ entity.App = (*App)(nil)
 
 type App struct {
+	entity.Cache
 	entity.Store
 	entity.StoreAnimation
 	entity.StoreBackup

@@ -12,7 +12,7 @@ type FilterSession struct {
 }
 
 type CacheSession interface {
-	UpsertSession(context.Context, Session) error
+	InsertSession(context.Context, Session) error
 	FetchSession(context.Context, FilterSession) (Session, error)
 	DeleteSession(context.Context, FilterSession) error
 }

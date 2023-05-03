@@ -115,13 +115,6 @@ func run(prog string, filename string) {
 		return
 	}
 
-	// sync local keys every 60 seconds
-	go func() {
-		if err := cookieApp.AutoSyncKeys(context.Background(), 60); err != nil { //nolint: gomnd
-			log.Error().Err(err).Msg("failed to auto sync keys")
-		}
-	}()
-
 	migrateApp := migrateapp.App{
 		Service: &scyllas,
 	}

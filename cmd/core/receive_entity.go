@@ -9,6 +9,10 @@ import (
 )
 
 func (h *handler) ReceiveEntity(ctx context.Context, d *webrtc.DataChannel, pc entity.PC) error {
+	d.OnOpen(func() {
+		// create sequencer
+	})
+
 	d.OnMessage(func(msg webrtc.DataChannelMessage) {
 		logger := log.With().Str("method", "receive_entity").Logger()
 

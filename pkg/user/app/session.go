@@ -36,8 +36,7 @@ func (a App) AuthSession(ctx context.Context) (user.Session, error) {
 }
 
 func (a App) CreateSession(ctx context.Context, ses user.Session) ([]byte, error) {
-	// TODO: use cache
-	if err := a.StoreSession.InsertSession(ctx, ses); err != nil {
+	if err := a.InsertSession(ctx, ses); err != nil {
 		return nil, err
 	}
 
@@ -45,16 +44,26 @@ func (a App) CreateSession(ctx context.Context, ses user.Session) ([]byte, error
 }
 
 func (a App) InsertSession(ctx context.Context, ses user.Session) error {
-	// TODO: use cache
+	if err := a.CacheSession.InsertSession(ctx, ses); err != nil {
+		return err
+	}
+
 	return a.StoreSession.InsertSession(ctx, ses)
 }
 
 func (a App) FetchSession(ctx context.Context, f user.FilterSession) (user.Session, error) {
-	// TODO: use cache
-	return a.StoreSession.FetchSession(ctx, f)
+	ses, err := a.CacheSession.FetchSession(ctx, f)
+	if err != nil {
+		return a.StoreSession.FetchSession(ctx, f)
+	}
+
+	return ses, nil
 }
 
 func (a App) DeleteSession(ctx context.Context, f user.FilterSession) error {
-	// TODO: use cache
+	if err := a.CacheSession.DeleteSession(ctx, f); err != nil {
+		return err
+	}
+
 	return a.StoreSession.DeleteSession(ctx, f)
 }

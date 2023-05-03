@@ -32,6 +32,19 @@ type Patch struct {
 	Objects     []geometry.Rect
 }
 
+type FilterCache struct {
+	ID   ulid.ID
+	Min  string
+	Max  string
+	Size int64
+}
+
+type Cache interface {
+	InsertCache(context.Context, E) error
+	FetchManyCache(context.Context, FilterCache) ([]E, error)
+	DeleteCache(context.Context, FilterCache) error
+}
+
 type Store interface {
 	Insert(context.Context, E) error
 	Update(context.Context, Filter, Patch) error
@@ -41,6 +54,8 @@ type Store interface {
 }
 
 type App interface {
+	Cache
+
 	Store
 	StoreAnimation
 	StoreBackup

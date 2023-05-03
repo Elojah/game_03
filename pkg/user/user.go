@@ -15,7 +15,6 @@ type App interface {
 	CreateJWT(context.Context, U, string, time.Duration) (string, error)
 	ReadJWT(context.Context, string) (Claims, error)
 
-	// create and return encrypted session
 	CreateSession(context.Context, Session) ([]byte, error)
 
 	Auth(context.Context, string) (U, error)

@@ -293,6 +293,7 @@ func (g *Grid) Generate(w gtile.WangSet, height int64, width int64, hs ...Heuris
 			for c := range candidates {
 				// pick first result (assign and break loop)
 				result[i][j] = c
+
 				break
 			}
 		}

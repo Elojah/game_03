@@ -2,15 +2,17 @@ package redis
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	"time"
 
 	"github.com/elojah/game_03/pkg/cookie"
-	"github.com/go-redis/redis"
+	"github.com/redis/rueidis"
 )
 
 const (
 	keysKey = "cookie_keys:"
+
+	cacheDuration = 60
 )
 
 // CreateKeys implementation for CookieKeys in redis.
@@ -21,7 +23,7 @@ func (s *Store) CreateKeys(ctx context.Context, cks ...cookie.Keys) error {
 			return err
 		}
 
-		if err := s.LPush(ctx, keysKey, raw).Err(); err != nil {
+		if err := s.Do(ctx, s.B().Lpush().Key(keysKey).Element(rueidis.BinaryString(raw)).Build()).Error(); err != nil {
 			return fmt.Errorf("push cookie_keys: %w", err)
 		}
 	}
@@ -36,11 +38,11 @@ func (s *Store) RotateKeys(ctx context.Context, ck cookie.Keys, size int64) erro
 		return err
 	}
 
-	if err := s.LPush(ctx, keysKey, raw).Err(); err != nil {
+	if err := s.Do(ctx, s.B().Lpush().Key(keysKey).Element(rueidis.BinaryString(raw)).Build()).Error(); err != nil {
 		return fmt.Errorf("push cookie_keys: %w", err)
 	}
 
-	if err := s.LTrim(ctx, keysKey, 0, size-1).Err(); err != nil {
+	if err := s.Do(ctx, s.B().Ltrim().Key(keysKey).Start(0).Stop(size-1).Build()).Error(); err != nil {
 		return fmt.Errorf("trim cookie_keys: %w", err)
 	}
 
@@ -53,11 +55,13 @@ func (s *Store) ReadKeys(ctx context.Context, f cookie.FilterKeys) ([]cookie.Key
 		return nil, nil
 	}
 
-	vals, err := s.LRange(ctx, keysKey, 0, -1).Result()
+	vals, err := s.DoCache(
+		ctx,
+		s.B().Lrange().Key(keysKey).Start(0).Stop(-1).Cache(),
+		cacheDuration*time.Second,
+	).AsStrSlice()
 	if err != nil {
-		if !errors.Is(err, redis.Nil) {
-			return nil, fmt.Errorf("read keys %s: %w", keysKey, err)
-		}
+		return nil, fmt.Errorf("read keys %s: %w", keysKey, err)
 	}
 
 	result := make([]cookie.Keys, 0, len(vals))
@@ -81,7 +85,7 @@ func (s *Store) DeleteKeys(ctx context.Context, f cookie.FilterKeys) error {
 		return nil
 	}
 
-	if err := s.Del(ctx, keysKey).Err(); err != nil {
+	if err := s.Do(ctx, s.B().Del().Key(keysKey).Build()).Error(); err != nil {
 		return fmt.Errorf("delete cookie_keys: %w", err)
 	}
 

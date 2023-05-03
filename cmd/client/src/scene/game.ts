@@ -1378,7 +1378,6 @@ export class Game extends Scene {
 	sendICE(): grpc.Client<grpc.ProtobufMessage, grpc.ProtobufMessage> {
 		let client = grpc.client(Core.SendICE, {
 			host: 'https://core.legacyfactory.com:8083',
-			// transport: grpc.WebsocketTransport(),
 		});
 
 		let md = new grpc.Metadata()

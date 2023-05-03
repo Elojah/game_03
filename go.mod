@@ -1,16 +1,14 @@
 module github.com/elojah/game_03
 
-go 1.19
+go 1.20
 
 require (
 	github.com/elojah/go-grpc v0.0.0-20230424170718-b977a940029a
 	github.com/elojah/go-grpcweb v0.0.0-20230425083110-6aa79dc8ae56
 	github.com/elojah/go-http v0.0.0-20221021094117-ce108391552b
 	github.com/elojah/go-log v0.0.0-20201121131125-8f1993f08a4b
-	github.com/elojah/go-redis v0.0.0-20201121123746-6614a554c9b4
+	github.com/elojah/go-redis v0.0.0-20230503090036-edcb51188058
 	github.com/elojah/go-scylla v0.0.0-20211020122449-c0687e5993d0
-	github.com/go-redis/redis v6.15.9+incompatible
-	github.com/go-redis/redis/v8 v8.4.0
 	github.com/gocql/gocql v1.2.1
 	github.com/gogo/protobuf v1.3.2
 	github.com/golang-jwt/jwt/v4 v4.4.2
@@ -20,9 +18,7 @@ require (
 	github.com/ilyakaznacheev/cleanenv v1.3.0
 	github.com/oklog/ulid/v2 v2.1.0
 	github.com/panjf2000/ants/v2 v2.7.3
-	github.com/pion/datachannel v1.5.5
 	github.com/pion/webrtc/v3 v3.1.60
-	github.com/redis/go-redis/v9 v9.0.3
 	github.com/rs/zerolog v1.28.0
 	github.com/scylladb/gocqlx v1.5.0
 	github.com/xxtea/xxtea-go v0.0.0-20170828040851-35c4b17eecf6
@@ -35,9 +31,7 @@ require (
 	cloud.google.com/go/compute v1.7.0 // indirect
 	github.com/BurntSushi/toml v1.2.0 // indirect
 	github.com/cenkalti/backoff/v4 v4.1.3 // indirect
-	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f // indirect
-	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/uuid v1.3.0 // indirect
@@ -51,6 +45,7 @@ require (
 	github.com/klauspost/compress v1.15.10 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
+	github.com/pion/datachannel v1.5.5 // indirect
 	github.com/pion/dtls/v2 v2.2.6 // indirect
 	github.com/pion/ice/v2 v2.3.2 // indirect
 	github.com/pion/interceptor v0.1.12 // indirect
@@ -66,13 +61,13 @@ require (
 	github.com/pion/transport/v2 v2.0.2 // indirect
 	github.com/pion/turn/v2 v2.1.0 // indirect
 	github.com/pion/udp/v2 v2.0.1 // indirect
+	github.com/redis/rueidis v1.0.0 // indirect
 	github.com/rs/cors v1.8.2 // indirect
 	github.com/scylladb/go-reflectx v1.0.1 // indirect
 	go.opencensus.io v0.23.0 // indirect
-	go.opentelemetry.io/otel v0.14.0 // indirect
 	golang.org/x/crypto v0.6.0 // indirect
 	golang.org/x/net v0.8.0 // indirect
-	golang.org/x/sys v0.6.0 // indirect
+	golang.org/x/sys v0.7.0 // indirect
 	golang.org/x/text v0.8.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20220923205249-dd2d53f1fffc // indirect
