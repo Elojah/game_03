@@ -10,7 +10,7 @@ type FilterKeys struct {
 	All bool
 }
 
-type StoreKeys interface {
+type CacheKeys interface {
 	ReadKeys(context.Context, FilterKeys) ([]Keys, error)
 
 	CreateKeys(context.Context, ...Keys) error

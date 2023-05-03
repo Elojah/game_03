@@ -107,9 +107,9 @@ func run(prog string, filename string) {
 
 	cs = append(cs, &rediss)
 
-	cookieStore := &cookieredis.Store{Service: rediss}
+	cookieCache := &cookieredis.Cache{Service: rediss}
 	cookieApp := &cookieapp.A{
-		StoreKeys: cookieStore,
+		CacheKeys: cookieCache,
 	}
 
 	// init http core server

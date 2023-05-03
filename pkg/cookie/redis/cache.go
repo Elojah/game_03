@@ -5,8 +5,8 @@ import (
 	"github.com/elojah/go-redis"
 )
 
-var _ cookie.StoreKeys = (*Store)(nil)
+var _ cookie.CacheKeys = (*Cache)(nil)
 
-type Store struct {
+type Cache struct {
 	redis.Service
 }

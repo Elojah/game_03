@@ -16,14 +16,14 @@ const (
 )
 
 // CreateKeys implementation for CookieKeys in redis.
-func (s *Store) CreateKeys(ctx context.Context, cks ...cookie.Keys) error {
+func (c *Cache) CreateKeys(ctx context.Context, cks ...cookie.Keys) error {
 	for _, ck := range cks {
 		raw, err := ck.Marshal()
 		if err != nil {
 			return err
 		}
 
-		if err := s.Do(ctx, s.B().Lpush().Key(keysKey).Element(rueidis.BinaryString(raw)).Build()).Error(); err != nil {
+		if err := c.Do(ctx, c.B().Lpush().Key(keysKey).Element(rueidis.BinaryString(raw)).Build()).Error(); err != nil {
 			return fmt.Errorf("push cookie_keys: %w", err)
 		}
 	}
@@ -32,17 +32,17 @@ func (s *Store) CreateKeys(ctx context.Context, cks ...cookie.Keys) error {
 }
 
 // RotateKeys implementation for CookieKeys in redis.
-func (s *Store) RotateKeys(ctx context.Context, ck cookie.Keys, size int64) error {
+func (c *Cache) RotateKeys(ctx context.Context, ck cookie.Keys, size int64) error {
 	raw, err := ck.Marshal()
 	if err != nil {
 		return err
 	}
 
-	if err := s.Do(ctx, s.B().Lpush().Key(keysKey).Element(rueidis.BinaryString(raw)).Build()).Error(); err != nil {
+	if err := c.Do(ctx, c.B().Lpush().Key(keysKey).Element(rueidis.BinaryString(raw)).Build()).Error(); err != nil {
 		return fmt.Errorf("push cookie_keys: %w", err)
 	}
 
-	if err := s.Do(ctx, s.B().Ltrim().Key(keysKey).Start(0).Stop(size-1).Build()).Error(); err != nil {
+	if err := c.Do(ctx, c.B().Ltrim().Key(keysKey).Start(0).Stop(size-1).Build()).Error(); err != nil {
 		return fmt.Errorf("trim cookie_keys: %w", err)
 	}
 
@@ -50,14 +50,14 @@ func (s *Store) RotateKeys(ctx context.Context, ck cookie.Keys, size int64) erro
 }
 
 // ReadKeys implementation for CookieKeys in redis.
-func (s *Store) ReadKeys(ctx context.Context, f cookie.FilterKeys) ([]cookie.Keys, error) {
+func (c *Cache) ReadKeys(ctx context.Context, f cookie.FilterKeys) ([]cookie.Keys, error) {
 	if !f.All {
 		return nil, nil
 	}
 
-	vals, err := s.DoCache(
+	vals, err := c.DoCache(
 		ctx,
-		s.B().Lrange().Key(keysKey).Start(0).Stop(-1).Cache(),
+		c.B().Lrange().Key(keysKey).Start(0).Stop(-1).Cache(),
 		cacheDuration*time.Second,
 	).AsStrSlice()
 	if err != nil {
@@ -80,12 +80,12 @@ func (s *Store) ReadKeys(ctx context.Context, f cookie.FilterKeys) ([]cookie.Key
 }
 
 // DeleteKeys implementation for CookieKeys in redis.
-func (s *Store) DeleteKeys(ctx context.Context, f cookie.FilterKeys) error {
+func (c *Cache) DeleteKeys(ctx context.Context, f cookie.FilterKeys) error {
 	if !f.All {
 		return nil
 	}
 
-	if err := s.Do(ctx, s.B().Del().Key(keysKey).Build()).Error(); err != nil {
+	if err := c.Do(ctx, c.B().Del().Key(keysKey).Build()).Error(); err != nil {
 		return fmt.Errorf("delete cookie_keys: %w", err)
 	}
 

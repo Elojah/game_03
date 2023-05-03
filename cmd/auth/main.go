@@ -122,9 +122,9 @@ func run(prog string, filename string) {
 
 	cs = append(cs, &googleApp)
 
-	cookieStore := &cookieredis.Store{Service: rediss}
+	cookieCache := &cookieredis.Cache{Service: rediss}
 	cookieApp := &cookieapp.A{
-		StoreKeys: cookieStore,
+		CacheKeys: cookieCache,
 	}
 
 	userStore := &userscylla.Store{Service: scyllas}

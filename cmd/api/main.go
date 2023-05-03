@@ -105,9 +105,9 @@ func run(prog string, filename string) {
 
 	cs = append(cs, &rediss)
 
-	cookieStore := &cookieredis.Store{Service: rediss}
+	cookieCache := &cookieredis.Cache{Service: rediss}
 	cookieApp := &cookieapp.A{
-		StoreKeys: cookieStore,
+		CacheKeys: cookieCache,
 	}
 
 	// init http api server
@@ -150,6 +150,7 @@ func run(prog string, filename string) {
 		CacheSession: userCache,
 		Cookie:       cookieApp,
 	}
+
 	if err := userApp.Dial(ctx, cfg.Session); err != nil {
 		log.Error().Err(err).Msg("failed to dial user application")
 

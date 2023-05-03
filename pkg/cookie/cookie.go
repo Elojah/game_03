@@ -10,7 +10,7 @@ const (
 // App
 
 type App interface {
-	StoreKeys
+	CacheKeys
 
 	Encode(context.Context, string, string) (string, error)
 	Decode(context.Context, string, string) (string, error)

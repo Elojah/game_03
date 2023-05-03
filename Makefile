@@ -148,6 +148,7 @@ proto-go proto-ts: ## Regenerate protobuf files
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/entity/pc.proto
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/entity/spawn.proto
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/entity/template.proto
+	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/event/event.proto
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/geometry/geometry.proto
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/room/cell.proto
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/room/room.proto
