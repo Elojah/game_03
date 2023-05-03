@@ -3,6 +3,7 @@ package event
 import (
 	"context"
 
+	entity "github.com/elojah/game_03/pkg/entity"
 	"github.com/elojah/game_03/pkg/ulid"
 	"github.com/redis/rueidis"
 )
@@ -34,4 +35,8 @@ type Cache interface {
 	Insert(context.Context, E) error
 	FetchMany(context.Context, Filter) ([]E, error)
 	Delete(context.Context, Filter) error
+}
+
+func (ev E) Eval(e entity.E) entity.E {
+	return e
 }
