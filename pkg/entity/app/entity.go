@@ -28,8 +28,12 @@ func (a App) CreateEntityFromBackup(ctx context.Context, id ulid.ID) (entity.E, 
 		return entity.E{}, err
 	}
 
-	e.At = time.Now().UnixNano()
+	e.At = time.Now().UnixMilli()
 	if err := a.Insert(ctx, e); err != nil {
+		return entity.E{}, err
+	}
+
+	if err := a.InsertCache(ctx, e); err != nil {
 		return entity.E{}, err
 	}
 
@@ -46,10 +50,17 @@ func (a App) CreateBackupFromEntity(ctx context.Context, id ulid.ID) error {
 	}
 
 	// Insert backup entity
-	e.At = time.Now().UnixNano()
+	e.At = time.Now().UnixMilli()
 	if err := a.UpdateBackup(ctx, entity.Filter{
 		ID: id,
 	}, e); err != nil {
+		return err
+	}
+
+	// #Delete entity cache
+	if err := a.DeleteCache(ctx, entity.FilterCache{
+		ID: id,
+	}); err != nil {
 		return err
 	}
 

@@ -14,7 +14,10 @@ import (
 	cookieapp "github.com/elojah/game_03/pkg/cookie/app"
 	cookieredis "github.com/elojah/game_03/pkg/cookie/redis"
 	entityapp "github.com/elojah/game_03/pkg/entity/app"
+	entityredis "github.com/elojah/game_03/pkg/entity/redis"
 	entityscylla "github.com/elojah/game_03/pkg/entity/scylla"
+	eventapp "github.com/elojah/game_03/pkg/event/app"
+	eventredis "github.com/elojah/game_03/pkg/event/redis"
 	roomapp "github.com/elojah/game_03/pkg/room/app"
 	roomscylla "github.com/elojah/game_03/pkg/room/scylla"
 	rtcapp "github.com/elojah/game_03/pkg/rtc/app"
@@ -123,8 +126,10 @@ func run(prog string, filename string) {
 
 	cs = append(cs, &https)
 
+	entityCache := &entityredis.Cache{Service: rediss}
 	entityStore := &entityscylla.Store{Service: scyllas}
 	entityApp := entityapp.App{
+		Cache:          entityCache,
 		Store:          entityStore,
 		StoreAnimation: entityStore,
 		StoreBackup:    entityStore,
@@ -152,6 +157,7 @@ func run(prog string, filename string) {
 		CacheSession: userCache,
 		Cookie:       cookieApp,
 	}
+
 	if err := userApp.Dial(ctx, cfg.Session); err != nil {
 		log.Error().Err(err).Msg("failed to dial user application")
 
@@ -163,9 +169,18 @@ func run(prog string, filename string) {
 		Store: &rtcStore,
 	}
 
+	eventCache := &eventredis.Cache{Service: rediss}
+	eventApp := eventapp.App{
+		Cache:  eventCache,
+		CacheQ: eventCache,
+		Entity: entityApp,
+		// Ability: abilityApp,
+	}
+
 	// init handler
 	h := handler{
 		entity: entityApp,
+		event:  eventApp,
 		room:   roomApp,
 		rtc:    rtcApp,
 		user:   userApp,

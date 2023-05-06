@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 
+	"github.com/elojah/game_03/pkg/ability"
 	"github.com/elojah/game_03/pkg/entity"
 	"github.com/pion/webrtc/v3"
 	"github.com/rs/zerolog/log"
@@ -10,39 +11,43 @@ import (
 
 func (h *handler) ReceiveEntity(ctx context.Context, d *webrtc.DataChannel, pc entity.PC) error {
 	d.OnOpen(func() {
-		// create sequencer
+		// blocking call
+		if err := h.event.Eval(ctx, pc.EntityID); err != nil {
+			logger := log.With().Str("method", "receive_entity").Str("subscribe", pc.EntityID.String()).Logger()
+
+			logger.Error().Err(err).Msg("subscribe failed")
+
+			return
+		}
 	})
 
 	d.OnMessage(func(msg webrtc.DataChannelMessage) {
 		logger := log.With().Str("method", "receive_entity").Logger()
 
-		var e entity.E
+		var c ability.Cast
 
-		if err := e.Unmarshal(msg.Data); err != nil {
-			logger.Error().Err(err).Msg("failed to read entity")
-
-			return
-		}
-
-		if !pc.EntityID.Equal(e.ID) {
-			logger.Error().Msg("unauthorized entity update")
+		if err := c.Unmarshal(msg.Data); err != nil {
+			logger.Error().Err(err).Msg("failed to read message")
 
 			return
 		}
 
-		if err := h.entity.Update(ctx, entity.Filter{
-			ID: e.ID,
-		}, entity.Patch{
-			X:           &e.X,
-			Y:           &e.Y,
-			AnimationID: e.AnimationID,
-			CellID:      e.CellID,
-		}); err != nil {
-			logger.Error().Err(err).Msg("failed to update entity")
+		events, err := h.event.CreateFromCast(ctx, pc.EntityID, c)
+		if err != nil {
+			logger.Error().Err(err).Msg("failed to create events from cast")
+
+			return
+		}
+
+		for _, e := range events {
+			if err := h.event.Publish(ctx, e); err != nil {
+				logger.Error().Err(err).Msg("failed to publish event")
+
+				return
+			}
 		}
 
 		logger.Info().Msg("success")
-
 	})
 
 	return nil

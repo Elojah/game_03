@@ -3,8 +3,41 @@
 
 import * as jspb from "google-protobuf";
 import * as github_com_gogo_protobuf_gogoproto_gogo_pb from "../../../../../github.com/gogo/protobuf/gogoproto/gogo_pb";
-import * as github_com_elojah_game_03_pkg_geometry_geometry_pb from "../../../../../github.com/elojah/game_03/pkg/geometry/geometry_pb";
 import * as github_com_elojah_game_03_pkg_entity_entity_pb from "../../../../../github.com/elojah/game_03/pkg/entity/entity_pb";
+
+export class Target extends jspb.Message {
+  getType(): TargetTypeMap[keyof TargetTypeMap];
+  setType(value: TargetTypeMap[keyof TargetTypeMap]): void;
+
+  getMove(): MoveMap[keyof MoveMap];
+  setMove(value: MoveMap[keyof MoveMap]): void;
+
+  getPositiontargettype(): TargetTypeMap[keyof TargetTypeMap];
+  setPositiontargettype(value: TargetTypeMap[keyof TargetTypeMap]): void;
+
+  getPositiontargetid(): Uint8Array | string;
+  getPositiontargetid_asU8(): Uint8Array;
+  getPositiontargetid_asB64(): string;
+  setPositiontargetid(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): Target.AsObject;
+  static toObject(includeInstance: boolean, msg: Target): Target.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: Target, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Target;
+  static deserializeBinaryFromReader(message: Target, reader: jspb.BinaryReader): Target;
+}
+
+export namespace Target {
+  export type AsObject = {
+    type: TargetTypeMap[keyof TargetTypeMap],
+    move: MoveMap[keyof MoveMap],
+    positiontargettype: TargetTypeMap[keyof TargetTypeMap],
+    positiontargetid: Uint8Array | string,
+  }
+}
 
 export class AbilityModifier extends jspb.Message {
   getCancel(): boolean;
@@ -101,8 +134,10 @@ export class Amount extends jspb.Message {
   getDirect(): number;
   setDirect(value: number): void;
 
-  getTarget(): TargetMap[keyof TargetMap];
-  setTarget(value: TargetMap[keyof TargetMap]): void;
+  hasTarget(): boolean;
+  clearTarget(): void;
+  getTarget(): Target | undefined;
+  setTarget(value?: Target): void;
 
   getStat(): github_com_elojah_game_03_pkg_entity_entity_pb.StatMap[keyof github_com_elojah_game_03_pkg_entity_entity_pb.StatMap];
   setStat(value: github_com_elojah_game_03_pkg_entity_entity_pb.StatMap[keyof github_com_elojah_game_03_pkg_entity_entity_pb.StatMap]): void;
@@ -132,7 +167,7 @@ export namespace Amount {
   export type AsObject = {
     id: Uint8Array | string,
     direct: number,
-    target: TargetMap[keyof TargetMap],
+    target?: Target.AsObject,
     stat: github_com_elojah_game_03_pkg_entity_entity_pb.StatMap[keyof github_com_elojah_game_03_pkg_entity_entity_pb.StatMap],
     percentage: number,
     effectid: Uint8Array | string,
@@ -210,20 +245,13 @@ export class Effect extends jspb.Message {
   getStat(): github_com_elojah_game_03_pkg_entity_entity_pb.StatMap[keyof github_com_elojah_game_03_pkg_entity_entity_pb.StatMap];
   setStat(value: github_com_elojah_game_03_pkg_entity_entity_pb.StatMap[keyof github_com_elojah_game_03_pkg_entity_entity_pb.StatMap]): void;
 
-  hasPosition(): boolean;
-  clearPosition(): void;
-  getPosition(): github_com_elojah_game_03_pkg_geometry_geometry_pb.Vec2 | undefined;
-  setPosition(value?: github_com_elojah_game_03_pkg_geometry_geometry_pb.Vec2): void;
-
-  hasForce(): boolean;
-  clearForce(): void;
-  getForce(): github_com_elojah_game_03_pkg_geometry_geometry_pb.Vec2 | undefined;
-  setForce(value?: github_com_elojah_game_03_pkg_geometry_geometry_pb.Vec2): void;
-
   hasAmount(): boolean;
   clearAmount(): void;
   getAmount(): Amount | undefined;
   setAmount(value?: Amount): void;
+
+  getRange(): number;
+  setRange(value: number): void;
 
   getDuration(): number;
   setDuration(value: number): void;
@@ -244,7 +272,7 @@ export class Effect extends jspb.Message {
   getStackrules(): StackRules | undefined;
   setStackrules(value?: StackRules): void;
 
-  getTargetsMap(): jspb.Map<string, TargetMap[keyof TargetMap]>;
+  getTargetsMap(): jspb.Map<string, Target>;
   clearTargetsMap(): void;
   getTriggersMap(): jspb.Map<string, Trigger>;
   clearTriggersMap(): void;
@@ -263,21 +291,20 @@ export class Effect extends jspb.Message {
 export namespace Effect {
   export type AsObject = {
     stat: github_com_elojah_game_03_pkg_entity_entity_pb.StatMap[keyof github_com_elojah_game_03_pkg_entity_entity_pb.StatMap],
-    position?: github_com_elojah_game_03_pkg_geometry_geometry_pb.Vec2.AsObject,
-    force?: github_com_elojah_game_03_pkg_geometry_geometry_pb.Vec2.AsObject,
     amount?: Amount.AsObject,
+    range: number,
     duration: number,
     icon: Uint8Array | string,
     delay: number,
     repeat: number,
     stackrules?: StackRules.AsObject,
-    targetsMap: Array<[string, TargetMap[keyof TargetMap]]>,
+    targetsMap: Array<[string, Target.AsObject]>,
     triggersMap: Array<[string, Trigger.AsObject]>,
     effectsMap: Array<[string, Effect.AsObject]>,
   }
 }
 
-export class Ability extends jspb.Message {
+export class A extends jspb.Message {
   getId(): Uint8Array | string;
   getId_asU8(): Uint8Array;
   getId_asB64(): string;
@@ -308,16 +335,16 @@ export class Ability extends jspb.Message {
   getEffectsMap(): jspb.Map<string, Effect>;
   clearEffectsMap(): void;
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): Ability.AsObject;
-  static toObject(includeInstance: boolean, msg: Ability): Ability.AsObject;
+  toObject(includeInstance?: boolean): A.AsObject;
+  static toObject(includeInstance: boolean, msg: A): A.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: Ability, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): Ability;
-  static deserializeBinaryFromReader(message: Ability, reader: jspb.BinaryReader): Ability;
+  static serializeBinaryToWriter(message: A, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): A;
+  static deserializeBinaryFromReader(message: A, reader: jspb.BinaryReader): A;
 }
 
-export namespace Ability {
+export namespace A {
   export type AsObject = {
     id: Uint8Array | string,
     name: string,
@@ -330,7 +357,7 @@ export namespace Ability {
   }
 }
 
-export interface TargetMap {
+export interface TargetTypeMap {
   NONETARGET: 0;
   SELF: 1;
   FOE: 3;
@@ -340,7 +367,16 @@ export interface TargetMap {
   CIRCLE: 7;
 }
 
-export const Target: TargetMap;
+export const TargetType: TargetTypeMap;
+
+export interface MoveMap {
+  NONEMOVE: 0;
+  WALK: 1;
+  TELEPORT: 2;
+  PUSH: 3;
+}
+
+export const Move: MoveMap;
 
 export interface OperatorMap {
   NONEOPERATOR: 0;

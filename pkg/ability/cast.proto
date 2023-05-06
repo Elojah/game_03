@@ -14,17 +14,25 @@ option (gogoproto.goproto_registration)     = true;
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 import "github.com/elojah/game_03/pkg/geometry/geometry.proto";
+import "github.com/elojah/game_03/pkg/ability/ability.proto";
 
 message CastTarget {
     bytes ID                              = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
 
-	geometry.Rect Rect                    = 2;
-	geometry.Circle Circle                = 3;
+    bytes CellID                          = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+	geometry.Rect Rect                    = 3 [(gogoproto.nullable) = false];
+	geometry.Circle Circle                = 4 [(gogoproto.nullable) = false];
 }
 
 message Cast {
-    bytes SourceID                        = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
-    bytes AbilityID                       = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    bytes AbilityID                       = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+	map<string, CastTarget> Targets       = 2 [(gogoproto.nullable) = false];
 
-	map<string, CastTarget> Targets      = 3 [(gogoproto.nullable) = false];
+	int64 At                              = 3;
+}
+
+message CastEffect {
+    bytes CurrentID                       = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+	ability.Effect Effect                 = 2 [(gogoproto.nullable) = false];
+	map<string, CastTarget> Targets       = 3 [(gogoproto.nullable) = false];
 }

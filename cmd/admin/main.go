@@ -13,6 +13,7 @@ import (
 	cookieapp "github.com/elojah/game_03/pkg/cookie/app"
 	cookieredis "github.com/elojah/game_03/pkg/cookie/redis"
 	entityapp "github.com/elojah/game_03/pkg/entity/app"
+	entityredis "github.com/elojah/game_03/pkg/entity/redis"
 	entityscylla "github.com/elojah/game_03/pkg/entity/scylla"
 	migrateapp "github.com/elojah/game_03/pkg/migrate/app"
 	roomapp "github.com/elojah/game_03/pkg/room/app"
@@ -119,8 +120,10 @@ func run(prog string, filename string) {
 		Service: &scyllas,
 	}
 
+	entityCache := &entityredis.Cache{Service: rediss}
 	entityStore := &entityscylla.Store{Service: scyllas}
 	entityApp := entityapp.App{
+		Cache:          entityCache,
 		Store:          entityStore,
 		StoreAnimation: entityStore,
 		StoreBackup:    entityStore,

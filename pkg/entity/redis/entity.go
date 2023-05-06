@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/elojah/game_03/pkg/entity"
-	gerrors "github.com/elojah/game_03/pkg/errors"
+	"github.com/elojah/game_03/pkg/errors"
 	"github.com/redis/rueidis"
 )
 
@@ -37,14 +37,20 @@ func (c *Cache) InsertCache(ctx context.Context, e entity.E) error {
 func (c *Cache) FetchManyCache(ctx context.Context, filter entity.FilterCache) ([]entity.E, error) {
 	vals, err := c.Do(
 		ctx,
-		c.B().Zrangebyscore().Key(key+filter.ID.String()).Min(filter.Min).Max(filter.Max).Limit(0, filter.Size).Build(),
-	).AsStrSlice()
+		c.B().Zrevrangebyscore().
+			Key(key+filter.ID.String()).
+			Max(filter.Max).
+			Min(filter.Min).
+			Withscores().
+			Limit(0, filter.Size).
+			Build(),
+	).AsZScores()
 	if err != nil {
 		return nil, fmt.Errorf("fetch entity %s:%w", filter.ID.String(), err)
 	}
 
 	if len(vals) != 0 {
-		return nil, fmt.Errorf("fetch entity %s:%w", filter.ID.String(), gerrors.ErrNotFound{
+		return nil, fmt.Errorf("fetch entity %s:%w", filter.ID.String(), errors.ErrNotFound{
 			Resource: key,
 			Index:    filter.ID.String(),
 		})
@@ -52,7 +58,7 @@ func (c *Cache) FetchManyCache(ctx context.Context, filter entity.FilterCache) (
 
 	es := make([]entity.E, len(vals))
 	for i := range vals {
-		if err := es[i].Unmarshal([]byte(vals[i])); err != nil {
+		if err := es[i].Unmarshal([]byte(vals[i].Member)); err != nil {
 			return nil, fmt.Errorf("fetch entity for entity %s:%w", filter.ID.String(), err)
 		}
 	}

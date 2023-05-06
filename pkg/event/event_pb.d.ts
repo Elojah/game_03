@@ -3,7 +3,7 @@
 
 import * as jspb from "google-protobuf";
 import * as github_com_gogo_protobuf_gogoproto_gogo_pb from "../../../../../github.com/gogo/protobuf/gogoproto/gogo_pb";
-import * as github_com_elojah_game_03_pkg_entity_entity_pb from "../../../../../github.com/elojah/game_03/pkg/entity/entity_pb";
+import * as github_com_elojah_game_03_pkg_ability_cast_pb from "../../../../../github.com/elojah/game_03/pkg/ability/cast_pb";
 
 export class E extends jspb.Message {
   getId(): Uint8Array | string;
@@ -16,18 +16,18 @@ export class E extends jspb.Message {
   getEntityid_asB64(): string;
   setEntityid(value: Uint8Array | string): void;
 
-  hasSource(): boolean;
-  clearSource(): void;
-  getSource(): github_com_elojah_game_03_pkg_entity_entity_pb.E | undefined;
-  setSource(value?: github_com_elojah_game_03_pkg_entity_entity_pb.E): void;
+  getSourceid(): Uint8Array | string;
+  getSourceid_asU8(): Uint8Array;
+  getSourceid_asB64(): string;
+  setSourceid(value: Uint8Array | string): void;
 
   getAt(): number;
   setAt(value: number): void;
 
-  hasTrigger(): boolean;
-  clearTrigger(): void;
-  getTrigger(): E | undefined;
-  setTrigger(value?: E): void;
+  hasEffect(): boolean;
+  clearEffect(): void;
+  getEffect(): github_com_elojah_game_03_pkg_ability_cast_pb.CastEffect | undefined;
+  setEffect(value?: github_com_elojah_game_03_pkg_ability_cast_pb.CastEffect): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): E.AsObject;
@@ -43,9 +43,9 @@ export namespace E {
   export type AsObject = {
     id: Uint8Array | string,
     entityid: Uint8Array | string,
-    source?: github_com_elojah_game_03_pkg_entity_entity_pb.E.AsObject,
+    sourceid: Uint8Array | string,
     at: number,
-    trigger?: E.AsObject,
+    effect?: github_com_elojah_game_03_pkg_ability_cast_pb.CastEffect.AsObject,
   }
 }
 

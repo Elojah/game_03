@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/elojah/game_03/pkg/entity"
+	"github.com/elojah/game_03/pkg/event"
 	"github.com/elojah/game_03/pkg/room"
 	"github.com/elojah/game_03/pkg/rtc"
 	"github.com/elojah/game_03/pkg/user"
@@ -13,6 +14,7 @@ import (
 type handler struct {
 	entity entity.App
 	room   room.App
+	event  event.App
 
 	rtc  rtc.App
 	user user.App

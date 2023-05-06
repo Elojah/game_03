@@ -3,6 +3,7 @@ package event
 import (
 	"context"
 
+	"github.com/elojah/game_03/pkg/ability"
 	entity "github.com/elojah/game_03/pkg/entity"
 	"github.com/elojah/game_03/pkg/ulid"
 	"github.com/redis/rueidis"
@@ -35,6 +36,14 @@ type Cache interface {
 	Insert(context.Context, E) error
 	FetchMany(context.Context, Filter) ([]E, error)
 	Delete(context.Context, Filter) error
+}
+
+type App interface {
+	Cache
+	CacheQ
+
+	Eval(context.Context, ulid.ID) error
+	CreateFromCast(context.Context, ulid.ID, ability.Cast) (map[string]E, error)
 }
 
 func (ev E) Eval(e entity.E) entity.E {

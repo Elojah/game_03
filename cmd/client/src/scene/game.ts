@@ -16,6 +16,9 @@ import { Core } from 'cmd/core/grpc/core_pb_service';
 
 import { ConnectReq, ICECandidate, SDP } from 'pkg/rtc/dto/rtc_pb';
 
+import * as Ability from 'pkg/ability/ability_pb';
+import * as Cast from 'pkg/ability/cast_pb';
+
 import * as Animation from 'pkg/entity/animation_pb';
 import * as AnimationDTO from 'pkg/entity/dto/animation_pb';
 
@@ -32,6 +35,7 @@ import * as World from 'pkg/room/world_pb';
 import * as WorldDTO from 'pkg/room/dto/world_pb';
 
 import { Empty } from "google-protobuf/google/protobuf/empty_pb";
+import { Circle } from 'pkg/geometry/geometry_pb';
 
 const entitySpriteDepth = 42
 
@@ -159,9 +163,25 @@ export class Game extends Scene {
 			console.log('channel send_entity opened')
 			this.LoadMapMutex.waitForUnlock().then(() => {
 				console.log('ticker send_entity start')
+				const id = ulid(this.Entity.E.getId_asU8())
 				this.SyncTimer = window.setInterval(() => {
-					se.send(this.Entity.E.serializeBinary())
-					console.log('send entity')
+
+					const c = new Cast.Cast()
+
+					const pos = new Circle()
+					pos.setX(this.Entity.E.getX())
+					pos.setY(this.Entity.E.getY())
+
+					const target = new Cast.CastTarget()
+					target.setCircle(pos)
+
+					c.getTargetsMap().set(id, target)
+					const now = Date.now()
+					c.setAt(now)
+
+					se.send(c.serializeBinary())
+
+					console.log('send entity position at ' + now)
 				}, 500)
 			})
 		}

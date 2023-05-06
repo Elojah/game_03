@@ -13,10 +13,9 @@ option (gogoproto.goproto_registration)     = true;
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
-import "github.com/elojah/game_03/pkg/geometry/geometry.proto";
 import "github.com/elojah/game_03/pkg/entity/entity.proto";
 
-enum Target {
+enum TargetType {
 	NoneTarget                                 = 0;
 	Self                                       = 1;
 	Foe                                        = 3;
@@ -26,6 +25,21 @@ enum Target {
 	// geometry aoe
 	Rect                                       = 6;
 	Circle                                     = 7;
+}
+
+enum Move {
+	NoneMove                                   = 0;
+	Walk                                       = 1;
+	Teleport                                   = 2;
+	Push                                       = 3;
+}
+
+message Target {
+	TargetType Type                            = 1;
+
+	Move Move                                  = 2;
+	TargetType PositionTargetType              = 3;
+	bytes PositionTargetID                     = 4 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
 }
 
 message AbilityModifier {
@@ -105,34 +119,31 @@ message StackRules {
 message Effect {
 	// if HP/MP, duration is ignored
 	entity.Stat Stat                           = 1;
+	Amount Amount                              = 2 [(gogoproto.nullable) = false];
 
-	// Movement effect (TP or push back)
-	geometry.Vec2 Position                     = 2;
-	geometry.Vec2 Force                        = 3; // Teleport if force == 0/0
-
-	Amount Amount                              = 4 [(gogoproto.nullable) = false];
+	int64 Range                                = 3;
 
 	// stack rules
 	// if duration 0 or ignored, overtime effects ignored too
-	int64 Duration                             = 5;
-	bytes Icon                                 = 6 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+	int64 Duration                             = 4;
+	bytes Icon                                 = 5 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
 
 	// Tick only if duration > 0 and not ignored
-	int64 Delay                                = 7; // after ms
-	int64 Repeat                               = 8; // each ms
+	int64 Delay                                = 6; // after ms
+	int64 Repeat                               = 7; // each ms
 
-	StackRules StackRules                      = 9 [(gogoproto.nullable) = false];
+	StackRules StackRules                      = 8 [(gogoproto.nullable) = false];
 
-	map<string, Target> Targets                = 10;
+	map<string, Target> Targets                = 9 [(gogoproto.nullable) = false];
 
 	// Triggers to check before applying this effect and can run on this effect or children only.
-	map<string, Trigger> Triggers              = 11 [(gogoproto.nullable) = false];
+	map<string, Trigger> Triggers              = 10 [(gogoproto.nullable) = false];
 
 	// recursive effects to run after this effect
-	map<string, Effect> Effects                = 12 [(gogoproto.nullable) = false];
+	map<string, Effect> Effects                = 11 [(gogoproto.nullable) = false];
 }
 
-message Ability {
+message A {
     bytes ID                                   = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
 	string Name                                = 2;
 

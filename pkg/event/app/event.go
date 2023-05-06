@@ -4,6 +4,7 @@ import (
 	"context"
 	"strconv"
 
+	"github.com/elojah/game_03/pkg/ability"
 	"github.com/elojah/game_03/pkg/entity"
 	"github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/event"
@@ -19,10 +20,11 @@ type App struct {
 	event.Cache
 	event.CacheQ
 
-	entity entity.App
+	Entity  entity.App
+	Ability ability.App
 }
 
-func (a App) Subscribe(ctx context.Context, entityID ulid.ID) error {
+func (a App) Eval(ctx context.Context, entityID ulid.ID) error {
 	ch := make(chan int64, bufferSize)
 
 	ctx, cancel := context.WithCancel(ctx)
@@ -42,7 +44,7 @@ func (a App) Subscribe(ctx context.Context, entityID ulid.ID) error {
 				at := strconv.FormatInt(m, 10)
 
 				// Fetch last entity state
-				lasts, err := a.entity.FetchManyCache(ctx, entity.FilterCache{
+				lasts, err := a.Entity.FetchManyCache(ctx, entity.FilterCache{
 					ID:   entityID,
 					Min:  "-inf",
 					Max:  at,
@@ -64,7 +66,7 @@ func (a App) Subscribe(ctx context.Context, entityID ulid.ID) error {
 				e := lasts[0]
 
 				// Delete all future entities
-				if err := a.entity.DeleteCache(ctx, entity.FilterCache{
+				if err := a.Entity.DeleteCache(ctx, entity.FilterCache{
 					ID:   entityID,
 					Min:  at,
 					Max:  "+inf",
@@ -76,7 +78,7 @@ func (a App) Subscribe(ctx context.Context, entityID ulid.ID) error {
 				}
 
 				// Eval all events since at (should always include current one)
-				events, err := a.FetchMany(ctx, event.Filter{
+				events, err := a.Cache.FetchMany(ctx, event.Filter{
 					EntityID: entityID,
 					Min:      at,
 					Max:      "+inf",
@@ -91,11 +93,13 @@ func (a App) Subscribe(ctx context.Context, entityID ulid.ID) error {
 				for _, ev := range events {
 					e = ev.Eval(e)
 
-					if err := a.entity.InsertCache(ctx, e); err != nil {
+					if err := a.Entity.InsertCache(ctx, e); err != nil {
 						logger.Error().Err(err).Msg("failed to fetch events")
 
 						continue
 					}
+
+					// trigger chain events ?
 				}
 			}
 		}
@@ -113,7 +117,7 @@ func (a App) Subscribe(ctx context.Context, entityID ulid.ID) error {
 			return
 		}
 
-		if err := a.Insert(ctx, ev); err != nil {
+		if err := a.Cache.Insert(ctx, ev); err != nil {
 			log.Error().Err(err).Msg("failed to insert event")
 
 			return
@@ -121,4 +125,87 @@ func (a App) Subscribe(ctx context.Context, entityID ulid.ID) error {
 
 		ch <- ev.At
 	})
+}
+
+// CreateFromCast creates events from cast.
+func (a App) CreateFromCast(ctx context.Context, sourceID ulid.ID, c ability.Cast) (map[string]event.E, error) {
+	result := make(map[string]event.E, 1)
+
+	// we use this case for move events
+	if target, ok := c.Targets[sourceID.String()]; ok && c.AbilityID.IsZero() {
+		position := ability.CastTarget{
+			ID:     ulid.NewID(),
+			Circle: target.Circle,
+		}
+		ev := event.E{
+			ID:       ulid.NewID(),
+			EntityID: sourceID,
+			SourceID: sourceID,
+			At:       c.At,
+			Effect: ability.CastEffect{
+				// default move effect, hard code here
+				Effect: ability.Effect{
+					Targets: map[string]ability.Target{
+						sourceID.String(): {
+							Type:               ability.Self,
+							Move:               ability.Walk,
+							PositionTargetType: ability.Circle,
+							PositionTargetID:   position.ID,
+						},
+					},
+				},
+				Targets: map[string]ability.CastTarget{
+					position.ID.String(): position,
+				},
+			},
+		}
+
+		result[ev.ID.String()] = ev
+
+		return result, nil
+	}
+
+	ab, err := a.Ability.Fetch(ctx, ability.Filter{ID: c.AbilityID})
+	if err != nil {
+		return nil, err
+	}
+
+	for _, ef := range ab.Effects {
+		// TODO: check triggers/modifiers
+		for key, target := range ef.Targets {
+			t, ok := c.Targets[key]
+			if !ok {
+				continue
+			}
+
+			// check target is same type than t
+			_ = target
+
+			// Populate cast targets
+			ctargets := make(map[string]ability.CastTarget)
+
+			if tt, ok := ef.Targets[key]; ok {
+				if !tt.PositionTargetID.IsZero() {
+					if t, ok := c.Targets[tt.PositionTargetID.String()]; ok {
+						ctargets[key] = t
+					}
+				}
+			}
+
+			ev := event.E{
+				ID:       ulid.NewID(),
+				EntityID: t.ID,
+				SourceID: sourceID,
+				At:       c.At,
+				Effect: ability.CastEffect{
+					Effect:  ef,
+					Targets: ctargets,
+				},
+			}
+
+			result[ev.ID.String()] = ev
+		}
+	}
+
+	return result, nil
 }
