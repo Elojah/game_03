@@ -47,5 +47,7 @@ type App interface {
 }
 
 func (ev E) Eval(e entity.E) entity.E {
+	e = ev.Effect.Eval(e)
+
 	return e
 }

@@ -46,7 +46,7 @@ func (a App) Eval(ctx context.Context, entityID ulid.ID) error {
 				// Fetch last entity state
 				lasts, err := a.Entity.FetchManyCache(ctx, entity.FilterCache{
 					ID:   entityID,
-					Min:  "-inf",
+					Min:  "0",
 					Max:  at,
 					Size: 1,
 				})
@@ -90,11 +90,19 @@ func (a App) Eval(ctx context.Context, entityID ulid.ID) error {
 					continue
 				}
 
+				logger.Info().Int("events", len(events)).Msg("eval events")
+
 				for _, ev := range events {
 					e = ev.Eval(e)
 
 					if err := a.Entity.InsertCache(ctx, e); err != nil {
-						logger.Error().Err(err).Msg("failed to fetch events")
+						logger.Error().Err(err).Msg("failed to insert cache entity")
+
+						continue
+					}
+
+					if err := a.Entity.Insert(ctx, e); err != nil {
+						logger.Error().Err(err).Msg("failed to insert entity")
 
 						continue
 					}
@@ -157,6 +165,7 @@ func (a App) CreateFromCast(ctx context.Context, sourceID ulid.ID, c ability.Cas
 				Targets: map[string]ability.CastTarget{
 					position.ID.String(): position,
 				},
+				CurrentID: sourceID,
 			},
 		}
 

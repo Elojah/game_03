@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/elojah/game_03/pkg/entity"
-	"github.com/elojah/game_03/pkg/errors"
 	"github.com/redis/rueidis"
 )
 
@@ -41,24 +40,16 @@ func (c *Cache) FetchManyCache(ctx context.Context, filter entity.FilterCache) (
 			Key(key+filter.ID.String()).
 			Max(filter.Max).
 			Min(filter.Min).
-			Withscores().
 			Limit(0, filter.Size).
 			Build(),
-	).AsZScores()
+	).AsStrSlice()
 	if err != nil {
 		return nil, fmt.Errorf("fetch entity %s:%w", filter.ID.String(), err)
 	}
 
-	if len(vals) != 0 {
-		return nil, fmt.Errorf("fetch entity %s:%w", filter.ID.String(), errors.ErrNotFound{
-			Resource: key,
-			Index:    filter.ID.String(),
-		})
-	}
-
 	es := make([]entity.E, len(vals))
 	for i := range vals {
-		if err := es[i].Unmarshal([]byte(vals[i].Member)); err != nil {
+		if err := es[i].Unmarshal([]byte(vals[i])); err != nil {
 			return nil, fmt.Errorf("fetch entity for entity %s:%w", filter.ID.String(), err)
 		}
 	}

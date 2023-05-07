@@ -32,12 +32,16 @@ func (h *handler) ReceiveEntity(ctx context.Context, d *webrtc.DataChannel, pc e
 			return
 		}
 
+		logger.Info().Int64("at", c.At).Msg("event received")
+
 		events, err := h.event.CreateFromCast(ctx, pc.EntityID, c)
 		if err != nil {
 			logger.Error().Err(err).Msg("failed to create events from cast")
 
 			return
 		}
+
+		// TODO: insert events here and publish only one last ping to all concerned entities
 
 		for _, e := range events {
 			if err := h.event.Publish(ctx, e); err != nil {

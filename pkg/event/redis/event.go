@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	gerrors "github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/event"
 	"github.com/redis/rueidis"
 )
@@ -37,17 +36,16 @@ func (c *Cache) Insert(ctx context.Context, ev event.E) error {
 func (c *Cache) FetchMany(ctx context.Context, filter event.Filter) ([]event.E, error) {
 	vals, err := c.Do(
 		ctx,
-		c.B().Zrangebyscore().Key(key+filter.EntityID.String()).Min(filter.Min).Max(filter.Max).Limit(0, filter.Size).Build(),
+		c.B().
+			Zrangebyscore().
+			Key(key+filter.EntityID.String()).
+			Min(filter.Min).
+			Max(filter.Max).
+			Limit(0, filter.Size).
+			Build(),
 	).AsStrSlice()
 	if err != nil {
 		return nil, fmt.Errorf("fetch event %s:%w", filter.EntityID.String(), err)
-	}
-
-	if len(vals) != 0 {
-		return nil, fmt.Errorf("fetch event %s:%w", filter.EntityID.String(), gerrors.ErrNotFound{
-			Resource: key,
-			Index:    filter.EntityID.String(),
-		})
 	}
 
 	es := make([]event.E, len(vals))
