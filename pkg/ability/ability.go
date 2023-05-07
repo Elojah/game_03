@@ -198,7 +198,11 @@ var (
 // }
 
 type Filter struct {
-	ID ulid.ID
+	ID  ulid.ID
+	IDs []ulid.ID
+
+	State []byte
+	Size  int
 }
 
 type Store interface {
@@ -208,7 +212,11 @@ type Store interface {
 	Delete(context.Context, Filter) error
 }
 
+// TODO
+type Cache interface{}
+
 type App interface {
+	Cache
 	Store
 }
 

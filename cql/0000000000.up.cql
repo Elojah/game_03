@@ -1,4 +1,4 @@
--- USER MANAGEMENT
+-- USER
 -- ---------------
 
 CREATE TABLE main.user (
@@ -27,7 +27,7 @@ CREATE TABLE main.session (
 
 CREATE INDEX ON main.session(user_id);
 
--- ROOM MANAGEMENT
+-- ROOM
 -- ---------------
 
 CREATE TABLE main.room (
@@ -55,7 +55,7 @@ CREATE TABLE main.room_public (
 
 CREATE INDEX ON main.room_public(room_id);
 
--- ENTITY MANAGEMENT
+-- ENTITY
 -- -----------------
 
 CREATE TYPE rect (
@@ -126,6 +126,13 @@ CREATE TABLE main.entity_template (
 
 CREATE INDEX ON main.entity_template(name);
 
+CREATE TABLE main.entity_ability (
+    entity_id        uuid PRIMARY KEY,
+    ability_id       uuid
+);
+
+CREATE INDEX ON main.entity_ability(ability_id);
+
 CREATE TABLE main.entity_spawn (
     entity_id        uuid PRIMARY KEY,
     spawn_id         uuid
@@ -143,7 +150,7 @@ CREATE TABLE main.pc (
     PRIMARY KEY(user_id, world_id, id)
 );
 
--- WORLD MANAGEMENT
+-- WORLD
 -- ----------------
 
 CREATE TABLE main.world (
@@ -179,6 +186,15 @@ CREATE TABLE main.world_spawn (
 );
 
 CREATE INDEX ON main.world_spawn(world_id);
+
+-- ABILITY
+-- -------
+
+CREATE TABLE main.ability (
+    id              uuid PRIMARY KEY,
+	proto           blob
+);
+
 
 -- TILESET
 -- -------

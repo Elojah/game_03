@@ -63,13 +63,13 @@ $ go run ./scripts/write_tileset/main.go 'assets/external/Tilesets' 'assets/tile
   + [ ] [p0] Remove `Math.round()` in `game.ts` and set entity.X entity.Y as float64 to fit Phaser.Body x/y
   + [ ] [p0] [HD] (re-)implement spawns -> change into point of interest per map to fill or not
     + [x] NPC entity have lower z index
-    + [~] [HD] NPC entity static/dynamic collision -> Add manual (in code ?) collisions for altar in room/app
+    + [~]  NPC entity static/dynamic collision -> Add manual (in code ?) collisions for altar in room/app
     + [ ] implement spawn mechanic
 	+ [ ] implement skill mechanic
 	  + [ ] AbilityModifier + EffectModifier
 	  + [ ] Triggers at component level
 	  + [ ] Eval triggers first, then modify effects then apply effects
-	  + [ ] Ability store + Entity Ability store
+	  + [ ] [HD] Ability store+cache + Entity Ability store+cache
 	  + [ ] API routes for ability + ability entity
   + [ ] [p0] Implement RTC both directions
 	  + [x] Clean cancel of send_entity
