@@ -25,96 +25,14 @@ type App struct {
 }
 
 func (a App) Eval(ctx context.Context, entityID ulid.ID) error {
-	ch := make(chan int64, bufferSize)
-
 	ctx, cancel := context.WithCancel(ctx)
 
 	defer cancel()
 
-	go func(ctx context.Context, entityID ulid.ID) {
-		logger := log.With().Str("method", "subscribe").Str("entity", entityID.String()).Logger()
-
-		for {
-			select {
-			case _ = <-ctx.Done():
-				logger.Error().Err(ctx.Err()).Msg("context cancelled")
-
-				return
-			case m := <-ch:
-				at := strconv.FormatInt(m, 10)
-
-				// Fetch last entity state
-				lasts, err := a.Entity.FetchManyCache(ctx, entity.FilterCache{
-					ID:   entityID,
-					Min:  "0",
-					Max:  at,
-					Size: 1,
-				})
-				if err != nil {
-					logger.Error().Err(err).Msg("failed to fetch entity")
-
-					continue
-				}
-
-				if len(lasts) != 1 {
-					err := errors.ErrNotFound{Resource: "entity", Index: entityID.String()}
-					logger.Error().Err(err).Msg("no entity found")
-
-					continue
-				}
-
-				e := lasts[0]
-
-				// Delete all future entities
-				if err := a.Entity.DeleteCache(ctx, entity.FilterCache{
-					ID:   entityID,
-					Min:  at,
-					Max:  "+inf",
-					Size: -1,
-				}); err != nil {
-					logger.Error().Err(err).Msg("failed to delete entities")
-
-					continue
-				}
-
-				// Eval all events since at (should always include current one)
-				events, err := a.Cache.FetchMany(ctx, event.Filter{
-					EntityID: entityID,
-					Min:      at,
-					Max:      "+inf",
-					Size:     -1,
-				})
-				if err != nil {
-					logger.Error().Err(err).Msg("failed to fetch events")
-
-					continue
-				}
-
-				logger.Info().Int("events", len(events)).Msg("eval events")
-
-				for _, ev := range events {
-					e = ev.Eval(e)
-
-					if err := a.Entity.InsertCache(ctx, e); err != nil {
-						logger.Error().Err(err).Msg("failed to insert cache entity")
-
-						continue
-					}
-
-					if err := a.Entity.Insert(ctx, e); err != nil {
-						logger.Error().Err(err).Msg("failed to insert entity")
-
-						continue
-					}
-
-					// trigger chain events ?
-				}
-			}
-		}
-	}(ctx, entityID)
+	logger := log.With().Str("method", "subscribe").Str("entity", entityID.String()).Logger()
 
 	// Subscribe is blocking
-	return a.CacheQ.Subscribe(ctx, event.FilterQ{
+	err := a.CacheQ.Subscribe(ctx, event.FilterQ{
 		EntityID: entityID,
 	}, func(m event.Message) {
 		var ev event.E
@@ -131,8 +49,77 @@ func (a App) Eval(ctx context.Context, entityID ulid.ID) error {
 			return
 		}
 
-		ch <- ev.At
+		at := strconv.FormatInt(ev.At, 10)
+
+		// Fetch last entity state
+		lasts, err := a.Entity.FetchManyCache(ctx, entity.FilterCache{
+			ID:   entityID,
+			Min:  "0",
+			Max:  at,
+			Size: 1,
+		})
+		if err != nil {
+			logger.Error().Err(err).Msg("failed to fetch entity")
+
+			return
+		}
+
+		if len(lasts) != 1 {
+			err := errors.ErrNotFound{Resource: "entity", Index: entityID.String()}
+			logger.Error().Err(err).Msg("no entity found")
+
+			return
+		}
+
+		e := lasts[0]
+
+		// Delete all future entities
+		if err := a.Entity.DeleteCache(ctx, entity.FilterCache{
+			ID:   entityID,
+			Min:  at,
+			Max:  "+inf",
+			Size: -1,
+		}); err != nil {
+			logger.Error().Err(err).Msg("failed to delete entities")
+
+			return
+		}
+
+		// Eval all events since at (should always include current one)
+		events, err := a.Cache.FetchMany(ctx, event.Filter{
+			EntityID: entityID,
+			Min:      at,
+			Max:      "+inf",
+			Size:     -1,
+		})
+		if err != nil {
+			logger.Error().Err(err).Msg("failed to fetch events")
+
+			return
+		}
+
+		logger.Info().Int("events", len(events)).Msg("eval events")
+
+		for _, ev := range events {
+			e = ev.Eval(e)
+
+			if err := a.Entity.InsertCache(ctx, e); err != nil {
+				logger.Error().Err(err).Msg("failed to insert cache entity")
+
+				continue
+			}
+
+			if err := a.Entity.Insert(ctx, e); err != nil {
+				logger.Error().Err(err).Msg("failed to insert entity")
+
+				continue
+			}
+
+			// trigger chain events ?
+		}
 	})
+
+	return err
 }
 
 // CreateFromCast creates events from cast.
@@ -182,16 +169,24 @@ func (a App) CreateFromCast(ctx context.Context, sourceID ulid.ID, c ability.Cas
 	for _, ef := range ab.Effects {
 		// TODO: check triggers/modifiers
 		for key, target := range ef.Targets {
+			targetID, err := ulid.Parse(key)
+			if err != nil {
+				return nil, err
+			}
+
 			t, ok := c.Targets[key]
 			if !ok {
 				continue
 			}
 
-			// check target is same type than t
+			// TODO: check target is same type than t
 			_ = target
 
 			// Populate cast targets
-			ctargets := make(map[string]ability.CastTarget)
+			// TODO: only consider ulid target (no geo) FTM
+			ctargets := map[string]ability.CastTarget{
+				key: {ID: t.ID},
+			}
 
 			if tt, ok := ef.Targets[key]; ok {
 				if !tt.PositionTargetID.IsZero() {
@@ -207,8 +202,9 @@ func (a App) CreateFromCast(ctx context.Context, sourceID ulid.ID, c ability.Cas
 				SourceID: sourceID,
 				At:       c.At,
 				Effect: ability.CastEffect{
-					Effect:  ef,
-					Targets: ctargets,
+					Effect:    ef,
+					Targets:   ctargets,
+					CurrentID: targetID,
 				},
 			}
 
