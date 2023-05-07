@@ -69,6 +69,8 @@ $ go run ./scripts/write_tileset/main.go 'assets/external/Tilesets' 'assets/tile
 	  + [ ] AbilityModifier + EffectModifier
 	  + [ ] Triggers at component level
 	  + [ ] Eval triggers first, then modify effects then apply effects
+	  + [ ] Ability store + Entity Ability store
+	  + [ ] API routes for ability + ability entity
   + [ ] [p0] Implement RTC both directions
 	  + [x] Clean cancel of send_entity
 	  + [ ] When ctrl+c -> cancel ctx clean
