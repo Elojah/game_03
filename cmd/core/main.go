@@ -11,6 +11,9 @@ import (
 	"time"
 
 	coregrpc "github.com/elojah/game_03/cmd/core/grpc"
+	abilityapp "github.com/elojah/game_03/pkg/ability/app"
+	abilityredis "github.com/elojah/game_03/pkg/ability/redis"
+	abilityscylla "github.com/elojah/game_03/pkg/ability/scylla"
 	cookieapp "github.com/elojah/game_03/pkg/cookie/app"
 	cookieredis "github.com/elojah/game_03/pkg/cookie/redis"
 	entityapp "github.com/elojah/game_03/pkg/entity/app"
@@ -126,11 +129,20 @@ func run(prog string, filename string) {
 
 	cs = append(cs, &https)
 
+	abilityCache := &abilityredis.Cache{Service: rediss}
+	abilityStore := &abilityscylla.Store{Service: scyllas}
+	abilityApp := abilityapp.App{
+		Cache: abilityCache,
+		Store: abilityStore,
+	}
+
 	entityCache := &entityredis.Cache{Service: rediss}
 	entityStore := &entityscylla.Store{Service: scyllas}
 	entityApp := entityapp.App{
-		Cache:          entityCache,
-		Store:          entityStore,
+		Cache:        entityCache,
+		Store:        entityStore,
+		StoreAbility: entityStore,
+		// CacheAbility:   entityCache,
 		StoreAnimation: entityStore,
 		StoreBackup:    entityStore,
 		StorePC:        entityStore,
@@ -171,19 +183,20 @@ func run(prog string, filename string) {
 
 	eventCache := &eventredis.Cache{Service: rediss}
 	eventApp := eventapp.App{
-		Cache:  eventCache,
-		CacheQ: eventCache,
-		Entity: entityApp,
-		// Ability: abilityApp,
+		Cache:   eventCache,
+		CacheQ:  eventCache,
+		Entity:  entityApp,
+		Ability: abilityApp,
 	}
 
 	// init handler
 	h := handler{
-		entity: entityApp,
-		event:  eventApp,
-		room:   roomApp,
-		rtc:    rtcApp,
-		user:   userApp,
+		ability: abilityApp,
+		entity:  entityApp,
+		event:   eventApp,
+		room:    roomApp,
+		rtc:     rtcApp,
+		user:    userApp,
 	}
 
 	if err := h.Dial(ctx); err != nil {

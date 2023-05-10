@@ -3,6 +3,7 @@
 
 import * as jspb from "google-protobuf";
 import * as github_com_gogo_protobuf_gogoproto_gogo_pb from "../../../../../../github.com/gogo/protobuf/gogoproto/gogo_pb";
+import * as github_com_elojah_game_03_pkg_ability_ability_pb from "../../../../../../github.com/elojah/game_03/pkg/ability/ability_pb";
 import * as github_com_elojah_game_03_pkg_entity_entity_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/entity_pb";
 
 export class ListEntityReq extends jspb.Message {
@@ -72,6 +73,62 @@ export namespace ListEntityResp {
   export type AsObject = {
     entitiesList: Array<github_com_elojah_game_03_pkg_entity_entity_pb.E.AsObject>,
     state: Uint8Array | string,
+  }
+}
+
+export class CreateEntityAbilityReq extends jspb.Message {
+  getEntityid(): Uint8Array | string;
+  getEntityid_asU8(): Uint8Array;
+  getEntityid_asB64(): string;
+  setEntityid(value: Uint8Array | string): void;
+
+  hasAbility(): boolean;
+  clearAbility(): void;
+  getAbility(): github_com_elojah_game_03_pkg_ability_ability_pb.A | undefined;
+  setAbility(value?: github_com_elojah_game_03_pkg_ability_ability_pb.A): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): CreateEntityAbilityReq.AsObject;
+  static toObject(includeInstance: boolean, msg: CreateEntityAbilityReq): CreateEntityAbilityReq.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: CreateEntityAbilityReq, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CreateEntityAbilityReq;
+  static deserializeBinaryFromReader(message: CreateEntityAbilityReq, reader: jspb.BinaryReader): CreateEntityAbilityReq;
+}
+
+export namespace CreateEntityAbilityReq {
+  export type AsObject = {
+    entityid: Uint8Array | string,
+    ability?: github_com_elojah_game_03_pkg_ability_ability_pb.A.AsObject,
+  }
+}
+
+export class CreateEntityAbilityResp extends jspb.Message {
+  getEntityid(): Uint8Array | string;
+  getEntityid_asU8(): Uint8Array;
+  getEntityid_asB64(): string;
+  setEntityid(value: Uint8Array | string): void;
+
+  getAbilityid(): Uint8Array | string;
+  getAbilityid_asU8(): Uint8Array;
+  getAbilityid_asB64(): string;
+  setAbilityid(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): CreateEntityAbilityResp.AsObject;
+  static toObject(includeInstance: boolean, msg: CreateEntityAbilityResp): CreateEntityAbilityResp.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: CreateEntityAbilityResp, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CreateEntityAbilityResp;
+  static deserializeBinaryFromReader(message: CreateEntityAbilityResp, reader: jspb.BinaryReader): CreateEntityAbilityResp;
+}
+
+export namespace CreateEntityAbilityResp {
+  export type AsObject = {
+    entityid: Uint8Array | string,
+    abilityid: Uint8Array | string,
   }
 }
 

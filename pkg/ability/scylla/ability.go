@@ -2,7 +2,6 @@ package scylla
 
 import (
 	"context"
-	"encoding/proto"
 	"errors"
 	"strings"
 
@@ -100,7 +99,7 @@ func (s Store) Fetch(ctx context.Context, f ability.Filter) (ability.A, error) {
 		return ability.A{}, err
 	}
 
-	if err := proto.Unmarshal(raw, &a); err != nil {
+	if err := a.Unmarshal(raw); err != nil {
 		return a, err
 	}
 

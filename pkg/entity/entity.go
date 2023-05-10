@@ -57,6 +57,7 @@ type App interface {
 	Cache
 
 	Store
+	StoreAbility
 	StoreAnimation
 	StoreBackup
 	StorePC

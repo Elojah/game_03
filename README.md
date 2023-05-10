@@ -32,6 +32,7 @@ $ ./scripts/upload_default_images.sh
 $ ./scripts/create_default_templates.sh
 $ ./scripts/create_default_tilesets.sh
 $ ./scripts/create_default_animations.sh
+$ ./scripts/create_default_abilities.sh
 $ grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '' -plaintext localhost:4282 grpc.Admin/CreateWorld
 ```
 
@@ -69,8 +70,9 @@ $ go run ./scripts/write_tileset/main.go 'assets/external/Tilesets' 'assets/tile
 	  + [ ] AbilityModifier + EffectModifier
 	  + [ ] Triggers at component level
 	  + [ ] Eval triggers first, then modify effects then apply effects
-	  + [ ] [HD] Ability store+cache + Entity Ability store+cache
-	  + [ ] API routes for ability + ability entity
+	  + [x] Ability store+cache + Entity Ability store+cache
+	  + [ ] [HD] API routes for ability + ability entity
+	  + [ ] [HD] Add faction implementation all along :(
   + [ ] [p0] Implement RTC both directions
 	  + [x] Clean cancel of send_entity
 	  + [ ] When ctrl+c -> cancel ctx clean

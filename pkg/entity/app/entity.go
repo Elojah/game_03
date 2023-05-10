@@ -13,6 +13,8 @@ var _ entity.App = (*App)(nil)
 type App struct {
 	entity.Cache
 	entity.Store
+	entity.CacheAbility
+	entity.StoreAbility
 	entity.StoreAnimation
 	entity.StoreBackup
 	entity.StorePC

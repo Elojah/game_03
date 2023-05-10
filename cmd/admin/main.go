@@ -9,6 +9,9 @@ import (
 	"time"
 
 	admingrpc "github.com/elojah/game_03/cmd/admin/grpc"
+	abilityapp "github.com/elojah/game_03/pkg/ability/app"
+	abilityredis "github.com/elojah/game_03/pkg/ability/redis"
+	abilityscylla "github.com/elojah/game_03/pkg/ability/scylla"
 	"github.com/elojah/game_03/pkg/cookie"
 	cookieapp "github.com/elojah/game_03/pkg/cookie/app"
 	cookieredis "github.com/elojah/game_03/pkg/cookie/redis"
@@ -120,11 +123,20 @@ func run(prog string, filename string) {
 		Service: &scyllas,
 	}
 
+	abilityCache := &abilityredis.Cache{Service: rediss}
+	abilityStore := &abilityscylla.Store{Service: scyllas}
+	abilityApp := abilityapp.App{
+		Cache: abilityCache,
+		Store: abilityStore,
+	}
+
 	entityCache := &entityredis.Cache{Service: rediss}
 	entityStore := &entityscylla.Store{Service: scyllas}
 	entityApp := entityapp.App{
-		Cache:          entityCache,
-		Store:          entityStore,
+		Cache:        entityCache,
+		Store:        entityStore,
+		StoreAbility: entityStore,
+		// CacheAbility:   entityCache,
 		StoreAnimation: entityStore,
 		StoreBackup:    entityStore,
 		StorePC:        entityStore,

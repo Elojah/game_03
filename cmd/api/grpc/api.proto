@@ -50,6 +50,7 @@ service API {
 
 	// Entity
     rpc CreateEntity(entity.E) returns (entity.E);
+    rpc CreateEntityAbility(dto.CreateEntityAbilityReq) returns (dto.CreateEntityAbilityResp);
 
     // Room
     rpc CreateRoom(room.R) returns (room.R);

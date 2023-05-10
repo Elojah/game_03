@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 
+	"github.com/elojah/game_03/pkg/ability"
 	"github.com/elojah/game_03/pkg/entity"
 	"github.com/elojah/game_03/pkg/event"
 	"github.com/elojah/game_03/pkg/room"
@@ -12,9 +13,10 @@ import (
 )
 
 type handler struct {
-	entity entity.App
-	room   room.App
-	event  event.App
+	ability ability.App
+	entity  entity.App
+	room    room.App
+	event   event.App
 
 	rtc  rtc.App
 	user user.App

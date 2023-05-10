@@ -12,6 +12,8 @@ option (gogoproto.goproto_enum_prefix_all) = false;
 option (gogoproto.goproto_registration) = true;
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+import "github.com/elojah/game_03/pkg/ability/ability.proto";
 import "github.com/elojah/game_03/pkg/entity/entity.proto";
 
 message ListEntityReq {
@@ -24,4 +26,14 @@ message ListEntityReq {
 message ListEntityResp {
     repeated entity.E Entities = 1 [(gogoproto.nullable) = false];
     bytes State                = 2;
+}
+
+message CreateEntityAbilityReq {
+    bytes EntityID             = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+	ability.A Ability          = 2 [(gogoproto.nullable) = false];
+}
+
+message CreateEntityAbilityResp {
+    bytes EntityID             = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    bytes AbilityID            = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
 }

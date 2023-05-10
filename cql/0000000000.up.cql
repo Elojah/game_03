@@ -1,5 +1,5 @@
 -- USER
--- ---------------
+-- ----------------
 
 CREATE TABLE main.user (
     id              uuid PRIMARY KEY,
@@ -28,7 +28,7 @@ CREATE TABLE main.session (
 CREATE INDEX ON main.session(user_id);
 
 -- ROOM
--- ---------------
+-- ----------------
 
 CREATE TABLE main.room (
     id              uuid PRIMARY KEY,
@@ -56,7 +56,7 @@ CREATE TABLE main.room_public (
 CREATE INDEX ON main.room_public(room_id);
 
 -- ENTITY
--- -----------------
+-- ----------------
 
 CREATE TYPE rect (
     x               bigint,
@@ -128,7 +128,8 @@ CREATE INDEX ON main.entity_template(name);
 
 CREATE TABLE main.entity_ability (
     entity_id        uuid PRIMARY KEY,
-    ability_id       uuid
+    ability_id       uuid,
+	last_cast        bigint
 );
 
 CREATE INDEX ON main.entity_ability(ability_id);
@@ -188,16 +189,33 @@ CREATE TABLE main.world_spawn (
 CREATE INDEX ON main.world_spawn(world_id);
 
 -- ABILITY
--- -------
+-- ----------------
 
 CREATE TABLE main.ability (
     id              uuid PRIMARY KEY,
 	proto           blob
 );
 
+-- GUILD
+-- ----------------
+
+CREATE TABLE main.faction (
+    id              uuid PRIMARY KEY,
+    name            varchar,
+    max             bigint
+);
+
+CREATE TABLE main.faction_pc (
+    pc_id           uuid PRIMARY KEY,
+    faction_id      uuid,
+    permission      bigint
+);
+
+CREATE INDEX ON main.faction_pc(faction_id);
+
 
 -- TILESET
--- -------
+-- ----------------
 
 CREATE TABLE main.tileset (
     id              uuid PRIMARY KEY,

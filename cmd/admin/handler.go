@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/elojah/game_03/pkg/ability"
 	"github.com/elojah/game_03/pkg/cookie"
 	"github.com/elojah/game_03/pkg/entity"
 	"github.com/elojah/game_03/pkg/migrate"
@@ -11,8 +12,9 @@ import (
 type handler struct {
 	migrate migrate.App
 
-	room   room.App
-	entity entity.App
-	tile   tile.App
-	cookie cookie.App
+	ability ability.App
+	cookie  cookie.App
+	entity  entity.App
+	room    room.App
+	tile    tile.App
 }
