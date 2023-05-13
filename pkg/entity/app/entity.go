@@ -39,6 +39,21 @@ func (a App) CreateEntityFromBackup(ctx context.Context, id ulid.ID) (entity.E, 
 		return entity.E{}, err
 	}
 
+	// #Insert cache ability
+	abs, _, err := a.FetchManyAbility(ctx, entity.FilterAbility{
+		EntityID: id,
+		Size:     entity.MaxAbilities,
+	})
+	if err != nil {
+		return entity.E{}, err
+	}
+
+	for _, ab := range abs {
+		if err := a.InsertCacheAbility(ctx, ab); err != nil {
+			return entity.E{}, err
+		}
+	}
+
 	return e, nil
 }
 
@@ -51,7 +66,7 @@ func (a App) CreateBackupFromEntity(ctx context.Context, id ulid.ID) error {
 		return err
 	}
 
-	// Insert backup entity
+	// #Insert backup entity
 	e.At = time.Now().UnixMilli()
 	if err := a.UpdateBackup(ctx, entity.Filter{
 		ID: id,
@@ -71,6 +86,23 @@ func (a App) CreateBackupFromEntity(ctx context.Context, id ulid.ID) error {
 		ID: id,
 	}); err != nil {
 		return err
+	}
+
+	// #Delete cache ability
+	abs, _, err := a.FetchManyAbility(ctx, entity.FilterAbility{
+		EntityID: id,
+		Size:     entity.MaxAbilities,
+	})
+	if err != nil {
+		return err
+	}
+
+	for _, ab := range abs {
+		if err := a.DeleteCacheAbility(ctx, entity.FilterAbility{
+			AbilityID: ab.AbilityID,
+		}); err != nil {
+			return err
+		}
 	}
 
 	return nil

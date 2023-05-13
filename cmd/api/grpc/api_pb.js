@@ -16,6 +16,8 @@ var github_com_gogo_protobuf_gogoproto_gogo_pb = require('../../../../../../gith
 goog.object.extend(proto, github_com_gogo_protobuf_gogoproto_gogo_pb);
 var google_protobuf_empty_pb = require('google-protobuf/google/protobuf/empty_pb.js');
 goog.object.extend(proto, google_protobuf_empty_pb);
+var github_com_elojah_game_03_pkg_ability_dto_ability_pb = require('../../../../../../github.com/elojah/game_03/pkg/ability/dto/ability_pb.js');
+goog.object.extend(proto, github_com_elojah_game_03_pkg_ability_dto_ability_pb);
 var github_com_elojah_game_03_pkg_entity_entity_pb = require('../../../../../../github.com/elojah/game_03/pkg/entity/entity_pb.js');
 goog.object.extend(proto, github_com_elojah_game_03_pkg_entity_entity_pb);
 var github_com_elojah_game_03_pkg_entity_pc_pb = require('../../../../../../github.com/elojah/game_03/pkg/entity/pc_pb.js');

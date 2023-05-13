@@ -3,6 +3,7 @@
 
 var github_com_elojah_game_03_cmd_api_grpc_api_pb = require("../../../../../../github.com/elojah/game_03/cmd/api/grpc/api_pb");
 var google_protobuf_empty_pb = require("google-protobuf/google/protobuf/empty_pb");
+var github_com_elojah_game_03_pkg_ability_dto_ability_pb = require("../../../../../../github.com/elojah/game_03/pkg/ability/dto/ability_pb");
 var github_com_elojah_game_03_pkg_entity_entity_pb = require("../../../../../../github.com/elojah/game_03/pkg/entity/entity_pb");
 var github_com_elojah_game_03_pkg_entity_pc_pb = require("../../../../../../github.com/elojah/game_03/pkg/entity/pc_pb");
 var github_com_elojah_game_03_pkg_entity_dto_entity_pb = require("../../../../../../github.com/elojah/game_03/pkg/entity/dto/entity_pb");
@@ -41,6 +42,33 @@ API.ListEntity = {
   responseStream: false,
   requestType: github_com_elojah_game_03_pkg_entity_dto_entity_pb.ListEntityReq,
   responseType: github_com_elojah_game_03_pkg_entity_dto_entity_pb.ListEntityResp
+};
+
+API.CreateEntity = {
+  methodName: "CreateEntity",
+  service: API,
+  requestStream: false,
+  responseStream: false,
+  requestType: github_com_elojah_game_03_pkg_entity_entity_pb.E,
+  responseType: github_com_elojah_game_03_pkg_entity_entity_pb.E
+};
+
+API.CreateEntityAbility = {
+  methodName: "CreateEntityAbility",
+  service: API,
+  requestStream: false,
+  responseStream: false,
+  requestType: github_com_elojah_game_03_pkg_entity_dto_entity_pb.CreateEntityAbilityReq,
+  responseType: github_com_elojah_game_03_pkg_entity_dto_entity_pb.CreateEntityAbilityResp
+};
+
+API.ListAbility = {
+  methodName: "ListAbility",
+  service: API,
+  requestStream: false,
+  responseStream: false,
+  requestType: github_com_elojah_game_03_pkg_ability_dto_ability_pb.ListAbilityReq,
+  responseType: github_com_elojah_game_03_pkg_ability_dto_ability_pb.ListAbilityResp
 };
 
 API.ListAnimation = {
@@ -86,24 +114,6 @@ API.ListTemplate = {
   responseStream: false,
   requestType: github_com_elojah_game_03_pkg_entity_dto_template_pb.ListTemplateReq,
   responseType: github_com_elojah_game_03_pkg_entity_dto_template_pb.ListTemplateResp
-};
-
-API.CreateEntity = {
-  methodName: "CreateEntity",
-  service: API,
-  requestStream: false,
-  responseStream: false,
-  requestType: github_com_elojah_game_03_pkg_entity_entity_pb.E,
-  responseType: github_com_elojah_game_03_pkg_entity_entity_pb.E
-};
-
-API.CreateEntityAbility = {
-  methodName: "CreateEntityAbility",
-  service: API,
-  requestStream: false,
-  responseStream: false,
-  requestType: github_com_elojah_game_03_pkg_entity_dto_entity_pb.CreateEntityAbilityReq,
-  responseType: github_com_elojah_game_03_pkg_entity_dto_entity_pb.CreateEntityAbilityResp
 };
 
 API.CreateRoom = {
@@ -221,6 +231,99 @@ APIClient.prototype.listEntity = function listEntity(requestMessage, metadata, c
     callback = arguments[1];
   }
   var client = grpc.unary(API.ListEntity, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+APIClient.prototype.createEntity = function createEntity(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(API.CreateEntity, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+APIClient.prototype.createEntityAbility = function createEntityAbility(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(API.CreateEntityAbility, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+APIClient.prototype.listAbility = function listAbility(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(API.ListAbility, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -376,68 +479,6 @@ APIClient.prototype.listTemplate = function listTemplate(requestMessage, metadat
     callback = arguments[1];
   }
   var client = grpc.unary(API.ListTemplate, {
-    request: requestMessage,
-    host: this.serviceHost,
-    metadata: metadata,
-    transport: this.options.transport,
-    debug: this.options.debug,
-    onEnd: function (response) {
-      if (callback) {
-        if (response.status !== grpc.Code.OK) {
-          var err = new Error(response.statusMessage);
-          err.code = response.status;
-          err.metadata = response.trailers;
-          callback(err, null);
-        } else {
-          callback(null, response.message);
-        }
-      }
-    }
-  });
-  return {
-    cancel: function () {
-      callback = null;
-      client.close();
-    }
-  };
-};
-
-APIClient.prototype.createEntity = function createEntity(requestMessage, metadata, callback) {
-  if (arguments.length === 2) {
-    callback = arguments[1];
-  }
-  var client = grpc.unary(API.CreateEntity, {
-    request: requestMessage,
-    host: this.serviceHost,
-    metadata: metadata,
-    transport: this.options.transport,
-    debug: this.options.debug,
-    onEnd: function (response) {
-      if (callback) {
-        if (response.status !== grpc.Code.OK) {
-          var err = new Error(response.statusMessage);
-          err.code = response.status;
-          err.metadata = response.trailers;
-          callback(err, null);
-        } else {
-          callback(null, response.message);
-        }
-      }
-    }
-  });
-  return {
-    cancel: function () {
-      callback = null;
-      client.close();
-    }
-  };
-};
-
-APIClient.prototype.createEntityAbility = function createEntityAbility(requestMessage, metadata, callback) {
-  if (arguments.length === 2) {
-    callback = arguments[1];
-  }
-  var client = grpc.unary(API.CreateEntityAbility, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,

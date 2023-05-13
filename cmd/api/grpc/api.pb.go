@@ -6,11 +6,12 @@ package grpc
 import (
 	context "context"
 	fmt "fmt"
+	dto2 "github.com/elojah/game_03/pkg/ability/dto"
 	entity "github.com/elojah/game_03/pkg/entity"
 	dto1 "github.com/elojah/game_03/pkg/entity/dto"
 	room "github.com/elojah/game_03/pkg/room"
-	dto2 "github.com/elojah/game_03/pkg/room/dto"
-	dto3 "github.com/elojah/game_03/pkg/twitch/dto"
+	dto3 "github.com/elojah/game_03/pkg/room/dto"
+	dto4 "github.com/elojah/game_03/pkg/twitch/dto"
 	dto "github.com/elojah/game_03/pkg/user/dto"
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
@@ -42,48 +43,49 @@ func init() {
 }
 
 var fileDescriptor_6dc96cba8df2a9f1 = []byte{
-	// 645 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x55, 0xbd, 0x6e, 0xd4, 0x4c,
-	0x14, 0xb5, 0xf5, 0xe5, 0xcb, 0xcf, 0x28, 0x09, 0xe1, 0x86, 0xa4, 0xd8, 0xa0, 0xa1, 0xa1, 0x80,
-	0x22, 0x76, 0xc8, 0x0f, 0x20, 0x21, 0x21, 0x05, 0x2b, 0xfc, 0x48, 0x14, 0x56, 0x00, 0x51, 0x22,
-	0xaf, 0x77, 0xe2, 0x18, 0xc6, 0x3b, 0x83, 0x67, 0x56, 0x51, 0x3a, 0x1e, 0x81, 0xc7, 0xe0, 0x11,
-	0x28, 0x53, 0xa6, 0x4c, 0x99, 0x92, 0xf5, 0x36, 0x94, 0x29, 0xa1, 0x43, 0x77, 0x6c, 0xaf, 0xed,
-	0x90, 0x20, 0x6f, 0xb3, 0x3b, 0xf7, 0xdc, 0x73, 0xe6, 0x1e, 0xdb, 0x67, 0x34, 0x64, 0x23, 0x8a,
-	0xf5, 0xe1, 0xa0, 0xeb, 0x84, 0x22, 0x71, 0x19, 0x17, 0x1f, 0x83, 0x43, 0x37, 0x0a, 0x12, 0xf6,
-	0x61, 0x63, 0xcb, 0x0d, 0x93, 0x9e, 0x1b, 0xc8, 0xd8, 0x8d, 0x52, 0x19, 0xe2, 0xc2, 0x91, 0xa9,
-	0xd0, 0x02, 0xa6, 0xb0, 0xee, 0xac, 0xd7, 0x74, 0x91, 0x88, 0x84, 0x6b, 0x9a, 0xdd, 0xc1, 0x81,
-	0xa9, 0x4c, 0x61, 0x56, 0xb9, 0xa8, 0xb3, 0x16, 0x09, 0x11, 0x71, 0x56, 0xb1, 0x58, 0x22, 0xf5,
-	0x71, 0xd1, 0x7c, 0x70, 0xbd, 0x07, 0xf9, 0x29, 0x72, 0x59, 0x5f, 0xc7, 0xfa, 0xb8, 0xf8, 0x2b,
-	0x24, 0xeb, 0xad, 0x24, 0x32, 0x2c, 0xe8, 0x3b, 0xad, 0xe8, 0x3d, 0x2d, 0x9a, 0x53, 0x1e, 0xb7,
-	0x96, 0x05, 0xfd, 0x38, 0x09, 0x74, 0x2c, 0xfa, 0x13, 0x3d, 0x12, 0x2a, 0xc7, 0x1e, 0x1f, 0xb5,
-	0x96, 0x68, 0x96, 0x48, 0x1e, 0x68, 0xd6, 0xee, 0x5d, 0xa4, 0x42, 0x24, 0xe6, 0x67, 0x02, 0xfa,
-	0x40, 0xb1, 0xb4, 0xdd, 0x93, 0x18, 0x3a, 0x9a, 0x0a, 0x19, 0xe7, 0x13, 0x4a, 0x6a, 0xa6, 0xda,
-	0x4a, 0x6a, 0xc6, 0x36, 0x5b, 0x4a, 0x8e, 0x44, 0xca, 0x7b, 0xed, 0x72, 0xa0, 0x8f, 0x62, 0x1d,
-	0x1e, 0x1a, 0xd5, 0x81, 0xe0, 0x5c, 0x1c, 0x15, 0xb2, 0xed, 0x7f, 0xcb, 0xd0, 0x94, 0x11, 0x29,
-	0xa6, 0xd4, 0x38, 0x03, 0x9b, 0xbf, 0xa7, 0xc9, 0x7f, 0xbb, 0xfe, 0x2b, 0x78, 0x4a, 0x16, 0xbc,
-	0x94, 0x05, 0x9a, 0xbd, 0xc9, 0xdb, 0xb0, 0xe2, 0xf4, 0xb4, 0x70, 0x1a, 0xd8, 0x3e, 0xfb, 0xdc,
-	0x59, 0xbd, 0x0a, 0x56, 0x12, 0x76, 0x08, 0x79, 0x1d, 0x2b, 0xbd, 0x67, 0x02, 0x00, 0x60, 0x58,
-	0x15, 0x80, 0xca, 0xe5, 0xbf, 0x30, 0x25, 0x71, 0x2c, 0x22, 0xbb, 0x65, 0x32, 0x8b, 0xb1, 0x0d,
-	0xac, 0x1a, 0x7b, 0x09, 0x56, 0x12, 0xee, 0x91, 0xd9, 0xdc, 0x8b, 0xef, 0xc1, 0x52, 0xcd, 0x9a,
-	0xef, 0xa1, 0x8a, 0x38, 0xc5, 0x49, 0xf1, 0x3d, 0xb8, 0x4f, 0xa6, 0x51, 0xee, 0x7b, 0xb0, 0x38,
-	0xde, 0x2b, 0x67, 0xdd, 0x68, 0xd4, 0x4a, 0xc2, 0x1d, 0xf2, 0xff, 0x0b, 0x86, 0xcc, 0x05, 0xd3,
-	0x31, 0x6b, 0x24, 0xce, 0x98, 0xd2, 0xf7, 0xe0, 0x09, 0x99, 0x47, 0xfa, 0xdb, 0x22, 0xe2, 0x70,
-	0x6b, 0xbc, 0x43, 0x09, 0x21, 0x7d, 0xe5, 0x0a, 0x54, 0x49, 0xb8, 0x4b, 0xe6, 0x73, 0x8f, 0xc5,
-	0xbb, 0x9a, 0x2b, 0x4d, 0xee, 0x75, 0xaa, 0x25, 0xf8, 0x64, 0xb9, 0xce, 0xda, 0xed, 0xc6, 0x1c,
-	0xc9, 0x6b, 0xb5, 0x67, 0x6c, 0x74, 0x70, 0xe0, 0xed, 0xeb, 0x9b, 0x4a, 0x02, 0x25, 0x24, 0x6f,
-	0xed, 0x0b, 0x91, 0xc0, 0x8c, 0x63, 0x82, 0xbd, 0xdf, 0x29, 0x17, 0xe0, 0x92, 0x59, 0xf4, 0x6a,
-	0xba, 0x4b, 0x63, 0xeb, 0x58, 0xe2, 0xde, 0x37, 0x2f, 0x21, 0xe6, 0x93, 0x2f, 0x96, 0xb5, 0x3f,
-	0xe8, 0xf2, 0x38, 0x6c, 0x27, 0xdb, 0x26, 0x8b, 0x95, 0x8f, 0x77, 0x8a, 0xa5, 0x50, 0xcf, 0x54,
-	0x09, 0xe6, 0x9f, 0xcf, 0x58, 0x33, 0x9c, 0xc2, 0x9d, 0xc7, 0x38, 0xaf, 0x8d, 0xc1, 0xb2, 0x39,
-	0x26, 0x47, 0x94, 0x84, 0x4d, 0x32, 0x87, 0xf5, 0x7b, 0x3c, 0x58, 0x50, 0xf5, 0x4d, 0x8d, 0x12,
-	0xb8, 0x0c, 0x55, 0x21, 0x7e, 0x6e, 0x8e, 0x55, 0x2d, 0xc4, 0x39, 0xd0, 0x0c, 0x71, 0x89, 0x29,
-	0x09, 0x0f, 0xc9, 0x94, 0x1f, 0xf7, 0x23, 0x58, 0x75, 0xf2, 0x0b, 0xc4, 0x29, 0x2f, 0x10, 0x67,
-	0x0f, 0x2f, 0x90, 0xce, 0x35, 0xf8, 0xb3, 0x97, 0xa7, 0x43, 0x6a, 0x9d, 0x0d, 0xa9, 0x75, 0x3e,
-	0xa4, 0xd6, 0xc5, 0x90, 0xda, 0xbf, 0x86, 0xd4, 0xfe, 0x92, 0x51, 0xfb, 0x5b, 0x46, 0xed, 0xef,
-	0x19, 0xb5, 0x4f, 0x32, 0x6a, 0x9f, 0x66, 0xd4, 0x3e, 0xcb, 0xa8, 0xfd, 0x23, 0xa3, 0xf6, 0xcf,
-	0x8c, 0x5a, 0x17, 0x19, 0xb5, 0xbf, 0x8e, 0xa8, 0x75, 0x32, 0xa2, 0xf6, 0xd9, 0x88, 0x5a, 0xe7,
-	0x23, 0x6a, 0x75, 0xa7, 0xcd, 0xce, 0x5b, 0x7f, 0x02, 0x00, 0x00, 0xff, 0xff, 0xaf, 0xc8, 0x37,
-	0x9b, 0x29, 0x07, 0x00, 0x00,
+	// 669 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x55, 0x3b, 0x6f, 0xd4, 0x40,
+	0x10, 0xb6, 0x45, 0xc8, 0x63, 0x49, 0x42, 0x98, 0x90, 0x14, 0x0e, 0x5a, 0x1a, 0x0a, 0x28, 0x62,
+	0x87, 0x3c, 0x48, 0x24, 0x24, 0xa4, 0x60, 0x85, 0x87, 0x44, 0x61, 0x05, 0x10, 0x25, 0xf2, 0xf9,
+	0x36, 0x8e, 0xc1, 0xbe, 0x5d, 0xbc, 0x7b, 0x8a, 0xd2, 0xf1, 0x13, 0xf8, 0x19, 0xf4, 0x34, 0x94,
+	0x29, 0x53, 0xa6, 0x4c, 0xc9, 0xf9, 0x1a, 0xca, 0x94, 0x94, 0x68, 0xd6, 0xf6, 0xd9, 0xce, 0x4b,
+	0x4e, 0x73, 0x37, 0xf3, 0xcd, 0xf7, 0xcd, 0x7e, 0xbb, 0x9a, 0x91, 0xc9, 0x4a, 0x18, 0xa9, 0xfd,
+	0x7e, 0xc7, 0x0e, 0x78, 0xe2, 0xb0, 0x98, 0x7f, 0xf1, 0xf7, 0x9d, 0xd0, 0x4f, 0xd8, 0xe7, 0x95,
+	0x35, 0x27, 0x48, 0xba, 0x8e, 0x2f, 0x22, 0x27, 0x4c, 0x45, 0x80, 0x81, 0x2d, 0x52, 0xae, 0x38,
+	0x8c, 0x61, 0x6e, 0x2d, 0xd7, 0x74, 0x21, 0x0f, 0xb9, 0xa3, 0x8b, 0x9d, 0xfe, 0x9e, 0xce, 0x74,
+	0xa2, 0xa3, 0x5c, 0x64, 0x2d, 0x85, 0x9c, 0x87, 0x31, 0xab, 0x58, 0x2c, 0x11, 0xea, 0xb0, 0x28,
+	0x6e, 0x5e, 0xed, 0x41, 0x7c, 0x0d, 0x1d, 0xbf, 0x13, 0xc5, 0x91, 0x3a, 0x74, 0xba, 0x8a, 0x97,
+	0x71, 0x21, 0x7c, 0x7a, 0xbd, 0x90, 0xf5, 0x14, 0xea, 0xf2, 0xbf, 0x42, 0xb2, 0xdc, 0x4a, 0x22,
+	0x82, 0x82, 0xbe, 0xd1, 0x8a, 0x8e, 0xce, 0x1a, 0xa7, 0x6c, 0xb5, 0x96, 0xf9, 0xbd, 0x28, 0xf1,
+	0x55, 0xc4, 0x7b, 0x37, 0xba, 0x12, 0x2a, 0x47, 0x1e, 0x37, 0x5b, 0x4b, 0x14, 0x4b, 0x44, 0xec,
+	0x2b, 0xd6, 0xee, 0x2d, 0x52, 0xce, 0x13, 0xfd, 0x73, 0x03, 0x7a, 0x5f, 0xb2, 0xb4, 0xdd, 0x4d,
+	0x34, 0x1d, 0x4d, 0x05, 0x2c, 0x8e, 0x6f, 0x28, 0xa9, 0x99, 0x6a, 0x2b, 0xa9, 0x19, 0x5b, 0x6d,
+	0x29, 0x39, 0xe0, 0x69, 0xdc, 0x6d, 0x37, 0x07, 0xea, 0x20, 0x52, 0xc1, 0xbe, 0x56, 0xed, 0xf1,
+	0x38, 0xe6, 0x07, 0x85, 0x6c, 0xfd, 0x7a, 0x19, 0x9a, 0xd2, 0x22, 0xc9, 0xa4, 0x1c, 0xcd, 0xc0,
+	0xea, 0xaf, 0x09, 0x72, 0x6b, 0xdb, 0x7b, 0x0b, 0x2f, 0xc8, 0x8c, 0x9b, 0x32, 0x5f, 0xb1, 0xf7,
+	0x79, 0x19, 0x16, 0xec, 0xae, 0xe2, 0x76, 0x03, 0xdb, 0x65, 0xdf, 0xac, 0xc5, 0xcb, 0x60, 0x29,
+	0x60, 0x83, 0x90, 0x77, 0x91, 0x54, 0x3b, 0x7a, 0x00, 0x00, 0x34, 0xab, 0x02, 0x50, 0x39, 0x7f,
+	0x01, 0x93, 0x02, 0x1e, 0x91, 0xe9, 0xbc, 0x57, 0x21, 0x9c, 0xb2, 0x8b, 0xd9, 0xde, 0xb1, 0xaa,
+	0x10, 0x3c, 0x32, 0x5f, 0x67, 0x6d, 0xe7, 0x8b, 0x09, 0x4b, 0x35, 0x2f, 0x8d, 0x0a, 0x1e, 0xf7,
+	0xe0, 0xea, 0xa2, 0x14, 0xb0, 0x45, 0xee, 0xa0, 0x93, 0xb2, 0x53, 0xe5, 0xad, 0xd6, 0xe1, 0xfe,
+	0x45, 0x50, 0x0a, 0x7c, 0x28, 0x0d, 0x95, 0xbb, 0x54, 0x3c, 0x54, 0x03, 0xab, 0x1e, 0xea, 0x1c,
+	0x2c, 0x05, 0x3c, 0x26, 0x93, 0xb9, 0x29, 0xcf, 0x85, 0xb9, 0x9a, 0x47, 0xcf, 0x45, 0x15, 0x29,
+	0x2f, 0xed, 0xb9, 0xf0, 0x84, 0x8c, 0xa3, 0xdc, 0x73, 0x61, 0x76, 0xd4, 0x2b, 0x67, 0xdd, 0x6d,
+	0xe4, 0x52, 0xc0, 0x43, 0x72, 0xfb, 0x35, 0x43, 0xe6, 0x8c, 0xae, 0xe8, 0x18, 0x89, 0x13, 0x3a,
+	0xf5, 0x5c, 0x78, 0x4e, 0xa6, 0x91, 0xfe, 0xa1, 0x58, 0x4a, 0xa8, 0xee, 0x56, 0x42, 0x48, 0x5f,
+	0xb8, 0x04, 0x95, 0x02, 0x28, 0x21, 0xb9, 0xc7, 0x5d, 0xce, 0x13, 0x98, 0xb0, 0xf5, 0x4a, 0xec,
+	0x5a, 0x65, 0x00, 0x0e, 0x99, 0x44, 0x8d, 0xae, 0xce, 0x8d, 0x5a, 0x60, 0x8a, 0x4d, 0xef, 0x9d,
+	0x43, 0xf4, 0xb0, 0xcc, 0x96, 0xb9, 0xd7, 0xef, 0xc4, 0x51, 0xd0, 0x4e, 0xb6, 0x4e, 0x66, 0x2b,
+	0x1f, 0x1f, 0x25, 0x4b, 0xa1, 0x3e, 0x8d, 0x25, 0x98, 0x3f, 0xa3, 0xb6, 0xa6, 0x39, 0x85, 0x3b,
+	0x97, 0xc5, 0x71, 0xed, 0x18, 0x4c, 0x9b, 0xc7, 0xe4, 0x88, 0x14, 0xb0, 0x4a, 0xa6, 0x30, 0xff,
+	0x84, 0x2b, 0x09, 0x55, 0x5d, 0xe7, 0x28, 0x81, 0xf3, 0x50, 0x35, 0xfe, 0xaf, 0xf4, 0x42, 0xd6,
+	0xc6, 0x3f, 0x07, 0x9a, 0xe3, 0x5f, 0x62, 0x52, 0xc0, 0x33, 0x32, 0xe6, 0x45, 0xbd, 0x10, 0x16,
+	0xed, 0xfc, 0x9b, 0x65, 0x97, 0xdf, 0x2c, 0x7b, 0x07, 0xbf, 0x59, 0xd6, 0x15, 0xf8, 0xcb, 0x37,
+	0xc7, 0x03, 0x6a, 0x9c, 0x0c, 0xa8, 0x71, 0x3a, 0xa0, 0xc6, 0xd9, 0x80, 0x9a, 0xff, 0x06, 0xd4,
+	0xfc, 0x9e, 0x51, 0xf3, 0x67, 0x46, 0xcd, 0xdf, 0x19, 0x35, 0x8f, 0x32, 0x6a, 0x1e, 0x67, 0xd4,
+	0x3c, 0xc9, 0xa8, 0xf9, 0x27, 0xa3, 0xe6, 0xdf, 0x8c, 0x1a, 0x67, 0x19, 0x35, 0x7f, 0x0c, 0xa9,
+	0x71, 0x34, 0xa4, 0xe6, 0xc9, 0x90, 0x1a, 0xa7, 0x43, 0x6a, 0x74, 0xc6, 0x75, 0xe7, 0xb5, 0xff,
+	0x01, 0x00, 0x00, 0xff, 0xff, 0x75, 0x62, 0xb5, 0xab, 0x9c, 0x07, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -102,6 +104,10 @@ type APIClient interface {
 	CreateSession(ctx context.Context, in *dto.CreateSessionReq, opts ...grpc.CallOption) (*dto.CreateSessionResp, error)
 	// Entity
 	ListEntity(ctx context.Context, in *dto1.ListEntityReq, opts ...grpc.CallOption) (*dto1.ListEntityResp, error)
+	CreateEntity(ctx context.Context, in *entity.E, opts ...grpc.CallOption) (*entity.E, error)
+	CreateEntityAbility(ctx context.Context, in *dto1.CreateEntityAbilityReq, opts ...grpc.CallOption) (*dto1.CreateEntityAbilityResp, error)
+	// Ability
+	ListAbility(ctx context.Context, in *dto2.ListAbilityReq, opts ...grpc.CallOption) (*dto2.ListAbilityResp, error)
 	// Animation
 	ListAnimation(ctx context.Context, in *dto1.ListAnimationReq, opts ...grpc.CallOption) (*dto1.ListAnimationResp, error)
 	// PC
@@ -110,20 +116,17 @@ type APIClient interface {
 	GetPC(ctx context.Context, in *dto1.GetPCReq, opts ...grpc.CallOption) (*dto1.PC, error)
 	// Template
 	ListTemplate(ctx context.Context, in *dto1.ListTemplateReq, opts ...grpc.CallOption) (*dto1.ListTemplateResp, error)
-	// Entity
-	CreateEntity(ctx context.Context, in *entity.E, opts ...grpc.CallOption) (*entity.E, error)
-	CreateEntityAbility(ctx context.Context, in *dto1.CreateEntityAbilityReq, opts ...grpc.CallOption) (*dto1.CreateEntityAbilityResp, error)
 	// Room
 	CreateRoom(ctx context.Context, in *room.R, opts ...grpc.CallOption) (*room.R, error)
-	ListRoom(ctx context.Context, in *dto2.ListRoomReq, opts ...grpc.CallOption) (*dto2.ListRoomResp, error)
-	ListRoomPublic(ctx context.Context, in *dto2.ListRoomReq, opts ...grpc.CallOption) (*dto2.ListRoomResp, error)
-	CreateRoomUser(ctx context.Context, in *dto2.CreateRoomUserReq, opts ...grpc.CallOption) (*room.User, error)
+	ListRoom(ctx context.Context, in *dto3.ListRoomReq, opts ...grpc.CallOption) (*dto3.ListRoomResp, error)
+	ListRoomPublic(ctx context.Context, in *dto3.ListRoomReq, opts ...grpc.CallOption) (*dto3.ListRoomResp, error)
+	CreateRoomUser(ctx context.Context, in *dto3.CreateRoomUserReq, opts ...grpc.CallOption) (*room.User, error)
 	// Cell
-	ListCell(ctx context.Context, in *dto2.ListCellReq, opts ...grpc.CallOption) (*dto2.ListCellResp, error)
+	ListCell(ctx context.Context, in *dto3.ListCellReq, opts ...grpc.CallOption) (*dto3.ListCellResp, error)
 	// World
-	ListWorld(ctx context.Context, in *dto2.ListWorldReq, opts ...grpc.CallOption) (*dto2.ListWorldResp, error)
+	ListWorld(ctx context.Context, in *dto3.ListWorldReq, opts ...grpc.CallOption) (*dto3.ListWorldResp, error)
 	// Twitch
-	ListFollow(ctx context.Context, in *dto3.ListFollowReq, opts ...grpc.CallOption) (*dto3.ListFollowResp, error)
+	ListFollow(ctx context.Context, in *dto4.ListFollowReq, opts ...grpc.CallOption) (*dto4.ListFollowResp, error)
 	// Ping
 	Ping(ctx context.Context, in *types.Empty, opts ...grpc.CallOption) (*types.Empty, error)
 }
@@ -148,6 +151,33 @@ func (c *aPIClient) CreateSession(ctx context.Context, in *dto.CreateSessionReq,
 func (c *aPIClient) ListEntity(ctx context.Context, in *dto1.ListEntityReq, opts ...grpc.CallOption) (*dto1.ListEntityResp, error) {
 	out := new(dto1.ListEntityResp)
 	err := c.cc.Invoke(ctx, "/grpc.API/ListEntity", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *aPIClient) CreateEntity(ctx context.Context, in *entity.E, opts ...grpc.CallOption) (*entity.E, error) {
+	out := new(entity.E)
+	err := c.cc.Invoke(ctx, "/grpc.API/CreateEntity", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *aPIClient) CreateEntityAbility(ctx context.Context, in *dto1.CreateEntityAbilityReq, opts ...grpc.CallOption) (*dto1.CreateEntityAbilityResp, error) {
+	out := new(dto1.CreateEntityAbilityResp)
+	err := c.cc.Invoke(ctx, "/grpc.API/CreateEntityAbility", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *aPIClient) ListAbility(ctx context.Context, in *dto2.ListAbilityReq, opts ...grpc.CallOption) (*dto2.ListAbilityResp, error) {
+	out := new(dto2.ListAbilityResp)
+	err := c.cc.Invoke(ctx, "/grpc.API/ListAbility", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -199,24 +229,6 @@ func (c *aPIClient) ListTemplate(ctx context.Context, in *dto1.ListTemplateReq, 
 	return out, nil
 }
 
-func (c *aPIClient) CreateEntity(ctx context.Context, in *entity.E, opts ...grpc.CallOption) (*entity.E, error) {
-	out := new(entity.E)
-	err := c.cc.Invoke(ctx, "/grpc.API/CreateEntity", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *aPIClient) CreateEntityAbility(ctx context.Context, in *dto1.CreateEntityAbilityReq, opts ...grpc.CallOption) (*dto1.CreateEntityAbilityResp, error) {
-	out := new(dto1.CreateEntityAbilityResp)
-	err := c.cc.Invoke(ctx, "/grpc.API/CreateEntityAbility", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *aPIClient) CreateRoom(ctx context.Context, in *room.R, opts ...grpc.CallOption) (*room.R, error) {
 	out := new(room.R)
 	err := c.cc.Invoke(ctx, "/grpc.API/CreateRoom", in, out, opts...)
@@ -226,8 +238,8 @@ func (c *aPIClient) CreateRoom(ctx context.Context, in *room.R, opts ...grpc.Cal
 	return out, nil
 }
 
-func (c *aPIClient) ListRoom(ctx context.Context, in *dto2.ListRoomReq, opts ...grpc.CallOption) (*dto2.ListRoomResp, error) {
-	out := new(dto2.ListRoomResp)
+func (c *aPIClient) ListRoom(ctx context.Context, in *dto3.ListRoomReq, opts ...grpc.CallOption) (*dto3.ListRoomResp, error) {
+	out := new(dto3.ListRoomResp)
 	err := c.cc.Invoke(ctx, "/grpc.API/ListRoom", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -235,8 +247,8 @@ func (c *aPIClient) ListRoom(ctx context.Context, in *dto2.ListRoomReq, opts ...
 	return out, nil
 }
 
-func (c *aPIClient) ListRoomPublic(ctx context.Context, in *dto2.ListRoomReq, opts ...grpc.CallOption) (*dto2.ListRoomResp, error) {
-	out := new(dto2.ListRoomResp)
+func (c *aPIClient) ListRoomPublic(ctx context.Context, in *dto3.ListRoomReq, opts ...grpc.CallOption) (*dto3.ListRoomResp, error) {
+	out := new(dto3.ListRoomResp)
 	err := c.cc.Invoke(ctx, "/grpc.API/ListRoomPublic", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -244,7 +256,7 @@ func (c *aPIClient) ListRoomPublic(ctx context.Context, in *dto2.ListRoomReq, op
 	return out, nil
 }
 
-func (c *aPIClient) CreateRoomUser(ctx context.Context, in *dto2.CreateRoomUserReq, opts ...grpc.CallOption) (*room.User, error) {
+func (c *aPIClient) CreateRoomUser(ctx context.Context, in *dto3.CreateRoomUserReq, opts ...grpc.CallOption) (*room.User, error) {
 	out := new(room.User)
 	err := c.cc.Invoke(ctx, "/grpc.API/CreateRoomUser", in, out, opts...)
 	if err != nil {
@@ -253,8 +265,8 @@ func (c *aPIClient) CreateRoomUser(ctx context.Context, in *dto2.CreateRoomUserR
 	return out, nil
 }
 
-func (c *aPIClient) ListCell(ctx context.Context, in *dto2.ListCellReq, opts ...grpc.CallOption) (*dto2.ListCellResp, error) {
-	out := new(dto2.ListCellResp)
+func (c *aPIClient) ListCell(ctx context.Context, in *dto3.ListCellReq, opts ...grpc.CallOption) (*dto3.ListCellResp, error) {
+	out := new(dto3.ListCellResp)
 	err := c.cc.Invoke(ctx, "/grpc.API/ListCell", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -262,8 +274,8 @@ func (c *aPIClient) ListCell(ctx context.Context, in *dto2.ListCellReq, opts ...
 	return out, nil
 }
 
-func (c *aPIClient) ListWorld(ctx context.Context, in *dto2.ListWorldReq, opts ...grpc.CallOption) (*dto2.ListWorldResp, error) {
-	out := new(dto2.ListWorldResp)
+func (c *aPIClient) ListWorld(ctx context.Context, in *dto3.ListWorldReq, opts ...grpc.CallOption) (*dto3.ListWorldResp, error) {
+	out := new(dto3.ListWorldResp)
 	err := c.cc.Invoke(ctx, "/grpc.API/ListWorld", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -271,8 +283,8 @@ func (c *aPIClient) ListWorld(ctx context.Context, in *dto2.ListWorldReq, opts .
 	return out, nil
 }
 
-func (c *aPIClient) ListFollow(ctx context.Context, in *dto3.ListFollowReq, opts ...grpc.CallOption) (*dto3.ListFollowResp, error) {
-	out := new(dto3.ListFollowResp)
+func (c *aPIClient) ListFollow(ctx context.Context, in *dto4.ListFollowReq, opts ...grpc.CallOption) (*dto4.ListFollowResp, error) {
+	out := new(dto4.ListFollowResp)
 	err := c.cc.Invoke(ctx, "/grpc.API/ListFollow", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -295,6 +307,10 @@ type APIServer interface {
 	CreateSession(context.Context, *dto.CreateSessionReq) (*dto.CreateSessionResp, error)
 	// Entity
 	ListEntity(context.Context, *dto1.ListEntityReq) (*dto1.ListEntityResp, error)
+	CreateEntity(context.Context, *entity.E) (*entity.E, error)
+	CreateEntityAbility(context.Context, *dto1.CreateEntityAbilityReq) (*dto1.CreateEntityAbilityResp, error)
+	// Ability
+	ListAbility(context.Context, *dto2.ListAbilityReq) (*dto2.ListAbilityResp, error)
 	// Animation
 	ListAnimation(context.Context, *dto1.ListAnimationReq) (*dto1.ListAnimationResp, error)
 	// PC
@@ -303,20 +319,17 @@ type APIServer interface {
 	GetPC(context.Context, *dto1.GetPCReq) (*dto1.PC, error)
 	// Template
 	ListTemplate(context.Context, *dto1.ListTemplateReq) (*dto1.ListTemplateResp, error)
-	// Entity
-	CreateEntity(context.Context, *entity.E) (*entity.E, error)
-	CreateEntityAbility(context.Context, *dto1.CreateEntityAbilityReq) (*dto1.CreateEntityAbilityResp, error)
 	// Room
 	CreateRoom(context.Context, *room.R) (*room.R, error)
-	ListRoom(context.Context, *dto2.ListRoomReq) (*dto2.ListRoomResp, error)
-	ListRoomPublic(context.Context, *dto2.ListRoomReq) (*dto2.ListRoomResp, error)
-	CreateRoomUser(context.Context, *dto2.CreateRoomUserReq) (*room.User, error)
+	ListRoom(context.Context, *dto3.ListRoomReq) (*dto3.ListRoomResp, error)
+	ListRoomPublic(context.Context, *dto3.ListRoomReq) (*dto3.ListRoomResp, error)
+	CreateRoomUser(context.Context, *dto3.CreateRoomUserReq) (*room.User, error)
 	// Cell
-	ListCell(context.Context, *dto2.ListCellReq) (*dto2.ListCellResp, error)
+	ListCell(context.Context, *dto3.ListCellReq) (*dto3.ListCellResp, error)
 	// World
-	ListWorld(context.Context, *dto2.ListWorldReq) (*dto2.ListWorldResp, error)
+	ListWorld(context.Context, *dto3.ListWorldReq) (*dto3.ListWorldResp, error)
 	// Twitch
-	ListFollow(context.Context, *dto3.ListFollowReq) (*dto3.ListFollowResp, error)
+	ListFollow(context.Context, *dto4.ListFollowReq) (*dto4.ListFollowResp, error)
 	// Ping
 	Ping(context.Context, *types.Empty) (*types.Empty, error)
 }
@@ -330,6 +343,15 @@ func (*UnimplementedAPIServer) CreateSession(ctx context.Context, req *dto.Creat
 }
 func (*UnimplementedAPIServer) ListEntity(ctx context.Context, req *dto1.ListEntityReq) (*dto1.ListEntityResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListEntity not implemented")
+}
+func (*UnimplementedAPIServer) CreateEntity(ctx context.Context, req *entity.E) (*entity.E, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateEntity not implemented")
+}
+func (*UnimplementedAPIServer) CreateEntityAbility(ctx context.Context, req *dto1.CreateEntityAbilityReq) (*dto1.CreateEntityAbilityResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateEntityAbility not implemented")
+}
+func (*UnimplementedAPIServer) ListAbility(ctx context.Context, req *dto2.ListAbilityReq) (*dto2.ListAbilityResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListAbility not implemented")
 }
 func (*UnimplementedAPIServer) ListAnimation(ctx context.Context, req *dto1.ListAnimationReq) (*dto1.ListAnimationResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListAnimation not implemented")
@@ -346,31 +368,25 @@ func (*UnimplementedAPIServer) GetPC(ctx context.Context, req *dto1.GetPCReq) (*
 func (*UnimplementedAPIServer) ListTemplate(ctx context.Context, req *dto1.ListTemplateReq) (*dto1.ListTemplateResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListTemplate not implemented")
 }
-func (*UnimplementedAPIServer) CreateEntity(ctx context.Context, req *entity.E) (*entity.E, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateEntity not implemented")
-}
-func (*UnimplementedAPIServer) CreateEntityAbility(ctx context.Context, req *dto1.CreateEntityAbilityReq) (*dto1.CreateEntityAbilityResp, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateEntityAbility not implemented")
-}
 func (*UnimplementedAPIServer) CreateRoom(ctx context.Context, req *room.R) (*room.R, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRoom not implemented")
 }
-func (*UnimplementedAPIServer) ListRoom(ctx context.Context, req *dto2.ListRoomReq) (*dto2.ListRoomResp, error) {
+func (*UnimplementedAPIServer) ListRoom(ctx context.Context, req *dto3.ListRoomReq) (*dto3.ListRoomResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListRoom not implemented")
 }
-func (*UnimplementedAPIServer) ListRoomPublic(ctx context.Context, req *dto2.ListRoomReq) (*dto2.ListRoomResp, error) {
+func (*UnimplementedAPIServer) ListRoomPublic(ctx context.Context, req *dto3.ListRoomReq) (*dto3.ListRoomResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListRoomPublic not implemented")
 }
-func (*UnimplementedAPIServer) CreateRoomUser(ctx context.Context, req *dto2.CreateRoomUserReq) (*room.User, error) {
+func (*UnimplementedAPIServer) CreateRoomUser(ctx context.Context, req *dto3.CreateRoomUserReq) (*room.User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRoomUser not implemented")
 }
-func (*UnimplementedAPIServer) ListCell(ctx context.Context, req *dto2.ListCellReq) (*dto2.ListCellResp, error) {
+func (*UnimplementedAPIServer) ListCell(ctx context.Context, req *dto3.ListCellReq) (*dto3.ListCellResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListCell not implemented")
 }
-func (*UnimplementedAPIServer) ListWorld(ctx context.Context, req *dto2.ListWorldReq) (*dto2.ListWorldResp, error) {
+func (*UnimplementedAPIServer) ListWorld(ctx context.Context, req *dto3.ListWorldReq) (*dto3.ListWorldResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListWorld not implemented")
 }
-func (*UnimplementedAPIServer) ListFollow(ctx context.Context, req *dto3.ListFollowReq) (*dto3.ListFollowResp, error) {
+func (*UnimplementedAPIServer) ListFollow(ctx context.Context, req *dto4.ListFollowReq) (*dto4.ListFollowResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListFollow not implemented")
 }
 func (*UnimplementedAPIServer) Ping(ctx context.Context, req *types.Empty) (*types.Empty, error) {
@@ -413,6 +429,60 @@ func _API_ListEntity_Handler(srv interface{}, ctx context.Context, dec func(inte
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(APIServer).ListEntity(ctx, req.(*dto1.ListEntityReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _API_CreateEntity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(entity.E)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(APIServer).CreateEntity(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/grpc.API/CreateEntity",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(APIServer).CreateEntity(ctx, req.(*entity.E))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _API_CreateEntityAbility_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(dto1.CreateEntityAbilityReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(APIServer).CreateEntityAbility(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/grpc.API/CreateEntityAbility",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(APIServer).CreateEntityAbility(ctx, req.(*dto1.CreateEntityAbilityReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _API_ListAbility_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(dto2.ListAbilityReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(APIServer).ListAbility(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/grpc.API/ListAbility",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(APIServer).ListAbility(ctx, req.(*dto2.ListAbilityReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -507,42 +577,6 @@ func _API_ListTemplate_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
-func _API_CreateEntity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(entity.E)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(APIServer).CreateEntity(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/grpc.API/CreateEntity",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(APIServer).CreateEntity(ctx, req.(*entity.E))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _API_CreateEntityAbility_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(dto1.CreateEntityAbilityReq)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(APIServer).CreateEntityAbility(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/grpc.API/CreateEntityAbility",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(APIServer).CreateEntityAbility(ctx, req.(*dto1.CreateEntityAbilityReq))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _API_CreateRoom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(room.R)
 	if err := dec(in); err != nil {
@@ -562,7 +596,7 @@ func _API_CreateRoom_Handler(srv interface{}, ctx context.Context, dec func(inte
 }
 
 func _API_ListRoom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(dto2.ListRoomReq)
+	in := new(dto3.ListRoomReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -574,13 +608,13 @@ func _API_ListRoom_Handler(srv interface{}, ctx context.Context, dec func(interf
 		FullMethod: "/grpc.API/ListRoom",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(APIServer).ListRoom(ctx, req.(*dto2.ListRoomReq))
+		return srv.(APIServer).ListRoom(ctx, req.(*dto3.ListRoomReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _API_ListRoomPublic_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(dto2.ListRoomReq)
+	in := new(dto3.ListRoomReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -592,13 +626,13 @@ func _API_ListRoomPublic_Handler(srv interface{}, ctx context.Context, dec func(
 		FullMethod: "/grpc.API/ListRoomPublic",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(APIServer).ListRoomPublic(ctx, req.(*dto2.ListRoomReq))
+		return srv.(APIServer).ListRoomPublic(ctx, req.(*dto3.ListRoomReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _API_CreateRoomUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(dto2.CreateRoomUserReq)
+	in := new(dto3.CreateRoomUserReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -610,13 +644,13 @@ func _API_CreateRoomUser_Handler(srv interface{}, ctx context.Context, dec func(
 		FullMethod: "/grpc.API/CreateRoomUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(APIServer).CreateRoomUser(ctx, req.(*dto2.CreateRoomUserReq))
+		return srv.(APIServer).CreateRoomUser(ctx, req.(*dto3.CreateRoomUserReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _API_ListCell_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(dto2.ListCellReq)
+	in := new(dto3.ListCellReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -628,13 +662,13 @@ func _API_ListCell_Handler(srv interface{}, ctx context.Context, dec func(interf
 		FullMethod: "/grpc.API/ListCell",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(APIServer).ListCell(ctx, req.(*dto2.ListCellReq))
+		return srv.(APIServer).ListCell(ctx, req.(*dto3.ListCellReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _API_ListWorld_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(dto2.ListWorldReq)
+	in := new(dto3.ListWorldReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -646,13 +680,13 @@ func _API_ListWorld_Handler(srv interface{}, ctx context.Context, dec func(inter
 		FullMethod: "/grpc.API/ListWorld",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(APIServer).ListWorld(ctx, req.(*dto2.ListWorldReq))
+		return srv.(APIServer).ListWorld(ctx, req.(*dto3.ListWorldReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _API_ListFollow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(dto3.ListFollowReq)
+	in := new(dto4.ListFollowReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -664,7 +698,7 @@ func _API_ListFollow_Handler(srv interface{}, ctx context.Context, dec func(inte
 		FullMethod: "/grpc.API/ListFollow",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(APIServer).ListFollow(ctx, req.(*dto3.ListFollowReq))
+		return srv.(APIServer).ListFollow(ctx, req.(*dto4.ListFollowReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -700,6 +734,18 @@ var _API_serviceDesc = grpc.ServiceDesc{
 			Handler:    _API_ListEntity_Handler,
 		},
 		{
+			MethodName: "CreateEntity",
+			Handler:    _API_CreateEntity_Handler,
+		},
+		{
+			MethodName: "CreateEntityAbility",
+			Handler:    _API_CreateEntityAbility_Handler,
+		},
+		{
+			MethodName: "ListAbility",
+			Handler:    _API_ListAbility_Handler,
+		},
+		{
 			MethodName: "ListAnimation",
 			Handler:    _API_ListAnimation_Handler,
 		},
@@ -718,14 +764,6 @@ var _API_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListTemplate",
 			Handler:    _API_ListTemplate_Handler,
-		},
-		{
-			MethodName: "CreateEntity",
-			Handler:    _API_CreateEntity_Handler,
-		},
-		{
-			MethodName: "CreateEntityAbility",
-			Handler:    _API_CreateEntityAbility_Handler,
 		},
 		{
 			MethodName: "CreateRoom",

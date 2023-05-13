@@ -7,8 +7,6 @@ import (
 )
 
 type FilterAbility struct {
-	ID        ulid.ID
-	IDs       []ulid.ID
 	EntityID  ulid.ID
 	AbilityID ulid.ID
 
@@ -26,6 +24,5 @@ type StoreAbility interface {
 type CacheAbility interface {
 	InsertCacheAbility(context.Context, Ability) error
 	FetchCacheAbility(context.Context, FilterAbility) (Ability, error)
-	FetchManyCacheAbility(context.Context, FilterAbility) ([]Ability, []byte, error)
 	DeleteCacheAbility(context.Context, FilterAbility) error
 }

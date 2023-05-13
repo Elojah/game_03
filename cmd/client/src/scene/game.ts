@@ -17,6 +17,7 @@ import { Core } from 'cmd/core/grpc/core_pb_service';
 import { ConnectReq, ICECandidate, SDP } from 'pkg/rtc/dto/rtc_pb';
 
 import * as Ability from 'pkg/ability/ability_pb';
+import * as AbilityDTO from 'pkg/ability/dto/ability_pb';
 import * as Cast from 'pkg/ability/cast_pb';
 
 import * as Animation from 'pkg/entity/animation_pb';
@@ -116,6 +117,12 @@ export class Game extends Scene {
 	// Entity update map to detect disconnect
 	EntityLastTick: Map<string, number>
 	cleanEntitiesDelay: number
+
+	// Abilities for entity
+	Abilities: Map<string, Ability.A>
+
+	// Menu UI
+	Menu: Phaser.GameObjects.DOMElement
 
 	SyncTimer: number
 
@@ -289,12 +296,11 @@ export class Game extends Scene {
 			Objects: new Map(),
 		}
 	}
+
 	preload() { }
+
 	create() {
-
 		this.Loading = this.Entity.E.getCellid_asU8()
-
-		this.Cursors = this.input.keyboard!.createCursorKeys();
 
 		// Load world & cell sync
 		// Connect for entity send/receive
@@ -323,8 +329,14 @@ export class Game extends Scene {
 						return this.loadMap(Cell.Orientation.NONE)
 					})
 					.then(() => {
+						// load menu
+						this.load.html('menu', 'html/menu.html')
+
 						this.load.start()
 						this.load.on('complete', () => {
+							this.Cursors = this.input.keyboard!.createCursorKeys();
+							const menu = this.add.dom(0, 0).createFromCache('menu').setOrigin(0)
+
 							console.log('load complete')
 						})
 					}).then(() => {
@@ -340,6 +352,10 @@ export class Game extends Scene {
 	}
 
 	updateBodyEntity() {
+		if (!this.Cursors) {
+			return
+		}
+
 		// Controls + local anim update
 		const speed: number = 200
 		let animationID = null
@@ -1151,7 +1167,18 @@ export class Game extends Scene {
 
 					console.log("receive position from server:", this.Entity.E.getX(), this.Entity.E.getY())
 
-					this.Connected()
+					// load own abilities
+					const req = new AbilityDTO.ListAbilityReq()
+					req.setEntityid(meid)
+					this.listAbility(req)
+						.then((resp: AbilityDTO.ListAbilityResp) => {
+							resp.getAbilitiesList().forEach((ab: Ability.A) => {
+								this.Abilities.set(ulid(ab.getId_asU8()), ab)
+							})
+
+							this.Connected()
+						})
+						.catch((err) => { console.log(err) })
 				} else if (this.Entities.has(meid)) {
 					const sprite = this.add.sprite(entry.getX(), entry.getY(), id)
 					sprite.setDepth(entitySpriteDepth - 1)
@@ -1361,6 +1388,32 @@ export class Game extends Scene {
 					}
 
 					resolve(message as AnimationDTO.ListAnimationResp)
+				}
+			});
+		})
+
+		return prom
+	}
+
+	// API Ability
+	listAbility(req: AbilityDTO.ListAbilityReq) {
+		let md = new grpc.Metadata()
+		md.set('token', this.registry.get('token'))
+
+		const prom = new Promise<AbilityDTO.ListAbilityResp>((resolve, reject) => {
+			grpc.unary(API.ListAbility, {
+				metadata: md,
+				request: req,
+				host: 'https://api.legacyfactory.com:8082',
+				onEnd: res => {
+					const { status, statusMessage, headers, message, trailers } = res;
+					if (status !== grpc.Code.OK || !message) {
+						reject('listAbility:' + res)
+
+						return
+					}
+
+					resolve(message as AbilityDTO.ListAbilityResp)
 				}
 			});
 		})

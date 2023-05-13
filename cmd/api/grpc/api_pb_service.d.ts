@@ -3,6 +3,7 @@
 
 import * as github_com_elojah_game_03_cmd_api_grpc_api_pb from "../../../../../../github.com/elojah/game_03/cmd/api/grpc/api_pb";
 import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty_pb";
+import * as github_com_elojah_game_03_pkg_ability_dto_ability_pb from "../../../../../../github.com/elojah/game_03/pkg/ability/dto/ability_pb";
 import * as github_com_elojah_game_03_pkg_entity_entity_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/entity_pb";
 import * as github_com_elojah_game_03_pkg_entity_pc_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/pc_pb";
 import * as github_com_elojah_game_03_pkg_entity_dto_entity_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/dto/entity_pb";
@@ -35,6 +36,33 @@ type APIListEntity = {
   readonly responseStream: false;
   readonly requestType: typeof github_com_elojah_game_03_pkg_entity_dto_entity_pb.ListEntityReq;
   readonly responseType: typeof github_com_elojah_game_03_pkg_entity_dto_entity_pb.ListEntityResp;
+};
+
+type APICreateEntity = {
+  readonly methodName: string;
+  readonly service: typeof API;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof github_com_elojah_game_03_pkg_entity_entity_pb.E;
+  readonly responseType: typeof github_com_elojah_game_03_pkg_entity_entity_pb.E;
+};
+
+type APICreateEntityAbility = {
+  readonly methodName: string;
+  readonly service: typeof API;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof github_com_elojah_game_03_pkg_entity_dto_entity_pb.CreateEntityAbilityReq;
+  readonly responseType: typeof github_com_elojah_game_03_pkg_entity_dto_entity_pb.CreateEntityAbilityResp;
+};
+
+type APIListAbility = {
+  readonly methodName: string;
+  readonly service: typeof API;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof github_com_elojah_game_03_pkg_ability_dto_ability_pb.ListAbilityReq;
+  readonly responseType: typeof github_com_elojah_game_03_pkg_ability_dto_ability_pb.ListAbilityResp;
 };
 
 type APIListAnimation = {
@@ -80,24 +108,6 @@ type APIListTemplate = {
   readonly responseStream: false;
   readonly requestType: typeof github_com_elojah_game_03_pkg_entity_dto_template_pb.ListTemplateReq;
   readonly responseType: typeof github_com_elojah_game_03_pkg_entity_dto_template_pb.ListTemplateResp;
-};
-
-type APICreateEntity = {
-  readonly methodName: string;
-  readonly service: typeof API;
-  readonly requestStream: false;
-  readonly responseStream: false;
-  readonly requestType: typeof github_com_elojah_game_03_pkg_entity_entity_pb.E;
-  readonly responseType: typeof github_com_elojah_game_03_pkg_entity_entity_pb.E;
-};
-
-type APICreateEntityAbility = {
-  readonly methodName: string;
-  readonly service: typeof API;
-  readonly requestStream: false;
-  readonly responseStream: false;
-  readonly requestType: typeof github_com_elojah_game_03_pkg_entity_dto_entity_pb.CreateEntityAbilityReq;
-  readonly responseType: typeof github_com_elojah_game_03_pkg_entity_dto_entity_pb.CreateEntityAbilityResp;
 };
 
 type APICreateRoom = {
@@ -176,13 +186,14 @@ export class API {
   static readonly serviceName: string;
   static readonly CreateSession: APICreateSession;
   static readonly ListEntity: APIListEntity;
+  static readonly CreateEntity: APICreateEntity;
+  static readonly CreateEntityAbility: APICreateEntityAbility;
+  static readonly ListAbility: APIListAbility;
   static readonly ListAnimation: APIListAnimation;
   static readonly CreatePC: APICreatePC;
   static readonly ListPC: APIListPC;
   static readonly GetPC: APIGetPC;
   static readonly ListTemplate: APIListTemplate;
-  static readonly CreateEntity: APICreateEntity;
-  static readonly CreateEntityAbility: APICreateEntityAbility;
   static readonly CreateRoom: APICreateRoom;
   static readonly ListRoom: APIListRoom;
   static readonly ListRoomPublic: APIListRoomPublic;
@@ -243,6 +254,33 @@ export class APIClient {
     requestMessage: github_com_elojah_game_03_pkg_entity_dto_entity_pb.ListEntityReq,
     callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_entity_dto_entity_pb.ListEntityResp|null) => void
   ): UnaryResponse;
+  createEntity(
+    requestMessage: github_com_elojah_game_03_pkg_entity_entity_pb.E,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_entity_entity_pb.E|null) => void
+  ): UnaryResponse;
+  createEntity(
+    requestMessage: github_com_elojah_game_03_pkg_entity_entity_pb.E,
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_entity_entity_pb.E|null) => void
+  ): UnaryResponse;
+  createEntityAbility(
+    requestMessage: github_com_elojah_game_03_pkg_entity_dto_entity_pb.CreateEntityAbilityReq,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_entity_dto_entity_pb.CreateEntityAbilityResp|null) => void
+  ): UnaryResponse;
+  createEntityAbility(
+    requestMessage: github_com_elojah_game_03_pkg_entity_dto_entity_pb.CreateEntityAbilityReq,
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_entity_dto_entity_pb.CreateEntityAbilityResp|null) => void
+  ): UnaryResponse;
+  listAbility(
+    requestMessage: github_com_elojah_game_03_pkg_ability_dto_ability_pb.ListAbilityReq,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_ability_dto_ability_pb.ListAbilityResp|null) => void
+  ): UnaryResponse;
+  listAbility(
+    requestMessage: github_com_elojah_game_03_pkg_ability_dto_ability_pb.ListAbilityReq,
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_ability_dto_ability_pb.ListAbilityResp|null) => void
+  ): UnaryResponse;
   listAnimation(
     requestMessage: github_com_elojah_game_03_pkg_entity_dto_animation_pb.ListAnimationReq,
     metadata: grpc.Metadata,
@@ -287,24 +325,6 @@ export class APIClient {
   listTemplate(
     requestMessage: github_com_elojah_game_03_pkg_entity_dto_template_pb.ListTemplateReq,
     callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_entity_dto_template_pb.ListTemplateResp|null) => void
-  ): UnaryResponse;
-  createEntity(
-    requestMessage: github_com_elojah_game_03_pkg_entity_entity_pb.E,
-    metadata: grpc.Metadata,
-    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_entity_entity_pb.E|null) => void
-  ): UnaryResponse;
-  createEntity(
-    requestMessage: github_com_elojah_game_03_pkg_entity_entity_pb.E,
-    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_entity_entity_pb.E|null) => void
-  ): UnaryResponse;
-  createEntityAbility(
-    requestMessage: github_com_elojah_game_03_pkg_entity_dto_entity_pb.CreateEntityAbilityReq,
-    metadata: grpc.Metadata,
-    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_entity_dto_entity_pb.CreateEntityAbilityResp|null) => void
-  ): UnaryResponse;
-  createEntityAbility(
-    requestMessage: github_com_elojah_game_03_pkg_entity_dto_entity_pb.CreateEntityAbilityReq,
-    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_entity_dto_entity_pb.CreateEntityAbilityResp|null) => void
   ): UnaryResponse;
   createRoom(
     requestMessage: github_com_elojah_game_03_pkg_room_room_pb.R,

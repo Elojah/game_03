@@ -196,17 +196,21 @@ CREATE TABLE main.ability (
 	proto           blob
 );
 
--- GUILD
+-- FACTION
 -- ----------------
 
 CREATE TABLE main.faction (
     id              uuid PRIMARY KEY,
+    world_id        uuid,
     name            varchar,
+    icon            varchar,
     max             bigint
 );
 
+CREATE INDEX ON main.faction(world_id);
+
 CREATE TABLE main.faction_pc (
-    pc_id           uuid PRIMARY KEY,
+    id              uuid PRIMARY KEY,
     faction_id      uuid,
     permission      bigint
 );

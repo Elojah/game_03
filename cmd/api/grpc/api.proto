@@ -15,6 +15,7 @@ import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 import "google/protobuf/empty.proto";
 
+import "github.com/elojah/game_03/pkg/ability/dto/ability.proto";
 import "github.com/elojah/game_03/pkg/entity/entity.proto";
 import "github.com/elojah/game_03/pkg/entity/pc.proto";
 import "github.com/elojah/game_03/pkg/entity/dto/entity.proto";
@@ -36,6 +37,11 @@ service API {
 
     // Entity
     rpc ListEntity(dto.ListEntityReq) returns (dto.ListEntityResp);
+    rpc CreateEntity(entity.E) returns (entity.E);
+    rpc CreateEntityAbility(dto.CreateEntityAbilityReq) returns (dto.CreateEntityAbilityResp);
+
+	// Ability
+    rpc ListAbility(dto.ListAbilityReq) returns (dto.ListAbilityResp);
 
     // Animation
     rpc ListAnimation(dto.ListAnimationReq) returns (dto.ListAnimationResp);
@@ -47,10 +53,6 @@ service API {
 
 	// Template
     rpc ListTemplate(dto.ListTemplateReq) returns (dto.ListTemplateResp);
-
-	// Entity
-    rpc CreateEntity(entity.E) returns (entity.E);
-    rpc CreateEntityAbility(dto.CreateEntityAbilityReq) returns (dto.CreateEntityAbilityResp);
 
     // Room
     rpc CreateRoom(room.R) returns (room.R);

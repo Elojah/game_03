@@ -7,6 +7,11 @@ import (
 	"github.com/elojah/game_03/pkg/ulid"
 )
 
+const (
+	// MaxAbilities is a soft limit to ease caching
+	MaxAbilities = 1000
+)
+
 type Filter struct {
 	ID  ulid.ID
 	IDs []ulid.ID
@@ -55,6 +60,7 @@ type Store interface {
 
 type App interface {
 	Cache
+	CacheAbility
 
 	Store
 	StoreAbility

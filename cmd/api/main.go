@@ -19,6 +19,8 @@ import (
 	entityapp "github.com/elojah/game_03/pkg/entity/app"
 	entityredis "github.com/elojah/game_03/pkg/entity/redis"
 	entityscylla "github.com/elojah/game_03/pkg/entity/scylla"
+	factionapp "github.com/elojah/game_03/pkg/faction/app"
+	factionscylla "github.com/elojah/game_03/pkg/faction/scylla"
 	roomapp "github.com/elojah/game_03/pkg/room/app"
 	roomscylla "github.com/elojah/game_03/pkg/room/scylla"
 	userapp "github.com/elojah/game_03/pkg/user/app"
@@ -135,15 +137,21 @@ func run(prog string, filename string) {
 	entityCache := &entityredis.Cache{Service: rediss}
 	entityStore := &entityscylla.Store{Service: scyllas}
 	entityApp := entityapp.App{
-		Cache: entityCache,
-		Store: entityStore,
-		// CacheAbility:   entityCache,
+		Cache:          entityCache,
+		Store:          entityStore,
+		CacheAbility:   entityCache,
 		StoreAbility:   entityStore,
 		StoreAnimation: entityStore,
 		StoreBackup:    entityStore,
 		StorePC:        entityStore,
 		StoreTemplate:  entityStore,
 		StoreSpawn:     entityStore,
+	}
+
+	factionStore := &factionscylla.Store{Service: scyllas}
+	factionApp := factionapp.App{
+		Store:   factionStore,
+		StorePC: factionStore,
 	}
 
 	roomStore := &roomscylla.Store{Service: scyllas}
@@ -174,9 +182,11 @@ func run(prog string, filename string) {
 
 	// init handler
 	h := handler{
-		entity: entityApp,
-		room:   roomApp,
-		user:   userApp,
+		ability: abilityApp,
+		entity:  entityApp,
+		faction: factionApp,
+		room:    roomApp,
+		user:    userApp,
 	}
 
 	// init grpc ONLY server

@@ -17,16 +17,6 @@ func (f filterAbility) where() (string, []any) {
 
 	var args []any
 
-	if f.ID != nil {
-		clause = append(clause, `id = ?`)
-		args = append(args, f.ID)
-	}
-
-	if len(f.IDs) > 0 {
-		clause = append(clause, `id IN ?`)
-		args = append(args, f.IDs)
-	}
-
 	if f.EntityID != nil {
 		clause = append(clause, `entity_id = ?`)
 		args = append(args, f.EntityID)
@@ -52,19 +42,6 @@ func (f filterAbility) where() (string, []any) {
 func (f filterAbility) index() string {
 	var cols []string
 
-	if f.ID != nil {
-		cols = append(cols, f.ID.String())
-	}
-
-	if f.IDs != nil {
-		ss := make([]string, 0, len(f.IDs))
-		for _, id := range f.IDs {
-			ss = append(ss, id.String())
-		}
-
-		cols = append(cols, strings.Join(ss, "|"))
-	}
-
 	if f.EntityID != nil {
 		cols = append(cols, f.EntityID.String())
 	}
@@ -78,7 +55,7 @@ func (f filterAbility) index() string {
 
 func (s Store) InsertAbility(ctx context.Context, ab entity.Ability) error {
 	q := s.Session.Query(
-		`INSERT INTO main.ab (entity_id, ability_id, last_cast) VALUES (?, ?, ?)`,
+		`INSERT INTO main.entity_ability (entity_id, ability_id, last_cast) VALUES (?, ?, ?)`,
 		ab.EntityID,
 		ab.AbilityID,
 		ab.LastCast,

@@ -4,7 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"os"
+	"strconv"
 
+	"github.com/elojah/game_03/pkg/faction"
 	"github.com/elojah/game_03/pkg/geometry"
 	"github.com/elojah/game_03/pkg/room"
 	"github.com/elojah/game_03/pkg/tile"
@@ -41,6 +43,21 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 		logger.Error().Err(err).Msg("failed to create world")
 
 		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
+	// #Create 3 factions
+	for i := 0; i < 3; i++ {
+		if err := h.faction.Insert(ctx, faction.F{
+			ID:      ulid.NewID(),
+			WorldID: id,
+			Name:    "faction_" + strconv.Itoa(i),
+			Icon:    "",
+			Max:     300,
+		}); err != nil {
+			logger.Error().Err(err).Msg("failed to create faction")
+
+			return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+		}
 	}
 
 	logger = logger.With().Str("world_id", w.ID.String()).Logger()

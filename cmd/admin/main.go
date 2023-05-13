@@ -18,6 +18,8 @@ import (
 	entityapp "github.com/elojah/game_03/pkg/entity/app"
 	entityredis "github.com/elojah/game_03/pkg/entity/redis"
 	entityscylla "github.com/elojah/game_03/pkg/entity/scylla"
+	factionapp "github.com/elojah/game_03/pkg/faction/app"
+	factionscylla "github.com/elojah/game_03/pkg/faction/scylla"
 	migrateapp "github.com/elojah/game_03/pkg/migrate/app"
 	roomapp "github.com/elojah/game_03/pkg/room/app"
 	roomscylla "github.com/elojah/game_03/pkg/room/scylla"
@@ -119,7 +121,7 @@ func run(prog string, filename string) {
 		return
 	}
 
-	migrateApp := migrateapp.App{
+	migrateApp := &migrateapp.App{
 		Service: &scyllas,
 	}
 
@@ -133,15 +135,21 @@ func run(prog string, filename string) {
 	entityCache := &entityredis.Cache{Service: rediss}
 	entityStore := &entityscylla.Store{Service: scyllas}
 	entityApp := entityapp.App{
-		Cache:        entityCache,
-		Store:        entityStore,
-		StoreAbility: entityStore,
-		// CacheAbility:   entityCache,
+		Cache:          entityCache,
+		Store:          entityStore,
+		StoreAbility:   entityStore,
+		CacheAbility:   entityCache,
 		StoreAnimation: entityStore,
 		StoreBackup:    entityStore,
 		StorePC:        entityStore,
 		StoreTemplate:  entityStore,
 		StoreSpawn:     entityStore,
+	}
+
+	factionStore := &factionscylla.Store{Service: scyllas}
+	factionApp := factionapp.App{
+		Store:   factionStore,
+		StorePC: factionStore,
 	}
 
 	roomStore := &roomscylla.Store{Service: scyllas}
@@ -163,11 +171,13 @@ func run(prog string, filename string) {
 	}
 
 	h := handler{
-		migrate: &migrateApp,
+		ability: abilityApp,
 		cookie:  cookieApp,
+		entity:  entityApp,
+		faction: factionApp,
+		migrate: migrateApp,
 		room:    roomApp,
 		tile:    tileApp,
-		entity:  entityApp,
 	}
 
 	// init grpc api server

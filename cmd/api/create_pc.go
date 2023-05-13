@@ -5,9 +5,11 @@ import (
 	"errors"
 	"time"
 
+	"github.com/elojah/game_03/pkg/ability"
 	"github.com/elojah/game_03/pkg/entity"
 	"github.com/elojah/game_03/pkg/entity/dto"
 	gerrors "github.com/elojah/game_03/pkg/errors"
+	"github.com/elojah/game_03/pkg/faction"
 	"github.com/elojah/game_03/pkg/room"
 	"github.com/elojah/game_03/pkg/ulid"
 	"github.com/rs/zerolog/log"
@@ -180,7 +182,7 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
-	// #Insert owner PC
+	// #Insert PC
 	pc := entity.PC{
 		ID:       ulid.NewID(),
 		EntityID: bu.ID,
@@ -189,6 +191,67 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 	}
 	if err := h.entity.InsertPC(ctx, pc); err != nil {
 		logger.Error().Err(err).Msg("failed to create pc")
+
+		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
+	// #Insert faction pc
+	// TODO: add as param in create_pc, here we only fetch first one
+	fac, err := h.faction.Fetch(ctx, faction.Filter{
+		WorldID: ro.WorldID,
+	})
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to fetch world faction")
+
+		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
+	if err := h.faction.InsertPC(ctx, faction.PC{
+		ID:         pc.ID,
+		FactionID:  fac.ID,
+		Permission: int64(faction.Member),
+	}); err != nil {
+		logger.Error().Err(err).Msg("failed to create faction pc")
+
+		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
+	// #Create first ability
+	// basic ability: damage one foe
+	ab := ability.A{
+		ID:        ulid.NewID(),
+		Name:      "test_spell",
+		Icon:      ulid.NewID(),
+		Animation: ulid.NewID(),
+		CastTime:  1000,
+		ManaCost:  10,
+		Cooldown:  3000,
+		Effects: map[string]ability.Effect{
+			ulid.NewID().String(): {
+				Stat:   entity.HP,
+				Amount: ability.Amount{Direct: -10},
+				Range:  10,
+				Targets: map[string]ability.Target{
+					ulid.NewID().String(): {
+						Type: ability.Foe,
+					},
+				},
+			},
+		},
+	}
+
+	if err := h.ability.Insert(ctx, ab); err != nil {
+		logger.Error().Err(err).Msg("failed to create ability")
+
+		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
+	if err := h.entity.InsertAbility(ctx, entity.Ability{
+		EntityID:  pc.EntityID,
+		AbilityID: ab.ID,
+		LastCast:  0,
+	}); err != nil {
+		logger.Error().Err(err).Msg("failed to create entity ability")
 
 		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
 	}
