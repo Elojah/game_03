@@ -19,8 +19,6 @@ export class Loading extends Scene {
 	preload() { }
 
 	create() {
-		this.add.image(0, 0, 'home_background_00').setOrigin(0)
-
 		const urlParams = new URLSearchParams(window.location.search)
 		const worldID = parse(urlParams.get('world_id')!)
 		const pcID = parse(urlParams.get('pc_id')!)
@@ -40,7 +38,6 @@ export class Loading extends Scene {
 			})
 			.then((result) => {
 				this.registry.set('token', result)
-				this.cache.html.destroy()
 				this.scene.transition({
 					target: 'game',
 					duration: 1000,

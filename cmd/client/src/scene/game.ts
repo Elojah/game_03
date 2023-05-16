@@ -121,8 +121,8 @@ export class Game extends Scene {
 	// Abilities for entity
 	Abilities: Map<string, Ability.A>
 
-	// Menu UI
-	Menu: Phaser.GameObjects.DOMElement
+	// // Menu UI
+	// Menu: Phaser.GameObjects.DOMElement
 
 	SyncTimer: number
 
@@ -141,7 +141,44 @@ export class Game extends Scene {
 		super(config);
 	}
 
-	async initConnection() {
+	init(pc: PCDTO.PC) {
+		this.PC = pc.getPc() as PC.PC;
+		const e = pc.getEntity() as Entity.E;
+		this.Entity = {
+			E: e,
+			Body: this.physics.add.sprite(0, 0, ''),
+			Animations: new Map(),
+			Orientation: Cell.Orientation.DOWN
+		}
+		this.EntityID = ulid(this.Entity.E.getId_asU8())
+
+		this.Cells = new Map()
+		this.CellsByID = new Map()
+		this.CellLoader = new Phaser.Loader.LoaderPlugin(this)
+		this.Border = new Map()
+
+		this.Entities = new Map()
+		this.EntityLoader = new Phaser.Loader.LoaderPlugin(this)
+		this.EntityLastTick = new Map()
+		this.cleanEntitiesDelay = 2 * 1000 // 2 seconds without tick (async) triggers entity removal
+
+		this.SpriteSheets = new Map()
+
+		this.World = new World.World()
+
+		this.LoadMapMutex = new Mutex()
+
+		const m = this.make.tilemap()
+		this.Blank = {
+			Cell: new Cell.Cell,
+			Tilemap: m,
+			Layers: new Map(),
+			Colliders: new Map(),
+			Objects: new Map(),
+		}
+	}
+
+	async createConnection() {
 		this.Connected = await this.LoadMapMutex.acquire()
 
 		const local = new RTCPeerConnection({
@@ -259,57 +296,29 @@ export class Game extends Scene {
 			.catch((err) => { console.log('failed to setup negotiation', err) });
 	}
 
-
-	init(pc: PCDTO.PC) {
-		this.PC = pc.getPc() as PC.PC;
-		const e = pc.getEntity() as Entity.E;
-		this.Entity = {
-			E: e,
-			Body: this.physics.add.sprite(0, 0, ''),
-			Animations: new Map(),
-			Orientation: Cell.Orientation.DOWN
-		}
-		this.EntityID = ulid(this.Entity.E.getId_asU8())
-
-		this.Cells = new Map()
-		this.CellsByID = new Map()
-		this.CellLoader = new Phaser.Loader.LoaderPlugin(this)
-		this.Border = new Map()
-
-		this.Entities = new Map()
-		this.EntityLoader = new Phaser.Loader.LoaderPlugin(this)
-		this.EntityLastTick = new Map()
-		this.cleanEntitiesDelay = 2 * 1000 // 2 seconds without tick (async) triggers entity removal
-
-		this.SpriteSheets = new Map()
-
-		this.World = new World.World()
-
-		this.LoadMapMutex = new Mutex()
-
-		const m = this.make.tilemap()
-		this.Blank = {
-			Cell: new Cell.Cell,
-			Tilemap: m,
-			Layers: new Map(),
-			Colliders: new Map(),
-			Objects: new Map(),
-		}
+	preload() {
+		this.load.html('menu', 'html/menu.html')
+		this.load.html('window-user', 'html/window-user.html')
+		this.load.image('game_background', 'img/game_background.png')
 	}
 
-	preload() { }
-
 	create() {
+		// Set background & menu
+		this.Background = this.add.tileSprite(0, 0, 1024, 512, 'game_background', 'img/game_background.png').setOrigin(0).setScrollFactor(0);
+		this.Background.setDisplaySize(this.game.scale.width, this.game.scale.height)
+
+		this.createMenu()
+
 		this.Loading = this.Entity.E.getCellid_asU8()
 
 		// Load world & cell sync
 		// Connect for entity send/receive
-		this.initConnection()
+		this.createConnection()
 			.then(() => {
 				return this.LoadMapMutex.waitForUnlock()
 			})
 			.then(() => {
-				this.listWorld((() => {
+				return this.listWorld((() => {
 					const req = new WorldDTO.ListWorldReq()
 
 					req.setIdsList([this.PC.getWorldid_asU8()])
@@ -317,38 +326,60 @@ export class Game extends Scene {
 
 					return req
 				})())
-					.then((ws: WorldDTO.ListWorldResp) => {
-						if (ws.getWorldsList().length != 1) {
-							console.log('failed to load world')
-						} else {
-							this.World = ws.getWorldsList()[0]
-						}
-					}).then(() => {
-						return this.loadBackground()
-					}).then(() => {
-						return this.loadMap(Cell.Orientation.NONE)
-					})
-					.then(() => {
-						// load menu
-						this.load.html('menu', 'html/menu.html')
-
-						this.load.start()
-						this.load.on('complete', () => {
-							this.Cursors = this.input.keyboard!.createCursorKeys();
-							const menu = this.add.dom(0, 0).createFromCache('menu').setOrigin(0)
-
-							console.log('load complete')
-						})
-					}).then(() => {
-						// post first loading launch
-						setInterval(() => {
-							this.cleanEntities()
-						}, this.cleanEntitiesDelay)
-					})
-					.catch((err) => {
-						console.log('setup error', err)
-					})
 			})
+			.then((ws: WorldDTO.ListWorldResp) => {
+				if (ws.getWorldsList().length != 1) {
+					console.log('failed to load world')
+				} else {
+					this.World = ws.getWorldsList()[0]
+				}
+
+				return this.loadMap(Cell.Orientation.NONE)
+			}).then(() => {
+				// post first loading launch
+				this.Cursors = this.input.keyboard!.createCursorKeys();
+
+				setInterval(() => {
+					this.cleanEntities()
+				}, this.cleanEntitiesDelay)
+			})
+			.catch((err) => {
+				console.log('setup error', err)
+			})
+	}
+
+	createMenu() {
+		this.add.dom(50, 20).createFromCache('menu').setScrollFactor(0)
+
+		document.getElementById('menu-user')?.addEventListener('click', (ev) => {
+			const w = document.getElementById('window-user')
+			if (w) {
+				w.remove()
+
+				return
+			}
+
+			const user = this.add.dom(50, 100).createFromCache('window-user').setScrollFactor(0).setVisible(false)
+
+			document.getElementById('window-user-name')!.innerHTML += this.Entity.E.getName()
+			document.getElementById('window-user-damage')!.innerHTML += this.Entity.E.getStats()!.getDamage().toString()
+			document.getElementById('window-user-defense')!.innerHTML += this.Entity.E.getStats()!.getDefense().toString()
+			document.getElementById('window-user-move-speed')!.innerHTML += this.Entity.E.getStats()!.getMovespeed().toString()
+			document.getElementById('window-user-cast-speed')!.innerHTML += this.Entity.E.getStats()!.getCastspeed().toString()
+			document.getElementById('window-user-cooldown-reduction')!.innerHTML += this.Entity.E.getStats()!.getCooldownreduction().toString()
+			document.getElementById('window-user-max-hp')!.innerHTML += this.Entity.E.getStats()!.getMaxhp().toString()
+			document.getElementById('window-user-max-mp')!.innerHTML += this.Entity.E.getStats()!.getMaxmp().toString()
+
+			user.setVisible(true)
+		})
+
+		document.getElementById('menu-abilities')?.addEventListener('click', (ev) => {
+
+		})
+
+		document.getElementById('menu-settings')?.addEventListener('click', (ev) => {
+
+		})
 	}
 
 	updateBodyEntity() {
@@ -406,6 +437,13 @@ export class Game extends Scene {
 			if (duplicateID) {
 				this.Entity?.Body?.play(duplicateID, true)
 			}
+		}
+	}
+
+	updateBackground() {
+		if (this.Background) {
+			this.Background.tilePositionX = this.Entity.Body.body.x % 1024
+			this.Background.tilePositionY = this.Entity.Body.body.y % 512
 		}
 	}
 
@@ -487,24 +525,6 @@ export class Game extends Scene {
 		})
 	}
 
-	async loadBackground() {
-		const bg = 'game_background'
-		this.load.image(bg, 'img/' + bg + '.png')
-		console.log('add listener on ', 'filecomplete-image-' + bg)
-		this.load.on('filecomplete-image-' + bg, () => {
-			console.log('image completed ', bg)
-			this.Background = this.add.tileSprite(0, 0, 1024, 512, bg, 'img/' + bg + '.png').setOrigin(0).setScrollFactor(0);
-			this.Background.setDisplaySize(this.game.scale.width, this.game.scale.height)
-		})
-	}
-
-	updateBackground() {
-		if (this.Background) {
-			this.Background.tilePositionX = this.Entity.Body.body.x % 1024
-			this.Background.tilePositionY = this.Entity.Body.body.y % 512
-		}
-	}
-
 	// Orientation o uses preload surrounded cells
 	// Cell.Orientation.NONE loads everything
 	async loadMap(o: Orientation) {
@@ -543,7 +563,7 @@ export class Game extends Scene {
 						)
 
 						// assign cells to delete
-						// deletedCells.push()
+						// ...
 						// create new blank graphic cell from loaded cell
 						this.Cells.set(Cell.Orientation.NONE, {
 							Cell: c,
@@ -1169,16 +1189,17 @@ export class Game extends Scene {
 
 					// load own abilities
 					const req = new AbilityDTO.ListAbilityReq()
-					req.setEntityid(meid)
-					this.listAbility(req)
-						.then((resp: AbilityDTO.ListAbilityResp) => {
-							resp.getAbilitiesList().forEach((ab: Ability.A) => {
-								this.Abilities.set(ulid(ab.getId_asU8()), ab)
-							})
+					// this.listAbility(req)
+					// 	.then((resp: AbilityDTO.ListAbilityResp) => {
+					// 		resp.getAbilitiesList().forEach((ab: Ability.A) => {
+					// 			this.Abilities.set(ulid(ab.getId_asU8()), ab)
+					// 		})
 
-							this.Connected()
-						})
-						.catch((err) => { console.log(err) })
+					// 	})
+					// 	.catch((err) => { console.log(err) })
+
+					req.setEntityid(meid)
+					this.Connected()
 				} else if (this.Entities.has(meid)) {
 					const sprite = this.add.sprite(entry.getX(), entry.getY(), id)
 					sprite.setDepth(entitySpriteDepth - 1)
