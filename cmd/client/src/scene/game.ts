@@ -349,7 +349,7 @@ export class Game extends Scene {
 	}
 
 	createMenu() {
-		this.add.dom(50, 20).createFromCache('menu').setScrollFactor(0)
+		this.add.dom(60, 20).createFromCache('menu').setScrollFactor(0)
 
 		document.getElementById('menu-user')?.addEventListener('click', (ev) => {
 			const w = document.getElementById('window-user')
@@ -359,7 +359,7 @@ export class Game extends Scene {
 				return
 			}
 
-			const user = this.add.dom(50, 100).createFromCache('window-user').setScrollFactor(0).setVisible(false)
+			const user = this.add.dom(200, 300).createFromCache('window-user').setScrollFactor(0).setVisible(false)
 
 			document.getElementById('window-user-name')!.innerHTML += this.Entity.E.getName()
 			document.getElementById('window-user-damage')!.innerHTML += this.Entity.E.getStats()!.getDamage().toString()
