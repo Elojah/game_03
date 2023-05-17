@@ -221,7 +221,7 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 	ab := ability.A{
 		ID:        ulid.NewID(),
 		Name:      "test_spell",
-		Icon:      ulid.NewID(),
+		Icon:      ulid.MustParse("01H0N2PHEMG0DJSDVGV15CXA3M"), // static wip icon
 		Animation: ulid.NewID(),
 		CastTime:  1000,
 		ManaCost:  10,

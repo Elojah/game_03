@@ -162,6 +162,8 @@ export class Game extends Scene {
 		this.EntityLastTick = new Map()
 		this.cleanEntitiesDelay = 2 * 1000 // 2 seconds without tick (async) triggers entity removal
 
+		this.Abilities = new Map()
+
 		this.SpriteSheets = new Map()
 
 		this.World = new World.World()
@@ -298,7 +300,9 @@ export class Game extends Scene {
 
 	preload() {
 		this.load.html('menu', 'html/menu.html')
-		this.load.html('window-user', 'html/window-user.html')
+		this.load.html('window-entity', 'html/window-entity.html')
+		this.load.html('window-ability', 'html/window-ability.html')
+		this.load.html('window-ability-line', 'html/window-ability-line.html')
 		this.load.image('game_background', 'img/game_background.png')
 	}
 
@@ -351,30 +355,48 @@ export class Game extends Scene {
 	createMenu() {
 		this.add.dom(60, 20).createFromCache('menu').setScrollFactor(0)
 
-		document.getElementById('menu-user')?.addEventListener('click', (ev) => {
-			const w = document.getElementById('window-user')
+		document.getElementById('menu-entity')?.addEventListener('click', (ev) => {
+			const w = document.getElementById('window-entity')
 			if (w) {
 				w.remove()
 
 				return
 			}
 
-			const user = this.add.dom(200, 300).createFromCache('window-user').setScrollFactor(0).setVisible(false)
+			const we = this.add.dom(200, 300).createFromCache('window-entity').setScrollFactor(0).setVisible(false)
 
-			document.getElementById('window-user-name')!.innerHTML += this.Entity.E.getName()
-			document.getElementById('window-user-damage')!.innerHTML += this.Entity.E.getStats()!.getDamage().toString()
-			document.getElementById('window-user-defense')!.innerHTML += this.Entity.E.getStats()!.getDefense().toString()
-			document.getElementById('window-user-move-speed')!.innerHTML += this.Entity.E.getStats()!.getMovespeed().toString()
-			document.getElementById('window-user-cast-speed')!.innerHTML += this.Entity.E.getStats()!.getCastspeed().toString()
-			document.getElementById('window-user-cooldown-reduction')!.innerHTML += this.Entity.E.getStats()!.getCooldownreduction().toString()
-			document.getElementById('window-user-max-hp')!.innerHTML += this.Entity.E.getStats()!.getMaxhp().toString()
-			document.getElementById('window-user-max-mp')!.innerHTML += this.Entity.E.getStats()!.getMaxmp().toString()
+			document.getElementById('window-entity-name')!.innerHTML += this.Entity.E.getName()
+			document.getElementById('window-entity-damage')!.innerHTML += this.Entity.E.getStats()!.getDamage().toString()
+			document.getElementById('window-entity-defense')!.innerHTML += this.Entity.E.getStats()!.getDefense().toString()
+			document.getElementById('window-entity-move-speed')!.innerHTML += this.Entity.E.getStats()!.getMovespeed().toString()
+			document.getElementById('window-entity-cast-speed')!.innerHTML += this.Entity.E.getStats()!.getCastspeed().toString()
+			document.getElementById('window-entity-cooldown-reduction')!.innerHTML += this.Entity.E.getStats()!.getCooldownreduction().toString()
+			document.getElementById('window-entity-max-hp')!.innerHTML += this.Entity.E.getStats()!.getMaxhp().toString()
+			document.getElementById('window-entity-max-mp')!.innerHTML += this.Entity.E.getStats()!.getMaxmp().toString()
 
-			user.setVisible(true)
+			we.setVisible(true)
 		})
 
-		document.getElementById('menu-abilities')?.addEventListener('click', (ev) => {
+		document.getElementById('menu-ability')?.addEventListener('click', (ev) => {
+			const w = document.getElementById('window-ability')
+			if (w) {
+				w.remove()
 
+				return
+			}
+
+			const wa = this.add.dom(200, 300).createFromCache('window-ability').setScrollFactor(0).setVisible(false)
+
+			const table = document.getElementById('window-ability-table')!
+			const line = this.cache.html.get('window-ability-line') as string
+			this.Abilities.forEach((ab, id) => {
+				const tmp = document.createElement('template')
+				tmp.innerHTML = line.replace('{{icon}}', ulid(ab.getIcon_asU8())).replace('{{name}}', ab.getName())
+				const li = tmp.content.firstChild as Node
+				table.appendChild(li)
+			})
+
+			wa.setVisible(true)
 		})
 
 		document.getElementById('menu-settings')?.addEventListener('click', (ev) => {
@@ -1189,17 +1211,20 @@ export class Game extends Scene {
 
 					// load own abilities
 					const req = new AbilityDTO.ListAbilityReq()
-					// this.listAbility(req)
-					// 	.then((resp: AbilityDTO.ListAbilityResp) => {
-					// 		resp.getAbilitiesList().forEach((ab: Ability.A) => {
-					// 			this.Abilities.set(ulid(ab.getId_asU8()), ab)
-					// 		})
+					req.setEntityid(this.Entity.E.getId_asU8())
+					req.setSize(100)
+					this.listAbility(req)
+						.then((resp: AbilityDTO.ListAbilityResp) => {
+							resp.getAbilitiesList().forEach((ab: Ability.A) => {
+								this.Abilities.set(ulid(ab.getId_asU8()), ab)
+							})
+						})
+						.then(() => {
+							this.Connected()
+						})
+						.catch((err) => { console.log(err) })
 
-					// 	})
-					// 	.catch((err) => { console.log(err) })
 
-					req.setEntityid(meid)
-					this.Connected()
 				} else if (this.Entities.has(meid)) {
 					const sprite = this.add.sprite(entry.getX(), entry.getY(), id)
 					sprite.setDepth(entitySpriteDepth - 1)
