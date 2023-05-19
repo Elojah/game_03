@@ -1,0 +1,13 @@
+.hotkey-table {
+	border-style: double;
+	border-color: black;
+	table-layout: fixed;
+	width: 300px;
+	height: 60px;
+}
+
+.hotkey {
+	border-style: groove;
+	border-radius: 30px;
+	border-color: grey;
+}

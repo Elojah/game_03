@@ -300,6 +300,7 @@ export class Game extends Scene {
 
 	preload() {
 		this.load.html('menu', 'html/menu.html')
+		this.load.html('hotkey', 'html/hotkey.html')
 		this.load.html('window-entity', 'html/window-entity.html')
 		this.load.html('window-ability', 'html/window-ability.html')
 		this.load.html('window-ability-line', 'html/window-ability-line.html')
@@ -353,6 +354,8 @@ export class Game extends Scene {
 	}
 
 	createMenu() {
+		this.add.dom(1000, 500).createFromCache('hotkey').setScrollFactor(0)
+
 		this.add.dom(60, 20).createFromCache('menu').setScrollFactor(0)
 
 		document.getElementById('menu-entity')?.addEventListener('click', (ev) => {
@@ -392,6 +395,10 @@ export class Game extends Scene {
 			this.Abilities.forEach((ab, id) => {
 				const tmp = document.createElement('template')
 				tmp.innerHTML = line.replace('{{icon}}', ulid(ab.getIcon_asU8())).replace('{{name}}', ab.getName())
+				tmp.draggable = true
+				tmp.ondragstart = (ev) => {
+					ev.dataTransfer?.setData("id", id)
+				}
 				const li = tmp.content.firstChild as Node
 				table.appendChild(li)
 			})
