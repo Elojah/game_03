@@ -354,8 +354,6 @@ export class Game extends Scene {
 	}
 
 	createMenu() {
-		this.add.dom(1000, 500).createFromCache('hotkey').setScrollFactor(0)
-
 		this.add.dom(60, 20).createFromCache('menu').setScrollFactor(0)
 
 		document.getElementById('menu-entity')?.addEventListener('click', (ev) => {
@@ -393,14 +391,19 @@ export class Game extends Scene {
 			const table = document.getElementById('window-ability-table')!
 			const line = this.cache.html.get('window-ability-line') as string
 			this.Abilities.forEach((ab, id) => {
+				const iconID = ulid(ab.getIcon_asU8())
+
 				const tmp = document.createElement('template')
-				tmp.innerHTML = line.replace('{{icon}}', ulid(ab.getIcon_asU8())).replace('{{name}}', ab.getName())
-				tmp.draggable = true
-				tmp.ondragstart = (ev) => {
-					ev.dataTransfer?.setData("id", id)
-				}
+				tmp.innerHTML = line.replace('{{icon}}', iconID).replace('{{name}}', ab.getName()).replace('{{id}}', id)
 				const li = tmp.content.firstChild as Node
 				table.appendChild(li)
+
+				const icon = document.getElementById('window-ability-line-' + id)!
+				icon.draggable = true
+				icon.ondragstart = (ev) => {
+					ev.dataTransfer?.setData('id', id)
+					ev.dataTransfer?.setData('icon', iconID)
+				}
 			})
 
 			wa.setVisible(true)
@@ -408,6 +411,24 @@ export class Game extends Scene {
 
 		document.getElementById('menu-settings')?.addEventListener('click', (ev) => {
 
+		})
+
+		// edit hotkeys to drop abilities into
+		this.add.dom(1000, 500).createFromCache('hotkey').setScrollFactor(0)
+
+		const keys = ['0', '1', '2', '3', '4', '5']
+		keys.map((n, i) => {
+			const elem = document.getElementById('hotkey-0-' + n)!
+			elem.ondragover = (e) => {
+				e.preventDefault()
+			}
+			elem.ondrop = (e) => {
+				e.preventDefault()
+
+				const id = e.dataTransfer?.getData('id')
+				const iconID = e.dataTransfer?.getData('icon')
+				elem.innerHTML = '<img src="img/assets/' + iconID + '.png" data-ability-id="' + id + '">'
+			}
 		})
 	}
 
