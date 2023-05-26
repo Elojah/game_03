@@ -157,6 +157,8 @@ export class Game extends Scene {
 
 	Connected: MutexInterface.Releaser
 
+	SendChannel: RTCDataChannel
+
 	constructor(config: string | Phaser.Types.Scenes.SettingsConfig) {
 		super(config);
 	}
@@ -226,8 +228,8 @@ export class Game extends Scene {
 			}]
 		});
 
-		const se = local.createDataChannel('send_entity')
-		se.onopen = () => {
+		this.SendChannel = local.createDataChannel('send_entity')
+		this.SendChannel.onopen = () => {
 			console.log('channel send_entity opened')
 			this.LoadMapMutex.waitForUnlock().then(() => {
 				console.log('ticker send_entity start')
@@ -247,14 +249,14 @@ export class Game extends Scene {
 					const now = Date.now()
 					c.setAt(now)
 
-					se.send(c.serializeBinary())
+					this.SendChannel.send(c.serializeBinary())
 
 					console.log('send entity position at ' + now)
 				}, 500)
 			})
 		}
-		se.onclose = () => { console.log('channel send_entity closed') }
-		se.onmessage = (m) => { console.log('message received on send_entity:', m) }
+		this.SendChannel.onclose = () => { console.log('channel send_entity closed') }
+		this.SendChannel.onmessage = (m) => { console.log('message received on send_entity:', m) }
 
 		const re = local.createDataChannel('receive_entity')
 		re.onopen = () => { console.log('channel receive_entity opened') }
@@ -408,28 +410,47 @@ export class Game extends Scene {
 
 		switch (a) {
 			case Action.Up:
-				// this.Entity.Body.body.setVelocity(0)
-				// this.CurrentAnimationID = this.Entity.Animations.get('walk_up')
-				// this.Entity.Body.body.setVelocityY(-speed)
-				// this.Entity.Orientation = Cell.Orientation.UP
 				break
 			case Action.Right:
-				// this.Entity.Body.body.setVelocity(0)
-				// this.CurrentAnimationID = this.Entity.Animations.get('walk_right')
-				// this.Entity.Body.body.setVelocityX(speed)
-				// this.Entity.Orientation = Cell.Orientation.RIGHT
 				break
 			case Action.Down:
-				// this.Entity.Body.body.setVelocity(0)
-				// this.CurrentAnimationID = this.Entity.Animations.get('walk_down')
-				// this.Entity.Body.body.setVelocityY(speed)
-				// this.Entity.Orientation = Cell.Orientation.DOWN
 				break
 			case Action.Left:
-				// this.Entity.Body.body.setVelocity(0)
-				// this.CurrentAnimationID = this.Entity.Animations.get('walk_left')
-				// this.Entity.Body.body.setVelocityX(-speed)
-				// this.Entity.Orientation = Cell.Orientation.LEFT
+				break
+			case Action.Hotbar00:
+				const abilityID = document.getElementById('hotkey-0-0-icon')?.dataset['abilityID']
+				if (!abilityID) {
+					break
+				}
+
+				const c = new Cast.Cast()
+
+				c.setAbilityid(abilityID)
+
+				// const pos = new Circle()
+				// pos.setX(this.Entity.E.getX())
+				// pos.setY(this.Entity.E.getY())
+				// pos.setRadius(10)
+
+				// const target = new Cast.CastTarget()
+				// target.setCircle(pos)
+
+				const now = Date.now()
+				c.setAt(now)
+
+				this.SendChannel.send(c.serializeBinary())
+
+				console.log('send ability cast at ' + now)
+				break
+			case Action.Hotbar01:
+				break
+			case Action.Hotbar02:
+				break
+			case Action.Hotbar03:
+				break
+			case Action.Hotbar04:
+				break
+			case Action.Hotbar05:
 				break
 		}
 	}
