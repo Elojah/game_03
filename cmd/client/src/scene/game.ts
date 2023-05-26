@@ -40,6 +40,26 @@ import { Circle } from 'pkg/geometry/geometry_pb';
 
 const entitySpriteDepth = 42
 
+enum Action {
+	None = 0,
+	Up = 1,
+	Right = 2,
+	Down = 3,
+	Left = 4,
+	Hotbar00 = 5,
+	Hotbar01 = 6,
+	Hotbar02 = 7,
+	Hotbar03 = 8,
+	Hotbar04 = 9,
+	Hotbar05 = 10,
+	Hotbar10 = 11,
+	Hotbar11 = 12,
+	Hotbar12 = 13,
+	Hotbar13 = 14,
+	Hotbar14 = 15,
+	Hotbar15 = 16,
+};
+
 type valueof<T> = T[keyof T];
 type Orientation = valueof<Cell.OrientationMap>
 
@@ -93,8 +113,6 @@ export class Game extends Scene {
 	PC: PC.PC;
 	Entity: BodyEntity;
 	EntityID: string;
-	Cursors: Phaser.Types.Input.Keyboard.CursorKeys
-	// Controls: Controls;
 
 	// Cells & maps
 	Cells: Map<Orientation, GraphicCell>
@@ -118,11 +136,13 @@ export class Game extends Scene {
 	EntityLastTick: Map<string, number>
 	cleanEntitiesDelay: number
 
+	CurrentAnimationID: string | undefined
+
 	// Abilities for entity
 	Abilities: Map<string, Ability.A>
 
-	// // Menu UI
-	// Menu: Phaser.GameObjects.DOMElement
+	// Keys assignment
+	Keys: Map<Action, Phaser.Input.Keyboard.Key>
 
 	SyncTimer: number
 
@@ -163,6 +183,8 @@ export class Game extends Scene {
 		this.cleanEntitiesDelay = 2 * 1000 // 2 seconds without tick (async) triggers entity removal
 
 		this.Abilities = new Map()
+
+		this.Keys = new Map()
 
 		this.SpriteSheets = new Map()
 
@@ -312,7 +334,7 @@ export class Game extends Scene {
 		this.Background = this.add.tileSprite(0, 0, 1024, 512, 'game_background', 'img/game_background.png').setOrigin(0).setScrollFactor(0);
 		this.Background.setDisplaySize(this.game.scale.width, this.game.scale.height)
 
-		this.createMenu()
+		this.createUI()
 
 		this.Loading = this.Entity.E.getCellid_asU8()
 
@@ -342,7 +364,8 @@ export class Game extends Scene {
 				return this.loadMap(Cell.Orientation.NONE)
 			}).then(() => {
 				// post first loading launch
-				this.Cursors = this.input.keyboard!.createCursorKeys();
+				// this.Cursors = this.input.keyboard!.createCursorKeys();
+				this.createKeys()
 
 				setInterval(() => {
 					this.cleanEntities()
@@ -353,7 +376,65 @@ export class Game extends Scene {
 			})
 	}
 
-	createMenu() {
+	createKeys() {
+		// this.Keys.set(Action.None, 0)
+		this.Keys.set(Action.Up, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.W)!)
+		this.Keys.set(Action.Right, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.D)!)
+		this.Keys.set(Action.Down, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S)!)
+		this.Keys.set(Action.Left, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.A)!)
+		this.Keys.set(Action.Hotbar00, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.ONE)!)
+		this.Keys.set(Action.Hotbar01, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.TWO)!)
+		this.Keys.set(Action.Hotbar02, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.THREE)!)
+		this.Keys.set(Action.Hotbar03, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR)!)
+		this.Keys.set(Action.Hotbar04, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.FIVE)!)
+		this.Keys.set(Action.Hotbar05, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.SIX)!)
+		this.Keys.set(Action.Hotbar10, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.SEVEN)!)
+		this.Keys.set(Action.Hotbar11, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.EIGHT)!)
+		this.Keys.set(Action.Hotbar12, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.NINE)!)
+		this.Keys.set(Action.Hotbar13, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.ZERO)!)
+		this.Keys.set(Action.Hotbar14, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.COMMA)!)
+		this.Keys.set(Action.Hotbar15, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.PERIOD)!)
+
+		this.Keys.forEach((v, k) => {
+			v.on('keydown', () => { this.LaunchAction(k) })
+		})
+	}
+
+	LaunchAction(a: Action) {
+		console.log('received action', a.toString())
+
+		// Controls + local anim update
+		const speed: number = 200
+
+		switch (a) {
+			case Action.Up:
+				// this.Entity.Body.body.setVelocity(0)
+				// this.CurrentAnimationID = this.Entity.Animations.get('walk_up')
+				// this.Entity.Body.body.setVelocityY(-speed)
+				// this.Entity.Orientation = Cell.Orientation.UP
+				break
+			case Action.Right:
+				// this.Entity.Body.body.setVelocity(0)
+				// this.CurrentAnimationID = this.Entity.Animations.get('walk_right')
+				// this.Entity.Body.body.setVelocityX(speed)
+				// this.Entity.Orientation = Cell.Orientation.RIGHT
+				break
+			case Action.Down:
+				// this.Entity.Body.body.setVelocity(0)
+				// this.CurrentAnimationID = this.Entity.Animations.get('walk_down')
+				// this.Entity.Body.body.setVelocityY(speed)
+				// this.Entity.Orientation = Cell.Orientation.DOWN
+				break
+			case Action.Left:
+				// this.Entity.Body.body.setVelocity(0)
+				// this.CurrentAnimationID = this.Entity.Animations.get('walk_left')
+				// this.Entity.Body.body.setVelocityX(-speed)
+				// this.Entity.Orientation = Cell.Orientation.LEFT
+				break
+		}
+	}
+
+	createUI() {
 		this.add.dom(60, 20).createFromCache('menu').setScrollFactor(0)
 
 		document.getElementById('menu-entity')?.addEventListener('click', (ev) => {
@@ -400,9 +481,14 @@ export class Game extends Scene {
 
 				const icon = document.getElementById('window-ability-line-' + id)!
 				icon.draggable = true
-				icon.ondragstart = (ev) => {
-					ev.dataTransfer?.setData('id', id)
-					ev.dataTransfer?.setData('icon', iconID)
+				icon.ondragstart = (e) => {
+					const target = e.target as HTMLElement
+
+					e.dataTransfer?.setData('id', target.id.split('-').at(3)!)
+					const iconID = target.getAttribute('src')?.split('/').at(-1)?.split('.').at(0)
+					if (iconID) {
+						e.dataTransfer?.setData('icon', iconID)
+					}
 				}
 			})
 
@@ -425,39 +511,58 @@ export class Game extends Scene {
 			elem.ondrop = (e) => {
 				e.preventDefault()
 
+				const elem = e.target as HTMLElement
+
+				const icon = document.createElement('img')
+
 				const id = e.dataTransfer?.getData('id')
 				const iconID = e.dataTransfer?.getData('icon')
-				elem.innerHTML = '<img src="img/assets/' + iconID + '.png" data-ability-id="' + id + '">'
+				icon.src = 'img/assets/' + iconID + '.png'
+				icon.id = elem.id + '-icon'
+				icon.dataset['abilityID'] = id
+				icon.draggable = true
+				icon.ondragstart = (e) => {
+					const target = e.target as HTMLElement
+
+					e.dataTransfer?.setData('id', target.dataset['abilityID']!)
+					const iconID = target.getAttribute('src')?.split('/').at(-1)?.split('.').at(0)
+					if (iconID) {
+						e.dataTransfer?.setData('icon', iconID)
+					}
+				}
+				icon.ondragend = (e) => {
+					const target = e.target as HTMLElement
+
+					target.remove()
+				}
+
+				elem.appendChild(icon)
 			}
 		})
 	}
 
 	updateBodyEntity() {
-		if (!this.Cursors) {
-			return
-		}
-
 		// Controls + local anim update
 		const speed: number = 200
 		let animationID = null
 		this.Entity.Body.body.setVelocity(0)
 
 		// Move entity
-		if (this.Cursors.up.isDown) {
+		if (this.Keys.get(Action.Up)?.isDown) {
 			animationID = this.Entity.Animations.get('walk_up')
 			this.Entity.Body.body.setVelocityY(-speed)
 			this.Entity.Orientation = Cell.Orientation.UP
-		} else if (this.Cursors.down.isDown) {
+		} else if (this.Keys.get(Action.Down)?.isDown) {
 			animationID = this.Entity.Animations.get('walk_down')
 			this.Entity.Body.body.setVelocityY(speed)
 			this.Entity.Orientation = Cell.Orientation.DOWN
 		}
 
-		if (this.Cursors.right.isDown) {
+		if (this.Keys.get(Action.Right)?.isDown) {
 			animationID = this.Entity.Animations.get('walk_right')
 			this.Entity.Body.body.setVelocityX(speed)
 			this.Entity.Orientation = Cell.Orientation.RIGHT
-		} else if (this.Cursors.left.isDown) {
+		} else if (this.Keys.get(Action.Left)?.isDown) {
 			animationID = this.Entity.Animations.get('walk_left')
 			this.Entity.Body.body.setVelocityX(-speed)
 			this.Entity.Orientation = Cell.Orientation.LEFT
