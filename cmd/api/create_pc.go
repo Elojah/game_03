@@ -220,7 +220,7 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 	// #TMP Create first ability
 	// basic ability: damage one foe
 	abilityTemplate, err := h.entity.FetchTemplate(ctx, entity.FilterTemplate{
-		Name: func(s string) *string { return &s }("ability"),
+		Name: func(s string) *string { return &s }("ability"), // TODO: replace with "green_ability" template ?
 	})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to fetch ability template")
@@ -236,6 +236,9 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 
 		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
 	}
+
+	anim.ID = ulid.NewID()
+	anim.EntityID = entityID
 
 	ab := ability.A{
 		ID:        ulid.NewID(),
