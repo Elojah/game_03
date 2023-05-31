@@ -26,6 +26,7 @@ type Filter struct {
 type Patch struct {
 	UserID      ulid.ID
 	CellID      ulid.ID
+	FactionID   ulid.ID
 	Name        *string
 	X           *int64
 	Y           *int64

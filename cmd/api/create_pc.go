@@ -162,11 +162,23 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
+	// #Insert faction pc
+	// TODO: add as param in create_pc, here we only fetch first one
+	fac, err := h.faction.Fetch(ctx, faction.Filter{
+		WorldID: ro.WorldID,
+	})
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to fetch world faction")
+
+		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
 	// #Insert entity backup
 	bu := entity.Backup{
 		ID:          entityID,
 		UserID:      u.ID,
 		CellID:      c.CellID,
+		FactionID:   fac.ID,
 		X:           0,
 		Y:           0,
 		Rot:         0,
@@ -195,17 +207,6 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
-	// #Insert faction pc
-	// TODO: add as param in create_pc, here we only fetch first one
-	fac, err := h.faction.Fetch(ctx, faction.Filter{
-		WorldID: ro.WorldID,
-	})
-	if err != nil {
-		logger.Error().Err(err).Msg("failed to fetch world faction")
-
-		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
-	}
-
 	if err := h.faction.InsertPC(ctx, faction.PC{
 		ID:         pc.ID,
 		FactionID:  fac.ID,
@@ -216,13 +217,31 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
-	// #Create first ability
+	// #TMP Create first ability
 	// basic ability: damage one foe
+	abilityTemplate, err := h.entity.FetchTemplate(ctx, entity.FilterTemplate{
+		Name: func(s string) *string { return &s }("ability"),
+	})
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to fetch ability template")
+
+		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
+	anim, err := h.entity.FetchAnimation(ctx, entity.FilterAnimation{
+		EntityID: abilityTemplate.EntityID,
+	})
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to fetch ability animation")
+
+		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
 	ab := ability.A{
 		ID:        ulid.NewID(),
 		Name:      "test_spell",
 		Icon:      ulid.MustParse("01H0N2PHEMG0DJSDVGV15CXA3M"), // static wip icon
-		Animation: ulid.NewID(),
+		Animation: anim.ID,
 		CastTime:  1000,
 		ManaCost:  10,
 		Cooldown:  3000,
@@ -252,6 +271,12 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 		LastCast:  0,
 	}); err != nil {
 		logger.Error().Err(err).Msg("failed to create entity ability")
+
+		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
+	if err := h.entity.InsertAnimation(ctx, anim); err != nil {
+		logger.Error().Err(err).Msg("failed to create ability animation")
 
 		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
 	}

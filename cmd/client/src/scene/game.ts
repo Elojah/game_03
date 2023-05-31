@@ -46,18 +46,18 @@ enum Action {
 	Right = 2,
 	Down = 3,
 	Left = 4,
-	Hotbar00 = 5,
-	Hotbar01 = 6,
-	Hotbar02 = 7,
-	Hotbar03 = 8,
-	Hotbar04 = 9,
-	Hotbar05 = 10,
-	Hotbar10 = 11,
-	Hotbar11 = 12,
-	Hotbar12 = 13,
-	Hotbar13 = 14,
-	Hotbar14 = 15,
-	Hotbar15 = 16,
+	Hotkey00 = 5,
+	Hotkey01 = 6,
+	Hotkey02 = 7,
+	Hotkey03 = 8,
+	Hotkey04 = 9,
+	Hotkey05 = 10,
+	Hotkey10 = 11,
+	Hotkey11 = 12,
+	Hotkey12 = 13,
+	Hotkey13 = 14,
+	Hotkey14 = 15,
+	Hotkey15 = 16,
 };
 
 type valueof<T> = T[keyof T];
@@ -379,80 +379,133 @@ export class Game extends Scene {
 	}
 
 	createKeys() {
-		// this.Keys.set(Action.None, 0)
 		this.Keys.set(Action.Up, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.W)!)
 		this.Keys.set(Action.Right, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.D)!)
 		this.Keys.set(Action.Down, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S)!)
 		this.Keys.set(Action.Left, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.A)!)
-		this.Keys.set(Action.Hotbar00, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.ONE)!)
-		this.Keys.set(Action.Hotbar01, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.TWO)!)
-		this.Keys.set(Action.Hotbar02, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.THREE)!)
-		this.Keys.set(Action.Hotbar03, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR)!)
-		this.Keys.set(Action.Hotbar04, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.FIVE)!)
-		this.Keys.set(Action.Hotbar05, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.SIX)!)
-		this.Keys.set(Action.Hotbar10, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.SEVEN)!)
-		this.Keys.set(Action.Hotbar11, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.EIGHT)!)
-		this.Keys.set(Action.Hotbar12, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.NINE)!)
-		this.Keys.set(Action.Hotbar13, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.ZERO)!)
-		this.Keys.set(Action.Hotbar14, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.COMMA)!)
-		this.Keys.set(Action.Hotbar15, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.PERIOD)!)
+		this.Keys.set(Action.Hotkey00, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.ONE)!)
+		this.Keys.set(Action.Hotkey01, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.TWO)!)
+		this.Keys.set(Action.Hotkey02, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.THREE)!)
+		this.Keys.set(Action.Hotkey03, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR)!)
+		this.Keys.set(Action.Hotkey04, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.FIVE)!)
+		this.Keys.set(Action.Hotkey05, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.SIX)!)
+		this.Keys.set(Action.Hotkey10, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.SEVEN)!)
+		this.Keys.set(Action.Hotkey11, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.EIGHT)!)
+		this.Keys.set(Action.Hotkey12, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.NINE)!)
+		this.Keys.set(Action.Hotkey13, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.ZERO)!)
+		this.Keys.set(Action.Hotkey14, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.COMMA)!)
+		this.Keys.set(Action.Hotkey15, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.PERIOD)!)
 
 		this.Keys.forEach((v, k) => {
-			v.on('keydown', () => { this.LaunchAction(k) })
+			if (k == Action.Up || k == Action.Right || k == Action.Down || k == Action.Left) {
+				// used in updateBodyEntity, no more usage here ftm ?
+				return
+			}
+
+			v.on('down', () => { this.launchAction(k) })
 		})
 	}
 
-	LaunchAction(a: Action) {
-		console.log('received action', a.toString())
+	launchAction(a: Action) {
+		console.log('launch action:', a)
 
 		// Controls + local anim update
 		const speed: number = 200
 
+		let eid = ''
+
 		switch (a) {
 			case Action.Up:
-				break
+				return
 			case Action.Right:
-				break
+				return
 			case Action.Down:
-				break
+				return
 			case Action.Left:
+				return
+			case Action.Hotkey00:
+				eid = 'hotkey-0-0-icon'
 				break
-			case Action.Hotbar00:
-				const abilityID = document.getElementById('hotkey-0-0-icon')?.dataset['abilityID']
-				if (!abilityID) {
-					break
-				}
-
-				const c = new Cast.Cast()
-
-				c.setAbilityid(abilityID)
-
-				// const pos = new Circle()
-				// pos.setX(this.Entity.E.getX())
-				// pos.setY(this.Entity.E.getY())
-				// pos.setRadius(10)
-
-				// const target = new Cast.CastTarget()
-				// target.setCircle(pos)
-
-				const now = Date.now()
-				c.setAt(now)
-
-				this.SendChannel.send(c.serializeBinary())
-
-				console.log('send ability cast at ' + now)
+			case Action.Hotkey01:
+				eid = 'hotkey-0-1-icon'
 				break
-			case Action.Hotbar01:
+			case Action.Hotkey02:
+				eid = 'hotkey-0-2-icon'
 				break
-			case Action.Hotbar02:
+			case Action.Hotkey03:
+				eid = 'hotkey-0-3-icon'
 				break
-			case Action.Hotbar03:
+			case Action.Hotkey04:
+				eid = 'hotkey-0-4-icon'
 				break
-			case Action.Hotbar04:
+			case Action.Hotkey05:
+				eid = 'hotkey-0-5-icon'
 				break
-			case Action.Hotbar05:
+			case Action.Hotkey10:
+				eid = 'hotkey-1-0-icon'
+				break
+			case Action.Hotkey11:
+				eid = 'hotkey-1-1-icon'
+				break
+			case Action.Hotkey12:
+				eid = 'hotkey-1-2-icon'
+				break
+			case Action.Hotkey13:
+				eid = 'hotkey-1-3-icon'
+				break
+			case Action.Hotkey14:
+				eid = 'hotkey-1-4-icon'
+				break
+			case Action.Hotkey15:
+				eid = 'hotkey-1-5-icon'
 				break
 		}
+
+		const abilityID = document.getElementById(eid)?.dataset['abilityID']
+		console.log(abilityID)
+		if (!abilityID) {
+			return
+		}
+
+		// Play ability animation (TMP: on self ftm)
+		const abanim = new Animation.AnimationAbility()
+		abanim.setCellid(this.Entity.E.getCellid())
+		abanim.setX(this.Entity.E.getX())
+		abanim.setY(this.Entity.E.getY())
+
+		const tmpanim = this.add.sprite(abanim.getX(), abanim.getY(), '')
+		tmpanim.play(ulid(this.Abilities.get(abilityID)?.getAnimation_asU8()!))
+		tmpanim.once('animationcomplete', () => {
+			tmpanim.destroy()
+		})
+
+		// Play cast animation on entity
+		// this.Entity.Body.body.setVelocity(0)
+		// this.Entity.E.setAnimationid(parse(animationID))
+		// const duplicateID = this.Entity.Animations.get(animationID)
+		// if (duplicateID) {
+		// 	this.Entity?.Body?.play(duplicateID, true)
+		// }
+
+
+		const c = new Cast.Cast()
+
+		c.setAbilityid(abilityID)
+
+		// const pos = new Circle()
+		// pos.setX(this.Entity.E.getX())
+		// pos.setY(this.Entity.E.getY())
+		// pos.setRadius(10)
+
+		// const target = new Cast.CastTarget()
+		// target.setCircle(pos)
+
+		const now = Date.now()
+		c.setAt(now)
+
+		this.SendChannel.send(c.serializeBinary())
+
+		console.log('send ability cast at ' + now)
 	}
 
 	createUI() {

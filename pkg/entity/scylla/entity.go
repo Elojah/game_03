@@ -105,6 +105,11 @@ func (p patch) set() (string, []any) {
 		args = append(args, p.CellID)
 	}
 
+	if p.FactionID != nil {
+		clause = append(clause, `faction_id = ?`)
+		args = append(args, p.FactionID)
+	}
+
 	if p.Name != nil {
 		clause = append(clause, `name = ?`)
 		args = append(args, *p.Name)
@@ -165,16 +170,16 @@ func (p patch) set() (string, []any) {
 func (s Store) Insert(ctx context.Context, e entity.E) error {
 	q := s.Session.Query(
 		`INSERT INTO main.entity (
-			id, user_id, cell_id,
+			id, user_id, cell_id, faction_id,
 			name,
 			x, y, rot, radius,
 			at,
 			animation_id, animation_at,
 			objects
 		) VALUES (
-			?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+			?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 		)`,
-		e.ID, e.UserID, e.CellID,
+		e.ID, e.UserID, e.CellID, e.FactionID,
 		e.Name,
 		e.X, e.Y, e.Rot, e.Radius,
 		e.At,
@@ -215,7 +220,7 @@ func (s Store) Update(ctx context.Context, f entity.Filter, p entity.Patch) erro
 func (s Store) Fetch(ctx context.Context, f entity.Filter) (entity.E, error) {
 	b := strings.Builder{}
 	b.WriteString(`SELECT
-		id, user_id, cell_id,
+		id, user_id, cell_id, faction_id,
 		name,
 		x, y, rot, radius,
 		at,
@@ -230,7 +235,7 @@ func (s Store) Fetch(ctx context.Context, f entity.Filter) (entity.E, error) {
 
 	var e entity.E
 	if err := q.Scan(
-		&e.ID, &e.UserID, &e.CellID,
+		&e.ID, &e.UserID, &e.CellID, &e.FactionID,
 		&e.Name,
 		&e.X, &e.Y, &e.Rot, &e.Radius,
 		&e.At,
@@ -254,7 +259,7 @@ func (s Store) FetchMany(ctx context.Context, f entity.Filter) ([]entity.E, []by
 
 	b := strings.Builder{}
 	b.WriteString(`SELECT
-		id, user_id, cell_id,
+		id, user_id, cell_id, faction_id,
 		name,
 		x, y, rot, radius,
 		at,
@@ -283,7 +288,7 @@ func (s Store) FetchMany(ctx context.Context, f entity.Filter) ([]entity.E, []by
 
 	for ; scanner.Next(); i++ {
 		if err := scanner.Scan(
-			&es[i].ID, &es[i].UserID, &es[i].CellID,
+			&es[i].ID, &es[i].UserID, &es[i].CellID, &es[i].FactionID,
 			&es[i].Name,
 			&es[i].X, &es[i].Y, &es[i].Rot, &es[i].Radius,
 			&es[i].At,

@@ -4,6 +4,7 @@
 import * as jspb from "google-protobuf";
 import * as github_com_gogo_protobuf_gogoproto_gogo_pb from "../../../../../github.com/gogo/protobuf/gogoproto/gogo_pb";
 import * as github_com_elojah_game_03_pkg_geometry_geometry_pb from "../../../../../github.com/elojah/game_03/pkg/geometry/geometry_pb";
+import * as github_com_elojah_game_03_pkg_entity_animation_pb from "../../../../../github.com/elojah/game_03/pkg/entity/animation_pb";
 
 export class Stats extends jspb.Message {
   getDamage(): number;
@@ -73,6 +74,11 @@ export class E extends jspb.Message {
   getCellid_asB64(): string;
   setCellid(value: Uint8Array | string): void;
 
+  getFactionid(): Uint8Array | string;
+  getFactionid_asU8(): Uint8Array;
+  getFactionid_asB64(): string;
+  setFactionid(value: Uint8Array | string): void;
+
   getName(): string;
   setName(value: string): void;
 
@@ -111,6 +117,8 @@ export class E extends jspb.Message {
 
   getEffectsMap(): jspb.Map<string, number>;
   clearEffectsMap(): void;
+  getAbilitiesMap(): jspb.Map<string, github_com_elojah_game_03_pkg_entity_animation_pb.AnimationAbility>;
+  clearAbilitiesMap(): void;
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): E.AsObject;
   static toObject(includeInstance: boolean, msg: E): E.AsObject;
@@ -126,6 +134,7 @@ export namespace E {
     id: Uint8Array | string,
     userid: Uint8Array | string,
     cellid: Uint8Array | string,
+    factionid: Uint8Array | string,
     name: string,
     x: number,
     y: number,
@@ -137,6 +146,7 @@ export namespace E {
     objectsList: Array<github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect.AsObject>,
     stats?: Stats.AsObject,
     effectsMap: Array<[string, number]>,
+    abilitiesMap: Array<[string, github_com_elojah_game_03_pkg_entity_animation_pb.AnimationAbility.AsObject]>,
   }
 }
 

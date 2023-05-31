@@ -124,17 +124,19 @@ type E struct {
 	ID          github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,1,opt,name=ID,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"ID"`
 	UserID      github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,2,opt,name=UserID,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"UserID"`
 	CellID      github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,3,opt,name=CellID,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"CellID"`
-	Name        string                                `protobuf:"bytes,4,opt,name=Name,proto3" json:"Name,omitempty"`
-	X           int64                                 `protobuf:"varint,5,opt,name=X,proto3" json:"X,omitempty"`
-	Y           int64                                 `protobuf:"varint,6,opt,name=Y,proto3" json:"Y,omitempty"`
-	Rot         int32                                 `protobuf:"varint,7,opt,name=Rot,proto3" json:"Rot,omitempty"`
-	Radius      int32                                 `protobuf:"varint,8,opt,name=Radius,proto3" json:"Radius,omitempty"`
-	At          int64                                 `protobuf:"varint,9,opt,name=At,proto3" json:"At,omitempty"`
-	AnimationID github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,10,opt,name=AnimationID,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"AnimationID"`
-	AnimationAt int64                                 `protobuf:"varint,11,opt,name=AnimationAt,proto3" json:"AnimationAt,omitempty"`
-	Objects     []geometry.Rect                       `protobuf:"bytes,12,rep,name=Objects,proto3" json:"Objects"`
-	Stats       Stats                                 `protobuf:"bytes,13,opt,name=Stats,proto3" json:"Stats"`
-	Effects     map[string]int64                      `protobuf:"bytes,14,rep,name=Effects,proto3" json:"Effects" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`
+	FactionID   github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,4,opt,name=FactionID,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"FactionID"`
+	Name        string                                `protobuf:"bytes,5,opt,name=Name,proto3" json:"Name,omitempty"`
+	X           int64                                 `protobuf:"varint,6,opt,name=X,proto3" json:"X,omitempty"`
+	Y           int64                                 `protobuf:"varint,7,opt,name=Y,proto3" json:"Y,omitempty"`
+	Rot         int32                                 `protobuf:"varint,8,opt,name=Rot,proto3" json:"Rot,omitempty"`
+	Radius      int32                                 `protobuf:"varint,9,opt,name=Radius,proto3" json:"Radius,omitempty"`
+	At          int64                                 `protobuf:"varint,10,opt,name=At,proto3" json:"At,omitempty"`
+	AnimationID github_com_elojah_game_03_pkg_ulid.ID `protobuf:"bytes,11,opt,name=AnimationID,proto3,customtype=github.com/elojah/game_03/pkg/ulid.ID" json:"AnimationID"`
+	AnimationAt int64                                 `protobuf:"varint,12,opt,name=AnimationAt,proto3" json:"AnimationAt,omitempty"`
+	Objects     []geometry.Rect                       `protobuf:"bytes,13,rep,name=Objects,proto3" json:"Objects"`
+	Stats       Stats                                 `protobuf:"bytes,14,opt,name=Stats,proto3" json:"Stats"`
+	Effects     map[string]int64                      `protobuf:"bytes,15,rep,name=Effects,proto3" json:"Effects" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`
+	Abilities   map[string]AnimationAbility           `protobuf:"bytes,16,rep,name=Abilities,proto3" json:"Abilities" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
 func (m *E) Reset()      { *m = E{} }
@@ -176,6 +178,8 @@ func init() {
 	golang_proto.RegisterType((*Stats)(nil), "entity.Stats")
 	proto.RegisterType((*E)(nil), "entity.E")
 	golang_proto.RegisterType((*E)(nil), "entity.E")
+	proto.RegisterMapType((map[string]AnimationAbility)(nil), "entity.E.AbilitiesEntry")
+	golang_proto.RegisterMapType((map[string]AnimationAbility)(nil), "entity.E.AbilitiesEntry")
 	proto.RegisterMapType((map[string]int64)(nil), "entity.E.EffectsEntry")
 	golang_proto.RegisterMapType((map[string]int64)(nil), "entity.E.EffectsEntry")
 }
@@ -188,49 +192,53 @@ func init() {
 }
 
 var fileDescriptor_e2701362edd4c296 = []byte{
-	// 664 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x54, 0xbf, 0x6f, 0xd3, 0x40,
-	0x14, 0xf6, 0x39, 0x89, 0xd3, 0x5c, 0xd2, 0xca, 0x9c, 0xa0, 0x3a, 0x55, 0xe8, 0x1a, 0x55, 0x42,
-	0x2a, 0x88, 0x3a, 0xd0, 0x0a, 0x84, 0x2a, 0x31, 0xa4, 0x75, 0xa4, 0x64, 0x70, 0x6b, 0xb9, 0x42,
-	0x6a, 0x27, 0xe4, 0x24, 0x17, 0x37, 0x6d, 0xe2, 0xab, 0x92, 0x4b, 0x21, 0x1b, 0x23, 0x23, 0x7f,
-	0x06, 0x7f, 0x02, 0x63, 0xc7, 0x8e, 0x19, 0x2b, 0x86, 0x8a, 0x38, 0x0b, 0x1b, 0x1d, 0x19, 0x18,
-	0xd0, 0x9d, 0x2f, 0xc6, 0x12, 0xa8, 0x52, 0x99, 0xfc, 0xbe, 0xf7, 0xbd, 0x1f, 0xc9, 0xe7, 0xf7,
-	0x19, 0x3e, 0x0f, 0xba, 0xfc, 0x78, 0xd4, 0xb4, 0x5a, 0xac, 0x5f, 0xa1, 0x3d, 0x76, 0xe2, 0x1f,
-	0x57, 0x02, 0xbf, 0x4f, 0xdf, 0x3e, 0xdb, 0xaa, 0x9c, 0x9d, 0x06, 0x15, 0x1a, 0xf2, 0x2e, 0x1f,
-	0xab, 0x87, 0x75, 0x36, 0x60, 0x9c, 0x21, 0x23, 0x46, 0x2b, 0x1b, 0xa9, 0xd6, 0x80, 0x05, 0xac,
-	0x22, 0xe9, 0xe6, 0xa8, 0x23, 0x91, 0x04, 0x32, 0x8a, 0xdb, 0x56, 0x5e, 0xdc, 0xbe, 0x29, 0xa0,
-	0xac, 0x4f, 0xf9, 0x60, 0x9c, 0x04, 0x71, 0xdb, 0xda, 0x0f, 0x00, 0x73, 0x07, 0xdc, 0xe7, 0x43,
-	0xb4, 0x0c, 0x0d, 0xdb, 0xef, 0xfb, 0x01, 0xc5, 0xa0, 0x0c, 0xd6, 0x33, 0x9e, 0x42, 0x08, 0xc3,
-	0xbc, 0x4d, 0x3b, 0x34, 0x1c, 0x52, 0xac, 0x4b, 0x62, 0x0e, 0xd1, 0x43, 0x58, 0x70, 0xd8, 0x39,
-	0x3d, 0x38, 0xa3, 0xb4, 0x8d, 0x33, 0x92, 0xfb, 0x93, 0x10, 0xec, 0xae, 0x3f, 0xe4, 0x31, 0x9b,
-	0x8d, 0xd9, 0x24, 0x81, 0x9e, 0xc2, 0x7b, 0xbb, 0x8c, 0xf5, 0xda, 0xec, 0x5d, 0xe8, 0xd1, 0xf6,
-	0xa8, 0xc5, 0xbb, 0x2c, 0xc4, 0x39, 0x59, 0xf5, 0x37, 0x81, 0x96, 0xa0, 0x5e, 0x77, 0xb1, 0x21,
-	0x69, 0xbd, 0xee, 0x0a, 0xec, 0xb8, 0x38, 0x1f, 0x63, 0xc7, 0x45, 0xf7, 0x61, 0xce, 0xf1, 0xdf,
-	0xd7, 0x5d, 0xbc, 0x20, 0x53, 0x31, 0x50, 0x59, 0xc7, 0xc5, 0x85, 0x24, 0xeb, 0xb8, 0x6b, 0xbf,
-	0xb2, 0x10, 0xd4, 0xd0, 0x6b, 0xa8, 0x37, 0x6c, 0xf9, 0x4f, 0x4b, 0x3b, 0x1b, 0x97, 0xd7, 0xab,
-	0xda, 0xd7, 0xeb, 0xd5, 0x47, 0xb7, 0x4b, 0x38, 0xea, 0x75, 0xdb, 0x56, 0xc3, 0xf6, 0xf4, 0x86,
-	0x8d, 0x6a, 0xd0, 0x78, 0x33, 0xa4, 0x83, 0x86, 0x2d, 0x35, 0xb9, 0xf3, 0x08, 0xd5, 0x2c, 0xc6,
-	0xec, 0xd2, 0x5e, 0xaf, 0x61, 0x4b, 0xf9, 0xee, 0x3e, 0x26, 0x6e, 0x46, 0x08, 0x66, 0xf7, 0xfc,
-	0x3e, 0x95, 0x2a, 0x17, 0x3c, 0x19, 0xa3, 0x12, 0x04, 0x87, 0x4a, 0x50, 0x70, 0x28, 0xd0, 0x91,
-	0xd2, 0x0f, 0x1c, 0x21, 0x13, 0x66, 0x3c, 0xc6, 0xa5, 0x7e, 0x39, 0x4f, 0x84, 0xe2, 0xe5, 0x7b,
-	0x7e, 0xbb, 0x3b, 0x1a, 0x4a, 0x05, 0x73, 0x9e, 0x42, 0x42, 0xe8, 0x2a, 0x57, 0xfa, 0xe9, 0x55,
-	0x8e, 0xf6, 0x61, 0xb1, 0x1a, 0x76, 0xfb, 0xbe, 0x78, 0x2b, 0x0d, 0x1b, 0xc3, 0xff, 0xf9, 0xd5,
-	0xe9, 0x09, 0xa8, 0x9c, 0x1a, 0x58, 0xe5, 0xb8, 0x28, 0x37, 0xa5, 0x53, 0xc8, 0x82, 0xf9, 0xfd,
-	0xe6, 0x09, 0x6d, 0xf1, 0x21, 0x2e, 0x95, 0x33, 0xeb, 0xc5, 0xcd, 0x25, 0x2b, 0xb9, 0x61, 0x8f,
-	0xb6, 0xf8, 0x4e, 0x56, 0xac, 0xf7, 0xe6, 0x45, 0xe8, 0xb1, 0x3a, 0x68, 0xbc, 0x58, 0x06, 0xeb,
-	0xc5, 0xcd, 0x45, 0x4b, 0xb9, 0x4b, 0x26, 0x55, 0xb1, 0x3a, 0xf9, 0x97, 0x30, 0x5f, 0xeb, 0x74,
-	0xe4, 0xe8, 0x25, 0x39, 0x7a, 0x79, 0x5e, 0x5c, 0xb3, 0x14, 0x51, 0x0b, 0xf9, 0x60, 0x3c, 0x5f,
-	0xa1, 0x72, 0x2b, 0xdb, 0xb0, 0x94, 0xa6, 0x85, 0x9e, 0xa7, 0x74, 0x2c, 0xaf, 0xa9, 0xe0, 0x89,
-	0x50, 0x9c, 0xde, 0xb9, 0xdf, 0x1b, 0xcd, 0x2d, 0x13, 0x83, 0x6d, 0xfd, 0x15, 0x78, 0xf2, 0x11,
-	0xc0, 0xac, 0xd8, 0x8e, 0x4a, 0x70, 0x61, 0x8f, 0x85, 0x54, 0xc4, 0xa6, 0x86, 0xe0, 0xdc, 0x7d,
-	0x26, 0x40, 0xc5, 0xc4, 0x71, 0xa6, 0x8e, 0x16, 0x53, 0x26, 0x33, 0xb3, 0x02, 0x26, 0x26, 0x32,
-	0x73, 0xe8, 0xc1, 0x3f, 0x6c, 0x64, 0x1a, 0xc8, 0x10, 0x7e, 0x31, 0xf3, 0xe2, 0xe9, 0xb8, 0xe6,
-	0x02, 0x2a, 0x28, 0x7f, 0x98, 0x05, 0x15, 0x3a, 0xae, 0x09, 0x77, 0xea, 0x97, 0x53, 0xa2, 0x4d,
-	0xa6, 0x44, 0xbb, 0x9a, 0x12, 0xed, 0x66, 0x4a, 0xc0, 0xcf, 0x29, 0x01, 0x1f, 0x22, 0x02, 0x3e,
-	0x47, 0x04, 0x7c, 0x89, 0x08, 0xb8, 0x88, 0x08, 0xb8, 0x8c, 0x08, 0x98, 0x44, 0x04, 0x7c, 0x8b,
-	0x08, 0xf8, 0x1e, 0x11, 0xed, 0x26, 0x22, 0xe0, 0xd3, 0x8c, 0x68, 0x17, 0x33, 0x02, 0x26, 0x33,
-	0xa2, 0x5d, 0xcd, 0x88, 0xd6, 0x34, 0xe4, 0xc7, 0x64, 0xeb, 0x77, 0x00, 0x00, 0x00, 0xff, 0xff,
-	0xf6, 0x0c, 0xd2, 0x06, 0xef, 0x04, 0x00, 0x00,
+	// 735 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x54, 0x4d, 0x6f, 0xd3, 0x4a,
+	0x14, 0xf5, 0xe4, 0xc3, 0xa9, 0x27, 0x69, 0x9e, 0xdf, 0xe8, 0xbd, 0x6a, 0x14, 0xa1, 0x69, 0x54,
+	0x09, 0xa9, 0x20, 0xea, 0x40, 0x0b, 0x08, 0x55, 0xb0, 0x48, 0xeb, 0xa0, 0x44, 0xc8, 0xad, 0xe5,
+	0x0a, 0xd4, 0xae, 0x90, 0x93, 0x4c, 0x52, 0xb7, 0x49, 0x5c, 0x25, 0x93, 0x42, 0x76, 0x2c, 0x59,
+	0xf2, 0x33, 0xf8, 0x09, 0x2c, 0xbb, 0xec, 0xb2, 0xcb, 0x8a, 0x45, 0x21, 0xce, 0x86, 0x1d, 0x5d,
+	0xb2, 0x44, 0x33, 0x9e, 0x38, 0x46, 0x54, 0x15, 0x65, 0xe5, 0x7b, 0xee, 0x9d, 0x73, 0x66, 0x7c,
+	0x66, 0xee, 0x85, 0x0f, 0xda, 0x1e, 0xdb, 0x1f, 0xd6, 0x8d, 0x86, 0xdf, 0x2d, 0xd1, 0x8e, 0x7f,
+	0xe0, 0xee, 0x97, 0xda, 0x6e, 0x97, 0xbe, 0xbe, 0xbf, 0x56, 0x3a, 0x3a, 0x6c, 0x97, 0x68, 0x8f,
+	0x79, 0x6c, 0x24, 0x3f, 0xc6, 0x51, 0xdf, 0x67, 0x3e, 0x52, 0x43, 0x54, 0x58, 0x89, 0x51, 0xdb,
+	0x7e, 0xdb, 0x2f, 0x89, 0x72, 0x7d, 0xd8, 0x12, 0x48, 0x00, 0x11, 0x85, 0xb4, 0xc2, 0xa3, 0xeb,
+	0x77, 0x6a, 0x53, 0xbf, 0x4b, 0x59, 0x7f, 0x14, 0x05, 0x92, 0xf6, 0xf0, 0x8f, 0x0e, 0xe8, 0xf6,
+	0xbc, 0xae, 0xcb, 0x3c, 0xbf, 0x17, 0xb2, 0x96, 0xbe, 0x03, 0x98, 0xde, 0x61, 0x2e, 0x1b, 0xa0,
+	0x05, 0xa8, 0x9a, 0x6e, 0xd7, 0x6d, 0x53, 0x0c, 0x8a, 0x60, 0x39, 0xe9, 0x48, 0x84, 0x30, 0xcc,
+	0x98, 0xb4, 0x45, 0x7b, 0x03, 0x8a, 0x13, 0xa2, 0x30, 0x85, 0xe8, 0x16, 0xd4, 0x2c, 0xff, 0x98,
+	0xee, 0x1c, 0x51, 0xda, 0xc4, 0x49, 0x51, 0x9b, 0x25, 0x78, 0x75, 0xd3, 0x1d, 0xb0, 0xb0, 0x9a,
+	0x0a, 0xab, 0x51, 0x02, 0xdd, 0x83, 0xff, 0x6e, 0xfa, 0x7e, 0xa7, 0xe9, 0xbf, 0xe9, 0x39, 0xb4,
+	0x39, 0x6c, 0xf0, 0x23, 0xe1, 0xb4, 0x58, 0xf5, 0x7b, 0x01, 0xe5, 0x61, 0xa2, 0x6a, 0x63, 0x55,
+	0x94, 0x13, 0x55, 0x9b, 0x63, 0xcb, 0xc6, 0x99, 0x10, 0x5b, 0x36, 0xfa, 0x0f, 0xa6, 0x2d, 0xf7,
+	0x6d, 0xd5, 0xc6, 0x73, 0x22, 0x15, 0x02, 0x99, 0xb5, 0x6c, 0xac, 0x45, 0x59, 0xcb, 0x5e, 0xfa,
+	0xa2, 0x42, 0x50, 0x41, 0xcf, 0x60, 0xa2, 0x66, 0x8a, 0x3f, 0xcd, 0x6d, 0xac, 0x9c, 0x5e, 0x2c,
+	0x2a, 0x9f, 0x2f, 0x16, 0x6f, 0x5f, 0xef, 0xe0, 0xb0, 0xe3, 0x35, 0x8d, 0x9a, 0xe9, 0x24, 0x6a,
+	0x26, 0xaa, 0x40, 0xf5, 0xe5, 0x80, 0xf6, 0x6b, 0xa6, 0xf0, 0xe4, 0xc6, 0x12, 0x92, 0xcc, 0x65,
+	0x36, 0x69, 0xa7, 0x53, 0x33, 0x85, 0x7d, 0x37, 0x97, 0x09, 0xc9, 0xe8, 0x05, 0xd4, 0x9e, 0xbb,
+	0xc2, 0xa9, 0x9a, 0x29, 0xac, 0xbe, 0xb1, 0xd2, 0x8c, 0x8f, 0x10, 0x4c, 0x6d, 0xb9, 0x5d, 0x2a,
+	0x2e, 0x43, 0x73, 0x44, 0x8c, 0x72, 0x10, 0xec, 0x4a, 0xfb, 0xc1, 0x2e, 0x47, 0x7b, 0xd2, 0x7c,
+	0xb0, 0x87, 0x74, 0x98, 0x74, 0x7c, 0x26, 0x9c, 0x4f, 0x3b, 0x3c, 0xe4, 0x2f, 0xc9, 0x71, 0x9b,
+	0xde, 0x70, 0x20, 0x8c, 0x4f, 0x3b, 0x12, 0xf1, 0x5b, 0x2b, 0x33, 0x0c, 0xc3, 0x5b, 0x2b, 0x33,
+	0xb4, 0x0d, 0xb3, 0xe5, 0xe9, 0x73, 0xac, 0x99, 0x38, 0xfb, 0x37, 0x07, 0x8f, 0x2b, 0xa0, 0x62,
+	0x4c, 0xb0, 0xcc, 0x70, 0x4e, 0xec, 0x14, 0x4f, 0x21, 0x03, 0x66, 0xb6, 0xeb, 0x07, 0xb4, 0xc1,
+	0x06, 0x78, 0xbe, 0x98, 0x5c, 0xce, 0xae, 0xe6, 0x8d, 0xa8, 0x8d, 0x1c, 0xda, 0x60, 0x1b, 0x29,
+	0xbe, 0xbd, 0x33, 0x5d, 0x84, 0xee, 0xc8, 0xee, 0xc0, 0xf9, 0x22, 0x58, 0xce, 0xae, 0xce, 0x1b,
+	0xb2, 0xc1, 0x45, 0x52, 0x2e, 0x96, 0xfd, 0xf3, 0x18, 0x66, 0x2a, 0xad, 0x96, 0x90, 0xfe, 0x47,
+	0x48, 0x2f, 0x4c, 0x17, 0x57, 0x0c, 0x59, 0xa8, 0xf4, 0x58, 0x7f, 0x34, 0xdd, 0x42, 0xe6, 0xd0,
+	0x53, 0xa8, 0x95, 0xeb, 0x5e, 0xc7, 0x63, 0x1e, 0x1d, 0x60, 0x5d, 0x30, 0xf1, 0x8c, 0x19, 0x95,
+	0xe2, 0xdc, 0x19, 0xa1, 0xb0, 0x0e, 0x73, 0x71, 0x71, 0x7e, 0x1b, 0x87, 0x74, 0x24, 0x1e, 0xb6,
+	0xe6, 0xf0, 0x90, 0x77, 0xc1, 0xb1, 0xdb, 0x19, 0x4e, 0xbb, 0x37, 0x04, 0xeb, 0x89, 0x27, 0xa0,
+	0xf0, 0x0a, 0xe6, 0x7f, 0x95, 0xbf, 0x82, 0x6d, 0xc4, 0xd9, 0xb1, 0x93, 0xcd, 0x4c, 0x15, 0x0a,
+	0xa3, 0x98, 0xee, 0xdd, 0xf7, 0x00, 0xa6, 0xb8, 0x27, 0x28, 0x07, 0xe7, 0xb6, 0xfc, 0x1e, 0xe5,
+	0xb1, 0xae, 0x20, 0x38, 0x1d, 0x30, 0x3a, 0x40, 0xd9, 0x68, 0xa8, 0xe8, 0x09, 0x34, 0x1f, 0x9b,
+	0x23, 0x7a, 0x8a, 0xc3, 0x68, 0x4e, 0xe8, 0x69, 0xf4, 0xff, 0x15, 0x93, 0x42, 0x57, 0x91, 0xca,
+	0x47, 0x82, 0x9e, 0xe1, 0x5f, 0xcb, 0xd6, 0xe7, 0x90, 0x26, 0x47, 0x80, 0xae, 0xc9, 0xd0, 0xb2,
+	0x75, 0xb8, 0x51, 0x3d, 0x1d, 0x13, 0xe5, 0x6c, 0x4c, 0x94, 0xf3, 0x31, 0x51, 0x2e, 0xc7, 0x04,
+	0xfc, 0x18, 0x13, 0xf0, 0x2e, 0x20, 0xe0, 0x63, 0x40, 0xc0, 0xa7, 0x80, 0x80, 0x93, 0x80, 0x80,
+	0xd3, 0x80, 0x80, 0xb3, 0x80, 0x80, 0xaf, 0x01, 0x01, 0xdf, 0x02, 0xa2, 0x5c, 0x06, 0x04, 0x7c,
+	0x98, 0x10, 0xe5, 0x64, 0x42, 0xc0, 0xd9, 0x84, 0x28, 0xe7, 0x13, 0xa2, 0xd4, 0x55, 0x31, 0x2f,
+	0xd7, 0x7e, 0x06, 0x00, 0x00, 0xff, 0xff, 0xc4, 0x01, 0x09, 0x84, 0x08, 0x06, 0x00, 0x00,
 }
 
 func (x Stat) String() string {
@@ -316,6 +324,9 @@ func (this *E) Equal(that interface{}) bool {
 	if !this.CellID.Equal(that1.CellID) {
 		return false
 	}
+	if !this.FactionID.Equal(that1.FactionID) {
+		return false
+	}
 	if this.Name != that1.Name {
 		return false
 	}
@@ -359,6 +370,16 @@ func (this *E) Equal(that interface{}) bool {
 			return false
 		}
 	}
+	if len(this.Abilities) != len(that1.Abilities) {
+		return false
+	}
+	for i := range this.Abilities {
+		a := this.Abilities[i]
+		b := that1.Abilities[i]
+		if !(&a).Equal(&b) {
+			return false
+		}
+	}
 	return true
 }
 func (this *Stats) GoString() string {
@@ -383,11 +404,12 @@ func (this *E) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 18)
+	s := make([]string, 0, 20)
 	s = append(s, "&entity.E{")
 	s = append(s, "ID: "+fmt.Sprintf("%#v", this.ID)+",\n")
 	s = append(s, "UserID: "+fmt.Sprintf("%#v", this.UserID)+",\n")
 	s = append(s, "CellID: "+fmt.Sprintf("%#v", this.CellID)+",\n")
+	s = append(s, "FactionID: "+fmt.Sprintf("%#v", this.FactionID)+",\n")
 	s = append(s, "Name: "+fmt.Sprintf("%#v", this.Name)+",\n")
 	s = append(s, "X: "+fmt.Sprintf("%#v", this.X)+",\n")
 	s = append(s, "Y: "+fmt.Sprintf("%#v", this.Y)+",\n")
@@ -416,6 +438,19 @@ func (this *E) GoString() string {
 	mapStringForEffects += "}"
 	if this.Effects != nil {
 		s = append(s, "Effects: "+mapStringForEffects+",\n")
+	}
+	keysForAbilities := make([]string, 0, len(this.Abilities))
+	for k, _ := range this.Abilities {
+		keysForAbilities = append(keysForAbilities, k)
+	}
+	github_com_gogo_protobuf_sortkeys.Strings(keysForAbilities)
+	mapStringForAbilities := "map[string]AnimationAbility{"
+	for _, k := range keysForAbilities {
+		mapStringForAbilities += fmt.Sprintf("%#v: %#v,", k, this.Abilities[k])
+	}
+	mapStringForAbilities += "}"
+	if this.Abilities != nil {
+		s = append(s, "Abilities: "+mapStringForAbilities+",\n")
 	}
 	s = append(s, "}")
 	return strings.Join(s, "")
@@ -516,6 +551,32 @@ func (m *E) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.Abilities) > 0 {
+		for k := range m.Abilities {
+			v := m.Abilities[k]
+			baseI := i
+			{
+				size, err := (&v).MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintEntity(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x12
+			i -= len(k)
+			copy(dAtA[i:], k)
+			i = encodeVarintEntity(dAtA, i, uint64(len(k)))
+			i--
+			dAtA[i] = 0xa
+			i = encodeVarintEntity(dAtA, i, uint64(baseI-i))
+			i--
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0x82
+		}
+	}
 	if len(m.Effects) > 0 {
 		for k := range m.Effects {
 			v := m.Effects[k]
@@ -530,7 +591,7 @@ func (m *E) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			dAtA[i] = 0xa
 			i = encodeVarintEntity(dAtA, i, uint64(baseI-i))
 			i--
-			dAtA[i] = 0x72
+			dAtA[i] = 0x7a
 		}
 	}
 	{
@@ -542,7 +603,7 @@ func (m *E) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintEntity(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0x6a
+	dAtA[i] = 0x72
 	if len(m.Objects) > 0 {
 		for iNdEx := len(m.Objects) - 1; iNdEx >= 0; iNdEx-- {
 			{
@@ -554,13 +615,13 @@ func (m *E) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 				i = encodeVarintEntity(dAtA, i, uint64(size))
 			}
 			i--
-			dAtA[i] = 0x62
+			dAtA[i] = 0x6a
 		}
 	}
 	if m.AnimationAt != 0 {
 		i = encodeVarintEntity(dAtA, i, uint64(m.AnimationAt))
 		i--
-		dAtA[i] = 0x58
+		dAtA[i] = 0x60
 	}
 	{
 		size := m.AnimationID.Size()
@@ -571,39 +632,49 @@ func (m *E) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintEntity(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0x52
+	dAtA[i] = 0x5a
 	if m.At != 0 {
 		i = encodeVarintEntity(dAtA, i, uint64(m.At))
 		i--
-		dAtA[i] = 0x48
+		dAtA[i] = 0x50
 	}
 	if m.Radius != 0 {
 		i = encodeVarintEntity(dAtA, i, uint64(m.Radius))
 		i--
-		dAtA[i] = 0x40
+		dAtA[i] = 0x48
 	}
 	if m.Rot != 0 {
 		i = encodeVarintEntity(dAtA, i, uint64(m.Rot))
 		i--
-		dAtA[i] = 0x38
+		dAtA[i] = 0x40
 	}
 	if m.Y != 0 {
 		i = encodeVarintEntity(dAtA, i, uint64(m.Y))
 		i--
-		dAtA[i] = 0x30
+		dAtA[i] = 0x38
 	}
 	if m.X != 0 {
 		i = encodeVarintEntity(dAtA, i, uint64(m.X))
 		i--
-		dAtA[i] = 0x28
+		dAtA[i] = 0x30
 	}
 	if len(m.Name) > 0 {
 		i -= len(m.Name)
 		copy(dAtA[i:], m.Name)
 		i = encodeVarintEntity(dAtA, i, uint64(len(m.Name)))
 		i--
-		dAtA[i] = 0x22
+		dAtA[i] = 0x2a
 	}
+	{
+		size := m.FactionID.Size()
+		i -= size
+		if _, err := m.FactionID.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintEntity(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x22
 	{
 		size := m.CellID.Size()
 		i -= size
@@ -699,6 +770,8 @@ func NewPopulatedE(r randyEntity, easy bool) *E {
 	this.UserID = *v2
 	v3 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
 	this.CellID = *v3
+	v4 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
+	this.FactionID = *v4
 	this.Name = string(randStringEntity(r))
 	this.X = int64(r.Int63())
 	if r.Intn(2) == 0 {
@@ -720,31 +793,38 @@ func NewPopulatedE(r randyEntity, easy bool) *E {
 	if r.Intn(2) == 0 {
 		this.At *= -1
 	}
-	v4 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
-	this.AnimationID = *v4
+	v5 := github_com_elojah_game_03_pkg_ulid.NewPopulatedID(r)
+	this.AnimationID = *v5
 	this.AnimationAt = int64(r.Int63())
 	if r.Intn(2) == 0 {
 		this.AnimationAt *= -1
 	}
 	if r.Intn(5) != 0 {
-		v5 := r.Intn(5)
-		this.Objects = make([]geometry.Rect, v5)
-		for i := 0; i < v5; i++ {
-			v6 := geometry.NewPopulatedRect(r, easy)
-			this.Objects[i] = *v6
+		v6 := r.Intn(5)
+		this.Objects = make([]geometry.Rect, v6)
+		for i := 0; i < v6; i++ {
+			v7 := geometry.NewPopulatedRect(r, easy)
+			this.Objects[i] = *v7
 		}
 	}
-	v7 := NewPopulatedStats(r, easy)
-	this.Stats = *v7
+	v8 := NewPopulatedStats(r, easy)
+	this.Stats = *v8
 	if r.Intn(5) != 0 {
-		v8 := r.Intn(10)
+		v9 := r.Intn(10)
 		this.Effects = make(map[string]int64)
-		for i := 0; i < v8; i++ {
-			v9 := randStringEntity(r)
-			this.Effects[v9] = int64(r.Int63())
+		for i := 0; i < v9; i++ {
+			v10 := randStringEntity(r)
+			this.Effects[v10] = int64(r.Int63())
 			if r.Intn(2) == 0 {
-				this.Effects[v9] *= -1
+				this.Effects[v10] *= -1
 			}
+		}
+	}
+	if r.Intn(5) != 0 {
+		v11 := r.Intn(10)
+		this.Abilities = make(map[string]AnimationAbility)
+		for i := 0; i < v11; i++ {
+			this.Abilities[randStringEntity(r)] = *NewPopulatedAnimationAbility(r, easy)
 		}
 	}
 	if !easy && r.Intn(10) != 0 {
@@ -771,9 +851,9 @@ func randUTF8RuneEntity(r randyEntity) rune {
 	return rune(ru + 61)
 }
 func randStringEntity(r randyEntity) string {
-	v10 := r.Intn(100)
-	tmps := make([]rune, v10)
-	for i := 0; i < v10; i++ {
+	v12 := r.Intn(100)
+	tmps := make([]rune, v12)
+	for i := 0; i < v12; i++ {
 		tmps[i] = randUTF8RuneEntity(r)
 	}
 	return string(tmps)
@@ -795,11 +875,11 @@ func randFieldEntity(dAtA []byte, r randyEntity, fieldNumber int, wire int) []by
 	switch wire {
 	case 0:
 		dAtA = encodeVarintPopulateEntity(dAtA, uint64(key))
-		v11 := r.Int63()
+		v13 := r.Int63()
 		if r.Intn(2) == 0 {
-			v11 *= -1
+			v13 *= -1
 		}
-		dAtA = encodeVarintPopulateEntity(dAtA, uint64(v11))
+		dAtA = encodeVarintPopulateEntity(dAtA, uint64(v13))
 	case 1:
 		dAtA = encodeVarintPopulateEntity(dAtA, uint64(key))
 		dAtA = append(dAtA, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
@@ -872,6 +952,8 @@ func (m *E) Size() (n int) {
 	n += 1 + l + sovEntity(uint64(l))
 	l = m.CellID.Size()
 	n += 1 + l + sovEntity(uint64(l))
+	l = m.FactionID.Size()
+	n += 1 + l + sovEntity(uint64(l))
 	l = len(m.Name)
 	if l > 0 {
 		n += 1 + l + sovEntity(uint64(l))
@@ -910,6 +992,15 @@ func (m *E) Size() (n int) {
 			_ = v
 			mapEntrySize := 1 + len(k) + sovEntity(uint64(len(k))) + 1 + sovEntity(uint64(v))
 			n += mapEntrySize + 1 + sovEntity(uint64(mapEntrySize))
+		}
+	}
+	if len(m.Abilities) > 0 {
+		for k, v := range m.Abilities {
+			_ = k
+			_ = v
+			l = v.Size()
+			mapEntrySize := 1 + len(k) + sovEntity(uint64(len(k))) + 1 + l + sovEntity(uint64(l))
+			n += mapEntrySize + 2 + sovEntity(uint64(mapEntrySize))
 		}
 	}
 	return n
@@ -958,10 +1049,21 @@ func (this *E) String() string {
 		mapStringForEffects += fmt.Sprintf("%v: %v,", k, this.Effects[k])
 	}
 	mapStringForEffects += "}"
+	keysForAbilities := make([]string, 0, len(this.Abilities))
+	for k, _ := range this.Abilities {
+		keysForAbilities = append(keysForAbilities, k)
+	}
+	github_com_gogo_protobuf_sortkeys.Strings(keysForAbilities)
+	mapStringForAbilities := "map[string]AnimationAbility{"
+	for _, k := range keysForAbilities {
+		mapStringForAbilities += fmt.Sprintf("%v: %v,", k, this.Abilities[k])
+	}
+	mapStringForAbilities += "}"
 	s := strings.Join([]string{`&E{`,
 		`ID:` + fmt.Sprintf("%v", this.ID) + `,`,
 		`UserID:` + fmt.Sprintf("%v", this.UserID) + `,`,
 		`CellID:` + fmt.Sprintf("%v", this.CellID) + `,`,
+		`FactionID:` + fmt.Sprintf("%v", this.FactionID) + `,`,
 		`Name:` + fmt.Sprintf("%v", this.Name) + `,`,
 		`X:` + fmt.Sprintf("%v", this.X) + `,`,
 		`Y:` + fmt.Sprintf("%v", this.Y) + `,`,
@@ -973,6 +1075,7 @@ func (this *E) String() string {
 		`Objects:` + repeatedStringForObjects + `,`,
 		`Stats:` + strings.Replace(strings.Replace(this.Stats.String(), "Stats", "Stats", 1), `&`, ``, 1) + `,`,
 		`Effects:` + mapStringForEffects + `,`,
+		`Abilities:` + mapStringForAbilities + `,`,
 		`}`,
 	}, "")
 	return s
@@ -1336,6 +1439,39 @@ func (m *E) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 4:
 			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field FactionID", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEntity
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthEntity
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEntity
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.FactionID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
 			}
 			var stringLen uint64
@@ -1366,7 +1502,7 @@ func (m *E) Unmarshal(dAtA []byte) error {
 			}
 			m.Name = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 5:
+		case 6:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field X", wireType)
 			}
@@ -1385,7 +1521,7 @@ func (m *E) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 6:
+		case 7:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Y", wireType)
 			}
@@ -1404,7 +1540,7 @@ func (m *E) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 7:
+		case 8:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Rot", wireType)
 			}
@@ -1423,7 +1559,7 @@ func (m *E) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 8:
+		case 9:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Radius", wireType)
 			}
@@ -1442,7 +1578,7 @@ func (m *E) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 9:
+		case 10:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field At", wireType)
 			}
@@ -1461,7 +1597,7 @@ func (m *E) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 10:
+		case 11:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AnimationID", wireType)
 			}
@@ -1494,7 +1630,7 @@ func (m *E) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 11:
+		case 12:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AnimationAt", wireType)
 			}
@@ -1513,7 +1649,7 @@ func (m *E) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 12:
+		case 13:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Objects", wireType)
 			}
@@ -1547,7 +1683,7 @@ func (m *E) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 13:
+		case 14:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Stats", wireType)
 			}
@@ -1580,7 +1716,7 @@ func (m *E) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 14:
+		case 15:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Effects", wireType)
 			}
@@ -1692,6 +1828,135 @@ func (m *E) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.Effects[mapkey] = mapvalue
+			iNdEx = postIndex
+		case 16:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Abilities", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEntity
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthEntity
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthEntity
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Abilities == nil {
+				m.Abilities = make(map[string]AnimationAbility)
+			}
+			var mapkey string
+			mapvalue := &AnimationAbility{}
+			for iNdEx < postIndex {
+				entryPreIndex := iNdEx
+				var wire uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowEntity
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					wire |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				fieldNum := int32(wire >> 3)
+				if fieldNum == 1 {
+					var stringLenmapkey uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowEntity
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						stringLenmapkey |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					intStringLenmapkey := int(stringLenmapkey)
+					if intStringLenmapkey < 0 {
+						return ErrInvalidLengthEntity
+					}
+					postStringIndexmapkey := iNdEx + intStringLenmapkey
+					if postStringIndexmapkey < 0 {
+						return ErrInvalidLengthEntity
+					}
+					if postStringIndexmapkey > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapkey = string(dAtA[iNdEx:postStringIndexmapkey])
+					iNdEx = postStringIndexmapkey
+				} else if fieldNum == 2 {
+					var mapmsglen int
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowEntity
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						mapmsglen |= int(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					if mapmsglen < 0 {
+						return ErrInvalidLengthEntity
+					}
+					postmsgIndex := iNdEx + mapmsglen
+					if postmsgIndex < 0 {
+						return ErrInvalidLengthEntity
+					}
+					if postmsgIndex > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapvalue = &AnimationAbility{}
+					if err := mapvalue.Unmarshal(dAtA[iNdEx:postmsgIndex]); err != nil {
+						return err
+					}
+					iNdEx = postmsgIndex
+				} else {
+					iNdEx = entryPreIndex
+					skippy, err := skipEntity(dAtA[iNdEx:])
+					if err != nil {
+						return err
+					}
+					if (skippy < 0) || (iNdEx+skippy) < 0 {
+						return ErrInvalidLengthEntity
+					}
+					if (iNdEx + skippy) > postIndex {
+						return io.ErrUnexpectedEOF
+					}
+					iNdEx += skippy
+				}
+			}
+			m.Abilities[mapkey] = *mapvalue
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

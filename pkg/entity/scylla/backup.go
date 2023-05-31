@@ -84,16 +84,16 @@ func (f filterBackup) index() string {
 func (s Store) InsertBackup(ctx context.Context, bu entity.Backup) error {
 	q := s.Session.Query(
 		`INSERT INTO main.entity_backup (
-			id, user_id, cell_id,
+			id, user_id, cell_id, faction_id,
 			name,
 			x, y, rot, radius,
 			at,
 			animation_id, animation_at,
 			objects
 		) VALUES (
-			?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+			?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 		)`,
-		bu.ID, bu.UserID, bu.CellID,
+		bu.ID, bu.UserID, bu.CellID, bu.FactionID,
 		bu.Name,
 		bu.X, bu.Y, bu.Rot, bu.Radius,
 		bu.At,
@@ -113,7 +113,7 @@ func (s Store) InsertBackup(ctx context.Context, bu entity.Backup) error {
 func (s Store) UpdateBackup(ctx context.Context, f entity.FilterBackup, bu entity.Backup) error {
 	b := strings.Builder{}
 	b.WriteString(`UPDATE main.entity_backup SET
-		user_id = ?, cell_id = ?,
+		user_id = ?, cell_id = ?, faction_id = ?,
 		name = ?,
 		x = ?, y = ?, rot = ?, radius = ?,
 		at = ?,
@@ -125,7 +125,7 @@ func (s Store) UpdateBackup(ctx context.Context, f entity.FilterBackup, bu entit
 	b.WriteString(clause)
 
 	args = append([]any{
-		bu.UserID, bu.CellID,
+		bu.UserID, bu.CellID, bu.FactionID,
 		bu.Name,
 		bu.X, bu.Y, bu.Rot, bu.Radius,
 		bu.At,
@@ -147,7 +147,7 @@ func (s Store) UpdateBackup(ctx context.Context, f entity.FilterBackup, bu entit
 func (s Store) FetchBackup(ctx context.Context, f entity.FilterBackup) (entity.Backup, error) {
 	b := strings.Builder{}
 	b.WriteString(`SELECT
-		id, user_id, cell_id,
+		id, user_id, cell_id, faction_id,
 		name,
 		x, y, rot, radius,
 		at,
@@ -162,7 +162,7 @@ func (s Store) FetchBackup(ctx context.Context, f entity.FilterBackup) (entity.B
 
 	var bu entity.Backup
 	if err := q.Scan(
-		&bu.ID, &bu.UserID, &bu.CellID,
+		&bu.ID, &bu.UserID, &bu.CellID, &bu.FactionID,
 		&bu.Name,
 		&bu.X, &bu.Y, &bu.Rot, &bu.Radius,
 		&bu.At,
@@ -186,7 +186,7 @@ func (s Store) FetchManyBackup(ctx context.Context, f entity.FilterBackup) ([]en
 
 	b := strings.Builder{}
 	b.WriteString(`SELECT
-		id, user_id, cell_id,
+		id, user_id, cell_id, faction_id,
 		name,
 		x, y, rot, radius,
 		at,
@@ -215,7 +215,7 @@ func (s Store) FetchManyBackup(ctx context.Context, f entity.FilterBackup) ([]en
 
 	for ; scanner.Next(); i++ {
 		if err := scanner.Scan(
-			&bus[i].ID, &bus[i].UserID, &bus[i].CellID,
+			&bus[i].ID, &bus[i].UserID, &bus[i].CellID, &bus[i].FactionID,
 			&bus[i].Name,
 			&bus[i].X, &bus[i].Y, &bus[i].Rot, &bus[i].Radius,
 			&bus[i].At,

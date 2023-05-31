@@ -45,19 +45,6 @@ grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '{"Name": 
 
 # NPC templates
 # 224x288
-# grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '{"Name": "Altar", "Entity": {
-# 	"Radius": 10,
-# 	"Objects": [
-# 		{"X": 41, "Y": 38, "Width": 20, "Height": 63},
-# 		{"X": 159, "Y": 38, "Width": 20, "Height": 63},
-# 		{"X": 41, "Y": 138, "Width": 20, "Height": 63},
-# 		{"X": 159, "Y": 138, "Width": 20, "Height": 63},
-# 		{"X": 61, "Y": 62, "Width": 98, "Height": 3},
-# 		{"X": 16, "Y": 110, "Width": 3, "Height": 70},
-# 		{"X": 63, "Y": 218, "Width": 1, "Height": 63},
-# 		{"X": 157, "Y": 218, "Width": 1, "Height": 63}
-# ]}}' -plaintext localhost:4282 grpc.Admin/CreateTemplate
-
 grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '{"Name": "Altar", "Entity": {
 	"Radius": 10,
 	"Objects": [
@@ -77,3 +64,6 @@ grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '{"Name": 
 		{"X": -33, "Y": 90, "Width": 1, "Height": 63},
 		{"X": 61, "Y": 90, "Width": 1, "Height": 63}
 ]}}' -plaintext localhost:4282 grpc.Admin/CreateTemplate
+
+# Ability templates
+grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '{"Name": "ability", "Entity": {"Objects": [{"Width": 16, "Height": 16}]}}' -plaintext localhost:4282 grpc.Admin/CreateTemplate

@@ -13,6 +13,27 @@ import (
 )
 
 var (
+	abilitySheets = map[string]string{
+		"ability": "01H1PKF558G77JMKAXB69H35PD",
+	}
+
+	abilityAnimations = map[string]dto.CreateAnimationReq{
+		"green_wheel": {
+			Animation: entity.Animation{
+				Name:         "green_wheel",
+				Start:        1,
+				End:          3,
+				Rate:         10,
+				FrameWidth:   16,
+				FrameHeight:  16,
+				FrameStart:   0,
+				FrameEnd:     3,
+				FrameMargin:  0,
+				FrameSpacing: 0,
+			},
+		},
+	}
+
 	npcSheets = map[string]string{
 		"Altar": "01GTXTWQQ0GEK0SZZ83FXPDB3E",
 	}
@@ -226,12 +247,12 @@ func generateAnimations(path string, sheets map[string]string, anims map[string]
 			}
 		}
 	}
-
 }
 
 func run(prog string, param string) {
 	generateAnimations(param, charSheets, charAnimations)
 	generateAnimations(param, npcSheets, npcAnimations)
+	generateAnimations(param, abilitySheets, abilityAnimations)
 }
 
 func main() {

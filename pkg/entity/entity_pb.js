@@ -16,6 +16,8 @@ var github_com_gogo_protobuf_gogoproto_gogo_pb = require('../../../../../github.
 goog.object.extend(proto, github_com_gogo_protobuf_gogoproto_gogo_pb);
 var github_com_elojah_game_03_pkg_geometry_geometry_pb = require('../../../../../github.com/elojah/game_03/pkg/geometry/geometry_pb.js');
 goog.object.extend(proto, github_com_elojah_game_03_pkg_geometry_geometry_pb);
+var github_com_elojah_game_03_pkg_entity_animation_pb = require('../../../../../github.com/elojah/game_03/pkg/entity/animation_pb.js');
+goog.object.extend(proto, github_com_elojah_game_03_pkg_entity_animation_pb);
 goog.exportSymbol('proto.entity.E', null, global);
 goog.exportSymbol('proto.entity.Stat', null, global);
 goog.exportSymbol('proto.entity.Stats', null, global);
@@ -437,7 +439,7 @@ proto.entity.Stats.prototype.setMaxmp = function(value) {
  * @private {!Array<number>}
  * @const
  */
-proto.entity.E.repeatedFields_ = [12];
+proto.entity.E.repeatedFields_ = [13];
 
 
 
@@ -473,18 +475,20 @@ proto.entity.E.toObject = function(includeInstance, msg) {
     id: msg.getId_asB64(),
     userid: msg.getUserid_asB64(),
     cellid: msg.getCellid_asB64(),
-    name: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    x: jspb.Message.getFieldWithDefault(msg, 5, 0),
-    y: jspb.Message.getFieldWithDefault(msg, 6, 0),
-    rot: jspb.Message.getFieldWithDefault(msg, 7, 0),
-    radius: jspb.Message.getFieldWithDefault(msg, 8, 0),
-    at: jspb.Message.getFieldWithDefault(msg, 9, 0),
+    factionid: msg.getFactionid_asB64(),
+    name: jspb.Message.getFieldWithDefault(msg, 5, ""),
+    x: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    y: jspb.Message.getFieldWithDefault(msg, 7, 0),
+    rot: jspb.Message.getFieldWithDefault(msg, 8, 0),
+    radius: jspb.Message.getFieldWithDefault(msg, 9, 0),
+    at: jspb.Message.getFieldWithDefault(msg, 10, 0),
     animationid: msg.getAnimationid_asB64(),
-    animationat: jspb.Message.getFieldWithDefault(msg, 11, 0),
+    animationat: jspb.Message.getFieldWithDefault(msg, 12, 0),
     objectsList: jspb.Message.toObjectList(msg.getObjectsList(),
     github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect.toObject, includeInstance),
     stats: (f = msg.getStats()) && proto.entity.Stats.toObject(includeInstance, f),
-    effectsMap: (f = msg.getEffectsMap()) ? f.toObject(includeInstance, undefined) : []
+    effectsMap: (f = msg.getEffectsMap()) ? f.toObject(includeInstance, undefined) : [],
+    abilitiesMap: (f = msg.getAbilitiesMap()) ? f.toObject(includeInstance, proto.entity.AnimationAbility.toObject) : []
   };
 
   if (includeInstance) {
@@ -534,51 +538,61 @@ proto.entity.E.deserializeBinaryFromReader = function(msg, reader) {
       msg.setCellid(value);
       break;
     case 4:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setFactionid(value);
+      break;
+    case 5:
       var value = /** @type {string} */ (reader.readString());
       msg.setName(value);
       break;
-    case 5:
+    case 6:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setX(value);
       break;
-    case 6:
+    case 7:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setY(value);
       break;
-    case 7:
+    case 8:
       var value = /** @type {number} */ (reader.readInt32());
       msg.setRot(value);
       break;
-    case 8:
+    case 9:
       var value = /** @type {number} */ (reader.readInt32());
       msg.setRadius(value);
       break;
-    case 9:
+    case 10:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setAt(value);
       break;
-    case 10:
+    case 11:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setAnimationid(value);
       break;
-    case 11:
+    case 12:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setAnimationat(value);
       break;
-    case 12:
+    case 13:
       var value = new github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect;
       reader.readMessage(value,github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect.deserializeBinaryFromReader);
       msg.addObjects(value);
       break;
-    case 13:
+    case 14:
       var value = new proto.entity.Stats;
       reader.readMessage(value,proto.entity.Stats.deserializeBinaryFromReader);
       msg.setStats(value);
       break;
-    case 14:
+    case 15:
       var value = msg.getEffectsMap();
       reader.readMessage(value, function(message, reader) {
         jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readString, jspb.BinaryReader.prototype.readInt64, null, "", 0);
+         });
+      break;
+    case 16:
+      var value = msg.getAbilitiesMap();
+      reader.readMessage(value, function(message, reader) {
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readString, jspb.BinaryReader.prototype.readMessage, proto.entity.AnimationAbility.deserializeBinaryFromReader, "", new proto.entity.AnimationAbility());
          });
       break;
     default:
@@ -631,66 +645,73 @@ proto.entity.E.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getFactionid_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      4,
+      f
+    );
+  }
   f = message.getName();
   if (f.length > 0) {
     writer.writeString(
-      4,
+      5,
       f
     );
   }
   f = message.getX();
   if (f !== 0) {
     writer.writeInt64(
-      5,
+      6,
       f
     );
   }
   f = message.getY();
   if (f !== 0) {
     writer.writeInt64(
-      6,
+      7,
       f
     );
   }
   f = message.getRot();
   if (f !== 0) {
     writer.writeInt32(
-      7,
+      8,
       f
     );
   }
   f = message.getRadius();
   if (f !== 0) {
     writer.writeInt32(
-      8,
+      9,
       f
     );
   }
   f = message.getAt();
   if (f !== 0) {
     writer.writeInt64(
-      9,
+      10,
       f
     );
   }
   f = message.getAnimationid_asU8();
   if (f.length > 0) {
     writer.writeBytes(
-      10,
+      11,
       f
     );
   }
   f = message.getAnimationat();
   if (f !== 0) {
     writer.writeInt64(
-      11,
+      12,
       f
     );
   }
   f = message.getObjectsList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
-      12,
+      13,
       f,
       github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect.serializeBinaryToWriter
     );
@@ -698,14 +719,18 @@ proto.entity.E.serializeBinaryToWriter = function(message, writer) {
   f = message.getStats();
   if (f != null) {
     writer.writeMessage(
-      13,
+      14,
       f,
       proto.entity.Stats.serializeBinaryToWriter
     );
   }
   f = message.getEffectsMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(14, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeInt64);
+    f.serializeBinary(15, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeInt64);
+  }
+  f = message.getAbilitiesMap(true);
+  if (f && f.getLength() > 0) {
+    f.serializeBinary(16, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeMessage, proto.entity.AnimationAbility.serializeBinaryToWriter);
   }
 };
 
@@ -837,11 +862,53 @@ proto.entity.E.prototype.setCellid = function(value) {
 
 
 /**
- * optional string Name = 4;
+ * optional bytes FactionID = 4;
+ * @return {!(string|Uint8Array)}
+ */
+proto.entity.E.prototype.getFactionid = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/**
+ * optional bytes FactionID = 4;
+ * This is a type-conversion wrapper around `getFactionid()`
+ * @return {string}
+ */
+proto.entity.E.prototype.getFactionid_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getFactionid()));
+};
+
+
+/**
+ * optional bytes FactionID = 4;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getFactionid()`
+ * @return {!Uint8Array}
+ */
+proto.entity.E.prototype.getFactionid_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getFactionid()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.entity.E} returns this
+ */
+proto.entity.E.prototype.setFactionid = function(value) {
+  return jspb.Message.setProto3BytesField(this, 4, value);
+};
+
+
+/**
+ * optional string Name = 5;
  * @return {string}
  */
 proto.entity.E.prototype.getName = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
 
@@ -850,33 +917,15 @@ proto.entity.E.prototype.getName = function() {
  * @return {!proto.entity.E} returns this
  */
 proto.entity.E.prototype.setName = function(value) {
-  return jspb.Message.setProto3StringField(this, 4, value);
+  return jspb.Message.setProto3StringField(this, 5, value);
 };
 
 
 /**
- * optional int64 X = 5;
+ * optional int64 X = 6;
  * @return {number}
  */
 proto.entity.E.prototype.getX = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.entity.E} returns this
- */
-proto.entity.E.prototype.setX = function(value) {
-  return jspb.Message.setProto3IntField(this, 5, value);
-};
-
-
-/**
- * optional int64 Y = 6;
- * @return {number}
- */
-proto.entity.E.prototype.getY = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
 };
 
@@ -885,16 +934,16 @@ proto.entity.E.prototype.getY = function() {
  * @param {number} value
  * @return {!proto.entity.E} returns this
  */
-proto.entity.E.prototype.setY = function(value) {
+proto.entity.E.prototype.setX = function(value) {
   return jspb.Message.setProto3IntField(this, 6, value);
 };
 
 
 /**
- * optional int32 Rot = 7;
+ * optional int64 Y = 7;
  * @return {number}
  */
-proto.entity.E.prototype.getRot = function() {
+proto.entity.E.prototype.getY = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
 };
 
@@ -903,16 +952,16 @@ proto.entity.E.prototype.getRot = function() {
  * @param {number} value
  * @return {!proto.entity.E} returns this
  */
-proto.entity.E.prototype.setRot = function(value) {
+proto.entity.E.prototype.setY = function(value) {
   return jspb.Message.setProto3IntField(this, 7, value);
 };
 
 
 /**
- * optional int32 Radius = 8;
+ * optional int32 Rot = 8;
  * @return {number}
  */
-proto.entity.E.prototype.getRadius = function() {
+proto.entity.E.prototype.getRot = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
 };
 
@@ -921,16 +970,16 @@ proto.entity.E.prototype.getRadius = function() {
  * @param {number} value
  * @return {!proto.entity.E} returns this
  */
-proto.entity.E.prototype.setRadius = function(value) {
+proto.entity.E.prototype.setRot = function(value) {
   return jspb.Message.setProto3IntField(this, 8, value);
 };
 
 
 /**
- * optional int64 At = 9;
+ * optional int32 Radius = 9;
  * @return {number}
  */
-proto.entity.E.prototype.getAt = function() {
+proto.entity.E.prototype.getRadius = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 9, 0));
 };
 
@@ -939,22 +988,40 @@ proto.entity.E.prototype.getAt = function() {
  * @param {number} value
  * @return {!proto.entity.E} returns this
  */
-proto.entity.E.prototype.setAt = function(value) {
+proto.entity.E.prototype.setRadius = function(value) {
   return jspb.Message.setProto3IntField(this, 9, value);
 };
 
 
 /**
- * optional bytes AnimationID = 10;
- * @return {!(string|Uint8Array)}
+ * optional int64 At = 10;
+ * @return {number}
  */
-proto.entity.E.prototype.getAnimationid = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 10, ""));
+proto.entity.E.prototype.getAt = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 10, 0));
 };
 
 
 /**
- * optional bytes AnimationID = 10;
+ * @param {number} value
+ * @return {!proto.entity.E} returns this
+ */
+proto.entity.E.prototype.setAt = function(value) {
+  return jspb.Message.setProto3IntField(this, 10, value);
+};
+
+
+/**
+ * optional bytes AnimationID = 11;
+ * @return {!(string|Uint8Array)}
+ */
+proto.entity.E.prototype.getAnimationid = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 11, ""));
+};
+
+
+/**
+ * optional bytes AnimationID = 11;
  * This is a type-conversion wrapper around `getAnimationid()`
  * @return {string}
  */
@@ -965,7 +1032,7 @@ proto.entity.E.prototype.getAnimationid_asB64 = function() {
 
 
 /**
- * optional bytes AnimationID = 10;
+ * optional bytes AnimationID = 11;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getAnimationid()`
@@ -982,16 +1049,16 @@ proto.entity.E.prototype.getAnimationid_asU8 = function() {
  * @return {!proto.entity.E} returns this
  */
 proto.entity.E.prototype.setAnimationid = function(value) {
-  return jspb.Message.setProto3BytesField(this, 10, value);
+  return jspb.Message.setProto3BytesField(this, 11, value);
 };
 
 
 /**
- * optional int64 AnimationAt = 11;
+ * optional int64 AnimationAt = 12;
  * @return {number}
  */
 proto.entity.E.prototype.getAnimationat = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 11, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 12, 0));
 };
 
 
@@ -1000,17 +1067,17 @@ proto.entity.E.prototype.getAnimationat = function() {
  * @return {!proto.entity.E} returns this
  */
 proto.entity.E.prototype.setAnimationat = function(value) {
-  return jspb.Message.setProto3IntField(this, 11, value);
+  return jspb.Message.setProto3IntField(this, 12, value);
 };
 
 
 /**
- * repeated geometry.Rect Objects = 12;
+ * repeated geometry.Rect Objects = 13;
  * @return {!Array<!proto.geometry.Rect>}
  */
 proto.entity.E.prototype.getObjectsList = function() {
   return /** @type{!Array<!proto.geometry.Rect>} */ (
-    jspb.Message.getRepeatedWrapperField(this, github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect, 12));
+    jspb.Message.getRepeatedWrapperField(this, github_com_elojah_game_03_pkg_geometry_geometry_pb.Rect, 13));
 };
 
 
@@ -1019,7 +1086,7 @@ proto.entity.E.prototype.getObjectsList = function() {
  * @return {!proto.entity.E} returns this
 */
 proto.entity.E.prototype.setObjectsList = function(value) {
-  return jspb.Message.setRepeatedWrapperField(this, 12, value);
+  return jspb.Message.setRepeatedWrapperField(this, 13, value);
 };
 
 
@@ -1029,7 +1096,7 @@ proto.entity.E.prototype.setObjectsList = function(value) {
  * @return {!proto.geometry.Rect}
  */
 proto.entity.E.prototype.addObjects = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 12, opt_value, proto.geometry.Rect, opt_index);
+  return jspb.Message.addToRepeatedWrapperField(this, 13, opt_value, proto.geometry.Rect, opt_index);
 };
 
 
@@ -1043,12 +1110,12 @@ proto.entity.E.prototype.clearObjectsList = function() {
 
 
 /**
- * optional Stats Stats = 13;
+ * optional Stats Stats = 14;
  * @return {?proto.entity.Stats}
  */
 proto.entity.E.prototype.getStats = function() {
   return /** @type{?proto.entity.Stats} */ (
-    jspb.Message.getWrapperField(this, proto.entity.Stats, 13));
+    jspb.Message.getWrapperField(this, proto.entity.Stats, 14));
 };
 
 
@@ -1057,7 +1124,7 @@ proto.entity.E.prototype.getStats = function() {
  * @return {!proto.entity.E} returns this
 */
 proto.entity.E.prototype.setStats = function(value) {
-  return jspb.Message.setWrapperField(this, 13, value);
+  return jspb.Message.setWrapperField(this, 14, value);
 };
 
 
@@ -1075,19 +1142,19 @@ proto.entity.E.prototype.clearStats = function() {
  * @return {boolean}
  */
 proto.entity.E.prototype.hasStats = function() {
-  return jspb.Message.getField(this, 13) != null;
+  return jspb.Message.getField(this, 14) != null;
 };
 
 
 /**
- * map<string, int64> Effects = 14;
+ * map<string, int64> Effects = 15;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
  * @return {!jspb.Map<string,number>}
  */
 proto.entity.E.prototype.getEffectsMap = function(opt_noLazyCreate) {
   return /** @type {!jspb.Map<string,number>} */ (
-      jspb.Message.getMapField(this, 14, opt_noLazyCreate,
+      jspb.Message.getMapField(this, 15, opt_noLazyCreate,
       null));
 };
 
@@ -1098,6 +1165,28 @@ proto.entity.E.prototype.getEffectsMap = function(opt_noLazyCreate) {
  */
 proto.entity.E.prototype.clearEffectsMap = function() {
   this.getEffectsMap().clear();
+  return this;};
+
+
+/**
+ * map<string, AnimationAbility> Abilities = 16;
+ * @param {boolean=} opt_noLazyCreate Do not create the map if
+ * empty, instead returning `undefined`
+ * @return {!jspb.Map<string,!proto.entity.AnimationAbility>}
+ */
+proto.entity.E.prototype.getAbilitiesMap = function(opt_noLazyCreate) {
+  return /** @type {!jspb.Map<string,!proto.entity.AnimationAbility>} */ (
+      jspb.Message.getMapField(this, 16, opt_noLazyCreate,
+      proto.entity.AnimationAbility));
+};
+
+
+/**
+ * Clears values from the map. The map will be non-null.
+ * @return {!proto.entity.E} returns this
+ */
+proto.entity.E.prototype.clearAbilitiesMap = function() {
+  this.getAbilitiesMap().clear();
   return this;};
 
 

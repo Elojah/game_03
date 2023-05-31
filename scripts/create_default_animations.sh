@@ -372,3 +372,6 @@ grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d @ -plainte
 
 # NPC animations
 grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d @ -plaintext localhost:4282 grpc.Admin/CreateAnimation <assets/animations/Altar/main.json
+
+# Ability animations
+grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d @ -plaintext localhost:4282 grpc.Admin/CreateAnimation <assets/animations/ability/green_wheel.json

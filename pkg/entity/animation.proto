@@ -33,3 +33,13 @@ message Animation {
     int64 FrameMargin       = 14;
     int64 FrameSpacing      = 15;
 }
+
+message AnimationAbility {
+    bytes AnimationID        = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+
+    bytes CellID             = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+	int64 X                  = 3;
+	int64 Y                  = 4;
+
+    int32 Rot                = 5;
+}

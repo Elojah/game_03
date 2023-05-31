@@ -14,20 +14,21 @@ option (gogoproto.goproto_registration) = true;
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 import "github.com/elojah/game_03/pkg/geometry/geometry.proto";
+import "github.com/elojah/game_03/pkg/entity/animation.proto";
 
 enum Stat {
-	NoneStat                            = 0;
+	NoneStat                                   = 0;
 
-	Damage                              = 1;
-	Defense                             = 2;
-	MoveSpeed                           = 4;
-	CastSpeed                           = 5;
-	CooldownReduction                   = 6;
+	Damage                                     = 1;
+	Defense                                    = 2;
+	MoveSpeed                                  = 4;
+	CastSpeed                                  = 5;
+	CooldownReduction                          = 6;
 
-	HP                                  = 7;
-	MP                                  = 8;
-	MaxHP                               = 9;
-	MaxMP                               = 10;
+	HP                                         = 7;
+	MP                                         = 8;
+	MaxHP                                      = 9;
+	MaxMP                                      = 10;
 }
 
 message Stats {
@@ -47,22 +48,25 @@ message E {
     bytes ID                            = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
     bytes UserID                        = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
     bytes CellID                        = 3 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    bytes FactionID                     = 4 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
 
-    string Name                         = 4;
+    string Name                         = 5;
 
-    int64 X                             = 5;
-    int64 Y                             = 6;
-    int32 Rot                           = 7;
-    int32 Radius                        = 8;
+    int64 X                             = 6;
+    int64 Y                             = 7;
+    int32 Rot                           = 8;
+    int32 Radius                        = 9;
 
-    int64 At                            = 9;
+    int64 At                            = 10;
 
-    bytes AnimationID                   = 10 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
-    int64 AnimationAt                   = 11;
+    bytes AnimationID                   = 11 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    int64 AnimationAt                   = 12;
 
-    repeated geometry.Rect Objects      = 12 [(gogoproto.nullable) = false];
+    repeated geometry.Rect Objects      = 13 [(gogoproto.nullable) = false];
 
-	Stats Stats                         = 13 [(gogoproto.nullable) = false];
+	Stats Stats                         = 14 [(gogoproto.nullable) = false];
 
-	map<string, int64> Effects          = 14 [(gogoproto.nullable) = false];
+	map<string, int64> Effects          = 15 [(gogoproto.nullable) = false];
+
+	map<string, entity.AnimationAbility> Abilities  = 16 [(gogoproto.nullable) = false];
 }

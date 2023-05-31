@@ -90,3 +90,43 @@ export namespace Animation {
   }
 }
 
+export class AnimationAbility extends jspb.Message {
+  getAnimationid(): Uint8Array | string;
+  getAnimationid_asU8(): Uint8Array;
+  getAnimationid_asB64(): string;
+  setAnimationid(value: Uint8Array | string): void;
+
+  getCellid(): Uint8Array | string;
+  getCellid_asU8(): Uint8Array;
+  getCellid_asB64(): string;
+  setCellid(value: Uint8Array | string): void;
+
+  getX(): number;
+  setX(value: number): void;
+
+  getY(): number;
+  setY(value: number): void;
+
+  getRot(): number;
+  setRot(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AnimationAbility.AsObject;
+  static toObject(includeInstance: boolean, msg: AnimationAbility): AnimationAbility.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AnimationAbility, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AnimationAbility;
+  static deserializeBinaryFromReader(message: AnimationAbility, reader: jspb.BinaryReader): AnimationAbility;
+}
+
+export namespace AnimationAbility {
+  export type AsObject = {
+    animationid: Uint8Array | string,
+    cellid: Uint8Array | string,
+    x: number,
+    y: number,
+    rot: number,
+  }
+}
+
