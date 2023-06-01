@@ -9,6 +9,18 @@ export class Target extends jspb.Message {
   getType(): TargetTypeMap[keyof TargetTypeMap];
   setType(value: TargetTypeMap[keyof TargetTypeMap]): void;
 
+  getRange(): number;
+  setRange(value: number): void;
+
+  getRadius(): number;
+  setRadius(value: number): void;
+
+  getWidth(): number;
+  setWidth(value: number): void;
+
+  getHeight(): number;
+  setHeight(value: number): void;
+
   getMove(): MoveMap[keyof MoveMap];
   setMove(value: MoveMap[keyof MoveMap]): void;
 
@@ -33,6 +45,10 @@ export class Target extends jspb.Message {
 export namespace Target {
   export type AsObject = {
     type: TargetTypeMap[keyof TargetTypeMap],
+    range: number,
+    radius: number,
+    width: number,
+    height: number,
     move: MoveMap[keyof MoveMap],
     positiontargettype: TargetTypeMap[keyof TargetTypeMap],
     positiontargetid: Uint8Array | string,
@@ -250,9 +266,6 @@ export class Effect extends jspb.Message {
   getAmount(): Amount | undefined;
   setAmount(value?: Amount): void;
 
-  getRange(): number;
-  setRange(value: number): void;
-
   getDuration(): number;
   setDuration(value: number): void;
 
@@ -292,7 +305,6 @@ export namespace Effect {
   export type AsObject = {
     stat: github_com_elojah_game_03_pkg_entity_entity_pb.StatMap[keyof github_com_elojah_game_03_pkg_entity_entity_pb.StatMap],
     amount?: Amount.AsObject,
-    range: number,
     duration: number,
     icon: Uint8Array | string,
     delay: number,

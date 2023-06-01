@@ -36,7 +36,7 @@ import * as World from 'pkg/room/world_pb';
 import * as WorldDTO from 'pkg/room/dto/world_pb';
 
 import { Empty } from "google-protobuf/google/protobuf/empty_pb";
-import { Circle } from 'pkg/geometry/geometry_pb';
+import { Circle, Rect } from 'pkg/geometry/geometry_pb';
 
 const entitySpriteDepth = 42
 
@@ -467,6 +467,70 @@ export class Game extends Scene {
 			return
 		}
 
+		// find targets here
+		const ab = this.Abilities.get(abilityID)
+		if (!ab) {
+			return
+		}
+
+		const c = new Cast.Cast()
+
+		c.setAbilityid(abilityID)
+
+		// const pos = new Circle()
+		// pos.setX(this.Entity.E.getX())
+		// pos.setY(this.Entity.E.getY())
+		// pos.setRadius(10)
+
+
+		const now = Date.now()
+		c.setAt(now)
+
+		ab.getEffectsMap().forEach((effect: Ability.Effect, abilityID: string) => {
+			effect.getTargetsMap().forEach((target: Ability.Target, targetID: string) => {
+				switch (target.getType()) {
+					case Ability.TargetType.NONETARGET:
+						// should never happen
+						break
+					case Ability.TargetType.SELF: {
+						const ct = new Cast.CastTarget()
+						ct.setId(this.EntityID)
+						c.getTargetsMap().set(targetID, ct)
+					} break
+					case Ability.TargetType.FOE: {
+						const ct = new Cast.CastTarget()
+						ct.setId(this.EntityID)
+						c.getTargetsMap().set(targetID, ct)
+					} break
+					case Ability.TargetType.CLOSESTSELF: {
+						// TODO
+					} break
+					case Ability.TargetType.CLOSESTFOE: {
+						// TODO
+					} break
+					case Ability.TargetType.RECT: {
+						const ct = new Cast.CastTarget()
+						const rect = new Rect()
+						rect.setX(this.input.mousePointer.worldX)
+						rect.setY(this.input.mousePointer.worldY)
+						rect.setWidth(target.getWidth())
+						rect.setHeight(target.getHeight())
+						ct.setRect(rect)
+					} break
+					case Ability.TargetType.CIRCLE: {
+						const ct = new Cast.CastTarget()
+						const circle = new Circle()
+						circle.setX(this.input.mousePointer.worldX)
+						circle.setY(this.input.mousePointer.worldY)
+						circle.setRadius(target.getRadius())
+						ct.setCircle(circle)
+					} break
+
+				}
+			})
+		})
+
+
 		// Play ability animation (TMP: on self ftm)
 		const abanim = new Animation.AnimationAbility()
 		abanim.setCellid(this.Entity.E.getCellid())
@@ -474,7 +538,7 @@ export class Game extends Scene {
 		abanim.setY(this.Entity.E.getY())
 
 		const tmpanim = this.add.sprite(abanim.getX(), abanim.getY(), '').setVisible(false)
-		const animID = this.Entity.Animations.get(ulid(this.Abilities.get(abilityID)?.getAnimation_asU8()!))!
+		const animID = this.Entity.Animations.get(ulid(ab.getAnimation_asU8()!))!
 		if (animID) {
 			tmpanim.setVisible(true).play(animID)
 			tmpanim.on('animationcomplete', () => {
@@ -492,21 +556,6 @@ export class Game extends Scene {
 		// 	this.Entity?.Body?.play(duplicateID, true)
 		// }
 
-
-		const c = new Cast.Cast()
-
-		c.setAbilityid(abilityID)
-
-		// const pos = new Circle()
-		// pos.setX(this.Entity.E.getX())
-		// pos.setY(this.Entity.E.getY())
-		// pos.setRadius(10)
-
-		// const target = new Cast.CastTarget()
-		// target.setCircle(pos)
-
-		const now = Date.now()
-		c.setAt(now)
 
 		this.SendChannel.send(c.serializeBinary())
 

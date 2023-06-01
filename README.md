@@ -71,13 +71,19 @@ $ go run ./scripts/write_tileset/main.go 'assets/external/Tilesets' 'assets/tile
 	  + [ ] Triggers at component level
 	  + [ ] Eval triggers first, then modify effects then apply effects
 	  + [x] Ability store+cache + Entity Ability store+cache
-	  + [ ] [HD] API routes for ability + ability entity
-	  + [ ] [HD] Add faction implementation all along :(
+	  + [x] API routes for ability + ability entity
+	  + [x] Add faction implementation all along :(
   + [ ] [p0] Implement RTC both directions
 	  + [x] Clean cancel of send_entity
 	  + [ ] When ctrl+c -> cancel ctx clean
 	  + [ ] RTC peer connectin not found 1/2 refresh (delete/recreate mechanism)
   + [ ] [BUG] [p0] Collision on entity don't happen (entity loaded before pc ?)
+
+  + [ ] [p0] Targeting ? + check realtime interaction
+  + [ ] [p0] Clean ability animation creation (green, red, etc.)
+  + [ ] [p0] Wrap animations/entitiy with red/green lights for clarity
+  + [ ] [p0] How to learn abilities ? Boss & loot ?
+
 
 # FLOW
 ---

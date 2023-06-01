@@ -37,9 +37,17 @@ enum Move {
 message Target {
 	TargetType Type                            = 1;
 
-	Move Move                                  = 2;
-	TargetType PositionTargetType              = 3;
-	bytes PositionTargetID                     = 4 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+	int64 Range                                = 2;
+
+	// optionals
+	int64 Radius                               = 3;
+	int64 Width                                = 4;
+	int64 Height                               = 5;
+
+	// Move target optionals
+	Move Move                                  = 6;
+	TargetType PositionTargetType              = 7;
+	bytes PositionTargetID                     = 8 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
 }
 
 message AbilityModifier {
@@ -120,8 +128,6 @@ message Effect {
 	// if HP/MP, duration is ignored
 	entity.Stat Stat                           = 1;
 	Amount Amount                              = 2 [(gogoproto.nullable) = false];
-
-	int64 Range                                = 3;
 
 	// stack rules
 	// if duration 0 or ignored, overtime effects ignored too
