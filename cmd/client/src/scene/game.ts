@@ -473,11 +473,16 @@ export class Game extends Scene {
 		abanim.setX(this.Entity.E.getX())
 		abanim.setY(this.Entity.E.getY())
 
-		const tmpanim = this.add.sprite(abanim.getX(), abanim.getY(), '')
-		tmpanim.play(ulid(this.Abilities.get(abilityID)?.getAnimation_asU8()!))
-		tmpanim.once('animationcomplete', () => {
+		const tmpanim = this.add.sprite(abanim.getX(), abanim.getY(), '').setVisible(false)
+		const animID = this.Entity.Animations.get(ulid(this.Abilities.get(abilityID)?.getAnimation_asU8()!))!
+		if (animID) {
+			tmpanim.setVisible(true).play(animID)
+			tmpanim.on('animationcomplete', () => {
+				tmpanim.destroy()
+			})
+		} else {
 			tmpanim.destroy()
-		})
+		}
 
 		// Play cast animation on entity
 		// this.Entity.Body.body.setVelocity(0)
@@ -1515,7 +1520,6 @@ export class Game extends Scene {
 						anims.set(an.getName(), id)
 					}
 
-
 					// return if already loaded
 					if (this.anims.exists(duplicateID)) {
 						anims.set(id, duplicateID)
@@ -1523,7 +1527,7 @@ export class Game extends Scene {
 						return
 					}
 
-					const loadAnim = () => {
+					const loadAnim = (an: Animation.Animation) => {
 						// Create animation
 						const seq = an.getSequenceList().length > 0 ? { frames: an.getSequenceList() } : { start: an.getStart(), end: an.getEnd() };
 						const newAnim = this.anims.create({
@@ -1533,7 +1537,11 @@ export class Game extends Scene {
 								seq,
 							),
 							frameRate: an.getRate(),
-							repeat: -1,
+							repeat: an.getRepeat(),
+							delay: an.getDelay(),
+							duration: an.getDuration(),
+							hideOnComplete: an.getShowandhide(),
+							showOnStart: an.getShowandhide(),
 						})
 						if (!newAnim) {
 							console.log('failed to load animation ' + duplicateID)
@@ -1561,10 +1569,10 @@ export class Game extends Scene {
 							// Add spritesheet to loaded
 							this.SpriteSheets.set(sheetID, 1)
 
-							loadAnim()
+							loadAnim(an)
 						}).start()
 					} else {
-						loadAnim()
+						loadAnim(an)
 					}
 				})
 			})

@@ -1,1 +1,1 @@
-{"EntityTemplate":"Villager4","Animation":{"ID":"","EntityID":"","SheetID":"AYPCaOcUa8+yM6EiHSY+kg==","DuplicateID":"","Name":"idle_down","End":1,"Rate":1,"FrameWidth":16,"FrameHeight":16,"FrameEnd":27}}
+{"EntityTemplate":"Villager4","Animation":{"ID":"","EntityID":"","SheetID":"AYPCaOcUa8+yM6EiHSY+kg==","DuplicateID":"","Name":"idle_down","End":1,"Rate":1,"FrameWidth":16,"FrameHeight":16,"FrameEnd":27,"Repeat":-1}}

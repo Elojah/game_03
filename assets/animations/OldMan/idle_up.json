@@ -1,1 +1,1 @@
-{"EntityTemplate":"OldMan","Animation":{"ID":"","EntityID":"","SheetID":"AYPCaOcUsqtCgEAeQ8Ew3g==","DuplicateID":"","Name":"idle_up","Start":1,"End":2,"Rate":1,"FrameWidth":16,"FrameHeight":16,"FrameEnd":27}}
+{"EntityTemplate":"OldMan","Animation":{"ID":"","EntityID":"","SheetID":"AYPCaOcUsqtCgEAeQ8Ew3g==","DuplicateID":"","Name":"idle_up","Start":1,"End":2,"Rate":1,"FrameWidth":16,"FrameHeight":16,"FrameEnd":27,"Repeat":-1}}

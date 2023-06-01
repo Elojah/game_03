@@ -32,6 +32,12 @@ message Animation {
     int64 FrameEnd          = 13;
     int64 FrameMargin       = 14;
     int64 FrameSpacing      = 15;
+
+	int64 Repeat            = 16;
+	int64 Delay             = 17;
+    int64 Duration          = 18;
+
+	bool ShowAndHide        = 19;
 }
 
 message AnimationAbility {

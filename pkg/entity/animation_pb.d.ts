@@ -60,6 +60,18 @@ export class Animation extends jspb.Message {
   getFramespacing(): number;
   setFramespacing(value: number): void;
 
+  getRepeat(): number;
+  setRepeat(value: number): void;
+
+  getDelay(): number;
+  setDelay(value: number): void;
+
+  getDuration(): number;
+  setDuration(value: number): void;
+
+  getShowandhide(): boolean;
+  setShowandhide(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Animation.AsObject;
   static toObject(includeInstance: boolean, msg: Animation): Animation.AsObject;
@@ -87,6 +99,10 @@ export namespace Animation {
     frameend: number,
     framemargin: number,
     framespacing: number,
+    repeat: number,
+    delay: number,
+    duration: number,
+    showandhide: boolean,
   }
 }
 

@@ -116,7 +116,11 @@ CREATE TABLE main.entity_animation (
     frame_start     bigint,
     frame_end       bigint,
     frame_margin    bigint,
-    frame_spacing   bigint
+    frame_spacing   bigint,
+	repeat          bigint,
+	delay           bigint,
+	duration        bigint,
+	show_and_hide   boolean
 );
 
 CREATE INDEX ON main.entity_animation(entity_id);

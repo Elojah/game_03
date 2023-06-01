@@ -1,1 +1,1 @@
-{"EntityTemplate":"MaskedNinja","Animation":{"ID":"","EntityID":"","SheetID":"AYPCaOcU6Ko6bdlQ8kFslw==","DuplicateID":"","Name":"idle_right","Start":3,"End":4,"Rate":1,"FrameWidth":16,"FrameHeight":16,"FrameEnd":27}}
+{"EntityTemplate":"MaskedNinja","Animation":{"ID":"","EntityID":"","SheetID":"AYPCaOcU6Ko6bdlQ8kFslw==","DuplicateID":"","Name":"idle_right","Start":3,"End":4,"Rate":1,"FrameWidth":16,"FrameHeight":16,"FrameEnd":27,"Repeat":-1}}

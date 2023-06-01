@@ -1,1 +1,1 @@
-{"EntityTemplate":"Caveman","Animation":{"ID":"","EntityID":"","SheetID":"AYPCaOcUUAinzCHTCvjksg==","DuplicateID":"","Name":"idle_down","End":1,"Rate":1,"FrameWidth":16,"FrameHeight":16,"FrameEnd":27}}
+{"EntityTemplate":"Caveman","Animation":{"ID":"","EntityID":"","SheetID":"AYPCaOcUUAinzCHTCvjksg==","DuplicateID":"","Name":"idle_down","End":1,"Rate":1,"FrameWidth":16,"FrameHeight":16,"FrameEnd":27,"Repeat":-1}}

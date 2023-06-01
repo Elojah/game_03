@@ -1,1 +1,1 @@
-{"EntityTemplate":"Princess","Animation":{"ID":"","EntityID":"","SheetID":"AYPCaOcUyrS4SERVSCYf7g==","DuplicateID":"","Name":"idle_up","Start":1,"End":2,"Rate":1,"FrameWidth":16,"FrameHeight":16,"FrameEnd":27}}
+{"EntityTemplate":"Princess","Animation":{"ID":"","EntityID":"","SheetID":"AYPCaOcUyrS4SERVSCYf7g==","DuplicateID":"","Name":"idle_up","Start":1,"End":2,"Rate":1,"FrameWidth":16,"FrameHeight":16,"FrameEnd":27,"Repeat":-1}}

@@ -30,6 +30,8 @@ var (
 				FrameEnd:     3,
 				FrameMargin:  0,
 				FrameSpacing: 0,
+				Duration:     1000,
+				ShowAndHide:  true,
 			},
 		},
 	}
@@ -51,6 +53,7 @@ var (
 				FrameEnd:     38,
 				FrameMargin:  0,
 				FrameSpacing: 0,
+				Repeat:       -1,
 			},
 		},
 	}
@@ -112,6 +115,7 @@ var (
 				FrameEnd:     27,
 				FrameMargin:  0,
 				FrameSpacing: 0,
+				Repeat:       -1,
 			},
 		},
 		"idle_left": {
@@ -126,6 +130,7 @@ var (
 				FrameEnd:     27,
 				FrameMargin:  0,
 				FrameSpacing: 0,
+				Repeat:       -1,
 			},
 		},
 		"idle_right": {
@@ -140,6 +145,7 @@ var (
 				FrameEnd:     27,
 				FrameMargin:  0,
 				FrameSpacing: 0,
+				Repeat:       -1,
 			},
 		},
 		"idle_up": {
@@ -154,6 +160,7 @@ var (
 				FrameEnd:     27,
 				FrameMargin:  0,
 				FrameSpacing: 0,
+				Repeat:       -1,
 			},
 		},
 		"walk_down": {

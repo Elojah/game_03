@@ -1,1 +1,1 @@
-{"EntityTemplate":"ability","Animation":{"ID":"","EntityID":"","SheetID":"AYhtN5Sogc8qTV1ZkxGWzQ==","DuplicateID":"","Name":"green_wheel","Start":1,"End":3,"Rate":10,"FrameWidth":16,"FrameHeight":16,"FrameEnd":3}}
+{"EntityTemplate":"ability","Animation":{"ID":"","EntityID":"","SheetID":"AYhtN5Sogc8qTV1ZkxGWzQ==","DuplicateID":"","Name":"green_wheel","Start":1,"End":3,"Rate":10,"FrameWidth":16,"FrameHeight":16,"FrameEnd":3,"Duration":1000,"ShowAndHide":true}}

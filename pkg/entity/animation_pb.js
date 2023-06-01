@@ -111,7 +111,11 @@ proto.entity.Animation.toObject = function(includeInstance, msg) {
     framestart: jspb.Message.getFieldWithDefault(msg, 12, 0),
     frameend: jspb.Message.getFieldWithDefault(msg, 13, 0),
     framemargin: jspb.Message.getFieldWithDefault(msg, 14, 0),
-    framespacing: jspb.Message.getFieldWithDefault(msg, 15, 0)
+    framespacing: jspb.Message.getFieldWithDefault(msg, 15, 0),
+    repeat: jspb.Message.getFieldWithDefault(msg, 16, 0),
+    delay: jspb.Message.getFieldWithDefault(msg, 17, 0),
+    duration: jspb.Message.getFieldWithDefault(msg, 18, 0),
+    showandhide: jspb.Message.getBooleanFieldWithDefault(msg, 19, false)
   };
 
   if (includeInstance) {
@@ -207,6 +211,22 @@ proto.entity.Animation.deserializeBinaryFromReader = function(msg, reader) {
     case 15:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setFramespacing(value);
+      break;
+    case 16:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setRepeat(value);
+      break;
+    case 17:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setDelay(value);
+      break;
+    case 18:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setDuration(value);
+      break;
+    case 19:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setShowandhide(value);
       break;
     default:
       reader.skipField();
@@ -339,6 +359,34 @@ proto.entity.Animation.serializeBinaryToWriter = function(message, writer) {
   if (f !== 0) {
     writer.writeInt64(
       15,
+      f
+    );
+  }
+  f = message.getRepeat();
+  if (f !== 0) {
+    writer.writeInt64(
+      16,
+      f
+    );
+  }
+  f = message.getDelay();
+  if (f !== 0) {
+    writer.writeInt64(
+      17,
+      f
+    );
+  }
+  f = message.getDuration();
+  if (f !== 0) {
+    writer.writeInt64(
+      18,
+      f
+    );
+  }
+  f = message.getShowandhide();
+  if (f) {
+    writer.writeBool(
+      19,
       f
     );
   }
@@ -727,6 +775,78 @@ proto.entity.Animation.prototype.getFramespacing = function() {
  */
 proto.entity.Animation.prototype.setFramespacing = function(value) {
   return jspb.Message.setProto3IntField(this, 15, value);
+};
+
+
+/**
+ * optional int64 Repeat = 16;
+ * @return {number}
+ */
+proto.entity.Animation.prototype.getRepeat = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 16, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.entity.Animation} returns this
+ */
+proto.entity.Animation.prototype.setRepeat = function(value) {
+  return jspb.Message.setProto3IntField(this, 16, value);
+};
+
+
+/**
+ * optional int64 Delay = 17;
+ * @return {number}
+ */
+proto.entity.Animation.prototype.getDelay = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 17, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.entity.Animation} returns this
+ */
+proto.entity.Animation.prototype.setDelay = function(value) {
+  return jspb.Message.setProto3IntField(this, 17, value);
+};
+
+
+/**
+ * optional int64 Duration = 18;
+ * @return {number}
+ */
+proto.entity.Animation.prototype.getDuration = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 18, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.entity.Animation} returns this
+ */
+proto.entity.Animation.prototype.setDuration = function(value) {
+  return jspb.Message.setProto3IntField(this, 18, value);
+};
+
+
+/**
+ * optional bool ShowAndHide = 19;
+ * @return {boolean}
+ */
+proto.entity.Animation.prototype.getShowandhide = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 19, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.entity.Animation} returns this
+ */
+proto.entity.Animation.prototype.setShowandhide = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 19, value);
 };
 
 

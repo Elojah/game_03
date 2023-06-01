@@ -1,1 +1,1 @@
-{"EntityTemplate":"RedNinja","Animation":{"ID":"","EntityID":"","SheetID":"AYPCaOcU+71a5fTUhgumrQ==","DuplicateID":"","Name":"idle_right","Start":3,"End":4,"Rate":1,"FrameWidth":16,"FrameHeight":16,"FrameEnd":27}}
+{"EntityTemplate":"RedNinja","Animation":{"ID":"","EntityID":"","SheetID":"AYPCaOcU+71a5fTUhgumrQ==","DuplicateID":"","Name":"idle_right","Start":3,"End":4,"Rate":1,"FrameWidth":16,"FrameHeight":16,"FrameEnd":27,"Repeat":-1}}

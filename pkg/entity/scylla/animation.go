@@ -94,12 +94,14 @@ func (s Store) InsertAnimation(ctx context.Context, an entity.Animation) error {
 			id, entity_id, sheet_id, duplicate_id,
 			name,
 			start, end, sequence, rate,
-			frame_width, frame_height, frame_start, frame_end, frame_margin, frame_spacing
-		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+			frame_width, frame_height, frame_start, frame_end, frame_margin, frame_spacing,
+			repeat, delay, duration, show_and_hide
+		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 		an.ID, an.EntityID, an.SheetID, an.DuplicateID,
 		an.Name,
 		an.Start, an.End, an.Sequence, an.Rate,
 		an.FrameWidth, an.FrameHeight, an.FrameStart, an.FrameEnd, an.FrameMargin, an.FrameSpacing,
+		an.Repeat, an.Delay, an.Duration, an.ShowAndHide,
 	).WithContext(ctx)
 
 	defer q.Release()
@@ -117,7 +119,8 @@ func (s Store) FetchAnimation(ctx context.Context, f entity.FilterAnimation) (en
 		id, entity_id, sheet_id, duplicate_id,
 		name,
 		start, end, sequence, rate,
-		frame_width, frame_height, frame_start, frame_end, frame_margin, frame_spacing
+		frame_width, frame_height, frame_start, frame_end, frame_margin, frame_spacing,
+		repeat, delay, duration, show_and_hide
 	FROM main.entity_animation `)
 
 	clause, args := filterAnimation(f).where()
@@ -131,6 +134,7 @@ func (s Store) FetchAnimation(ctx context.Context, f entity.FilterAnimation) (en
 		&an.Name,
 		&an.Start, &an.End, &an.Sequence, &an.Rate,
 		&an.FrameWidth, &an.FrameHeight, &an.FrameStart, &an.FrameEnd, &an.FrameMargin, &an.FrameSpacing,
+		&an.Repeat, &an.Delay, &an.Duration, &an.ShowAndHide,
 	); err != nil {
 		if errors.Is(err, gocql.ErrNotFound) {
 			return entity.Animation{}, gerrors.ErrNotFound{Resource: "animation", Index: filterAnimation(f).index()}
@@ -152,7 +156,8 @@ func (s Store) FetchManyAnimation(ctx context.Context, f entity.FilterAnimation)
 		id, entity_id, sheet_id, duplicate_id,
 		name,
 		start, end, sequence, rate,
-		frame_width, frame_height, frame_start, frame_end, frame_margin, frame_spacing
+		frame_width, frame_height, frame_start, frame_end, frame_margin, frame_spacing,
+		repeat, delay, duration, show_and_hide
 	FROM main.entity_animation `)
 
 	clause, args := filterAnimation(f).where()
@@ -182,6 +187,7 @@ func (s Store) FetchManyAnimation(ctx context.Context, f entity.FilterAnimation)
 			&ans[i].FrameWidth, &ans[i].FrameHeight,
 			&ans[i].FrameStart, &ans[i].FrameEnd,
 			&ans[i].FrameMargin, &ans[i].FrameSpacing,
+			&ans[i].Repeat, &ans[i].Delay, &ans[i].Duration, &ans[i].ShowAndHide,
 		); err != nil {
 			return nil, nil, err
 		}

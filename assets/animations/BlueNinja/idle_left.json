@@ -1,1 +1,1 @@
-{"EntityTemplate":"BlueNinja","Animation":{"ID":"","EntityID":"","SheetID":"AYPCaOcU+WLUCXm2vo8pXg==","DuplicateID":"","Name":"idle_left","Start":2,"End":3,"Rate":1,"FrameWidth":16,"FrameHeight":16,"FrameEnd":27}}
+{"EntityTemplate":"BlueNinja","Animation":{"ID":"","EntityID":"","SheetID":"AYPCaOcU+WLUCXm2vo8pXg==","DuplicateID":"","Name":"idle_left","Start":2,"End":3,"Rate":1,"FrameWidth":16,"FrameHeight":16,"FrameEnd":27,"Repeat":-1}}
