@@ -5,6 +5,36 @@ import * as jspb from "google-protobuf";
 import * as github_com_gogo_protobuf_gogoproto_gogo_pb from "../../../../../github.com/gogo/protobuf/gogoproto/gogo_pb";
 import * as github_com_elojah_game_03_pkg_entity_entity_pb from "../../../../../github.com/elojah/game_03/pkg/entity/entity_pb";
 
+export class MoveTarget extends jspb.Message {
+  getMove(): MoveMap[keyof MoveMap];
+  setMove(value: MoveMap[keyof MoveMap]): void;
+
+  getTargettype(): TargetTypeMap[keyof TargetTypeMap];
+  setTargettype(value: TargetTypeMap[keyof TargetTypeMap]): void;
+
+  getTargetid(): Uint8Array | string;
+  getTargetid_asU8(): Uint8Array;
+  getTargetid_asB64(): string;
+  setTargetid(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MoveTarget.AsObject;
+  static toObject(includeInstance: boolean, msg: MoveTarget): MoveTarget.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: MoveTarget, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MoveTarget;
+  static deserializeBinaryFromReader(message: MoveTarget, reader: jspb.BinaryReader): MoveTarget;
+}
+
+export namespace MoveTarget {
+  export type AsObject = {
+    move: MoveMap[keyof MoveMap],
+    targettype: TargetTypeMap[keyof TargetTypeMap],
+    targetid: Uint8Array | string,
+  }
+}
+
 export class Target extends jspb.Message {
   getType(): TargetTypeMap[keyof TargetTypeMap];
   setType(value: TargetTypeMap[keyof TargetTypeMap]): void;
@@ -21,16 +51,10 @@ export class Target extends jspb.Message {
   getHeight(): number;
   setHeight(value: number): void;
 
-  getMove(): MoveMap[keyof MoveMap];
-  setMove(value: MoveMap[keyof MoveMap]): void;
-
-  getPositiontargettype(): TargetTypeMap[keyof TargetTypeMap];
-  setPositiontargettype(value: TargetTypeMap[keyof TargetTypeMap]): void;
-
-  getPositiontargetid(): Uint8Array | string;
-  getPositiontargetid_asU8(): Uint8Array;
-  getPositiontargetid_asB64(): string;
-  setPositiontargetid(value: Uint8Array | string): void;
+  hasMove(): boolean;
+  clearMove(): void;
+  getMove(): MoveTarget | undefined;
+  setMove(value?: MoveTarget): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Target.AsObject;
@@ -49,9 +73,7 @@ export namespace Target {
     radius: number,
     width: number,
     height: number,
-    move: MoveMap[keyof MoveMap],
-    positiontargettype: TargetTypeMap[keyof TargetTypeMap],
-    positiontargetid: Uint8Array | string,
+    move?: MoveTarget.AsObject,
   }
 }
 

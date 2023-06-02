@@ -218,6 +218,8 @@ type Cache interface{}
 type App interface {
 	Cache
 	Store
+
+	AddCast(context.Context, entity.E, Cast) (entity.E, error)
 }
 
 func (cef CastEffect) Eval(e entity.E) entity.E {
@@ -231,8 +233,8 @@ func (cef CastEffect) Eval(e entity.E) entity.E {
 	}
 
 	// move first
-	if tt.Move != NoneMove {
-		switch tt.PositionTargetType {
+	if m := tt.Move; m.Move != NoneMove {
+		switch m.TargetType {
 		case NoneTarget:
 			// no move destination ? ignore
 		case Self:
@@ -247,7 +249,7 @@ func (cef CastEffect) Eval(e entity.E) entity.E {
 			// move to rect ? ignore
 		case Circle:
 			// standard move (use center)
-			pos, ok := cef.Targets[tt.PositionTargetID.String()]
+			pos, ok := cef.Targets[m.TargetID.String()]
 			if !ok {
 				// position not defined, ignore
 				break

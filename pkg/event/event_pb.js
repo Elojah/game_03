@@ -74,7 +74,8 @@ proto.event.E.toObject = function(includeInstance, msg) {
     entityid: msg.getEntityid_asB64(),
     sourceid: msg.getSourceid_asB64(),
     at: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    effect: (f = msg.getEffect()) && github_com_elojah_game_03_pkg_ability_cast_pb.CastEffect.toObject(includeInstance, f)
+    effect: (f = msg.getEffect()) && github_com_elojah_game_03_pkg_ability_cast_pb.CastEffect.toObject(includeInstance, f),
+    sourcecast: (f = msg.getSourcecast()) && github_com_elojah_game_03_pkg_ability_cast_pb.Cast.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -131,6 +132,11 @@ proto.event.E.deserializeBinaryFromReader = function(msg, reader) {
       var value = new github_com_elojah_game_03_pkg_ability_cast_pb.CastEffect;
       reader.readMessage(value,github_com_elojah_game_03_pkg_ability_cast_pb.CastEffect.deserializeBinaryFromReader);
       msg.setEffect(value);
+      break;
+    case 6:
+      var value = new github_com_elojah_game_03_pkg_ability_cast_pb.Cast;
+      reader.readMessage(value,github_com_elojah_game_03_pkg_ability_cast_pb.Cast.deserializeBinaryFromReader);
+      msg.setSourcecast(value);
       break;
     default:
       reader.skipField();
@@ -195,6 +201,14 @@ proto.event.E.serializeBinaryToWriter = function(message, writer) {
       5,
       f,
       github_com_elojah_game_03_pkg_ability_cast_pb.CastEffect.serializeBinaryToWriter
+    );
+  }
+  f = message.getSourcecast();
+  if (f != null) {
+    writer.writeMessage(
+      6,
+      f,
+      github_com_elojah_game_03_pkg_ability_cast_pb.Cast.serializeBinaryToWriter
     );
   }
 };
@@ -378,6 +392,43 @@ proto.event.E.prototype.clearEffect = function() {
  */
 proto.event.E.prototype.hasEffect = function() {
   return jspb.Message.getField(this, 5) != null;
+};
+
+
+/**
+ * optional ability.Cast SourceCast = 6;
+ * @return {?proto.ability.Cast}
+ */
+proto.event.E.prototype.getSourcecast = function() {
+  return /** @type{?proto.ability.Cast} */ (
+    jspb.Message.getWrapperField(this, github_com_elojah_game_03_pkg_ability_cast_pb.Cast, 6));
+};
+
+
+/**
+ * @param {?proto.ability.Cast|undefined} value
+ * @return {!proto.event.E} returns this
+*/
+proto.event.E.prototype.setSourcecast = function(value) {
+  return jspb.Message.setWrapperField(this, 6, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.event.E} returns this
+ */
+proto.event.E.prototype.clearSourcecast = function() {
+  return this.setSourcecast(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.event.E.prototype.hasSourcecast = function() {
+  return jspb.Message.getField(this, 6) != null;
 };
 
 

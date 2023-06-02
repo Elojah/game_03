@@ -34,6 +34,12 @@ enum Move {
 	Push                                       = 3;
 }
 
+message MoveTarget {
+	Move Move                                  = 1;
+	TargetType TargetType                      = 2;
+	bytes TargetID                             = 3 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+}
+
 message Target {
 	TargetType Type                            = 1;
 
@@ -44,10 +50,8 @@ message Target {
 	int64 Width                                = 4;
 	int64 Height                               = 5;
 
-	// Move target optionals
-	Move Move                                  = 6;
-	TargetType PositionTargetType              = 7;
-	bytes PositionTargetID                     = 8 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+	// Move target optional
+	MoveTarget Move                            = 6 [(gogoproto.nullable) = false];
 }
 
 message AbilityModifier {

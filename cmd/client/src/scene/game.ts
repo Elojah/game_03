@@ -516,6 +516,7 @@ export class Game extends Scene {
 						rect.setWidth(target.getWidth())
 						rect.setHeight(target.getHeight())
 						ct.setRect(rect)
+						c.getTargetsMap().set(targetID, ct)
 					} break
 					case Ability.TargetType.CIRCLE: {
 						const ct = new Cast.CastTarget()
@@ -524,6 +525,8 @@ export class Game extends Scene {
 						circle.setY(this.input.mousePointer.worldY)
 						circle.setRadius(target.getRadius())
 						ct.setCircle(circle)
+						// ct.setCellid()
+						c.getTargetsMap().set(targetID, ct)
 					} break
 
 				}
@@ -531,22 +534,31 @@ export class Game extends Scene {
 		})
 
 
-		// Play ability animation (TMP: on self ftm)
-		const abanim = new Animation.AnimationAbility()
-		abanim.setCellid(this.Entity.E.getCellid())
-		abanim.setX(this.Entity.E.getX())
-		abanim.setY(this.Entity.E.getY())
+		c.getTargetsMap().forEach((target: Cast.CastTarget, id: string) => {
+			// Play ability animation (TMP: on self ftm)
+			// const abanim = new Animation.AnimationAbility()
+			// abanim.setCellid(this.Entity.E.getCellid())
+			// TODO: circle or target id or rect
 
-		const tmpanim = this.add.sprite(abanim.getX(), abanim.getY(), '').setVisible(false)
-		const animID = this.Entity.Animations.get(ulid(ab.getAnimation_asU8()!))!
-		if (animID) {
-			tmpanim.setVisible(true).play(animID)
-			tmpanim.on('animationcomplete', () => {
+			const xy = this.getCastXY(target)
+			if (!xy[2]) { // is ok false ?
+				return
+			}
+
+			// abanim.setX(xy[0])
+			// abanim.setY(xy[1])
+
+			const tmpanim = this.add.sprite(xy[0], xy[1], '').setVisible(false)
+			const animID = this.Entity.Animations.get(ulid(ab.getAnimation_asU8()!))!
+			if (animID) {
+				tmpanim.play(animID)
+				tmpanim.on('animationcomplete', () => {
+					tmpanim.destroy()
+				})
+			} else {
 				tmpanim.destroy()
-			})
-		} else {
-			tmpanim.destroy()
-		}
+			}
+		})
 
 		// Play cast animation on entity
 		// this.Entity.Body.body.setVelocity(0)
@@ -561,6 +573,23 @@ export class Game extends Scene {
 
 		console.log('send ability cast at ' + now)
 	}
+
+	getCastXY(ct: Cast.CastTarget): [number, number, boolean] {
+		if (ct.getCircle()?.getRadius()) {
+			return [ct.getCircle()?.getX()!, ct.getCircle()?.getY()!, true]
+		} else if (ct.getRect()?.getWidth()) {
+			return [ct.getRect()?.getX()!, ct.getRect()?.getY()!, true]
+		} else {
+			const id = ulid(ct.getId_asU8())
+			const e = this.Entities.get(id)
+			if (!e) {
+				return [0, 0, false]
+			}
+
+			return [e.E.getX(), e.E.getY(), true]
+		}
+	}
+
 
 	createUI() {
 		this.add.dom(60, 20).createFromCache('menu').setScrollFactor(0)

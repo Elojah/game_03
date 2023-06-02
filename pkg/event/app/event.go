@@ -101,7 +101,12 @@ func (a App) Eval(ctx context.Context, entityID ulid.ID) error {
 		logger.Info().Int("events", len(events)).Msg("eval events")
 
 		for _, ev := range events {
-			e = ev.Eval(e)
+			e, err = a.Ability.AddCast(ctx, e, ev.SourceCast)
+			if err != nil {
+
+			}
+
+			e = ev.Effect.Eval(e)
 
 			if err := a.Entity.InsertCache(ctx, e); err != nil {
 				logger.Error().Err(err).Msg("failed to insert cache entity")
@@ -142,10 +147,12 @@ func (a App) CreateFromCast(ctx context.Context, sourceID ulid.ID, c ability.Cas
 				Effect: ability.Effect{
 					Targets: map[string]ability.Target{
 						sourceID.String(): {
-							Type:               ability.Self,
-							Move:               ability.Walk,
-							PositionTargetType: ability.Circle,
-							PositionTargetID:   position.ID,
+							Type: ability.Self,
+							Move: ability.MoveTarget{
+								Move:       ability.Walk,
+								TargetType: ability.Circle,
+								TargetID:   position.ID,
+							},
 						},
 					},
 				},
@@ -165,6 +172,17 @@ func (a App) CreateFromCast(ctx context.Context, sourceID ulid.ID, c ability.Cas
 	if err != nil {
 		return nil, err
 	}
+
+	// Create source cast event for source
+	ev := event.E{
+		ID:         ulid.NewID(),
+		EntityID:   sourceID,
+		SourceID:   sourceID,
+		At:         c.At,
+		SourceCast: c,
+	}
+
+	result[ev.ID.String()] = ev
 
 	for _, ef := range ab.Effects {
 		// TODO: check triggers/modifiers
@@ -189,8 +207,8 @@ func (a App) CreateFromCast(ctx context.Context, sourceID ulid.ID, c ability.Cas
 			}
 
 			if tt, ok := ef.Targets[key]; ok {
-				if !tt.PositionTargetID.IsZero() {
-					if t, ok := c.Targets[tt.PositionTargetID.String()]; ok {
+				if !tt.Move.TargetID.IsZero() {
+					if t, ok := c.Targets[tt.Move.TargetID.String()]; ok {
 						ctargets[key] = t
 					}
 				}

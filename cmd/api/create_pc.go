@@ -252,10 +252,11 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 			ulid.NewID().String(): {
 				Stat:   entity.HP,
 				Amount: ability.Amount{Direct: -10},
-				Range:  10,
 				Targets: map[string]ability.Target{
 					ulid.NewID().String(): {
-						Type: ability.Foe,
+						Type:   ability.Circle,
+						Radius: 1,
+						Range:  100,
 					},
 				},
 			},
