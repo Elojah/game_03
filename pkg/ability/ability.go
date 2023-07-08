@@ -246,7 +246,7 @@ func (cef CastEffect) Eval(e entity.E) entity.E {
 		case ClosestFoe:
 			// chain event
 		case Rect:
-			// move to rect ? ignore
+			// move to rect ? ignore, use circle instead
 		case Circle:
 			// standard move (use center)
 			pos, ok := cef.Targets[m.TargetID.String()]

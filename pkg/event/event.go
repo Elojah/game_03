@@ -42,4 +42,5 @@ type App interface {
 	CacheQ
 
 	CreateFromCast(context.Context, ulid.ID, ability.Cast) (map[string]E, error)
+	Eval(context.Context, ulid.ID) error
 }

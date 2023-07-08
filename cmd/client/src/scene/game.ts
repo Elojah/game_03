@@ -462,7 +462,6 @@ export class Game extends Scene {
 		}
 
 		const abilityID = document.getElementById(eid)?.dataset['abilityID']
-		console.log(abilityID)
 		if (!abilityID) {
 			return
 		}
@@ -521,8 +520,8 @@ export class Game extends Scene {
 					case Ability.TargetType.CIRCLE: {
 						const ct = new Cast.CastTarget()
 						const circle = new Circle()
-						circle.setX(this.input.mousePointer.worldX)
-						circle.setY(this.input.mousePointer.worldY)
+						circle.setX(Math.round(this.input.mousePointer.worldX))
+						circle.setY(Math.round(this.input.mousePointer.worldY))
 						circle.setRadius(target.getRadius())
 						ct.setCircle(circle)
 						// ct.setCellid()
@@ -536,8 +535,6 @@ export class Game extends Scene {
 
 		c.getTargetsMap().forEach((target: Cast.CastTarget, id: string) => {
 			// Play ability animation (TMP: on self ftm)
-			// const abanim = new Animation.AnimationAbility()
-			// abanim.setCellid(this.Entity.E.getCellid())
 			// TODO: circle or target id or rect
 
 			const xy = this.getCastXY(target)
@@ -547,6 +544,7 @@ export class Game extends Scene {
 
 			// abanim.setX(xy[0])
 			// abanim.setY(xy[1])
+			// abanim.setCellid(this.Entity.E.getCellid())
 
 			const tmpanim = this.add.sprite(xy[0], xy[1], '').setVisible(false)
 			const animID = this.Entity.Animations.get(ulid(ab.getAnimation_asU8()!))!
@@ -760,6 +758,8 @@ export class Game extends Scene {
 	}
 
 	update(time: number, deltaTime: number) {
+		this.input.activePointer.updateWorldPoint(this.cameras.main);
+
 		this.updateBodyEntity()
 		this.updateBackground()
 

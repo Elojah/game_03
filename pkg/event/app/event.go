@@ -103,7 +103,9 @@ func (a App) Eval(ctx context.Context, entityID ulid.ID) error {
 		for _, ev := range events {
 			e, err = a.Ability.AddCast(ctx, e, ev.SourceCast)
 			if err != nil {
+				logger.Error().Err(err).Msg("failed to add ability cast to entity")
 
+				continue
 			}
 
 			e = ev.Effect.Eval(e)
