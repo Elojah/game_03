@@ -54,19 +54,17 @@ func (a App) CreateFromCast(ctx context.Context, sourceID ulid.ID, c ability.Cas
 
 	source := lasts[0]
 
-	// #Sepcial case: abilityID = 0 -> use this case for move events
+	// #Sepcial case: abilityID = sourceID -> use this case for move events
 	if target, ok := c.Targets[sourceID.String()]; ok && c.AbilityID.IsZero() {
-		position := ability.CastTarget{
-			ID:     ulid.NewID(),
-			Circle: target.Circle,
-		}
 		ev := event.E{
 			ID:       ulid.NewID(),
 			EntityID: sourceID,
 			Source:   source,
 			At:       c.At,
+			// default move effect, hard code here
 			Effect: ability.CastEffect{
-				// default move effect, hard code here
+				AbilityID: sourceID,
+				EffectID:  sourceID,
 				Effect: ability.Effect{
 					Targets: map[string]ability.Target{
 						sourceID.String(): {
@@ -74,13 +72,14 @@ func (a App) CreateFromCast(ctx context.Context, sourceID ulid.ID, c ability.Cas
 							Move: ability.MoveTarget{
 								Move:       ability.Walk,
 								TargetType: ability.Circle,
-								TargetID:   position.ID,
 							},
 						},
 					},
 				},
 				Targets: map[string]ability.CastTarget{
-					position.ID.String(): position,
+					sourceID.String(): {
+						Circle: target.Circle,
+					},
 				},
 				CurrentID: sourceID,
 			},
@@ -131,16 +130,20 @@ func (a App) CreateFromCast(ctx context.Context, sourceID ulid.ID, c ability.Cas
 
 	// Create source cast event for source
 	ev := event.E{
-		ID:         ulid.NewID(),
-		EntityID:   sourceID,
-		Source:     source,
-		At:         c.At,
-		SourceCast: c,
+		ID:       ulid.NewID(),
+		EntityID: sourceID,
+		Source:   source,
+		At:       c.At,
+		Effect: ability.CastEffect{
+			AbilityID: ab.ID,
+		},
 	}
 
 	result[ev.ID.String()] = ev
 
 	for effectID, ef := range ab.Effects {
+		effectID := ulid.MustParse(effectID)
+
 		// TODO: check triggers/modifiers
 		for key, target := range ef.Targets {
 			targetID, err := ulid.Parse(key)
@@ -163,7 +166,7 @@ func (a App) CreateFromCast(ctx context.Context, sourceID ulid.ID, c ability.Cas
 				if t.ID.Compare(sourceID) != 0 {
 					return nil, errors.ErrInvalidSelfTarget{
 						AbilityID:      ab.ID.String(),
-						EffectID:       effectID,
+						EffectID:       effectID.String(),
 						EffectTargetID: key,
 						SourceID:       sourceID.String(),
 						TargetID:       t.ID.String(),
@@ -177,7 +180,9 @@ func (a App) CreateFromCast(ctx context.Context, sourceID ulid.ID, c ability.Cas
 					Source:   source,
 					At:       c.At,
 					Effect: ability.CastEffect{
-						Effect: ef,
+						AbilityID: ab.ID,
+						EffectID:  effectID,
+						Effect:    ef,
 						Targets: map[string]ability.CastTarget{
 							key: {ID: t.ID}, // confirmed same as sourceID (self) above
 						},
@@ -193,7 +198,9 @@ func (a App) CreateFromCast(ctx context.Context, sourceID ulid.ID, c ability.Cas
 					Source:   source,
 					At:       c.At,
 					Effect: ability.CastEffect{
-						Effect: ef,
+						AbilityID: ab.ID,
+						EffectID:  effectID,
+						Effect:    ef,
 						Targets: map[string]ability.CastTarget{
 							key: {ID: t.ID},
 						},
@@ -209,7 +216,9 @@ func (a App) CreateFromCast(ctx context.Context, sourceID ulid.ID, c ability.Cas
 					Source:   source,
 					At:       c.At,
 					Effect: ability.CastEffect{
-						Effect: ef,
+						AbilityID: ab.ID,
+						EffectID:  effectID,
+						Effect:    ef,
 						Targets: map[string]ability.CastTarget{
 							key: {ID: t.ID},
 						},
@@ -304,15 +313,20 @@ func (a App) Eval(ctx context.Context, entityID ulid.ID) error {
 		logger.Info().Int("events", len(events)).Msg("eval events")
 
 		for _, ev := range events {
-			// add cast state to entity if event is cast
-			e, err = a.Ability.AddCast(ctx, e, ev.SourceCast)
+			// // add cast state to entity if event is cast
+			// e, err = a.Ability.AddCast(ctx, e, ev.SourceCast)
+			// if err != nil {
+			// 	logger.Error().Err(err).Msg("failed to add ability cast to entity")
+
+			// 	continue
+			// }
+
+			e, err = a.EvalEntity(ctx, ev, e)
 			if err != nil {
-				logger.Error().Err(err).Msg("failed to add ability cast to entity")
+				logger.Error().Err(err).Msg("failed to eval event to entity")
 
 				continue
 			}
-
-			e = a.EvalEntity(ctx, ev, e)
 
 			if err := a.Entity.Insert(ctx, e); err != nil {
 				logger.Error().Err(err).Msg("failed to insert cache entity")
@@ -328,47 +342,83 @@ func (a App) Eval(ctx context.Context, entityID ulid.ID) error {
 }
 
 // TODO: everything in this function, check validity of received cast
-func (a App) EvalEntity(ctx context.Context, ev event.E, e entity.E) entity.E {
-	current := ev.Effect.CurrentID.String()
-
-	tt, ok := ev.Effect.Effect.Targets[current]
+func (a App) EvalEntity(ctx context.Context, ev event.E, e entity.E) (entity.E, error) {
+	targetType, ok := ev.Effect.Effect.Targets[ev.Effect.CurrentID.String()]
 	if !ok {
 		// no go case, current target is not specified in ability targets
-		// so we don't know which ability's target to pick
-		return e
+		// so we don't know how to check target validity
+		return e, nil
 	}
 
-	// self move first
-	if m := tt.Move; m.Move != ability.NoneMove {
-		switch m.TargetType {
-		case ability.NoneTarget:
-			// no move destination ? ignore
-		case ability.Self:
-			// move on self ? ignore
-		case ability.ClosestSelf:
-			// chain event
-		case ability.Foe:
-			// chain event
-		case ability.ClosestFoe:
-			// chain event
-		case ability.Ally:
-			// chain event
-		case ability.ClosestAlly:
-			// chain event
-		case ability.Rect:
-			// move to rect ? ignore, use circle instead
-		case ability.Circle:
+	// self eval
+	if ev.Source.ID.Compare(e.ID) == 0 {
+		// self walk
+		if m := targetType.Move; ev.Effect.AbilityID.Compare(ev.Source.ID) == 0 &&
+			m.Move == ability.Walk &&
+			m.TargetType == ability.Circle {
 			// standard move (use center)
-			pos, ok := ev.Effect.Targets[m.TargetID.String()]
+			pos, ok := ev.Effect.Targets[targetType.Move.TargetID.String()]
 			if !ok {
 				// position not defined, ignore
-				break
+				return e, nil
 			}
+
+			// TODO: check distance depending on current speed
 
 			e.X = pos.Circle.X
 			e.Y = pos.Circle.Y
+
+			return e, nil
+		}
+
+		// self cast
+		ab, err := a.Ability.Fetch(ctx, ability.Filter{
+			ID: ev.Effect.AbilityID,
+		})
+		if err != nil {
+			return e, err
+		}
+
+		if e.Abilities == nil {
+			e.Abilities = make(map[string]entity.AnimationAbility)
+		}
+
+		e.Abilities[ulid.NewID().String()] = entity.AnimationAbility{
+			AnimationID: ab.Animation,
 		}
 	}
 
-	return e
+	// #Check cast/target validity
+
+	// check faction validity
+	if targetType.Type == ability.Foe && e.FactionID.Compare(ev.Source.FactionID) == 0 {
+		return e, errors.ErrInvalidCastTargetFaction{
+			AbilityID:        ev.Effect.AbilityID.String(),
+			EffectID:         ev.Effect.EffectID.String(),
+			EffectTargetID:   ev.Effect.CurrentID.String(),
+			EffectTargetType: targetType.Type.String(),
+			SourceID:         ev.Source.ID.String(),
+			SourceFactionID:  ev.Source.FactionID.String(),
+			TargetID:         e.ID.String(),
+			TargetFactionID:  e.FactionID.String(),
+		}
+	} else if targetType.Type == ability.Ally {
+		return e, errors.ErrInvalidCastTargetFaction{
+			AbilityID:        ev.Effect.AbilityID.String(),
+			EffectID:         ev.Effect.EffectID.String(),
+			EffectTargetID:   ev.Effect.CurrentID.String(),
+			EffectTargetType: targetType.Type.String(),
+			SourceID:         ev.Source.ID.String(),
+			SourceFactionID:  ev.Source.FactionID.String(),
+			TargetID:         e.ID.String(),
+			TargetFactionID:  e.FactionID.String(),
+		}
+	}
+
+	// target, ok := ev.Effect.Targets[ev.Effect.CurrentID.String()]
+	// if !ok {
+	// 	return e, nil
+	// }
+
+	return e, nil
 }

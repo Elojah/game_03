@@ -24,6 +24,7 @@ message CastTarget {
 	geometry.Circle Circle                = 4 [(gogoproto.nullable) = false];
 }
 
+// Cast object sent to process
 message Cast {
     bytes AbilityID                       = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
 	map<string, CastTarget> Targets       = 2 [(gogoproto.nullable) = false];
@@ -31,8 +32,11 @@ message Cast {
 	int64 At                              = 3;
 }
 
+// Cast effect received to eval
 message CastEffect {
-    bytes CurrentID                       = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
-	ability.Effect Effect                 = 2 [(gogoproto.nullable) = false];
-	map<string, CastTarget> Targets       = 3 [(gogoproto.nullable) = false];
+    bytes AbilityID                       = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    bytes EffectID                        = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    bytes CurrentID                       = 3 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+	ability.Effect Effect                 = 4 [(gogoproto.nullable) = false];
+	map<string, CastTarget> Targets       = 5 [(gogoproto.nullable) = false];
 }

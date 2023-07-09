@@ -26,6 +26,4 @@ message E {
 
 	// Receive cast effect
 	ability.CastEffect Effect = 5 [(gogoproto.nullable) = false];
-
-	ability.Cast SourceCast   = 6 [(gogoproto.nullable) = false];
 }

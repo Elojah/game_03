@@ -30,11 +30,6 @@ export class E extends jspb.Message {
   getEffect(): github_com_elojah_game_03_pkg_ability_cast_pb.CastEffect | undefined;
   setEffect(value?: github_com_elojah_game_03_pkg_ability_cast_pb.CastEffect): void;
 
-  hasSourcecast(): boolean;
-  clearSourcecast(): void;
-  getSourcecast(): github_com_elojah_game_03_pkg_ability_cast_pb.Cast | undefined;
-  setSourcecast(value?: github_com_elojah_game_03_pkg_ability_cast_pb.Cast): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): E.AsObject;
   static toObject(includeInstance: boolean, msg: E): E.AsObject;
@@ -52,7 +47,6 @@ export namespace E {
     source?: github_com_elojah_game_03_pkg_entity_entity_pb.E.AsObject,
     at: number,
     effect?: github_com_elojah_game_03_pkg_ability_cast_pb.CastEffect.AsObject,
-    sourcecast?: github_com_elojah_game_03_pkg_ability_cast_pb.Cast.AsObject,
   }
 }
 

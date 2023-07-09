@@ -57,3 +57,28 @@ func (e ErrInvalidSelfTarget) Error() string {
 		e.SourceID,
 	)
 }
+
+type ErrInvalidCastTargetFaction struct {
+	AbilityID        string
+	EffectID         string
+	EffectTargetID   string
+	EffectTargetType string
+	SourceID         string
+	SourceFactionID  string
+	TargetID         string
+	TargetFactionID  string
+}
+
+func (e ErrInvalidCastTargetFaction) Error() string {
+	return fmt.Sprintf(
+		"invalid target for ability %s effect %s target %s type %s: received %s faction %s for source %s faction %s",
+		e.AbilityID,
+		e.EffectID,
+		e.EffectTargetID,
+		e.EffectTargetType,
+		e.TargetID,
+		e.TargetFactionID,
+		e.SourceID,
+		e.SourceFactionID,
+	)
+}

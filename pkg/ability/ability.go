@@ -37,12 +37,10 @@ type Store interface {
 	Delete(context.Context, Filter) error
 }
 
-// TODO
+// TODO implement
 type Cache interface{}
 
 type App interface {
 	Cache
 	Store
-
-	AddCast(context.Context, entity.E, Cast) (entity.E, error)
 }

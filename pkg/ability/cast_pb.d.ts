@@ -76,6 +76,16 @@ export namespace Cast {
 }
 
 export class CastEffect extends jspb.Message {
+  getAbilityid(): Uint8Array | string;
+  getAbilityid_asU8(): Uint8Array;
+  getAbilityid_asB64(): string;
+  setAbilityid(value: Uint8Array | string): void;
+
+  getEffectid(): Uint8Array | string;
+  getEffectid_asU8(): Uint8Array;
+  getEffectid_asB64(): string;
+  setEffectid(value: Uint8Array | string): void;
+
   getCurrentid(): Uint8Array | string;
   getCurrentid_asU8(): Uint8Array;
   getCurrentid_asB64(): string;
@@ -100,6 +110,8 @@ export class CastEffect extends jspb.Message {
 
 export namespace CastEffect {
   export type AsObject = {
+    abilityid: Uint8Array | string,
+    effectid: Uint8Array | string,
     currentid: Uint8Array | string,
     effect?: github_com_elojah_game_03_pkg_ability_ability_pb.Effect.AsObject,
     targetsMap: Array<[string, CastTarget.AsObject]>,
