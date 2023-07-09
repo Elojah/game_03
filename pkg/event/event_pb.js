@@ -14,6 +14,8 @@ var global = Function('return this')();
 
 var github_com_gogo_protobuf_gogoproto_gogo_pb = require('../../../../../github.com/gogo/protobuf/gogoproto/gogo_pb.js');
 goog.object.extend(proto, github_com_gogo_protobuf_gogoproto_gogo_pb);
+var github_com_elojah_game_03_pkg_entity_entity_pb = require('../../../../../github.com/elojah/game_03/pkg/entity/entity_pb.js');
+goog.object.extend(proto, github_com_elojah_game_03_pkg_entity_entity_pb);
 var github_com_elojah_game_03_pkg_ability_cast_pb = require('../../../../../github.com/elojah/game_03/pkg/ability/cast_pb.js');
 goog.object.extend(proto, github_com_elojah_game_03_pkg_ability_cast_pb);
 goog.exportSymbol('proto.event.E', null, global);
@@ -72,7 +74,7 @@ proto.event.E.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: msg.getId_asB64(),
     entityid: msg.getEntityid_asB64(),
-    sourceid: msg.getSourceid_asB64(),
+    source: (f = msg.getSource()) && github_com_elojah_game_03_pkg_entity_entity_pb.E.toObject(includeInstance, f),
     at: jspb.Message.getFieldWithDefault(msg, 4, 0),
     effect: (f = msg.getEffect()) && github_com_elojah_game_03_pkg_ability_cast_pb.CastEffect.toObject(includeInstance, f),
     sourcecast: (f = msg.getSourcecast()) && github_com_elojah_game_03_pkg_ability_cast_pb.Cast.toObject(includeInstance, f)
@@ -121,8 +123,9 @@ proto.event.E.deserializeBinaryFromReader = function(msg, reader) {
       msg.setEntityid(value);
       break;
     case 3:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setSourceid(value);
+      var value = new github_com_elojah_game_03_pkg_entity_entity_pb.E;
+      reader.readMessage(value,github_com_elojah_game_03_pkg_entity_entity_pb.E.deserializeBinaryFromReader);
+      msg.setSource(value);
       break;
     case 4:
       var value = /** @type {number} */ (reader.readInt64());
@@ -181,11 +184,12 @@ proto.event.E.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getSourceid_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
+  f = message.getSource();
+  if (f != null) {
+    writer.writeMessage(
       3,
-      f
+      f,
+      github_com_elojah_game_03_pkg_entity_entity_pb.E.serializeBinaryToWriter
     );
   }
   f = message.getAt();
@@ -299,44 +303,39 @@ proto.event.E.prototype.setEntityid = function(value) {
 
 
 /**
- * optional bytes SourceID = 3;
- * @return {!(string|Uint8Array)}
+ * optional entity.E Source = 3;
+ * @return {?proto.entity.E}
  */
-proto.event.E.prototype.getSourceid = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+proto.event.E.prototype.getSource = function() {
+  return /** @type{?proto.entity.E} */ (
+    jspb.Message.getWrapperField(this, github_com_elojah_game_03_pkg_entity_entity_pb.E, 3));
 };
 
 
 /**
- * optional bytes SourceID = 3;
- * This is a type-conversion wrapper around `getSourceid()`
- * @return {string}
- */
-proto.event.E.prototype.getSourceid_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getSourceid()));
+ * @param {?proto.entity.E|undefined} value
+ * @return {!proto.event.E} returns this
+*/
+proto.event.E.prototype.setSource = function(value) {
+  return jspb.Message.setWrapperField(this, 3, value);
 };
 
 
 /**
- * optional bytes SourceID = 3;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getSourceid()`
- * @return {!Uint8Array}
- */
-proto.event.E.prototype.getSourceid_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getSourceid()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
+ * Clears the message field making it undefined.
  * @return {!proto.event.E} returns this
  */
-proto.event.E.prototype.setSourceid = function(value) {
-  return jspb.Message.setProto3BytesField(this, 3, value);
+proto.event.E.prototype.clearSource = function() {
+  return this.setSource(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.event.E.prototype.hasSource = function() {
+  return jspb.Message.getField(this, 3) != null;
 };
 
 

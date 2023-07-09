@@ -3121,11 +3121,13 @@ proto.ability.A.prototype.clearEffectsMap = function() {
 proto.ability.TargetType = {
   NONETARGET: 0,
   SELF: 1,
+  CLOSESTSELF: 2,
   FOE: 3,
-  CLOSESTSELF: 4,
-  CLOSESTFOE: 5,
-  RECT: 6,
-  CIRCLE: 7
+  CLOSESTFOE: 4,
+  ALLY: 5,
+  CLOSESTALLY: 6,
+  RECT: 7,
+  CIRCLE: 8
 };
 
 /**

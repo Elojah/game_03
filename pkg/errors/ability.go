@@ -38,3 +38,22 @@ type ErrCooldownInProgress struct {
 func (e ErrCooldownInProgress) Error() string {
 	return fmt.Sprintf("cooldown %d in progress (%d/%d) to perform %s", e.Cooldown, e.At, e.LastCast, e.AbilityID)
 }
+
+type ErrInvalidSelfTarget struct {
+	AbilityID      string
+	EffectID       string
+	EffectTargetID string
+	SourceID       string
+	TargetID       string
+}
+
+func (e ErrInvalidSelfTarget) Error() string {
+	return fmt.Sprintf(
+		"invalid self target for ability %s effect %s target %s: received %s for source %s",
+		e.AbilityID,
+		e.EffectID,
+		e.EffectTargetID,
+		e.TargetID,
+		e.SourceID,
+	)
+}

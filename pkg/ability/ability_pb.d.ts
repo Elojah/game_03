@@ -394,11 +394,13 @@ export namespace A {
 export interface TargetTypeMap {
   NONETARGET: 0;
   SELF: 1;
+  CLOSESTSELF: 2;
   FOE: 3;
-  CLOSESTSELF: 4;
-  CLOSESTFOE: 5;
-  RECT: 6;
-  CIRCLE: 7;
+  CLOSESTFOE: 4;
+  ALLY: 5;
+  CLOSESTALLY: 6;
+  RECT: 7;
+  CIRCLE: 8;
 }
 
 export const TargetType: TargetTypeMap;

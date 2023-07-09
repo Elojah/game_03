@@ -34,15 +34,24 @@ func (c *Cache) InsertCache(ctx context.Context, e entity.E) error {
 
 // FetchManyCache implemented with redis.
 func (c *Cache) FetchManyCache(ctx context.Context, filter entity.FilterCache) ([]entity.E, error) {
-	vals, err := c.Do(
-		ctx,
-		c.B().Zrevrangebyscore().
+	var cmd rueidis.Completed
+	if filter.Reverse {
+		cmd = c.B().Zrevrangebyscore().
 			Key(key+filter.ID.String()).
 			Max(filter.Max).
 			Min(filter.Min).
 			Limit(0, filter.Size).
-			Build(),
-	).AsStrSlice()
+			Build()
+	} else {
+		cmd = c.B().Zrangebyscore().
+			Key(key+filter.ID.String()).
+			Min(filter.Min).
+			Max(filter.Max).
+			Limit(0, filter.Size).
+			Build()
+	}
+
+	vals, err := c.Do(ctx, cmd).AsStrSlice()
 	if err != nil {
 		return nil, fmt.Errorf("fetch entity %s:%w", filter.ID.String(), err)
 	}

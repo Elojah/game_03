@@ -22,6 +22,18 @@ type App struct {
 	entity.StoreSpawn
 }
 
+func (a App) Insert(ctx context.Context, e entity.E) error {
+	if err := a.InsertCache(ctx, e); err != nil {
+		return err
+	}
+
+	if err := a.Store.Insert(ctx, e); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (a App) CreateEntityFromBackup(ctx context.Context, id ulid.ID) (entity.E, error) {
 	e, err := a.FetchBackup(ctx, entity.FilterBackup{
 		ID: id,

@@ -758,7 +758,8 @@ export class Game extends Scene {
 	}
 
 	update(time: number, deltaTime: number) {
-		this.input.activePointer.updateWorldPoint(this.cameras.main);
+		// update cursor position when moving keyboard
+		this.input.activePointer.updateWorldPoint(this.cameras.main)
 
 		this.updateBodyEntity()
 		this.updateBackground()

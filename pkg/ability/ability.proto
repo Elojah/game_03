@@ -17,14 +17,17 @@ import "github.com/elojah/game_03/pkg/entity/entity.proto";
 
 enum TargetType {
 	NoneTarget                                 = 0;
+
 	Self                                       = 1;
+	ClosestSelf                                = 2;
 	Foe                                        = 3;
-	ClosestSelf                                = 4;
-	ClosestFoe                                 = 5;
+	ClosestFoe                                 = 4;
+	Ally                                       = 5;
+	ClosestAlly                                = 6;
 
 	// geometry aoe
-	Rect                                       = 6;
-	Circle                                     = 7;
+	Rect                                       = 7;
+	Circle                                     = 8;
 }
 
 enum Move {

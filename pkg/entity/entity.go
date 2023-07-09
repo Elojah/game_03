@@ -39,10 +39,11 @@ type Patch struct {
 }
 
 type FilterCache struct {
-	ID   ulid.ID
-	Min  string
-	Max  string
-	Size int64
+	ID      ulid.ID
+	Min     string
+	Max     string
+	Size    int64
+	Reverse bool
 }
 
 type Cache interface {
@@ -73,6 +74,8 @@ type App interface {
 
 	CreateEntityFromBackup(context.Context, ulid.ID) (E, error)
 	CreateBackupFromEntity(context.Context, ulid.ID) error
+
+	Insert(context.Context, E) error
 }
 
 // FetchStat should be used when only way to get stat is `Stat` enum.

@@ -3,6 +3,7 @@
 
 import * as jspb from "google-protobuf";
 import * as github_com_gogo_protobuf_gogoproto_gogo_pb from "../../../../../github.com/gogo/protobuf/gogoproto/gogo_pb";
+import * as github_com_elojah_game_03_pkg_entity_entity_pb from "../../../../../github.com/elojah/game_03/pkg/entity/entity_pb";
 import * as github_com_elojah_game_03_pkg_ability_cast_pb from "../../../../../github.com/elojah/game_03/pkg/ability/cast_pb";
 
 export class E extends jspb.Message {
@@ -16,10 +17,10 @@ export class E extends jspb.Message {
   getEntityid_asB64(): string;
   setEntityid(value: Uint8Array | string): void;
 
-  getSourceid(): Uint8Array | string;
-  getSourceid_asU8(): Uint8Array;
-  getSourceid_asB64(): string;
-  setSourceid(value: Uint8Array | string): void;
+  hasSource(): boolean;
+  clearSource(): void;
+  getSource(): github_com_elojah_game_03_pkg_entity_entity_pb.E | undefined;
+  setSource(value?: github_com_elojah_game_03_pkg_entity_entity_pb.E): void;
 
   getAt(): number;
   setAt(value: number): void;
@@ -48,7 +49,7 @@ export namespace E {
   export type AsObject = {
     id: Uint8Array | string,
     entityid: Uint8Array | string,
-    sourceid: Uint8Array | string,
+    source?: github_com_elojah_game_03_pkg_entity_entity_pb.E.AsObject,
     at: number,
     effect?: github_com_elojah_game_03_pkg_ability_cast_pb.CastEffect.AsObject,
     sourcecast?: github_com_elojah_game_03_pkg_ability_cast_pb.Cast.AsObject,
