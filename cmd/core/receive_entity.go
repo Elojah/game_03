@@ -7,6 +7,7 @@ import (
 
 	"github.com/elojah/game_03/pkg/ability"
 	"github.com/elojah/game_03/pkg/entity"
+	"github.com/elojah/game_03/pkg/event"
 	"github.com/pion/webrtc/v3"
 	"github.com/rs/zerolog/log"
 )
@@ -40,7 +41,7 @@ func (h *handler) ReceiveEntity(ctx context.Context, d *webrtc.DataChannel, pc e
 		}()
 
 		// blocking call
-		if err := h.event.Eval(ctx, pc.EntityID); err != nil {
+		if err := h.event.Listen(ctx, pc.EntityID); err != nil {
 			logger.Error().Err(err).Msg("subscribe failed")
 
 			return
@@ -60,12 +61,7 @@ func (h *handler) ReceiveEntity(ctx context.Context, d *webrtc.DataChannel, pc e
 
 		logger.Info().Int64("at", c.At).Msg("event received")
 
-		events, err := h.event.CreateFromCast(ctx, pc.EntityID, c)
-		if err != nil {
-			logger.Error().Err(err).Msg("failed to create events from cast")
-
-			return
-		}
+		events := event.NewEvents(pc.EntityID, c)
 
 		for _, e := range events {
 			if err := h.event.Publish(ctx, e); err != nil {

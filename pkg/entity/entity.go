@@ -2,6 +2,7 @@ package entity
 
 import (
 	"context"
+	"math"
 
 	"github.com/elojah/game_03/pkg/geometry"
 	"github.com/elojah/game_03/pkg/ulid"
@@ -78,9 +79,9 @@ type App interface {
 	Insert(context.Context, E) error
 }
 
-// FetchStat should be used when only way to get stat is `Stat` enum.
+// GetStat should be used when only way to get stat is `Stat` enum.
 // Use direct access if you can.
-func (e E) FetchStat(st Stat) int64 {
+func (e E) GetStat(st Stat) int64 {
 	switch st {
 	case NoneStat:
 		return 0
@@ -105,4 +106,34 @@ func (e E) FetchStat(st Stat) int64 {
 	}
 
 	return 0
+}
+
+// SetStat should be used when only way to get stat is `Stat` enum.
+// Use direct access if you can.
+func (e E) SetStat(st Stat, value int64) {
+	switch st {
+	case NoneStat:
+	case Damage:
+		e.Stats.Damage = value
+	case Defense:
+		e.Stats.Defense = value
+	case MoveSpeed:
+		e.Stats.MoveSpeed = value
+	case CastSpeed:
+		e.Stats.CastSpeed = value
+	case CooldownReduction:
+		e.Stats.CooldownReduction = value
+	case HP:
+		e.Stats.HP = value
+	case MP:
+		e.Stats.MP = value
+	case MaxHP:
+		e.Stats.MaxHP = value
+	case MaxMP:
+		e.Stats.MaxMP = value
+	}
+}
+
+func (e E) Distance(comp E) float64 {
+	return math.Abs(float64(comp.X-e.X)) + math.Abs(float64(comp.Y-e.Y))
 }

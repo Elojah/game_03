@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/elojah/game_03/pkg/ability"
+	entity "github.com/elojah/game_03/pkg/entity"
 	"github.com/elojah/game_03/pkg/ulid"
 	"github.com/redis/rueidis"
 )
@@ -41,7 +42,60 @@ type App interface {
 	Cache
 	CacheQ
 
-	CreateFromCast(context.Context, ulid.ID, ability.Cast) (map[string]E, error)
+	Listen(context.Context, ulid.ID) error
+}
 
-	Eval(context.Context, ulid.ID) error
+func NewEvents(sourceID ulid.ID, c ability.Cast) map[string]E {
+	result := make(map[string]E, 1)
+
+	// #Sepcial case: abilityID = sourceID -> use this case for move events
+	if target, ok := c.Targets[sourceID.String()]; ok && c.AbilityID.Compare(sourceID) == 0 {
+		ev := E{
+			ID:       ulid.NewID(),
+			EntityID: sourceID,
+			// Source:   source,
+			At: c.At,
+			// default move effect, hard code here
+			Effect: ability.CastEffect{
+				AbilityID: sourceID,
+				EffectID:  sourceID,
+				Effect: ability.Effect{
+					Targets: map[string]ability.Target{
+						sourceID.String(): {
+							Type: ability.Self,
+							Move: ability.MoveTarget{
+								Move:       ability.Walk,
+								TargetType: ability.Circle,
+							},
+						},
+					},
+				},
+				Targets: map[string]ability.CastTarget{
+					sourceID.String(): {
+						Circle: target.Circle,
+					},
+				},
+				CurrentID: sourceID,
+			},
+		}
+
+		result[ev.ID.String()] = ev
+
+		return result
+	}
+
+	// Create source cast event for source
+	ev := E{
+		ID:       ulid.NewID(),
+		EntityID: sourceID,
+		Source:   entity.E{ID: sourceID},
+		At:       c.At,
+		Effect: ability.CastEffect{
+			AbilityID: c.AbilityID,
+		},
+	}
+
+	result[ev.ID.String()] = ev
+
+	return result
 }
