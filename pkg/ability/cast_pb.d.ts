@@ -47,6 +47,11 @@ export namespace CastTarget {
 }
 
 export class Cast extends jspb.Message {
+  getId(): Uint8Array | string;
+  getId_asU8(): Uint8Array;
+  getId_asB64(): string;
+  setId(value: Uint8Array | string): void;
+
   getAbilityid(): Uint8Array | string;
   getAbilityid_asU8(): Uint8Array;
   getAbilityid_asB64(): string;
@@ -69,6 +74,7 @@ export class Cast extends jspb.Message {
 
 export namespace Cast {
   export type AsObject = {
+    id: Uint8Array | string,
     abilityid: Uint8Array | string,
     targetsMap: Array<[string, CastTarget.AsObject]>,
     at: number,
@@ -76,6 +82,14 @@ export namespace Cast {
 }
 
 export class CastEffect extends jspb.Message {
+  getId(): Uint8Array | string;
+  getId_asU8(): Uint8Array;
+  getId_asB64(): string;
+  setId(value: Uint8Array | string): void;
+
+  getSelf(): boolean;
+  setSelf(value: boolean): void;
+
   getAbilityid(): Uint8Array | string;
   getAbilityid_asU8(): Uint8Array;
   getAbilityid_asB64(): string;
@@ -110,6 +124,8 @@ export class CastEffect extends jspb.Message {
 
 export namespace CastEffect {
   export type AsObject = {
+    id: Uint8Array | string,
+    self: boolean,
     abilityid: Uint8Array | string,
     effectid: Uint8Array | string,
     currentid: Uint8Array | string,

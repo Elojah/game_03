@@ -27,6 +27,7 @@ func (h *handler) ReceiveEntity(ctx context.Context, d *webrtc.DataChannel, pc e
 				select {
 				case _ = <-ctx.Done():
 					logger.Error().Err(ctx.Err()).Msg("context done")
+
 					return
 				case t := <-ticker.C:
 					at := strconv.FormatInt(t.Add(-cleanEntities*time.Millisecond).UnixMilli(), 10)

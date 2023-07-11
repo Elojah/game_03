@@ -53,12 +53,12 @@ func NewEvents(sourceID ulid.ID, c ability.Cast) map[string]E {
 		ev := E{
 			ID:       ulid.NewID(),
 			EntityID: sourceID,
-			// Source:   source,
-			At: c.At,
+			Source:   entity.E{ID: sourceID},
+			At:       c.At,
 			// default move effect, hard code here
 			Effect: ability.CastEffect{
-				AbilityID: sourceID,
-				EffectID:  sourceID,
+				ID:   ulid.NewID(),
+				Self: true,
 				Effect: ability.Effect{
 					Targets: map[string]ability.Target{
 						sourceID.String(): {
@@ -91,6 +91,7 @@ func NewEvents(sourceID ulid.ID, c ability.Cast) map[string]E {
 		Source:   entity.E{ID: sourceID},
 		At:       c.At,
 		Effect: ability.CastEffect{
+			Self:      true,
 			AbilityID: c.AbilityID,
 		},
 	}

@@ -426,9 +426,10 @@ proto.ability.Cast.prototype.toObject = function(opt_includeInstance) {
  */
 proto.ability.Cast.toObject = function(includeInstance, msg) {
   var f, obj = {
+    id: msg.getId_asB64(),
     abilityid: msg.getAbilityid_asB64(),
     targetsMap: (f = msg.getTargetsMap()) ? f.toObject(includeInstance, proto.ability.CastTarget.toObject) : [],
-    at: jspb.Message.getFieldWithDefault(msg, 3, 0)
+    at: jspb.Message.getFieldWithDefault(msg, 4, 0)
   };
 
   if (includeInstance) {
@@ -467,15 +468,19 @@ proto.ability.Cast.deserializeBinaryFromReader = function(msg, reader) {
     switch (field) {
     case 1:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setAbilityid(value);
+      msg.setId(value);
       break;
     case 2:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setAbilityid(value);
+      break;
+    case 3:
       var value = msg.getTargetsMap();
       reader.readMessage(value, function(message, reader) {
         jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readString, jspb.BinaryReader.prototype.readMessage, proto.ability.CastTarget.deserializeBinaryFromReader, "", new proto.ability.CastTarget());
          });
       break;
-    case 3:
+    case 4:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setAt(value);
       break;
@@ -508,21 +513,28 @@ proto.ability.Cast.prototype.serializeBinary = function() {
  */
 proto.ability.Cast.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getAbilityid_asU8();
+  f = message.getId_asU8();
   if (f.length > 0) {
     writer.writeBytes(
       1,
       f
     );
   }
+  f = message.getAbilityid_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      2,
+      f
+    );
+  }
   f = message.getTargetsMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(2, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeMessage, proto.ability.CastTarget.serializeBinaryToWriter);
+    f.serializeBinary(3, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeMessage, proto.ability.CastTarget.serializeBinaryToWriter);
   }
   f = message.getAt();
   if (f !== 0) {
     writer.writeInt64(
-      3,
+      4,
       f
     );
   }
@@ -530,16 +542,58 @@ proto.ability.Cast.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional bytes AbilityID = 1;
+ * optional bytes ID = 1;
  * @return {!(string|Uint8Array)}
  */
-proto.ability.Cast.prototype.getAbilityid = function() {
+proto.ability.Cast.prototype.getId = function() {
   return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
- * optional bytes AbilityID = 1;
+ * optional bytes ID = 1;
+ * This is a type-conversion wrapper around `getId()`
+ * @return {string}
+ */
+proto.ability.Cast.prototype.getId_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getId()));
+};
+
+
+/**
+ * optional bytes ID = 1;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getId()`
+ * @return {!Uint8Array}
+ */
+proto.ability.Cast.prototype.getId_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getId()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.ability.Cast} returns this
+ */
+proto.ability.Cast.prototype.setId = function(value) {
+  return jspb.Message.setProto3BytesField(this, 1, value);
+};
+
+
+/**
+ * optional bytes AbilityID = 2;
+ * @return {!(string|Uint8Array)}
+ */
+proto.ability.Cast.prototype.getAbilityid = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * optional bytes AbilityID = 2;
  * This is a type-conversion wrapper around `getAbilityid()`
  * @return {string}
  */
@@ -550,7 +604,7 @@ proto.ability.Cast.prototype.getAbilityid_asB64 = function() {
 
 
 /**
- * optional bytes AbilityID = 1;
+ * optional bytes AbilityID = 2;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getAbilityid()`
@@ -567,19 +621,19 @@ proto.ability.Cast.prototype.getAbilityid_asU8 = function() {
  * @return {!proto.ability.Cast} returns this
  */
 proto.ability.Cast.prototype.setAbilityid = function(value) {
-  return jspb.Message.setProto3BytesField(this, 1, value);
+  return jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 
 /**
- * map<string, CastTarget> Targets = 2;
+ * map<string, CastTarget> Targets = 3;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
  * @return {!jspb.Map<string,!proto.ability.CastTarget>}
  */
 proto.ability.Cast.prototype.getTargetsMap = function(opt_noLazyCreate) {
   return /** @type {!jspb.Map<string,!proto.ability.CastTarget>} */ (
-      jspb.Message.getMapField(this, 2, opt_noLazyCreate,
+      jspb.Message.getMapField(this, 3, opt_noLazyCreate,
       proto.ability.CastTarget));
 };
 
@@ -594,11 +648,11 @@ proto.ability.Cast.prototype.clearTargetsMap = function() {
 
 
 /**
- * optional int64 At = 3;
+ * optional int64 At = 4;
  * @return {number}
  */
 proto.ability.Cast.prototype.getAt = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
 
@@ -607,7 +661,7 @@ proto.ability.Cast.prototype.getAt = function() {
  * @return {!proto.ability.Cast} returns this
  */
 proto.ability.Cast.prototype.setAt = function(value) {
-  return jspb.Message.setProto3IntField(this, 3, value);
+  return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
@@ -643,6 +697,8 @@ proto.ability.CastEffect.prototype.toObject = function(opt_includeInstance) {
  */
 proto.ability.CastEffect.toObject = function(includeInstance, msg) {
   var f, obj = {
+    id: msg.getId_asB64(),
+    self: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
     abilityid: msg.getAbilityid_asB64(),
     effectid: msg.getEffectid_asB64(),
     currentid: msg.getCurrentid_asB64(),
@@ -686,22 +742,30 @@ proto.ability.CastEffect.deserializeBinaryFromReader = function(msg, reader) {
     switch (field) {
     case 1:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setAbilityid(value);
+      msg.setId(value);
       break;
     case 2:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setEffectid(value);
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setSelf(value);
       break;
     case 3:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setCurrentid(value);
+      msg.setAbilityid(value);
       break;
     case 4:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setEffectid(value);
+      break;
+    case 5:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setCurrentid(value);
+      break;
+    case 6:
       var value = new github_com_elojah_game_03_pkg_ability_ability_pb.Effect;
       reader.readMessage(value,github_com_elojah_game_03_pkg_ability_ability_pb.Effect.deserializeBinaryFromReader);
       msg.setEffect(value);
       break;
-    case 5:
+    case 7:
       var value = msg.getTargetsMap();
       reader.readMessage(value, function(message, reader) {
         jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readString, jspb.BinaryReader.prototype.readMessage, proto.ability.CastTarget.deserializeBinaryFromReader, "", new proto.ability.CastTarget());
@@ -736,53 +800,127 @@ proto.ability.CastEffect.prototype.serializeBinary = function() {
  */
 proto.ability.CastEffect.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getAbilityid_asU8();
+  f = message.getId_asU8();
   if (f.length > 0) {
     writer.writeBytes(
       1,
       f
     );
   }
-  f = message.getEffectid_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
+  f = message.getSelf();
+  if (f) {
+    writer.writeBool(
       2,
       f
     );
   }
-  f = message.getCurrentid_asU8();
+  f = message.getAbilityid_asU8();
   if (f.length > 0) {
     writer.writeBytes(
       3,
       f
     );
   }
+  f = message.getEffectid_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      4,
+      f
+    );
+  }
+  f = message.getCurrentid_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      5,
+      f
+    );
+  }
   f = message.getEffect();
   if (f != null) {
     writer.writeMessage(
-      4,
+      6,
       f,
       github_com_elojah_game_03_pkg_ability_ability_pb.Effect.serializeBinaryToWriter
     );
   }
   f = message.getTargetsMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(5, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeMessage, proto.ability.CastTarget.serializeBinaryToWriter);
+    f.serializeBinary(7, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeMessage, proto.ability.CastTarget.serializeBinaryToWriter);
   }
 };
 
 
 /**
- * optional bytes AbilityID = 1;
+ * optional bytes ID = 1;
  * @return {!(string|Uint8Array)}
  */
-proto.ability.CastEffect.prototype.getAbilityid = function() {
+proto.ability.CastEffect.prototype.getId = function() {
   return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
- * optional bytes AbilityID = 1;
+ * optional bytes ID = 1;
+ * This is a type-conversion wrapper around `getId()`
+ * @return {string}
+ */
+proto.ability.CastEffect.prototype.getId_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getId()));
+};
+
+
+/**
+ * optional bytes ID = 1;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getId()`
+ * @return {!Uint8Array}
+ */
+proto.ability.CastEffect.prototype.getId_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getId()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.ability.CastEffect} returns this
+ */
+proto.ability.CastEffect.prototype.setId = function(value) {
+  return jspb.Message.setProto3BytesField(this, 1, value);
+};
+
+
+/**
+ * optional bool Self = 2;
+ * @return {boolean}
+ */
+proto.ability.CastEffect.prototype.getSelf = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 2, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.ability.CastEffect} returns this
+ */
+proto.ability.CastEffect.prototype.setSelf = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 2, value);
+};
+
+
+/**
+ * optional bytes AbilityID = 3;
+ * @return {!(string|Uint8Array)}
+ */
+proto.ability.CastEffect.prototype.getAbilityid = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/**
+ * optional bytes AbilityID = 3;
  * This is a type-conversion wrapper around `getAbilityid()`
  * @return {string}
  */
@@ -793,7 +931,7 @@ proto.ability.CastEffect.prototype.getAbilityid_asB64 = function() {
 
 
 /**
- * optional bytes AbilityID = 1;
+ * optional bytes AbilityID = 3;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getAbilityid()`
@@ -810,21 +948,21 @@ proto.ability.CastEffect.prototype.getAbilityid_asU8 = function() {
  * @return {!proto.ability.CastEffect} returns this
  */
 proto.ability.CastEffect.prototype.setAbilityid = function(value) {
-  return jspb.Message.setProto3BytesField(this, 1, value);
+  return jspb.Message.setProto3BytesField(this, 3, value);
 };
 
 
 /**
- * optional bytes EffectID = 2;
+ * optional bytes EffectID = 4;
  * @return {!(string|Uint8Array)}
  */
 proto.ability.CastEffect.prototype.getEffectid = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
 /**
- * optional bytes EffectID = 2;
+ * optional bytes EffectID = 4;
  * This is a type-conversion wrapper around `getEffectid()`
  * @return {string}
  */
@@ -835,7 +973,7 @@ proto.ability.CastEffect.prototype.getEffectid_asB64 = function() {
 
 
 /**
- * optional bytes EffectID = 2;
+ * optional bytes EffectID = 4;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getEffectid()`
@@ -852,21 +990,21 @@ proto.ability.CastEffect.prototype.getEffectid_asU8 = function() {
  * @return {!proto.ability.CastEffect} returns this
  */
 proto.ability.CastEffect.prototype.setEffectid = function(value) {
-  return jspb.Message.setProto3BytesField(this, 2, value);
+  return jspb.Message.setProto3BytesField(this, 4, value);
 };
 
 
 /**
- * optional bytes CurrentID = 3;
+ * optional bytes CurrentID = 5;
  * @return {!(string|Uint8Array)}
  */
 proto.ability.CastEffect.prototype.getCurrentid = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
 
 /**
- * optional bytes CurrentID = 3;
+ * optional bytes CurrentID = 5;
  * This is a type-conversion wrapper around `getCurrentid()`
  * @return {string}
  */
@@ -877,7 +1015,7 @@ proto.ability.CastEffect.prototype.getCurrentid_asB64 = function() {
 
 
 /**
- * optional bytes CurrentID = 3;
+ * optional bytes CurrentID = 5;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getCurrentid()`
@@ -894,17 +1032,17 @@ proto.ability.CastEffect.prototype.getCurrentid_asU8 = function() {
  * @return {!proto.ability.CastEffect} returns this
  */
 proto.ability.CastEffect.prototype.setCurrentid = function(value) {
-  return jspb.Message.setProto3BytesField(this, 3, value);
+  return jspb.Message.setProto3BytesField(this, 5, value);
 };
 
 
 /**
- * optional Effect Effect = 4;
+ * optional Effect Effect = 6;
  * @return {?proto.ability.Effect}
  */
 proto.ability.CastEffect.prototype.getEffect = function() {
   return /** @type{?proto.ability.Effect} */ (
-    jspb.Message.getWrapperField(this, github_com_elojah_game_03_pkg_ability_ability_pb.Effect, 4));
+    jspb.Message.getWrapperField(this, github_com_elojah_game_03_pkg_ability_ability_pb.Effect, 6));
 };
 
 
@@ -913,7 +1051,7 @@ proto.ability.CastEffect.prototype.getEffect = function() {
  * @return {!proto.ability.CastEffect} returns this
 */
 proto.ability.CastEffect.prototype.setEffect = function(value) {
-  return jspb.Message.setWrapperField(this, 4, value);
+  return jspb.Message.setWrapperField(this, 6, value);
 };
 
 
@@ -931,19 +1069,19 @@ proto.ability.CastEffect.prototype.clearEffect = function() {
  * @return {boolean}
  */
 proto.ability.CastEffect.prototype.hasEffect = function() {
-  return jspb.Message.getField(this, 4) != null;
+  return jspb.Message.getField(this, 6) != null;
 };
 
 
 /**
- * map<string, CastTarget> Targets = 5;
+ * map<string, CastTarget> Targets = 7;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
  * @return {!jspb.Map<string,!proto.ability.CastTarget>}
  */
 proto.ability.CastEffect.prototype.getTargetsMap = function(opt_noLazyCreate) {
   return /** @type {!jspb.Map<string,!proto.ability.CastTarget>} */ (
-      jspb.Message.getMapField(this, 5, opt_noLazyCreate,
+      jspb.Message.getMapField(this, 7, opt_noLazyCreate,
       proto.ability.CastTarget));
 };
 

@@ -26,17 +26,22 @@ message CastTarget {
 
 // Cast object sent to process
 message Cast {
-    bytes AbilityID                       = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
-	map<string, CastTarget> Targets       = 2 [(gogoproto.nullable) = false];
+    bytes ID                              = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    bytes AbilityID                       = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+	map<string, CastTarget> Targets       = 3 [(gogoproto.nullable) = false];
 
-	int64 At                              = 3;
+	int64 At                              = 4;
 }
 
 // Cast effect received to eval
 message CastEffect {
-    bytes AbilityID                       = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
-    bytes EffectID                        = 2 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
-    bytes CurrentID                       = 3 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
-	ability.Effect Effect                 = 4 [(gogoproto.nullable) = false];
-	map<string, CastTarget> Targets       = 5 [(gogoproto.nullable) = false];
+    bytes ID                              = 1 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+	bool Self                             = 2;
+
+	bytes AbilityID                       = 3 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    bytes EffectID                        = 4 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+    bytes CurrentID                       = 5 [(gogoproto.customtype) = "github.com/elojah/game_03/pkg/ulid.ID", (gogoproto.nullable) = false];
+
+	ability.Effect Effect                 = 6 [(gogoproto.nullable) = false];
+	map<string, CastTarget> Targets       = 7 [(gogoproto.nullable) = false];
 }

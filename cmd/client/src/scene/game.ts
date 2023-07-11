@@ -409,9 +409,6 @@ export class Game extends Scene {
 	launchAction(a: Action) {
 		console.log('launch action:', a)
 
-		// Controls + local anim update
-		const speed: number = 200
-
 		let eid = ''
 
 		switch (a) {
@@ -475,6 +472,9 @@ export class Game extends Scene {
 		const c = new Cast.Cast()
 
 		c.setAbilityid(abilityID)
+
+		// overrided, used to bypass parse error
+		c.setId(abilityID)
 
 		// const pos = new Circle()
 		// pos.setX(this.Entity.E.getX())
