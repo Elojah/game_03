@@ -464,10 +464,12 @@ proto.ability.Target.prototype.toObject = function(opt_includeInstance) {
 proto.ability.Target.toObject = function(includeInstance, msg) {
   var f, obj = {
     type: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    range: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    radius: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    width: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    height: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    groupid: msg.getGroupid_asB64(),
+    closest: jspb.Message.getBooleanFieldWithDefault(msg, 3, false),
+    range: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    radius: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    width: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    height: jspb.Message.getFieldWithDefault(msg, 7, 0),
     move: (f = msg.getMove()) && proto.ability.MoveTarget.toObject(includeInstance, f)
   };
 
@@ -510,22 +512,30 @@ proto.ability.Target.deserializeBinaryFromReader = function(msg, reader) {
       msg.setType(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setRange(value);
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setGroupid(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setRadius(value);
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setClosest(value);
       break;
     case 4:
       var value = /** @type {number} */ (reader.readInt64());
-      msg.setWidth(value);
+      msg.setRange(value);
       break;
     case 5:
       var value = /** @type {number} */ (reader.readInt64());
-      msg.setHeight(value);
+      msg.setRadius(value);
       break;
     case 6:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setWidth(value);
+      break;
+    case 7:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setHeight(value);
+      break;
+    case 8:
       var value = new proto.ability.MoveTarget;
       reader.readMessage(value,proto.ability.MoveTarget.deserializeBinaryFromReader);
       msg.setMove(value);
@@ -566,38 +576,52 @@ proto.ability.Target.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getRange();
-  if (f !== 0) {
-    writer.writeInt64(
+  f = message.getGroupid_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
       2,
       f
     );
   }
-  f = message.getRadius();
-  if (f !== 0) {
-    writer.writeInt64(
+  f = message.getClosest();
+  if (f) {
+    writer.writeBool(
       3,
       f
     );
   }
-  f = message.getWidth();
+  f = message.getRange();
   if (f !== 0) {
     writer.writeInt64(
       4,
       f
     );
   }
-  f = message.getHeight();
+  f = message.getRadius();
   if (f !== 0) {
     writer.writeInt64(
       5,
       f
     );
   }
+  f = message.getWidth();
+  if (f !== 0) {
+    writer.writeInt64(
+      6,
+      f
+    );
+  }
+  f = message.getHeight();
+  if (f !== 0) {
+    writer.writeInt64(
+      7,
+      f
+    );
+  }
   f = message.getMove();
   if (f != null) {
     writer.writeMessage(
-      6,
+      8,
       f,
       proto.ability.MoveTarget.serializeBinaryToWriter
     );
@@ -624,46 +648,70 @@ proto.ability.Target.prototype.setType = function(value) {
 
 
 /**
- * optional int64 Range = 2;
+ * optional bytes GroupID = 2;
+ * @return {!(string|Uint8Array)}
+ */
+proto.ability.Target.prototype.getGroupid = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * optional bytes GroupID = 2;
+ * This is a type-conversion wrapper around `getGroupid()`
+ * @return {string}
+ */
+proto.ability.Target.prototype.getGroupid_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getGroupid()));
+};
+
+
+/**
+ * optional bytes GroupID = 2;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getGroupid()`
+ * @return {!Uint8Array}
+ */
+proto.ability.Target.prototype.getGroupid_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getGroupid()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.ability.Target} returns this
+ */
+proto.ability.Target.prototype.setGroupid = function(value) {
+  return jspb.Message.setProto3BytesField(this, 2, value);
+};
+
+
+/**
+ * optional bool Closest = 3;
+ * @return {boolean}
+ */
+proto.ability.Target.prototype.getClosest = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 3, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.ability.Target} returns this
+ */
+proto.ability.Target.prototype.setClosest = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 3, value);
+};
+
+
+/**
+ * optional int64 Range = 4;
  * @return {number}
  */
 proto.ability.Target.prototype.getRange = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.ability.Target} returns this
- */
-proto.ability.Target.prototype.setRange = function(value) {
-  return jspb.Message.setProto3IntField(this, 2, value);
-};
-
-
-/**
- * optional int64 Radius = 3;
- * @return {number}
- */
-proto.ability.Target.prototype.getRadius = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.ability.Target} returns this
- */
-proto.ability.Target.prototype.setRadius = function(value) {
-  return jspb.Message.setProto3IntField(this, 3, value);
-};
-
-
-/**
- * optional int64 Width = 4;
- * @return {number}
- */
-proto.ability.Target.prototype.getWidth = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
@@ -672,16 +720,16 @@ proto.ability.Target.prototype.getWidth = function() {
  * @param {number} value
  * @return {!proto.ability.Target} returns this
  */
-proto.ability.Target.prototype.setWidth = function(value) {
+proto.ability.Target.prototype.setRange = function(value) {
   return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
 /**
- * optional int64 Height = 5;
+ * optional int64 Radius = 5;
  * @return {number}
  */
-proto.ability.Target.prototype.getHeight = function() {
+proto.ability.Target.prototype.getRadius = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 
@@ -690,18 +738,54 @@ proto.ability.Target.prototype.getHeight = function() {
  * @param {number} value
  * @return {!proto.ability.Target} returns this
  */
-proto.ability.Target.prototype.setHeight = function(value) {
+proto.ability.Target.prototype.setRadius = function(value) {
   return jspb.Message.setProto3IntField(this, 5, value);
 };
 
 
 /**
- * optional MoveTarget Move = 6;
+ * optional int64 Width = 6;
+ * @return {number}
+ */
+proto.ability.Target.prototype.getWidth = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.ability.Target} returns this
+ */
+proto.ability.Target.prototype.setWidth = function(value) {
+  return jspb.Message.setProto3IntField(this, 6, value);
+};
+
+
+/**
+ * optional int64 Height = 7;
+ * @return {number}
+ */
+proto.ability.Target.prototype.getHeight = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.ability.Target} returns this
+ */
+proto.ability.Target.prototype.setHeight = function(value) {
+  return jspb.Message.setProto3IntField(this, 7, value);
+};
+
+
+/**
+ * optional MoveTarget Move = 8;
  * @return {?proto.ability.MoveTarget}
  */
 proto.ability.Target.prototype.getMove = function() {
   return /** @type{?proto.ability.MoveTarget} */ (
-    jspb.Message.getWrapperField(this, proto.ability.MoveTarget, 6));
+    jspb.Message.getWrapperField(this, proto.ability.MoveTarget, 8));
 };
 
 
@@ -710,7 +794,7 @@ proto.ability.Target.prototype.getMove = function() {
  * @return {!proto.ability.Target} returns this
 */
 proto.ability.Target.prototype.setMove = function(value) {
-  return jspb.Message.setWrapperField(this, 6, value);
+  return jspb.Message.setWrapperField(this, 8, value);
 };
 
 
@@ -728,7 +812,7 @@ proto.ability.Target.prototype.clearMove = function() {
  * @return {boolean}
  */
 proto.ability.Target.prototype.hasMove = function() {
-  return jspb.Message.getField(this, 6) != null;
+  return jspb.Message.getField(this, 8) != null;
 };
 
 
@@ -3121,13 +3205,10 @@ proto.ability.A.prototype.clearEffectsMap = function() {
 proto.ability.TargetType = {
   NONETARGET: 0,
   SELF: 1,
-  CLOSESTSELF: 2,
-  FOE: 3,
-  CLOSESTFOE: 4,
-  ALLY: 5,
-  CLOSESTALLY: 6,
-  RECT: 7,
-  CIRCLE: 8
+  FOE: 2,
+  ALLY: 3,
+  RECT: 4,
+  CIRCLE: 5
 };
 
 /**

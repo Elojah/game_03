@@ -18,16 +18,14 @@ import "github.com/elojah/game_03/pkg/entity/entity.proto";
 enum TargetType {
 	NoneTarget                                 = 0;
 
+	// direct entity
 	Self                                       = 1;
-	ClosestSelf                                = 2;
-	Foe                                        = 3;
-	ClosestFoe                                 = 4;
-	Ally                                       = 5;
-	ClosestAlly                                = 6;
+	Foe                                        = 2;
+	Ally                                       = 3;
 
 	// geometry aoe
-	Rect                                       = 7;
-	Circle                                     = 8;
+	Rect                                       = 4;
+	Circle                                     = 5;
 }
 
 enum Move {
@@ -46,15 +44,20 @@ message MoveTarget {
 message Target {
 	TargetType Type                            = 1;
 
-	int64 Range                                = 2;
+	// GroupID used for frontend casting + faster backend checking
+	bytes GroupID                              = 2;
+
+	// Affect closest target (ally/foe only)
+	bool Closest                               = 3;
+	int64 Range                                = 4;
 
 	// optionals
-	int64 Radius                               = 3;
-	int64 Width                                = 4;
-	int64 Height                               = 5;
+	int64 Radius                               = 5;
+	int64 Width                                = 6;
+	int64 Height                               = 7;
 
 	// Move target optional
-	MoveTarget Move                            = 6 [(gogoproto.nullable) = false];
+	MoveTarget Move                            = 8 [(gogoproto.nullable) = false];
 }
 
 message AbilityModifier {

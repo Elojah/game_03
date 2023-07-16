@@ -351,8 +351,6 @@ func (a App) cast(ctx context.Context, ev event.E, e entity.E) (entity.E, map[st
 						CurrentID: targetID,
 					},
 				}
-			case ability.ClosestSelf:
-				return e, nil, errors.ErrNotImplemented{Version: "1.0.0"}
 			case ability.Foe:
 				id := ulid.NewID()
 				events[id.String()] = event.E{
@@ -370,8 +368,6 @@ func (a App) cast(ctx context.Context, ev event.E, e entity.E) (entity.E, map[st
 						CurrentID: targetID,
 					},
 				}
-			case ability.ClosestFoe:
-				return e, nil, errors.ErrNotImplemented{Version: "1.0.0"}
 			case ability.Ally:
 				id := ulid.NewID()
 				events[id.String()] = event.E{
@@ -389,8 +385,6 @@ func (a App) cast(ctx context.Context, ev event.E, e entity.E) (entity.E, map[st
 						CurrentID: targetID,
 					},
 				}
-			case ability.ClosestAlly:
-				return e, nil, errors.ErrNotImplemented{Version: "1.0.0"}
 			case ability.Rect:
 				return e, nil, errors.ErrNotImplemented{Version: "1.0.0"}
 			case ability.Circle:

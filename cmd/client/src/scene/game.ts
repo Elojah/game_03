@@ -61,13 +61,27 @@ enum Action {
 };
 
 type valueof<T> = T[keyof T];
+
 type Orientation = valueof<Cell.OrientationMap>
+type TargetType = valueof<Ability.TargetTypeMap>
+
+type GraphicTarget = {
+	Type: TargetType
+	Targets: Map<string, Ability.Target>
+}
+
+type GraphicAbility = {
+	A: Ability.A
+	// Targets array define order in which target groups are defined
+	Targets: Array<GraphicTarget>
+}
 
 type BodyEntity = {
 	E: Entity.E
 	Body: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
 	Animations: Map<string, string>
 	Orientation: Orientation
+	Abilities: Map<string, GraphicAbility>
 }
 
 type GraphicEntity = {
@@ -170,7 +184,8 @@ export class Game extends Scene {
 			E: e,
 			Body: this.physics.add.sprite(0, 0, ''),
 			Animations: new Map(),
-			Orientation: Cell.Orientation.DOWN
+			Orientation: Cell.Orientation.DOWN,
+			Abilities: new Map()
 		}
 		this.EntityID = ulid(this.Entity.E.getId_asU8())
 
@@ -485,52 +500,117 @@ export class Game extends Scene {
 		const now = Date.now()
 		c.setAt(now)
 
-		ab.getEffectsMap().forEach((effect: Ability.Effect, abilityID: string) => {
-			effect.getTargetsMap().forEach((target: Ability.Target, targetID: string) => {
-				switch (target.getType()) {
-					case Ability.TargetType.NONETARGET:
-						// should never happen
-						break
-					case Ability.TargetType.SELF: {
-						const ct = new Cast.CastTarget()
-						ct.setId(this.EntityID)
-						c.getTargetsMap().set(targetID, ct)
-					} break
-					case Ability.TargetType.FOE: {
-						const ct = new Cast.CastTarget()
-						ct.setId(this.EntityID)
-						c.getTargetsMap().set(targetID, ct)
-					} break
-					case Ability.TargetType.CLOSESTSELF: {
-						// TODO
-					} break
-					case Ability.TargetType.CLOSESTFOE: {
-						// TODO
-					} break
-					case Ability.TargetType.RECT: {
-						const ct = new Cast.CastTarget()
-						const rect = new Rect()
-						rect.setX(this.input.mousePointer.worldX)
-						rect.setY(this.input.mousePointer.worldY)
-						rect.setWidth(target.getWidth())
-						rect.setHeight(target.getHeight())
-						ct.setRect(rect)
-						c.getTargetsMap().set(targetID, ct)
-					} break
-					case Ability.TargetType.CIRCLE: {
-						const ct = new Cast.CastTarget()
-						const circle = new Circle()
-						circle.setX(Math.round(this.input.mousePointer.worldX))
-						circle.setY(Math.round(this.input.mousePointer.worldY))
-						circle.setRadius(target.getRadius())
-						ct.setCircle(circle)
-						// ct.setCellid()
-						c.getTargetsMap().set(targetID, ct)
-					} break
+		const la = this.Entity.Abilities.get(abilityID)
 
+		if (!la) {
+			// ability not initialized locally
+			return
+		}
+
+
+		la?.Targets.forEach((v) => {
+			// group by groupID
+			// order defined in custom ?
+			// Allies - Foes - Circle - Rect
+			switch (v.Type) {
+				case Ability.TargetType.NONETARGET: { break }
+				case Ability.TargetType.SELF: {
+					const ct = new Cast.CastTarget()
+					ct.setId(this.EntityID)
+					const key = v.Targets.entries().next().value[0]
+					c.getTargetsMap().set(key, ct)
+					break
 				}
-			})
+				case Ability.TargetType.FOE: {
+					v.Targets.forEach((target, key) => {
+						// Target X cast targets to assign
+						const ct = new Cast.CastTarget()
+						ct.setId(this.EntityID)
+
+						c.getTargetsMap().set(key, ct)
+					})
+					break
+				}
+				case Ability.TargetType.ALLY: {
+					v.Targets.forEach((target, key) => {
+						// Target X cast targets to assign
+						const ct = new Cast.CastTarget()
+						ct.setId(this.EntityID)
+
+						c.getTargetsMap().set(key, ct)
+					})
+					break
+				}
+				case Ability.TargetType.RECT: {
+					const ct = new Cast.CastTarget()
+
+					const target = v.Targets.entries().next().value
+					const rect = new Rect()
+					rect.setX(this.input.mousePointer.worldX)
+					rect.setY(this.input.mousePointer.worldY)
+					rect.setWidth(target[1].getWidth())
+					rect.setHeight(target[1].getHeight())
+					ct.setRect(rect)
+					// ct.setCellid()
+					c.getTargetsMap().set(target[0], ct)
+					break
+				}
+				case Ability.TargetType.CIRCLE: {
+					const ct = new Cast.CastTarget()
+					const circle = new Circle()
+					circle.setX(Math.round(this.input.mousePointer.worldX))
+					circle.setY(Math.round(this.input.mousePointer.worldY))
+					const target = v.Targets.entries().next().value
+					circle.setRadius(target[1].getRadius())
+					ct.setCircle(circle)
+					// ct.setCellid()
+					c.getTargetsMap().set(target[0], ct)
+					break
+				}
+			}
 		})
+
+		// ab.getEffectsMap().forEach((effect: Ability.Effect, abilityID: string) => {
+		// 	effect.getTargetsMap().forEach((target: Ability.Target, targetID: string) => {
+		// 		switch (target.getType()) {
+		// 			case Ability.TargetType.NONETARGET:
+		// 				// should never happen
+		// 				break
+		// 			case Ability.TargetType.SELF: {
+		// 			case Ability.TargetType.FOE: {
+		// 				const ct = new Cast.CastTarget()
+		// 				ct.setId(this.EntityID)
+		// 				c.getTargetsMap().set(targetID, ct)
+		// 			} break
+		// 			case Ability.TargetType.CLOSESTSELF: {
+		// 				// TODO
+		// 			} break
+		// 			case Ability.TargetType.CLOSESTFOE: {
+		// 				// TODO
+		// 			} break
+		// 			case Ability.TargetType.RECT: {
+		// 				const ct = new Cast.CastTarget()
+		// 				const rect = new Rect()
+		// 				rect.setX(this.input.mousePointer.worldX)
+		// 				rect.setY(this.input.mousePointer.worldY)
+		// 				rect.setWidth(target.getWidth())
+		// 				rect.setHeight(target.getHeight())
+		// 				ct.setRect(rect)
+		// 				c.getTargetsMap().set(targetID, ct)
+		// 			} break
+		// 			case Ability.TargetType.CIRCLE: {
+		// 				const ct = new Cast.CastTarget()
+		// 				const circle = new Circle()
+		// 				circle.setX(Math.round(this.input.mousePointer.worldX))
+		// 				circle.setY(Math.round(this.input.mousePointer.worldY))
+		// 				circle.setRadius(target.getRadius())
+		// 				ct.setCircle(circle)
+		// 				// ct.setCellid()
+		// 				c.getTargetsMap().set(targetID, ct)
+		// 			} break
+		// 		}
+		// 	})
+		// })
 
 
 		c.getTargetsMap().forEach((target: Cast.CastTarget, id: string) => {
@@ -1514,11 +1594,17 @@ export class Game extends Scene {
 							this.Connected()
 						})
 						.catch((err) => { console.log(err) })
-
-
 				} else if (this.Entities.has(meid)) {
 					const sprite = this.add.sprite(entry.getX(), entry.getY(), id)
 					sprite.setDepth(entitySpriteDepth - 1)
+					sprite.on('over', () => {
+						// TODO
+						const casting = this.Entity.E.getAbilitiesMap()
+						// if () {
+
+						// } else if (this.Entity.IsAllyCasting) {
+						// }
+					})
 
 					let ge: GraphicEntity = {
 						E: entry,

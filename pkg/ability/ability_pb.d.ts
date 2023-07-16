@@ -39,6 +39,14 @@ export class Target extends jspb.Message {
   getType(): TargetTypeMap[keyof TargetTypeMap];
   setType(value: TargetTypeMap[keyof TargetTypeMap]): void;
 
+  getGroupid(): Uint8Array | string;
+  getGroupid_asU8(): Uint8Array;
+  getGroupid_asB64(): string;
+  setGroupid(value: Uint8Array | string): void;
+
+  getClosest(): boolean;
+  setClosest(value: boolean): void;
+
   getRange(): number;
   setRange(value: number): void;
 
@@ -69,6 +77,8 @@ export class Target extends jspb.Message {
 export namespace Target {
   export type AsObject = {
     type: TargetTypeMap[keyof TargetTypeMap],
+    groupid: Uint8Array | string,
+    closest: boolean,
     range: number,
     radius: number,
     width: number,
@@ -394,13 +404,10 @@ export namespace A {
 export interface TargetTypeMap {
   NONETARGET: 0;
   SELF: 1;
-  CLOSESTSELF: 2;
-  FOE: 3;
-  CLOSESTFOE: 4;
-  ALLY: 5;
-  CLOSESTALLY: 6;
-  RECT: 7;
-  CIRCLE: 8;
+  FOE: 2;
+  ALLY: 3;
+  RECT: 4;
+  CIRCLE: 5;
 }
 
 export const TargetType: TargetTypeMap;
