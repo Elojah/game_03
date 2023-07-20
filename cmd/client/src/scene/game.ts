@@ -158,7 +158,9 @@ export class Game extends Scene {
 	// Keys assignment
 	Keys: Map<Action, Phaser.Input.Keyboard.Key>
 
-	SyncTimer: number
+	// Targets live variable
+	Targeting: GraphicTarget | undefined
+	CastTargets: Map<string, Cast.CastTarget>
 
 	// Spritesheets already loaded
 	SpriteSheets: Map<string, integer>
@@ -168,6 +170,8 @@ export class Game extends Scene {
 
 	// Start load pc mutex before map
 	LoadMapMutex: Mutex
+
+	SyncTimer: number
 
 	Connected: MutexInterface.Releaser
 
@@ -417,12 +421,12 @@ export class Game extends Scene {
 				return
 			}
 
-			v.on('down', () => { this.launchAction(k) })
+			v.on('down', () => { this.prepareAbility(v, k) })
 		})
 	}
 
-	launchAction(a: Action) {
-		console.log('launch action:', a)
+	prepareAbility(key: Phaser.Input.Keyboard.Key, a: Action) {
+		console.log('prepare ability:', a)
 
 		let eid = ''
 
@@ -507,6 +511,31 @@ export class Game extends Scene {
 			return
 		}
 
+		// loop for multiple target groups ?
+		for (const target of la?.Targets) {
+			const selected = await this.targetSelect(target)
+
+			key.once('up', () => {
+				// don't launch ability if we have zero targets
+				if (this.CastTargets.size == 0) {
+					return
+				}
+
+				v.Targets.forEach((target, key) => {
+					if (this.CastTargets.size == 0) {
+						return
+					}
+
+					// Assign randomly
+					const ct = this.CastTargets.entries().next().value
+					this.CastTargets.delete(ct[0])
+					c.getTargetsMap().set(key, ct[1])
+				})
+
+				this.launchAbility(c)
+			})
+
+		}
 
 		la?.Targets.forEach((v) => {
 			// group by groupID
@@ -519,26 +548,34 @@ export class Game extends Scene {
 					ct.setId(this.EntityID)
 					const key = v.Targets.entries().next().value[0]
 					c.getTargetsMap().set(key, ct)
+
+					this.launchAbility(c)
 					break
 				}
+				case Ability.TargetType.ALLY:
 				case Ability.TargetType.FOE: {
-					v.Targets.forEach((target, key) => {
-						// Target X cast targets to assign
-						const ct = new Cast.CastTarget()
-						ct.setId(this.EntityID)
+					this.targetSelect(v)
 
-						c.getTargetsMap().set(key, ct)
-					})
-					break
-				}
-				case Ability.TargetType.ALLY: {
-					v.Targets.forEach((target, key) => {
-						// Target X cast targets to assign
-						const ct = new Cast.CastTarget()
-						ct.setId(this.EntityID)
+					key.once('up', () => {
+						// don't launch ability if we have zero targets
+						if (this.CastTargets.size == 0) {
+							return
+						}
 
-						c.getTargetsMap().set(key, ct)
+						v.Targets.forEach((target, key) => {
+							if (this.CastTargets.size == 0) {
+								return
+							}
+
+							// Assign randomly
+							const ct = this.CastTargets.entries().next().value
+							this.CastTargets.delete(ct[0])
+							c.getTargetsMap().set(key, ct[1])
+						})
+
+						this.launchAbility(c)
 					})
+
 					break
 				}
 				case Ability.TargetType.RECT: {
@@ -569,6 +606,78 @@ export class Game extends Scene {
 				}
 			}
 		})
+		// key.on('up', () => { this.launchAbility(key, a) })
+		// // loop for multiple target groups ?
+		// key.on('down', () => { this.prepareAbility(key, a) })
+	}
+
+	launchAbility(c: Cast.Cast) {
+		// la?.Targets.forEach((v) => {
+		// 	// group by groupID
+		// 	// order defined in custom ?
+		// 	// Allies - Foes - Circle - Rect
+		// 	switch (v.Type) {
+		// 		case Ability.TargetType.NONETARGET: { break }
+		// 		case Ability.TargetType.SELF: {
+		// 			const ct = new Cast.CastTarget()
+		// 			ct.setId(this.EntityID)
+		// 			const key = v.Targets.entries().next().value[0]
+		// 			c.getTargetsMap().set(key, ct)
+		// 			break
+		// 		}
+		// 		case Ability.TargetType.FOE: {
+		// 			this.targetSelect(v).then(() => {
+
+		// 			})
+
+
+		// 			v.Targets.forEach((target, key) => {
+		// 				// Target X cast targets to assign
+		// 				const ct = new Cast.CastTarget()
+		// 				ct.setId(this.EntityID)
+
+		// 				c.getTargetsMap().set(key, ct)
+		// 			})
+		// 			break
+		// 		}
+		// 		case Ability.TargetType.ALLY: {
+		// 			v.Targets.forEach((target, key) => {
+		// 				// Target X cast targets to assign
+		// 				const ct = new Cast.CastTarget()
+		// 				ct.setId(this.EntityID)
+
+		// 				c.getTargetsMap().set(key, ct)
+		// 			})
+		// 			break
+		// 		}
+		// 		case Ability.TargetType.RECT: {
+		// 			const ct = new Cast.CastTarget()
+
+		// 			const target = v.Targets.entries().next().value
+		// 			const rect = new Rect()
+		// 			rect.setX(this.input.mousePointer.worldX)
+		// 			rect.setY(this.input.mousePointer.worldY)
+		// 			rect.setWidth(target[1].getWidth())
+		// 			rect.setHeight(target[1].getHeight())
+		// 			ct.setRect(rect)
+		// 			// ct.setCellid()
+		// 			c.getTargetsMap().set(target[0], ct)
+		// 			break
+		// 		}
+		// 		case Ability.TargetType.CIRCLE: {
+		// 			const ct = new Cast.CastTarget()
+		// 			const circle = new Circle()
+		// 			circle.setX(Math.round(this.input.mousePointer.worldX))
+		// 			circle.setY(Math.round(this.input.mousePointer.worldY))
+		// 			const target = v.Targets.entries().next().value
+		// 			circle.setRadius(target[1].getRadius())
+		// 			ct.setCircle(circle)
+		// 			// ct.setCellid()
+		// 			c.getTargetsMap().set(target[0], ct)
+		// 			break
+		// 		}
+		// 	}
+		// })
 
 		// ab.getEffectsMap().forEach((effect: Ability.Effect, abilityID: string) => {
 		// 	effect.getTargetsMap().forEach((target: Ability.Target, targetID: string) => {
@@ -668,6 +777,19 @@ export class Game extends Scene {
 		}
 	}
 
+	targetSelect(gt: GraphicTarget) {
+		// check if already targeting
+		if (this.Targeting) {
+			return
+		}
+
+		this.Targeting = gt
+		this.CastTargets = new Map()
+
+		// change cursor
+		this.input.setDefaultCursor
+
+	}
 
 	createUI() {
 		this.add.dom(60, 20).createFromCache('menu').setScrollFactor(0)
@@ -1595,15 +1717,20 @@ export class Game extends Scene {
 						})
 						.catch((err) => { console.log(err) })
 				} else if (this.Entities.has(meid)) {
+					const eid = ulid(entry.getId_asU8())
 					const sprite = this.add.sprite(entry.getX(), entry.getY(), id)
 					sprite.setDepth(entitySpriteDepth - 1)
 					sprite.on('over', () => {
 						// TODO
-						const casting = this.Entity.E.getAbilitiesMap()
-						// if () {
-
-						// } else if (this.Entity.IsAllyCasting) {
-						// }
+						if (this.Targeting &&
+							this.Targeting.Targets.size < this.CastTargets.size &&
+							!this.CastTargets.has(eid) &&
+							((this.Targeting.Type == Ability.TargetType.FOE && (entry.getFactionid() != this.Entity.E.getFactionid())) ||
+								(this.Targeting.Type == Ability.TargetType.ALLY && (entry.getFactionid() == this.Entity.E.getFactionid())))) {
+							const target = new Cast.CastTarget()
+							target.setId(eid)
+							this.CastTargets.set(eid, target)
+						}
 					})
 
 					let ge: GraphicEntity = {
