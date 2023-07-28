@@ -18,7 +18,8 @@ export default () => {
 				theme='filled_black'
 				size='large'
 				shape='pill'
-				width='256'
+				// @ts-ignore https://github.com/MomenSherif/react-oauth/issues/281
+				width={256}
 				onSuccess={GSigninSuccess}
 				onError={GSigninError}
 			/>

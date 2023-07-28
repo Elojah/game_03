@@ -67,6 +67,7 @@ type TargetType = valueof<Ability.TargetTypeMap>
 
 type GraphicTarget = {
 	Type: TargetType
+	GroupID: string
 	Targets: Map<string, Ability.Target>
 }
 
@@ -485,12 +486,6 @@ export class Game extends Scene {
 
 		const abilityID = document.getElementById(eid)?.dataset['abilityID']
 		if (!abilityID) {
-			return
-		}
-
-		// find targets here
-		const ab = this.Abilities.get(abilityID)
-		if (!ab) {
 			return
 		}
 
@@ -1642,7 +1637,49 @@ export class Game extends Scene {
 					this.listAbility(req)
 						.then((resp: AbilityDTO.ListAbilityResp) => {
 							resp.getAbilitiesList().forEach((ab: Ability.A) => {
-								this.Abilities.set(ulid(ab.getId_asU8()), ab)
+								const id = ulid(ab.getId_asU8())
+
+								const ga: GraphicAbility = {
+									A: ab,
+									Effects: new Array()
+								}
+
+								// TODO: group targets in this.Entity.Ability
+								// Order to redefine ?
+								ab.getEffectsMap().forEach((e: Ability.Effect, effectID: string) => {
+									const ge: GraphicEffect = {
+										ID: effectID,
+										Targets: new Array()
+									}
+
+									const targetsByGroup = new Map<string, GraphicTarget>()
+									e.getTargetsMap().forEach((target: Ability.Target, targetID: string) => {
+										const groupID = ulid(target.getGroupid_asU8())
+										if (!targetsByGroup.has(groupID)) {
+											targetsByGroup.set(groupID, {
+												Type: target.getType(),
+												GroupID: groupID,
+												Targets: new Map()
+											})
+										}
+
+										targetsByGroup.get(groupID)?.Targets.set(targetID, target)
+									})
+
+									const targets = new Array<GraphicTarget>()
+									// specify target order here ?
+									targetsByGroup.forEach((v, k) => {
+										targets.push(v)
+									})
+
+									ga.Effects.push({
+										ID: effectID,
+										Targets: targets
+									})
+								})
+
+								this.Abilities.set(id, ab)
+								this.Entity.Abilities.set(id, ga)
 							})
 						})
 						.then(() => {
