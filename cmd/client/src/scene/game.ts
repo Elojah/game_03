@@ -503,6 +503,8 @@ export class Game extends Scene {
 			return
 		}
 
+		// key.on('down')
+
 		// loop for multiple effects
 		for (const e of la.Effects) {
 			// loop for multiple target groups
