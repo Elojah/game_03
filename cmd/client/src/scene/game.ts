@@ -438,14 +438,6 @@ export class Game extends Scene {
 		let eid = ''
 
 		switch (a) {
-			case Action.Up:
-				return
-			case Action.Right:
-				return
-			case Action.Down:
-				return
-			case Action.Left:
-				return
 			case Action.Hotkey00:
 				eid = 'hotkey-0-0-icon'
 				break
@@ -487,7 +479,7 @@ export class Game extends Scene {
 		const abilityIDStr = document.getElementById(eid)?.dataset['abilityID']
 		if (!abilityIDStr) {
 			// no ability in hotkey
-			return
+			return key.once('down', () => { this.prepareAbility(key, a) })
 		}
 
 		const abilityID = parse(abilityIDStr)
@@ -503,7 +495,7 @@ export class Game extends Scene {
 
 		if (!la) {
 			// ability not initialized locally
-			return
+			return key.once('down', () => { this.prepareAbility(key, a) })
 		}
 
 		// loop for multiple effects
@@ -516,12 +508,12 @@ export class Game extends Scene {
 				const ok = await this.targetSelect(t, key)
 				if (!ok) {
 					// target selection failed
-					return
+					return key.once('down', () => { this.prepareAbility(key, a) })
 				}
 
 				// don't launch ability if we have zero targets
 				if (this.CastTargets.size == 0) {
-					return
+					return key.once('down', () => { this.prepareAbility(key, a) })
 				}
 
 				t.Targets.forEach((target, key) => {
@@ -539,9 +531,7 @@ export class Game extends Scene {
 
 		this.launchAbility(c)
 
-		key.once('down', () => {
-			this.prepareAbility(key, a)
-		})
+		return key.once('down', () => { this.prepareAbility(key, a) })
 	}
 
 	launchAbility(c: Cast.Cast) {
