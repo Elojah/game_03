@@ -428,13 +428,13 @@ export class Game extends Scene {
 				return
 			}
 
-			v.on('down', () => { this.prepareAbility(v, k) })
+			v.once('down', () => {
+				this.prepareAbility(v, k)
+			})
 		})
 	}
 
 	async prepareAbility(key: Phaser.Input.Keyboard.Key, a: Action) {
-		console.log('prepare ability:', a)
-
 		let eid = ''
 
 		switch (a) {
@@ -484,10 +484,13 @@ export class Game extends Scene {
 				break
 		}
 
-		const abilityID = document.getElementById(eid)?.dataset['abilityID']
-		if (!abilityID) {
+		const abilityIDStr = document.getElementById(eid)?.dataset['abilityID']
+		if (!abilityIDStr) {
+			// no ability in hotkey
 			return
 		}
+
+		const abilityID = parse(abilityIDStr)
 
 		const c = new Cast.Cast()
 
@@ -496,14 +499,12 @@ export class Game extends Scene {
 		// overrided, used to bypass parse error
 		c.setId(abilityID)
 
-		const la = this.Entity.Abilities.get(abilityID)
+		const la = this.Entity.Abilities.get(abilityIDStr)
 
 		if (!la) {
 			// ability not initialized locally
 			return
 		}
-
-		// key.on('down')
 
 		// loop for multiple effects
 		for (const e of la.Effects) {
@@ -537,11 +538,16 @@ export class Game extends Scene {
 		}
 
 		this.launchAbility(c)
+
+		key.once('down', () => {
+			this.prepareAbility(key, a)
+		})
 	}
 
 	launchAbility(c: Cast.Cast) {
 		const ab = this.Abilities.get(ulid(c.getAbilityid_asU8()))
 		if (!ab) {
+			console.log('ability not found', ulid(c.getAbilityid_asU8()))
 			return
 		}
 
@@ -570,7 +576,7 @@ export class Game extends Scene {
 					case Ability.TargetType.SELF: { break }
 					case Ability.TargetType.ALLY: {
 						t.Targets.forEach((_, id) => {
-							const target = this.CastTargets.get(id)
+							const target = c.getTargetsMap().get(id)
 							if (!target) {
 								return
 							}
@@ -585,7 +591,7 @@ export class Game extends Scene {
 					}
 					case Ability.TargetType.FOE: {
 						t.Targets.forEach((_, id) => {
-							const target = this.CastTargets.get(id)
+							const target = c.getTargetsMap().get(id)
 							if (!target) {
 								return
 							}
@@ -600,7 +606,7 @@ export class Game extends Scene {
 					}
 					case Ability.TargetType.RECT: {
 						t.Targets.forEach((_, id) => {
-							const target = this.CastTargets.get(id)
+							const target = c.getTargetsMap().get(id)
 							if (!target) {
 								return
 							}
@@ -614,7 +620,7 @@ export class Game extends Scene {
 					}
 					case Ability.TargetType.CIRCLE: {
 						t.Targets.forEach((_, id) => {
-							const target = this.CastTargets.get(id)
+							const target = c.getTargetsMap().get(id)
 							if (!target) {
 								return
 							}
@@ -678,35 +684,47 @@ export class Game extends Scene {
 				break
 			}
 			case Ability.TargetType.RECT: {
-				let id = 0
+				let n = 0
 				const target = this.Targeting?.Targets.entries().next().value
 
 				this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
 					const ct = new Cast.CastTarget()
 					const rect = new Rect()
-					rect.setX(Math.round(pointer.x))
-					rect.setY(Math.round(pointer.y))
+					rect.setX(Math.round(pointer.worldX))
+					rect.setY(Math.round(pointer.worldY))
 					rect.setWidth(target[1].getWidth())
 					rect.setHeight(target[1].getHeight())
 					ct.setRect(rect)
 					// ct.setCellid()
-					this.CastTargets.set((id++).toString(), ct)
+					this.CastTargets.set((n++).toString(), ct)
+					if (n >= this.Targeting?.Targets.size!) {
+						key.emit('down')
+
+						return
+					}
 				})
 				break
 			}
 			case Ability.TargetType.CIRCLE: {
-				let id = 0
+				let n = 0
 				const target = this.Targeting?.Targets.entries().next().value
 
 				this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+					// add new circle
 					const ct = new Cast.CastTarget()
 					const circle = new Circle()
-					circle.setX(Math.round(pointer.x))
-					circle.setY(Math.round(pointer.y))
+					circle.setX(Math.round(pointer.worldX))
+					circle.setY(Math.round(pointer.worldY))
 					circle.setRadius(target[1].getRadius())
 					ct.setCircle(circle)
 					// ct.setCellid()
-					this.CastTargets.set((id++).toString(), ct)
+					this.CastTargets.set((n++).toString(), ct)
+					if (n >= this.Targeting?.Targets.size!) {
+						key.emit('down')
+
+						return
+					}
+
 				})
 				break
 			}
@@ -714,7 +732,8 @@ export class Game extends Scene {
 
 		// wait for ability click
 		return new Promise<boolean>((accept, reject) => {
-			key.on('down', () => {
+			key.once('down', () => {
+				this.input.removeListener('pointerdown')
 				this.Targeting = undefined
 				accept(true)
 			})

@@ -286,6 +286,8 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
+	// #!TMP
+
 	logger.Info().Msg("success")
 
 	return &pc, nil
