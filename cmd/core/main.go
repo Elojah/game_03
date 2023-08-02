@@ -148,6 +148,7 @@ func run(prog string, filename string) {
 		StorePC:        entityStore,
 		StoreTemplate:  entityStore,
 		StoreSpawn:     entityStore,
+		Ability:        abilityApp,
 	}
 
 	roomStore := &roomscylla.Store{Service: scyllas}

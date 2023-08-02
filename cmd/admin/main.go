@@ -144,6 +144,7 @@ func run(prog string, filename string) {
 		StorePC:        entityStore,
 		StoreTemplate:  entityStore,
 		StoreSpawn:     entityStore,
+		Ability:        abilityApp,
 	}
 
 	factionStore := &factionscylla.Store{Service: scyllas}

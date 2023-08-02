@@ -22,10 +22,11 @@ enum TargetType {
 	Self                                       = 1;
 	Foe                                        = 2;
 	Ally                                       = 3;
+	Spawn                                      = 4;
 
 	// geometry aoe
-	Rect                                       = 4;
-	Circle                                     = 5;
+	Rect                                       = 5;
+	Circle                                     = 6;
 }
 
 enum Move {
@@ -57,7 +58,7 @@ message Target {
 	int64 Height                               = 7;
 
 	// Move target optional
-	MoveTarget Move                            = 8 [(gogoproto.nullable) = false];
+	MoveTarget MoveTarget                      = 8 [(gogoproto.nullable) = false];
 }
 
 message AbilityModifier {

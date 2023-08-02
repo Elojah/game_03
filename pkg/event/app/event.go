@@ -227,11 +227,11 @@ func (a App) move(ctx context.Context, ev event.E, e entity.E) (entity.E, map[st
 	}
 
 	// self walk
-	if m := targetType.Move; ev.Effect.AbilityID.Compare(ev.Source.ID) == 0 &&
+	if m := targetType.MoveTarget; ev.Effect.AbilityID.Compare(ev.Source.ID) == 0 &&
 		m.Move == ability.Walk &&
 		m.TargetType == ability.Circle {
 		// standard move (use center)
-		pos, ok := ev.Effect.Targets[targetType.Move.TargetID.String()]
+		pos, ok := ev.Effect.Targets[targetType.MoveTarget.TargetID.String()]
 		if !ok {
 			// position not defined, ignore
 			return e, nil, nil

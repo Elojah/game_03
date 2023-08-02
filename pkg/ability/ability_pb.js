@@ -470,7 +470,7 @@ proto.ability.Target.toObject = function(includeInstance, msg) {
     radius: jspb.Message.getFieldWithDefault(msg, 5, 0),
     width: jspb.Message.getFieldWithDefault(msg, 6, 0),
     height: jspb.Message.getFieldWithDefault(msg, 7, 0),
-    move: (f = msg.getMove()) && proto.ability.MoveTarget.toObject(includeInstance, f)
+    movetarget: (f = msg.getMovetarget()) && proto.ability.MoveTarget.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -538,7 +538,7 @@ proto.ability.Target.deserializeBinaryFromReader = function(msg, reader) {
     case 8:
       var value = new proto.ability.MoveTarget;
       reader.readMessage(value,proto.ability.MoveTarget.deserializeBinaryFromReader);
-      msg.setMove(value);
+      msg.setMovetarget(value);
       break;
     default:
       reader.skipField();
@@ -618,7 +618,7 @@ proto.ability.Target.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getMove();
+  f = message.getMovetarget();
   if (f != null) {
     writer.writeMessage(
       8,
@@ -780,10 +780,10 @@ proto.ability.Target.prototype.setHeight = function(value) {
 
 
 /**
- * optional MoveTarget Move = 8;
+ * optional MoveTarget MoveTarget = 8;
  * @return {?proto.ability.MoveTarget}
  */
-proto.ability.Target.prototype.getMove = function() {
+proto.ability.Target.prototype.getMovetarget = function() {
   return /** @type{?proto.ability.MoveTarget} */ (
     jspb.Message.getWrapperField(this, proto.ability.MoveTarget, 8));
 };
@@ -793,7 +793,7 @@ proto.ability.Target.prototype.getMove = function() {
  * @param {?proto.ability.MoveTarget|undefined} value
  * @return {!proto.ability.Target} returns this
 */
-proto.ability.Target.prototype.setMove = function(value) {
+proto.ability.Target.prototype.setMovetarget = function(value) {
   return jspb.Message.setWrapperField(this, 8, value);
 };
 
@@ -802,8 +802,8 @@ proto.ability.Target.prototype.setMove = function(value) {
  * Clears the message field making it undefined.
  * @return {!proto.ability.Target} returns this
  */
-proto.ability.Target.prototype.clearMove = function() {
-  return this.setMove(undefined);
+proto.ability.Target.prototype.clearMovetarget = function() {
+  return this.setMovetarget(undefined);
 };
 
 
@@ -811,7 +811,7 @@ proto.ability.Target.prototype.clearMove = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.ability.Target.prototype.hasMove = function() {
+proto.ability.Target.prototype.hasMovetarget = function() {
   return jspb.Message.getField(this, 8) != null;
 };
 
@@ -3207,8 +3207,9 @@ proto.ability.TargetType = {
   SELF: 1,
   FOE: 2,
   ALLY: 3,
-  RECT: 4,
-  CIRCLE: 5
+  SPAWN: 4,
+  RECT: 5,
+  CIRCLE: 6
 };
 
 /**

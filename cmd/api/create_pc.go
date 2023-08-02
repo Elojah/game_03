@@ -5,7 +5,6 @@ import (
 	"errors"
 	"time"
 
-	"github.com/elojah/game_03/pkg/ability"
 	"github.com/elojah/game_03/pkg/entity"
 	"github.com/elojah/game_03/pkg/entity/dto"
 	gerrors "github.com/elojah/game_03/pkg/errors"
@@ -217,76 +216,11 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
-	// #TMP Create first ability
-	// basic ability: damage one foe
-	abilityTemplate, err := h.entity.FetchTemplate(ctx, entity.FilterTemplate{
-		Name: func(s string) *string { return &s }("ability"), // TODO: replace with "green_ability" template ?
-	})
-	if err != nil {
-		logger.Error().Err(err).Msg("failed to fetch ability template")
+	if err := h.entity.CreateDefaultAbilities(ctx, pc.EntityID); err != nil {
+		logger.Error().Err(err).Msg("failed to create default abilities")
 
 		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
 	}
-
-	anim, err := h.entity.FetchAnimation(ctx, entity.FilterAnimation{
-		EntityID: abilityTemplate.EntityID,
-	})
-	if err != nil {
-		logger.Error().Err(err).Msg("failed to fetch ability animation")
-
-		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
-	}
-
-	anim.ID = ulid.NewID()
-	anim.EntityID = entityID
-
-	ab := ability.A{
-		ID:        ulid.NewID(),
-		Name:      "test_spell",
-		Icon:      ulid.MustParse("01H0N2PHEMG0DJSDVGV15CXA3M"), // static wip icon
-		Animation: anim.ID,
-		CastTime:  1000,
-		ManaCost:  10,
-		Cooldown:  3000,
-		Effects: map[string]ability.Effect{
-			ulid.NewID().String(): {
-				Stat:   entity.HP,
-				Amount: ability.Amount{Direct: -10},
-				Targets: map[string]ability.Target{
-					ulid.NewID().String(): {
-						GroupID: ulid.NewID(),
-						Type:    ability.Circle,
-						Radius:  1,
-						Range:   100,
-					},
-				},
-			},
-		},
-	}
-
-	if err := h.ability.Insert(ctx, ab); err != nil {
-		logger.Error().Err(err).Msg("failed to create ability")
-
-		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
-	}
-
-	if err := h.entity.InsertAbility(ctx, entity.Ability{
-		EntityID:  pc.EntityID,
-		AbilityID: ab.ID,
-		LastCast:  0,
-	}); err != nil {
-		logger.Error().Err(err).Msg("failed to create entity ability")
-
-		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
-	}
-
-	if err := h.entity.InsertAnimation(ctx, anim); err != nil {
-		logger.Error().Err(err).Msg("failed to create ability animation")
-
-		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
-	}
-
-	// #!TMP
 
 	logger.Info().Msg("success")
 

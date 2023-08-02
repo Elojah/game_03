@@ -63,7 +63,7 @@ func NewEvents(sourceID ulid.ID, c ability.Cast) map[string]E {
 					Targets: map[string]ability.Target{
 						sourceID.String(): {
 							Type: ability.Self,
-							Move: ability.MoveTarget{
+							MoveTarget: ability.MoveTarget{
 								Move:       ability.Walk,
 								TargetType: ability.Circle,
 							},

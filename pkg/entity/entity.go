@@ -77,6 +77,8 @@ type App interface {
 	CreateBackupFromEntity(context.Context, ulid.ID) error
 
 	Insert(context.Context, E) error
+
+	CreateDefaultAbilities(context.Context, ulid.ID) error
 }
 
 // GetStat should be used when only way to get stat is `Stat` enum.

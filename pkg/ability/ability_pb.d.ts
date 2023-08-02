@@ -59,10 +59,10 @@ export class Target extends jspb.Message {
   getHeight(): number;
   setHeight(value: number): void;
 
-  hasMove(): boolean;
-  clearMove(): void;
-  getMove(): MoveTarget | undefined;
-  setMove(value?: MoveTarget): void;
+  hasMovetarget(): boolean;
+  clearMovetarget(): void;
+  getMovetarget(): MoveTarget | undefined;
+  setMovetarget(value?: MoveTarget): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Target.AsObject;
@@ -83,7 +83,7 @@ export namespace Target {
     radius: number,
     width: number,
     height: number,
-    move?: MoveTarget.AsObject,
+    movetarget?: MoveTarget.AsObject,
   }
 }
 
@@ -406,8 +406,9 @@ export interface TargetTypeMap {
   SELF: 1;
   FOE: 2;
   ALLY: 3;
-  RECT: 4;
-  CIRCLE: 5;
+  SPAWN: 4;
+  RECT: 5;
+  CIRCLE: 6;
 }
 
 export const TargetType: TargetTypeMap;
