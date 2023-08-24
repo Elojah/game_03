@@ -54,4 +54,5 @@ type App interface {
 	StoreWorldSpawn
 
 	PopulateWaypoints(context.Context, Waypoints, ulid.ID) error
+	CopyWorld(context.Context, ulid.ID) (ulid.ID, error)
 }

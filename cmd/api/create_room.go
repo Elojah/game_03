@@ -25,11 +25,8 @@ func (h *handler) CreateRoom(ctx context.Context, req *room.R) (*room.R, error) 
 		return &room.R{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	}
 
-	// #Check world_id
-	if _, err := h.room.FetchWorld(ctx, room.FilterWorld{
-		ID:   req.WorldID,
-		Size: 1,
-	}); err != nil {
+	worldID, err := h.room.CopyWorld(ctx, req.WorldID)
+	if err != nil {
 		if errors.As(err, &gerrors.ErrNotFound{}) {
 			logger.Error().Err(err).Msg("world not found")
 
@@ -39,11 +36,13 @@ func (h *handler) CreateRoom(ctx context.Context, req *room.R) (*room.R, error) 
 		logger.Error().Err(err).Msg("failed to fetch world")
 
 		return &room.R{}, status.New(codes.Internal, err.Error()).Err()
+
 	}
 
 	// #Set new room values
 	req.ID = ulid.NewID()
 	req.OwnerID = u.ID
+	req.WorldID = worldID
 
 	// #Insert room
 	if err := h.room.Insert(ctx, *req); err != nil {

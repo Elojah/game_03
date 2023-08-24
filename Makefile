@@ -119,6 +119,8 @@ dashboard:  ## Build dashboard content
 .PHONY: populate
 populate:  ## Populate initial content
 	$(info $(M) populate initial content…) @
+	$Q mkdir -p cmd/$(CLIENT)/dist/img/assets
+	$Q mkdir -p cmd/$(DASHBOARD)/dist/img/assets
 	$Q ./scripts/upload_default_images.sh
 	$Q ./scripts/create_default_templates.sh
 	$Q ./scripts/create_default_tilesets.sh

@@ -21,8 +21,9 @@ $ grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '"cql"' 
 $ make populate
 $ make api && ./bin/game_03_api config/api/local.json
 $ make auth && ./bin/game_03_auth config/auth/local.json
-$ make client
-$ make web_client && ./bin/game_03_web config/web_client/local.json
+$ make core && ./bin/game_03_core config/core/local.json
+$ make dashboard && ./bin/game_03_web config/dashboard/local.json
+$ make client && ./bin/game_03_web config/client/local.json
 ```
 
 Upload assets (`make populate`):

@@ -111,3 +111,53 @@ func (a App) PopulateWaypoints(ctx context.Context, ws room.Waypoints, worldID u
 
 	return nil
 }
+
+func (a App) CopyWorld(ctx context.Context, worldID ulid.ID) (ulid.ID, error) {
+	orig, err := a.FetchWorld(ctx, room.FilterWorld{
+		ID: worldID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	// Create world with new ID
+	orig.ID = ulid.NewID()
+	if err := a.InsertWorld(ctx, orig); err != nil {
+		return nil, err
+	}
+
+	// Copy cells one by one
+	for y := int64(0); y < orig.Height; y++ {
+		for x := int64(0); x < orig.Width; x++ {
+			wc, err := a.FetchWorldCell(ctx, room.FilterWorldCell{
+				WorldID: worldID,
+				X:       x,
+				Y:       y,
+			})
+			if err != nil {
+				return nil, err
+			}
+
+			c, err := a.FetchCell(ctx, room.FilterCell{
+				ID: wc.CellID,
+			})
+			if err != nil {
+				return nil, err
+			}
+
+			c.ID = ulid.NewID()
+			if err := a.InsertCell(ctx, c); err != nil {
+				return nil, err
+			}
+
+			wc.WorldID = orig.ID
+			wc.CellID = c.ID
+
+			if err := a.InsertWorldCell(ctx, wc); err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	return orig.ID, nil
+}
