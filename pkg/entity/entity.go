@@ -136,6 +136,11 @@ func (e E) SetStat(st Stat, value int64) {
 	}
 }
 
+func (e E) SetPosition(x int64, y int64) {
+	e.X = x
+	e.Y = y
+}
+
 func (e E) Distance(comp E) float64 {
 	return math.Abs(float64(comp.X-e.X)) + math.Abs(float64(comp.Y-e.Y))
 }

@@ -137,6 +137,17 @@ func (a App) CreateDefaultAbilities(ctx context.Context, entityID ulid.ID) error
 		Cooldown:  10000,
 		Effects: map[string]ability.Effect{
 			ulid.NewID().String(): {
+				Triggers: map[string]ability.Trigger{
+					ulid.NewID().String(): {
+						Operator: ability.Equal,
+						Amount: &ability.Amount{
+							Stat: entity.HP,
+						},
+						Treshold: &ability.Amount{
+							Direct: 0,
+						},
+					},
+				},
 				Targets: map[string]ability.Target{
 					ulid.NewID().String(): {
 						GroupID: ulid.NewID(),

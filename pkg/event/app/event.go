@@ -132,11 +132,11 @@ func (a App) Listen(ctx context.Context, entityID ulid.ID) error {
 
 // TODO: everything in this function, check validity of received cast
 func (a App) apply(ctx context.Context, ev event.E, e entity.E) (entity.E, map[string]event.E, error) {
-	// self cast
-	if ev.Effect.Self && ev.Effect.AbilityID.IsZero() {
+	// self move
+	if ev.Effect.AbilityID.Compare(e.ID) == 0 && ev.Effect.Self {
+		// } else if ev.Effect.Self && !ev.Effect.AbilityID.IsZero() {
+		// 	return a.cast(ctx, ev, e)
 		return a.move(ctx, ev, e)
-	} else if ev.Effect.Self && !ev.Effect.AbilityID.IsZero() {
-		return a.cast(ctx, ev, e)
 	}
 
 	targetType, ok := ev.Effect.Effect.Targets[ev.Effect.CurrentID.String()]
@@ -156,6 +156,16 @@ func (a App) apply(ctx context.Context, ev event.E, e entity.E) (entity.E, map[s
 
 	// check target type validity
 	// TODO: geometry not considered yet
+	if targetType.Type == ability.Self && e.ID.Compare(ev.Source.ID) != 0 {
+		return e, nil, errors.ErrInvalidSelfTarget{
+			AbilityID:      ev.Effect.AbilityID.String(),
+			EffectID:       ev.Effect.EffectID.String(),
+			EffectTargetID: ev.Effect.CurrentID.String(),
+			SourceID:       ev.Source.ID.String(),
+			TargetID:       e.ID.String(),
+		}
+	}
+
 	if targetType.Type == ability.Foe && e.FactionID.Compare(ev.Source.FactionID) == 0 {
 		return e, nil, errors.ErrInvalidCastTargetFaction{
 			AbilityID:        ev.Effect.AbilityID.String(),
@@ -207,12 +217,24 @@ func (a App) apply(ctx context.Context, ev event.E, e entity.E) (entity.E, map[s
 				SourceY:        float64(ev.Source.Y),
 			}
 		}
+		// } else {
+		// 	return e, nil, errors.ErrNotImplemented{Version: "1.0.0"}
+	}
 
-		// Direct amount on stats
-		// TODO: EVERYTHING
+	// Direct amount on stats
+	// TODO: EVERYTHING
+	if ev.Effect.Effect.Stat != entity.NoneStat {
 		e.SetStat(ev.Effect.Effect.Stat, e.GetStat(ev.Effect.Effect.Stat)+ev.Effect.Effect.Amount.Direct)
-	} else {
-		return e, nil, errors.ErrNotImplemented{Version: "1.0.0"}
+	}
+
+	// TODO: move entities
+	if targetType.MoveTarget.Move != ability.NoneMove {
+		switch targetType.MoveTarget.Move {
+		case ability.Walk:
+		case ability.Teleport:
+		case ability.Push:
+		}
+		// e.SetPosition()
 	}
 
 	return e, events, nil
@@ -241,6 +263,8 @@ func (a App) move(ctx context.Context, ev event.E, e entity.E) (entity.E, map[st
 
 		e.X = pos.Circle.X
 		e.Y = pos.Circle.Y
+
+		return e, nil, nil
 	}
 
 	return e, nil, nil

@@ -84,7 +84,7 @@ $ go run ./scripts/write_tileset/main.go 'assets/external/Tilesets' 'assets/tile
   + [ ] [p0] Clean ability animation creation (green, red, etc.)
   + [ ] [p0] Wrap animations/entitiy with red/green lights for clarity
   + [ ] [p0] How to learn abilities ? Boss & loot ?
-  + [ ] [p0] Duplicate world in `create_room` and use new copy
+  + [x] [p0] Duplicate world in `create_room` and use new copy
 
 # FLOW
 ---
