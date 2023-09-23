@@ -132,13 +132,6 @@ func (a App) Listen(ctx context.Context, entityID ulid.ID) error {
 
 // TODO: everything in this function, check validity of received cast
 func (a App) apply(ctx context.Context, ev event.E, e entity.E) (entity.E, map[string]event.E, error) {
-	// self move
-	if ev.Effect.AbilityID.Compare(e.ID) == 0 && ev.Effect.Self {
-		// } else if ev.Effect.Self && !ev.Effect.AbilityID.IsZero() {
-		// 	return a.cast(ctx, ev, e)
-		return a.move(ctx, ev, e)
-	}
-
 	targetType, ok := ev.Effect.Effect.Targets[ev.Effect.CurrentID.String()]
 	if !ok {
 		// no go case, current target is not specified in ability targets
@@ -216,9 +209,10 @@ func (a App) apply(ctx context.Context, ev event.E, e entity.E) (entity.E, map[s
 				SourceX:        float64(ev.Source.X),
 				SourceY:        float64(ev.Source.Y),
 			}
+		} else {
+			// Implement aoe/telegraphs/geometry
+			return e, nil, errors.ErrNotImplemented{Version: "1.0.0"}
 		}
-		// } else {
-		// 	return e, nil, errors.ErrNotImplemented{Version: "1.0.0"}
 	}
 
 	// Direct amount on stats
@@ -229,45 +223,32 @@ func (a App) apply(ctx context.Context, ev event.E, e entity.E) (entity.E, map[s
 
 	// TODO: move entities
 	if targetType.MoveTarget.Move != ability.NoneMove {
-		switch targetType.MoveTarget.Move {
-		case ability.Walk:
-		case ability.Teleport:
-		case ability.Push:
-		}
-		// e.SetPosition()
-	}
-
-	return e, events, nil
-}
-
-func (a App) move(ctx context.Context, ev event.E, e entity.E) (entity.E, map[string]event.E, error) {
-	targetType, ok := ev.Effect.Effect.Targets[ev.Effect.CurrentID.String()]
-	if !ok {
-		// no go case, current target is not specified in ability targets
-		// so we don't know how to check target validity
-		return e, nil, nil
-	}
-
-	// self walk
-	if m := targetType.MoveTarget; ev.Effect.AbilityID.Compare(ev.Source.ID) == 0 &&
-		m.Move == ability.Walk &&
-		m.TargetType == ability.Circle {
-		// standard move (use center)
+		// move destination
 		pos, ok := ev.Effect.Targets[targetType.MoveTarget.TargetID.String()]
 		if !ok {
 			// position not defined, ignore
 			return e, nil, nil
 		}
 
-		// TODO: check distance depending on current speed
+		switch targetType.MoveTarget.Move {
+		case ability.NoneMove:
+		case ability.Walk:
+			// self move
+			if ev.Effect.AbilityID.Compare(e.ID) == 0 && ev.Effect.Self {
+				// TODO: check distance depending on current speed
+			}
+			// TODO: add default? animation
+		case ability.Teleport:
+			// TODO: check distance depending on teleport range
+			// TODO: add specific animation
+		case ability.Push:
+			// TODO: add specific animation
+		}
 
-		e.X = pos.Circle.X
-		e.Y = pos.Circle.Y
-
-		return e, nil, nil
+		e.SetPosition(pos.Circle.X, pos.Circle.Y)
 	}
 
-	return e, nil, nil
+	return e, events, nil
 }
 
 // cast implements self cast animations and target events propagation.

@@ -22,8 +22,8 @@ $ make populate
 $ make api && ./bin/game_03_api config/api/local.json
 $ make auth && ./bin/game_03_auth config/auth/local.json
 $ make core && ./bin/game_03_core config/core/local.json
-$ make dashboard && ./bin/game_03_web config/dashboard/local.json
-$ make client && ./bin/game_03_web config/client/local.json
+$ make dashboard && ./bin/game_03_web_dashboard config/web_dashboard/local.json
+$ make client && ./bin/game_03_web_client config/web_client/local.json
 ```
 
 Upload assets (`make populate`):
@@ -79,7 +79,7 @@ $ go run ./scripts/write_tileset/main.go 'assets/external/Tilesets' 'assets/tile
 	  + [ ] When ctrl+c -> cancel ctx clean
 	  + [ ] RTC peer connectin not found 1/2 refresh (delete/recreate mechanism)
   + [ ] [BUG] [p0] Collision on entity don't happen (entity loaded before pc ?)
-  + [ ] [BUG] [p0] Moving wasd AND moving mouse in same time, why is mouse stuck ? (mouse position stuck too)
+  + [x] [BUG] [p0] Moving wasd AND moving mouse in same time, why is mouse stuck ? (mouse position stuck too)
   + [ ] [p0] Targeting ? + check realtime interaction -> read entity.Abilities into game.ts and display it accordingly (how to clean post ?)
   + [ ] [p0] Clean ability animation creation (green, red, etc.)
   + [ ] [p0] Wrap animations/entitiy with red/green lights for clarity
@@ -91,7 +91,7 @@ $ go run ./scripts/write_tileset/main.go 'assets/external/Tilesets' 'assets/tile
 
 Note: `CreateTilesheet` is optional when using local files in `cmd/client/dist/`.
 
-Instead you can use `scripts/create_default_tilesheets.sh` once from current directory to "load" local `scripts/assets` into local client.
+Instead you can use `make populate` once from current directory to "load" local `scripts/assets` into local client.
 
 ### scratch setup
 
