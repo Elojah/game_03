@@ -7,6 +7,7 @@ import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty
 import * as github_com_elojah_game_03_pkg_ability_dto_ability_pb from "../../../../../../github.com/elojah/game_03/pkg/ability/dto/ability_pb";
 import * as github_com_elojah_game_03_pkg_entity_entity_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/entity_pb";
 import * as github_com_elojah_game_03_pkg_entity_pc_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/pc_pb";
+import * as github_com_elojah_game_03_pkg_entity_pc_preferences_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/pc_preferences_pb";
 import * as github_com_elojah_game_03_pkg_entity_dto_entity_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/dto/entity_pb";
 import * as github_com_elojah_game_03_pkg_entity_dto_animation_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/dto/animation_pb";
 import * as github_com_elojah_game_03_pkg_entity_dto_pc_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/dto/pc_pb";

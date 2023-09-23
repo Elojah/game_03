@@ -6,6 +6,7 @@ var google_protobuf_empty_pb = require("google-protobuf/google/protobuf/empty_pb
 var github_com_elojah_game_03_pkg_ability_dto_ability_pb = require("../../../../../../github.com/elojah/game_03/pkg/ability/dto/ability_pb");
 var github_com_elojah_game_03_pkg_entity_entity_pb = require("../../../../../../github.com/elojah/game_03/pkg/entity/entity_pb");
 var github_com_elojah_game_03_pkg_entity_pc_pb = require("../../../../../../github.com/elojah/game_03/pkg/entity/pc_pb");
+var github_com_elojah_game_03_pkg_entity_pc_preferences_pb = require("../../../../../../github.com/elojah/game_03/pkg/entity/pc_preferences_pb");
 var github_com_elojah_game_03_pkg_entity_dto_entity_pb = require("../../../../../../github.com/elojah/game_03/pkg/entity/dto/entity_pb");
 var github_com_elojah_game_03_pkg_entity_dto_animation_pb = require("../../../../../../github.com/elojah/game_03/pkg/entity/dto/animation_pb");
 var github_com_elojah_game_03_pkg_entity_dto_pc_pb = require("../../../../../../github.com/elojah/game_03/pkg/entity/dto/pc_pb");
@@ -105,6 +106,24 @@ API.GetPC = {
   responseStream: false,
   requestType: github_com_elojah_game_03_pkg_entity_dto_pc_pb.GetPCReq,
   responseType: github_com_elojah_game_03_pkg_entity_dto_pc_pb.PC
+};
+
+API.GetPCPreferences = {
+  methodName: "GetPCPreferences",
+  service: API,
+  requestStream: false,
+  responseStream: false,
+  requestType: github_com_elojah_game_03_pkg_entity_pc_pb.PC,
+  responseType: github_com_elojah_game_03_pkg_entity_pc_preferences_pb.PCPreferences
+};
+
+API.UpdatePCPreferences = {
+  methodName: "UpdatePCPreferences",
+  service: API,
+  requestStream: false,
+  responseStream: false,
+  requestType: github_com_elojah_game_03_pkg_entity_pc_preferences_pb.PCPreferences,
+  responseType: github_com_elojah_game_03_pkg_entity_pc_preferences_pb.PCPreferences
 };
 
 API.ListTemplate = {
@@ -448,6 +467,68 @@ APIClient.prototype.getPC = function getPC(requestMessage, metadata, callback) {
     callback = arguments[1];
   }
   var client = grpc.unary(API.GetPC, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+APIClient.prototype.getPCPreferences = function getPCPreferences(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(API.GetPCPreferences, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+APIClient.prototype.updatePCPreferences = function updatePCPreferences(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(API.UpdatePCPreferences, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,

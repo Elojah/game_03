@@ -1294,7 +1294,10 @@ func (m *Stats) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
+			if skippy < 0 {
+				return ErrInvalidLengthEntity
+			}
+			if (iNdEx + skippy) < 0 {
 				return ErrInvalidLengthEntity
 			}
 			if (iNdEx + skippy) > l {
@@ -1818,7 +1821,7 @@ func (m *E) Unmarshal(dAtA []byte) error {
 					if err != nil {
 						return err
 					}
-					if (skippy < 0) || (iNdEx+skippy) < 0 {
+					if skippy < 0 {
 						return ErrInvalidLengthEntity
 					}
 					if (iNdEx + skippy) > postIndex {
@@ -1947,7 +1950,7 @@ func (m *E) Unmarshal(dAtA []byte) error {
 					if err != nil {
 						return err
 					}
-					if (skippy < 0) || (iNdEx+skippy) < 0 {
+					if skippy < 0 {
 						return ErrInvalidLengthEntity
 					}
 					if (iNdEx + skippy) > postIndex {
@@ -1964,7 +1967,10 @@ func (m *E) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
+			if skippy < 0 {
+				return ErrInvalidLengthEntity
+			}
+			if (iNdEx + skippy) < 0 {
 				return ErrInvalidLengthEntity
 			}
 			if (iNdEx + skippy) > l {

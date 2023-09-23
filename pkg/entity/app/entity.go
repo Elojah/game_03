@@ -19,6 +19,7 @@ type App struct {
 	entity.StoreAnimation
 	entity.StoreBackup
 	entity.StorePC
+	entity.StorePCPreferences
 	entity.StoreTemplate
 	entity.StoreSpawn
 
@@ -123,8 +124,8 @@ func (a App) CreateBackupFromEntity(ctx context.Context, id ulid.ID) error {
 	return nil
 }
 
-// CreateDefaultAbilities.
-func (a App) CreateDefaultAbilities(ctx context.Context, entityID ulid.ID) error {
+// CreateDefaultAbilities WIP.
+func (a App) CreateDefaultAbilities(ctx context.Context, entityID ulid.ID) ([]entity.Ability, error) {
 	// default ability: tp to spawn point
 	// TODO: add animation
 	abRes := ability.A{
@@ -164,7 +165,7 @@ func (a App) CreateDefaultAbilities(ctx context.Context, entityID ulid.ID) error
 	}
 
 	if err := a.Ability.Insert(ctx, abRes); err != nil {
-		return err
+		return nil, err
 	}
 
 	if err := a.InsertAbility(ctx, entity.Ability{
@@ -172,22 +173,22 @@ func (a App) CreateDefaultAbilities(ctx context.Context, entityID ulid.ID) error
 		AbilityID: abRes.ID,
 		LastCast:  0,
 	}); err != nil {
-		return err
+		return nil, err
 	}
 
 	// basic ability: damage one foe
 	abilityTemplate, err := a.FetchTemplate(ctx, entity.FilterTemplate{
-		Name: func(s string) *string { return &s }("ability"), // TODO: replace with "green_ability" template ?
+		Name: func(s string) *string { return &s }("ability"),
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	anim, err := a.FetchAnimation(ctx, entity.FilterAnimation{
 		EntityID: abilityTemplate.EntityID,
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	anim.ID = ulid.NewID()
@@ -218,7 +219,7 @@ func (a App) CreateDefaultAbilities(ctx context.Context, entityID ulid.ID) error
 	}
 
 	if err := a.Ability.Insert(ctx, ab); err != nil {
-		return err
+		return nil, err
 	}
 
 	if err := a.InsertAbility(ctx, entity.Ability{
@@ -226,12 +227,16 @@ func (a App) CreateDefaultAbilities(ctx context.Context, entityID ulid.ID) error
 		AbilityID: ab.ID,
 		LastCast:  0,
 	}); err != nil {
-		return err
+		return nil, err
 	}
 
 	if err := a.InsertAnimation(ctx, anim); err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return []entity.Ability{entity.Ability{
+		AbilityID: ab.ID,
+		EntityID:  entityID,
+	},
+	}, nil
 }

@@ -1108,7 +1108,10 @@ func (m *CastTarget) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
+			if skippy < 0 {
+				return ErrInvalidLengthCast
+			}
+			if (iNdEx + skippy) < 0 {
 				return ErrInvalidLengthCast
 			}
 			if (iNdEx + skippy) > l {
@@ -1336,7 +1339,7 @@ func (m *Cast) Unmarshal(dAtA []byte) error {
 					if err != nil {
 						return err
 					}
-					if (skippy < 0) || (iNdEx+skippy) < 0 {
+					if skippy < 0 {
 						return ErrInvalidLengthCast
 					}
 					if (iNdEx + skippy) > postIndex {
@@ -1372,7 +1375,10 @@ func (m *Cast) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
+			if skippy < 0 {
+				return ErrInvalidLengthCast
+			}
+			if (iNdEx + skippy) < 0 {
 				return ErrInvalidLengthCast
 			}
 			if (iNdEx + skippy) > l {
@@ -1719,7 +1725,7 @@ func (m *CastEffect) Unmarshal(dAtA []byte) error {
 					if err != nil {
 						return err
 					}
-					if (skippy < 0) || (iNdEx+skippy) < 0 {
+					if skippy < 0 {
 						return ErrInvalidLengthCast
 					}
 					if (iNdEx + skippy) > postIndex {
@@ -1736,7 +1742,10 @@ func (m *CastEffect) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
+			if skippy < 0 {
+				return ErrInvalidLengthCast
+			}
+			if (iNdEx + skippy) < 0 {
 				return ErrInvalidLengthCast
 			}
 			if (iNdEx + skippy) > l {

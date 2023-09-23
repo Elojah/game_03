@@ -47,7 +47,6 @@ linters:
   enable:
     - asciicheck
     - bodyclose
-    - depguard
     - dogsled
     - exhaustive
     - exportloopref
@@ -82,6 +81,7 @@ linters:
     - whitespace
     - wsl
   disable:
+    - depguard # Hard to maintain for no plus value
     - dupl # In a template world why not but in Go...
     - funlen # Makes no sense in an actual project
     - gochecknoglobals # May be ok to have const

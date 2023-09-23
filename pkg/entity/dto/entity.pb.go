@@ -1061,7 +1061,10 @@ func (m *ListEntityReq) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
+			if skippy < 0 {
+				return ErrInvalidLengthEntity
+			}
+			if (iNdEx + skippy) < 0 {
 				return ErrInvalidLengthEntity
 			}
 			if (iNdEx + skippy) > l {
@@ -1179,7 +1182,10 @@ func (m *ListEntityResp) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
+			if skippy < 0 {
+				return ErrInvalidLengthEntity
+			}
+			if (iNdEx + skippy) < 0 {
 				return ErrInvalidLengthEntity
 			}
 			if (iNdEx + skippy) > l {
@@ -1295,7 +1301,10 @@ func (m *CreateEntityAbilityReq) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
+			if skippy < 0 {
+				return ErrInvalidLengthEntity
+			}
+			if (iNdEx + skippy) < 0 {
 				return ErrInvalidLengthEntity
 			}
 			if (iNdEx + skippy) > l {
@@ -1411,7 +1420,10 @@ func (m *CreateEntityAbilityResp) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
+			if skippy < 0 {
+				return ErrInvalidLengthEntity
+			}
+			if (iNdEx + skippy) < 0 {
 				return ErrInvalidLengthEntity
 			}
 			if (iNdEx + skippy) > l {

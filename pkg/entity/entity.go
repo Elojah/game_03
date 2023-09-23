@@ -70,6 +70,7 @@ type App interface {
 	StoreAnimation
 	StoreBackup
 	StorePC
+	StorePCPreferences
 	StoreTemplate
 	StoreSpawn
 
@@ -78,7 +79,7 @@ type App interface {
 
 	Insert(context.Context, E) error
 
-	CreateDefaultAbilities(context.Context, ulid.ID) error
+	CreateDefaultAbilities(context.Context, ulid.ID) ([]Ability, error)
 }
 
 // GetStat should be used when only way to get stat is `Stat` enum.

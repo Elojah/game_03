@@ -2924,7 +2924,10 @@ func (m *MoveTarget) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
+			if skippy < 0 {
+				return ErrInvalidLengthAbility
+			}
+			if (iNdEx + skippy) < 0 {
 				return ErrInvalidLengthAbility
 			}
 			if (iNdEx + skippy) > l {
@@ -3156,7 +3159,10 @@ func (m *Target) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
+			if skippy < 0 {
+				return ErrInvalidLengthAbility
+			}
+			if (iNdEx + skippy) < 0 {
 				return ErrInvalidLengthAbility
 			}
 			if (iNdEx + skippy) > l {
@@ -3283,7 +3289,10 @@ func (m *AbilityModifier) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
+			if skippy < 0 {
+				return ErrInvalidLengthAbility
+			}
+			if (iNdEx + skippy) < 0 {
 				return ErrInvalidLengthAbility
 			}
 			if (iNdEx + skippy) > l {
@@ -3528,7 +3537,10 @@ func (m *EffectModifier) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
+			if skippy < 0 {
+				return ErrInvalidLengthAbility
+			}
+			if (iNdEx + skippy) < 0 {
 				return ErrInvalidLengthAbility
 			}
 			if (iNdEx + skippy) > l {
@@ -3757,7 +3769,10 @@ func (m *Amount) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
+			if skippy < 0 {
+				return ErrInvalidLengthAbility
+			}
+			if (iNdEx + skippy) < 0 {
 				return ErrInvalidLengthAbility
 			}
 			if (iNdEx + skippy) > l {
@@ -4010,7 +4025,7 @@ func (m *Trigger) Unmarshal(dAtA []byte) error {
 					if err != nil {
 						return err
 					}
-					if (skippy < 0) || (iNdEx+skippy) < 0 {
+					if skippy < 0 {
 						return ErrInvalidLengthAbility
 					}
 					if (iNdEx + skippy) > postIndex {
@@ -4139,7 +4154,7 @@ func (m *Trigger) Unmarshal(dAtA []byte) error {
 					if err != nil {
 						return err
 					}
-					if (skippy < 0) || (iNdEx+skippy) < 0 {
+					if skippy < 0 {
 						return ErrInvalidLengthAbility
 					}
 					if (iNdEx + skippy) > postIndex {
@@ -4156,7 +4171,10 @@ func (m *Trigger) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
+			if skippy < 0 {
+				return ErrInvalidLengthAbility
+			}
+			if (iNdEx + skippy) < 0 {
 				return ErrInvalidLengthAbility
 			}
 			if (iNdEx + skippy) > l {
@@ -4263,7 +4281,10 @@ func (m *StackRules) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
+			if skippy < 0 {
+				return ErrInvalidLengthAbility
+			}
+			if (iNdEx + skippy) < 0 {
 				return ErrInvalidLengthAbility
 			}
 			if (iNdEx + skippy) > l {
@@ -4600,7 +4621,7 @@ func (m *Effect) Unmarshal(dAtA []byte) error {
 					if err != nil {
 						return err
 					}
-					if (skippy < 0) || (iNdEx+skippy) < 0 {
+					if skippy < 0 {
 						return ErrInvalidLengthAbility
 					}
 					if (iNdEx + skippy) > postIndex {
@@ -4729,7 +4750,7 @@ func (m *Effect) Unmarshal(dAtA []byte) error {
 					if err != nil {
 						return err
 					}
-					if (skippy < 0) || (iNdEx+skippy) < 0 {
+					if skippy < 0 {
 						return ErrInvalidLengthAbility
 					}
 					if (iNdEx + skippy) > postIndex {
@@ -4858,7 +4879,7 @@ func (m *Effect) Unmarshal(dAtA []byte) error {
 					if err != nil {
 						return err
 					}
-					if (skippy < 0) || (iNdEx+skippy) < 0 {
+					if skippy < 0 {
 						return ErrInvalidLengthAbility
 					}
 					if (iNdEx + skippy) > postIndex {
@@ -4875,7 +4896,10 @@ func (m *Effect) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
+			if skippy < 0 {
+				return ErrInvalidLengthAbility
+			}
+			if (iNdEx + skippy) < 0 {
 				return ErrInvalidLengthAbility
 			}
 			if (iNdEx + skippy) > l {
@@ -5225,7 +5249,7 @@ func (m *A) Unmarshal(dAtA []byte) error {
 					if err != nil {
 						return err
 					}
-					if (skippy < 0) || (iNdEx+skippy) < 0 {
+					if skippy < 0 {
 						return ErrInvalidLengthAbility
 					}
 					if (iNdEx + skippy) > postIndex {
@@ -5242,7 +5266,10 @@ func (m *A) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
+			if skippy < 0 {
+				return ErrInvalidLengthAbility
+			}
+			if (iNdEx + skippy) < 0 {
 				return ErrInvalidLengthAbility
 			}
 			if (iNdEx + skippy) > l {

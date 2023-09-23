@@ -768,7 +768,10 @@ func (m *Room) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
+			if skippy < 0 {
+				return ErrInvalidLengthRoom
+			}
+			if (iNdEx + skippy) < 0 {
 				return ErrInvalidLengthRoom
 			}
 			if (iNdEx + skippy) > l {
@@ -871,7 +874,10 @@ func (m *ListRoomReq) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
+			if skippy < 0 {
+				return ErrInvalidLengthRoom
+			}
+			if (iNdEx + skippy) < 0 {
 				return ErrInvalidLengthRoom
 			}
 			if (iNdEx + skippy) > l {
@@ -989,7 +995,10 @@ func (m *ListRoomResp) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
+			if skippy < 0 {
+				return ErrInvalidLengthRoom
+			}
+			if (iNdEx + skippy) < 0 {
 				return ErrInvalidLengthRoom
 			}
 			if (iNdEx + skippy) > l {

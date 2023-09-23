@@ -1,4 +1,3 @@
-// source: github.com/elojah/game_03/cmd/core/grpc/core.proto
 /**
  * @fileoverview
  * @enhanceable
@@ -13,8 +12,6 @@ var goog = jspb;
 var global = Function('return this')();
 
 var github_com_gogo_protobuf_gogoproto_gogo_pb = require('../../../../../../github.com/gogo/protobuf/gogoproto/gogo_pb.js');
-goog.object.extend(proto, github_com_gogo_protobuf_gogoproto_gogo_pb);
 var google_protobuf_empty_pb = require('google-protobuf/google/protobuf/empty_pb.js');
-goog.object.extend(proto, google_protobuf_empty_pb);
 var github_com_elojah_game_03_pkg_rtc_dto_rtc_pb = require('../../../../../../github.com/elojah/game_03/pkg/rtc/dto/rtc_pb.js');
-goog.object.extend(proto, github_com_elojah_game_03_pkg_rtc_dto_rtc_pb);
+goog.object.extend(exports, proto.grpc);

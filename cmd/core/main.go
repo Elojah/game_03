@@ -139,16 +139,17 @@ func run(prog string, filename string) {
 	entityCache := &entityredis.Cache{Service: rediss}
 	entityStore := &entityscylla.Store{Service: scyllas}
 	entityApp := entityapp.App{
-		Cache:          entityCache,
-		Store:          entityStore,
-		StoreAbility:   entityStore,
-		CacheAbility:   entityCache,
-		StoreAnimation: entityStore,
-		StoreBackup:    entityStore,
-		StorePC:        entityStore,
-		StoreTemplate:  entityStore,
-		StoreSpawn:     entityStore,
-		Ability:        abilityApp,
+		Cache:              entityCache,
+		Store:              entityStore,
+		StoreAbility:       entityStore,
+		CacheAbility:       entityCache,
+		StoreAnimation:     entityStore,
+		StoreBackup:        entityStore,
+		StorePC:            entityStore,
+		StorePCPreferences: entityStore,
+		StoreTemplate:      entityStore,
+		StoreSpawn:         entityStore,
+		Ability:            abilityApp,
 	}
 
 	roomStore := &roomscylla.Store{Service: scyllas}

@@ -157,6 +157,14 @@ CREATE TABLE main.pc (
     PRIMARY KEY(user_id, world_id, id)
 );
 
+CREATE TABLE main.pc_preferences (
+    id              uuid PRIMARY KEY,
+    pc_id           uuid,
+    ability_hotbars map<varchar, uuid>
+);
+
+CREATE INDEX ON main.pc_preferences(pc_id);
+
 -- WORLD
 -- ----------------
 

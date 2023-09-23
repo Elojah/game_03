@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/elojah/game_03/pkg/entity"
@@ -216,8 +217,25 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
-	if err := h.entity.CreateDefaultAbilities(ctx, pc.EntityID); err != nil {
+	abilities, err := h.entity.CreateDefaultAbilities(ctx, pc.EntityID)
+	if err != nil {
 		logger.Error().Err(err).Msg("failed to create default abilities")
+
+		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
+	// Assign 5 first abilities (maximum) to first hotbar
+	pcp := entity.PCPreferences{
+		ID:             ulid.NewID(),
+		PCID:           pc.ID,
+		AbilityHotbars: make(map[string]ulid.ID),
+	}
+	for i := 0; i < len(abilities) && i < 6; i++ {
+		pcp.AbilityHotbars[fmt.Sprintf("hotbar-0-%d", i)] = abilities[i].AbilityID
+	}
+
+	if err := h.entity.InsertPCPreferences(ctx, pcp); err != nil {
+		logger.Error().Err(err).Msg("failed to insert pc preferences")
 
 		return &entity.PC{}, status.New(codes.Internal, err.Error()).Err()
 	}

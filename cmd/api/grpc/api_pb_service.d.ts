@@ -6,6 +6,7 @@ import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty
 import * as github_com_elojah_game_03_pkg_ability_dto_ability_pb from "../../../../../../github.com/elojah/game_03/pkg/ability/dto/ability_pb";
 import * as github_com_elojah_game_03_pkg_entity_entity_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/entity_pb";
 import * as github_com_elojah_game_03_pkg_entity_pc_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/pc_pb";
+import * as github_com_elojah_game_03_pkg_entity_pc_preferences_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/pc_preferences_pb";
 import * as github_com_elojah_game_03_pkg_entity_dto_entity_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/dto/entity_pb";
 import * as github_com_elojah_game_03_pkg_entity_dto_animation_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/dto/animation_pb";
 import * as github_com_elojah_game_03_pkg_entity_dto_pc_pb from "../../../../../../github.com/elojah/game_03/pkg/entity/dto/pc_pb";
@@ -101,6 +102,24 @@ type APIGetPC = {
   readonly responseType: typeof github_com_elojah_game_03_pkg_entity_dto_pc_pb.PC;
 };
 
+type APIGetPCPreferences = {
+  readonly methodName: string;
+  readonly service: typeof API;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof github_com_elojah_game_03_pkg_entity_pc_pb.PC;
+  readonly responseType: typeof github_com_elojah_game_03_pkg_entity_pc_preferences_pb.PCPreferences;
+};
+
+type APIUpdatePCPreferences = {
+  readonly methodName: string;
+  readonly service: typeof API;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof github_com_elojah_game_03_pkg_entity_pc_preferences_pb.PCPreferences;
+  readonly responseType: typeof github_com_elojah_game_03_pkg_entity_pc_preferences_pb.PCPreferences;
+};
+
 type APIListTemplate = {
   readonly methodName: string;
   readonly service: typeof API;
@@ -193,6 +212,8 @@ export class API {
   static readonly CreatePC: APICreatePC;
   static readonly ListPC: APIListPC;
   static readonly GetPC: APIGetPC;
+  static readonly GetPCPreferences: APIGetPCPreferences;
+  static readonly UpdatePCPreferences: APIUpdatePCPreferences;
   static readonly ListTemplate: APIListTemplate;
   static readonly CreateRoom: APICreateRoom;
   static readonly ListRoom: APIListRoom;
@@ -316,6 +337,24 @@ export class APIClient {
   getPC(
     requestMessage: github_com_elojah_game_03_pkg_entity_dto_pc_pb.GetPCReq,
     callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_entity_dto_pc_pb.PC|null) => void
+  ): UnaryResponse;
+  getPCPreferences(
+    requestMessage: github_com_elojah_game_03_pkg_entity_pc_pb.PC,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_entity_pc_preferences_pb.PCPreferences|null) => void
+  ): UnaryResponse;
+  getPCPreferences(
+    requestMessage: github_com_elojah_game_03_pkg_entity_pc_pb.PC,
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_entity_pc_preferences_pb.PCPreferences|null) => void
+  ): UnaryResponse;
+  updatePCPreferences(
+    requestMessage: github_com_elojah_game_03_pkg_entity_pc_preferences_pb.PCPreferences,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_entity_pc_preferences_pb.PCPreferences|null) => void
+  ): UnaryResponse;
+  updatePCPreferences(
+    requestMessage: github_com_elojah_game_03_pkg_entity_pc_preferences_pb.PCPreferences,
+    callback: (error: ServiceError|null, responseMessage: github_com_elojah_game_03_pkg_entity_pc_preferences_pb.PCPreferences|null) => void
   ): UnaryResponse;
   listTemplate(
     requestMessage: github_com_elojah_game_03_pkg_entity_dto_template_pb.ListTemplateReq,

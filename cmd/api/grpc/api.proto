@@ -18,6 +18,7 @@ import "google/protobuf/empty.proto";
 import "github.com/elojah/game_03/pkg/ability/dto/ability.proto";
 import "github.com/elojah/game_03/pkg/entity/entity.proto";
 import "github.com/elojah/game_03/pkg/entity/pc.proto";
+import "github.com/elojah/game_03/pkg/entity/pc_preferences.proto";
 import "github.com/elojah/game_03/pkg/entity/dto/entity.proto";
 import "github.com/elojah/game_03/pkg/entity/dto/animation.proto";
 import "github.com/elojah/game_03/pkg/entity/dto/pc.proto";
@@ -50,6 +51,8 @@ service API {
     rpc CreatePC(dto.CreatePCReq) returns (entity.PC);
     rpc ListPC(dto.ListPCReq) returns (dto.ListPCResp);
     rpc GetPC(dto.GetPCReq) returns (dto.PC);
+    rpc GetPCPreferences(entity.PC) returns (entity.PCPreferences);
+    rpc UpdatePCPreferences(entity.PCPreferences) returns (entity.PCPreferences);
 
 	// Template
     rpc ListTemplate(dto.ListTemplateReq) returns (dto.ListTemplateResp);

@@ -559,7 +559,10 @@ func (m *CreateTilesetReq) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
+			if skippy < 0 {
+				return ErrInvalidLengthSet
+			}
+			if (iNdEx + skippy) < 0 {
 				return ErrInvalidLengthSet
 			}
 			if (iNdEx + skippy) > l {
@@ -642,7 +645,10 @@ func (m *CreateTilesetResp) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
+			if skippy < 0 {
+				return ErrInvalidLengthSet
+			}
+			if (iNdEx + skippy) < 0 {
 				return ErrInvalidLengthSet
 			}
 			if (iNdEx + skippy) > l {
