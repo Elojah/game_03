@@ -365,6 +365,7 @@ export class Game extends Scene {
     this.Background.setDisplaySize(this.game.scale.width, this.game.scale.height)
 
     this.createUI()
+    this.applyPCPreferences()
 
     this.Loading = this.Entity.E.getCellid_asU8()
 
@@ -837,6 +838,46 @@ export class Game extends Scene {
         elem.appendChild(icon)
       }
     })
+  }
+
+  applyPCPreferences() {
+    this.getPCPreferences(this.PC).
+      then((result: PCPreferences.PCPreferences) => {
+        result.getAbilityhotbarsMap().forEach((abilityID: Uint8Array, hotbar: string) => {
+          const target = document.getElementById(hotbar)
+          if (!target) {
+            return
+          }
+
+          const icon = document.createElement('img')
+
+          const id = ulid(abilityID)
+          const iconID = this.Abilities.get(id)?.getIcon_asU8()
+          icon.src = 'img/assets/' + iconID + '.png'
+          icon.id = target.id + '-icon'
+          icon.dataset['abilityID'] = id
+          icon.draggable = true
+          icon.ondragstart = (e) => {
+            const target = e.target as HTMLElement
+
+            e.dataTransfer?.setData('id', target.dataset['abilityID']!)
+            const iconID = target.getAttribute('src')?.split('/').at(-1)?.split('.').at(0)
+            if (iconID) {
+              e.dataTransfer?.setData('icon', iconID)
+            }
+          }
+          icon.ondragend = (e) => {
+            const target = e.target as HTMLElement
+
+            target.remove()
+          }
+
+          target.appendChild(icon)
+        })
+      }).
+      catch((error) => {
+        console.log(error)
+      })
   }
 
   updateBodyEntity() {
