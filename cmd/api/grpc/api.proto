@@ -32,6 +32,8 @@ import "github.com/elojah/game_03/pkg/room/dto/world.proto";
 import "github.com/elojah/game_03/pkg/twitch/dto/follow.proto";
 import "github.com/elojah/game_03/pkg/user/dto/session.proto";
 
+message _ {}
+
 service API {
 	// Session
 	rpc CreateSession(dto.CreateSessionReq) returns (dto.CreateSessionResp);

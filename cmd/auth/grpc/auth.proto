@@ -17,6 +17,8 @@ import "google/protobuf/wrappers.proto";
 
 import "github.com/elojah/game_03/pkg/user/dto/user.proto";
 
+message _ {}
+
 service Auth {
     // Signin Twitch
     rpc SigninTwitch(google.protobuf.StringValue) returns (dto.SigninResp);

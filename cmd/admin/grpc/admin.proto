@@ -21,6 +21,8 @@ import "github.com/elojah/game_03/pkg/entity/template.proto";
 import "github.com/elojah/game_03/pkg/entity/dto/animation.proto";
 import "github.com/elojah/game_03/pkg/entity/dto/template.proto";
 
+message _ {}
+
 service Admin {
 	// ### TECHNICAL ADMIN ###
 

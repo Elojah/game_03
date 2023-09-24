@@ -159,5 +159,23 @@ func (a App) CopyWorld(ctx context.Context, worldID ulid.ID) (ulid.ID, error) {
 		}
 	}
 
+	// TODO: Copy waypoints (above)
+	spawns, _, err := a.FetchManyWorldSpawn(ctx, room.FilterWorldSpawn{
+		WorldID: worldID,
+	})
+
+	for spawn := range spawns {
+		// TODO
+	}
+
+	// if err := a.PopulateWaypoints(ctx, room.Waypoints{
+	// 	{
+	// 		Position: ,
+	// 		C
+	// 	},
+	// }, orig.ID); err != nil {
+	// 	return nil, err
+	// }
+
 	return orig.ID, nil
 }

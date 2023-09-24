@@ -71,20 +71,16 @@ $ go run ./scripts/write_tileset/main.go 'assets/external/Tilesets' 'assets/tile
 	  + [ ] AbilityModifier + EffectModifier
 	  + [ ] Triggers at component level
 	  + [ ] Eval triggers first, then modify effects then apply effects
-	  + [x] Ability store+cache + Entity Ability store+cache
-	  + [x] API routes for ability + ability entity
-	  + [x] Add faction implementation all along :(
   + [ ] [p0] Implement RTC both directions
-	  + [x] Clean cancel of send_entity
 	  + [ ] When ctrl+c -> cancel ctx clean
 	  + [ ] RTC peer connectin not found 1/2 refresh (delete/recreate mechanism)
   + [ ] [BUG] [p0] Collision on entity don't happen (entity loaded before pc ?)
-  + [x] [BUG] [p0] Moving wasd AND moving mouse in same time, why is mouse stuck ? (mouse position stuck too)
   + [ ] [p0] Targeting ? + check realtime interaction -> read entity.Abilities into game.ts and display it accordingly (how to clean post ?)
   + [ ] [p0] Clean ability animation creation (green, red, etc.)
   + [ ] [p0] Wrap animations/entitiy with red/green lights for clarity
   + [ ] [p0] How to learn abilities ? Boss & loot ?
   + [x] [p0] Duplicate world in `create_room` and use new copy
+    + [ ] Save (`store`) waypoints at world create and use them in `CopyWorld`
 
 # FLOW
 ---
