@@ -193,6 +193,17 @@ CREATE TABLE main.world_cell (
     PRIMARY KEY(world_id, x, y)
 );
 
+CREATE TABLE main.world_waypoint (
+    id              uuid PRIMARY KEY,
+    world_id        uuid,
+    cell_id         uuid,
+    owner_id        uuid,
+    x               bigint,
+    y               bigint
+);
+
+CREATE INDEX ON main.world_waypoint(world_id);
+
 CREATE TABLE main.world_spawn (
     id              uuid PRIMARY KEY,
     world_id        uuid,

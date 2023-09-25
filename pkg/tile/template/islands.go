@@ -103,8 +103,8 @@ func NewIslands(opts IslandsOptions) Islands { //nolint: gocognit
 	}
 }
 
-func (t Islands) Waypoints(r geometry.Rect, cellID ulid.ID) room.Waypoints {
-	var result room.Waypoints
+func (t Islands) WorldWaypoints(r geometry.Rect, worldID ulid.ID, cellID ulid.ID) room.WorldWaypoints {
+	var result room.WorldWaypoints
 
 	/*
 		- Pixel on screen
@@ -146,11 +146,11 @@ func (t Islands) Waypoints(r geometry.Rect, cellID ulid.ID) room.Waypoints {
 	for i := r.Y; i < r.Y+int64(r.Height); i++ {
 		for j := r.X; j < r.X+int64(r.Width); j++ {
 			if t.waypoints[i][j] {
-				result = append(result, room.Waypoint{Position: geometry.Vec2{
-					X: j * (int64(pixelScale) / gridScale),
-					Y: i * (int64(pixelScale) / gridScale),
-				},
-					CellID: cellID,
+				result = append(result, room.WorldWaypoint{
+					X:       j * (int64(pixelScale) / gridScale),
+					Y:       i * (int64(pixelScale) / gridScale),
+					CellID:  cellID,
+					WorldID: cellID,
 				})
 			}
 		}

@@ -81,6 +81,8 @@ $ go run ./scripts/write_tileset/main.go 'assets/external/Tilesets' 'assets/tile
   + [ ] [p0] How to learn abilities ? Boss & loot ?
   + [x] [p0] Duplicate world in `create_room` and use new copy
     + [ ] Save (`store`) waypoints at world create and use them in `CopyWorld`
+  + [ ] [REFACTO] Move to grpc-web
+  + [ ] [REFACTO] Remove gogoprotobuf :(
 
 # FLOW
 ---

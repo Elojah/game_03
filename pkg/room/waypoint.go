@@ -1,13 +1,24 @@
 package room
 
 import (
-	"github.com/elojah/game_03/pkg/geometry"
+	"context"
+
 	"github.com/elojah/game_03/pkg/ulid"
 )
 
-type Waypoint struct {
-	Position geometry.Vec2
-	CellID   ulid.ID
+type WorldWaypoints []WorldWaypoint
+
+type FilterWorldWaypoint struct {
+	ID      ulid.ID
+	WorldID ulid.ID
+
+	State []byte
+	Size  int
 }
 
-type Waypoints []Waypoint
+type StoreWorldWaypoint interface {
+	InsertWorldWaypoint(context.Context, WorldWaypoint) error
+	FetchWorldWaypoint(context.Context, FilterWorldWaypoint) (WorldWaypoint, error)
+	DeleteWorldWaypoint(context.Context, FilterWorldWaypoint) error
+	FetchManyWorldWaypoint(context.Context, FilterWorldWaypoint) ([]WorldWaypoint, []byte, error)
+}

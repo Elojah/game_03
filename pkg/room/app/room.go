@@ -20,12 +20,13 @@ type App struct {
 	room.StoreWorld
 	room.StoreWorldCell
 	room.StoreWorldSpawn
+	room.StoreWorldWaypoint
 
 	Entity entity.App
 }
 
 // PopulateWaypoints
-func (a App) PopulateWaypoints(ctx context.Context, ws room.Waypoints, worldID ulid.ID) error {
+func (a App) PopulateWaypoints(ctx context.Context, ws room.WorldWaypoints) error {
 	if a.Entity == nil {
 		return errors.ErrMissingImplementation{Interface: "entity"}
 	}
@@ -85,8 +86,8 @@ func (a App) PopulateWaypoints(ctx context.Context, ws room.Waypoints, worldID u
 			ID:          entityID,
 			UserID:      ulid.NewID(),
 			CellID:      w.CellID,
-			X:           w.Position.X,
-			Y:           w.Position.Y,
+			X:           w.X,
+			Y:           w.Y,
 			Rot:         0,
 			Radius:      eAltar.Radius,
 			At:          time.Now().UnixNano(),
@@ -102,7 +103,7 @@ func (a App) PopulateWaypoints(ctx context.Context, ws room.Waypoints, worldID u
 		if err := a.StoreWorldSpawn.InsertWorldSpawn(ctx, room.WorldSpawn{
 			ID:       ulid.NewID(),
 			EntityID: e.ID,
-			WorldID:  worldID,
+			WorldID:  w.WorldID,
 			OwnerID:  ulid.NewZeroID(),
 		}); err != nil {
 			return err
@@ -159,23 +160,23 @@ func (a App) CopyWorld(ctx context.Context, worldID ulid.ID) (ulid.ID, error) {
 		}
 	}
 
-	// TODO: Copy waypoints (above)
-	spawns, _, err := a.FetchManyWorldSpawn(ctx, room.FilterWorldSpawn{
+	// Fetch & Copy waypoints then populate them
+	wps, _, err := a.FetchManyWorldWaypoint(ctx, room.FilterWorldWaypoint{
 		WorldID: worldID,
 	})
-
-	for spawn := range spawns {
-		// TODO
+	if err != nil {
+		return nil, err
 	}
 
-	// if err := a.PopulateWaypoints(ctx, room.Waypoints{
-	// 	{
-	// 		Position: ,
-	// 		C
-	// 	},
-	// }, orig.ID); err != nil {
-	// 	return nil, err
-	// }
+	for _, wp := range wps {
+		if err := a.InsertWorldWaypoint(ctx, wp); err != nil {
+			return nil, err
+		}
+	}
+
+	if err := a.PopulateWaypoints(ctx, wps); err != nil {
+		return nil, err
+	}
 
 	return orig.ID, nil
 }

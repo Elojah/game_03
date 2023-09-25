@@ -37,7 +37,7 @@ PROTOC_GEN_TS      = $(DIR)/cmd/$(CLIENT)/node_modules/.bin/protoc-gen-ts
 GEN_PB_GO          = protoc -I=$(GEN_PARENT_PATH) --gogoslick_out=$(GOPATH)/src
 GEN_PB_TS          = protoc -I=$(GEN_PARENT_PATH) --plugin=protoc-gen-ts=$(PROTOC_GEN_TS) --js_out=import_style=commonjs,binary:$(GOPATH)/src --ts_out="service=grpc-web:$(GOPATH)/src"
 GEN_PB_SERVICE_GO  = protoc -I=$(GEN_PARENT_PATH) -I=$(GOPATH)/src --gogoslick_out=plugins=grpc,Mgoogle/protobuf/empty.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/wrappers.proto=github.com/gogo/protobuf/types:$(GOPATH)/src
-GEN_PB_SERVICE_TS  = protoc -I=$(GEN_PARENT_PATH) -I=$(GOPATH)/src --plugin=protoc-gen-ts=$(PROTOC_GEN_TS) --js_out=import_style=client,binary:$(GOPATH)/src --ts_out=service=grpc-web:$(GOPATH)/src
+GEN_PB_SERVICE_TS  = protoc -I=$(GEN_PARENT_PATH) -I=$(GOPATH)/src --plugin=protoc-gen-ts=$(PROTOC_GEN_TS) --js_out=import_style=client,binary:$(GOPATH)/src --ts_out=service=grpc-web:$(GOPATH)/src --ts_opt=target=web
 
 .PHONY: all
 all: api admin auth core client web_client dashboard web_dashboard
@@ -159,8 +159,9 @@ proto-go proto-ts: ## Regenerate protobuf files
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/room/cell.proto
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/room/room.proto
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/room/user.proto
-	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/room/world.proto
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/room/spawn.proto
+	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/room/waypoint.proto
+	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/room/world.proto
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/twitch/follow.proto
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/twitch/user.proto
 	$Q $(GEN_PB_$(PB_LANG)) $(GO_PACKAGE)/pkg/user/user.proto

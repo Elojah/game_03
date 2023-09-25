@@ -161,9 +161,17 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 			}
 
 			// assign cell id to waypoints
-			wps := wi.Waypoints(rect, c.ID)
+			wps := wi.WorldWaypoints(rect, w.ID, c.ID)
 
-			if err := h.room.PopulateWaypoints(ctx, wps, w.ID); err != nil {
+			for _, wp := range wps {
+				if err := h.room.InsertWorldWaypoint(ctx, wp); err != nil {
+					logger.Error().Err(err).Msg("failed to create world waypoint")
+
+					return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+				}
+			}
+
+			if err := h.room.PopulateWaypoints(ctx, wps); err != nil {
 				logger.Error().Err(err).Msg("failed to populate waypoints")
 
 				return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
