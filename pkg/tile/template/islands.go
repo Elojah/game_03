@@ -150,7 +150,7 @@ func (t Islands) WorldWaypoints(r geometry.Rect, worldID ulid.ID, cellID ulid.ID
 					X:       j * (int64(pixelScale) / gridScale),
 					Y:       i * (int64(pixelScale) / gridScale),
 					CellID:  cellID,
-					WorldID: cellID,
+					WorldID: worldID,
 				})
 			}
 		}

@@ -114,7 +114,7 @@ func (a App) PopulateWaypoints(ctx context.Context, ws room.WorldWaypoints) erro
 }
 
 func (a App) CopyWorld(ctx context.Context, worldID ulid.ID) (ulid.ID, error) {
-	orig, err := a.FetchWorld(ctx, room.FilterWorld{
+	copy, err := a.FetchWorld(ctx, room.FilterWorld{
 		ID: worldID,
 	})
 	if err != nil {
@@ -122,14 +122,14 @@ func (a App) CopyWorld(ctx context.Context, worldID ulid.ID) (ulid.ID, error) {
 	}
 
 	// Create world with new ID
-	orig.ID = ulid.NewID()
-	if err := a.InsertWorld(ctx, orig); err != nil {
+	copy.ID = ulid.NewID()
+	if err := a.InsertWorld(ctx, copy); err != nil {
 		return nil, err
 	}
 
 	// Copy cells one by one
-	for y := int64(0); y < orig.Height; y++ {
-		for x := int64(0); x < orig.Width; x++ {
+	for y := int64(0); y < copy.Height; y++ {
+		for x := int64(0); x < copy.Width; x++ {
 			wc, err := a.FetchWorldCell(ctx, room.FilterWorldCell{
 				WorldID: worldID,
 				X:       x,
@@ -151,7 +151,7 @@ func (a App) CopyWorld(ctx context.Context, worldID ulid.ID) (ulid.ID, error) {
 				return nil, err
 			}
 
-			wc.WorldID = orig.ID
+			wc.WorldID = copy.ID
 			wc.CellID = c.ID
 
 			if err := a.InsertWorldCell(ctx, wc); err != nil {
@@ -178,5 +178,5 @@ func (a App) CopyWorld(ctx context.Context, worldID ulid.ID) (ulid.ID, error) {
 		return nil, err
 	}
 
-	return orig.ID, nil
+	return copy.ID, nil
 }
