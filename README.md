@@ -17,7 +17,7 @@ Dev setup:
 $ docker-compose up -d # wait ~10 sec for scylla to boot
 $ cat docker/scylla/keyspace.cql | docker exec -i game_03_scylla cqlsh
 $ make admin && ./bin/game_03_admin config/admin/local.json
-$ grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '"cql"' -plaintext localhost:4282 grpc.Admin/MigrateUp
+$  grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '{"Value": "cql"}' -plaintext localhost:4282 grpc.Admin/MigrateUp
 $ make populate
 $ make api && ./bin/game_03_api config/api/local.json
 $ make auth && ./bin/game_03_auth config/auth/local.json
@@ -83,6 +83,13 @@ $ go run ./scripts/write_tileset/main.go 'assets/external/Tilesets' 'assets/tile
     + [ ] Save (`store`) waypoints at world create and use them in `CopyWorld`
   + [ ] [REFACTO] Move to grpc-web
   + [ ] [REFACTO] Remove gogoprotobuf :(
+  + [ ] [p0] populate error
+  ```sh
+./scripts/create_default_animations.sh: line 24: scripts/Boy/BlueNinja/idle_right.json: No such file or directory
+./scripts/create_default_animations.sh: line 29: scripts/Boy/BlueNinja/walk_up.json: No such file or directory
+./scripts/create_default_animations.sh: line 177: scripts/Lion/BlueNinja/idle_right.json: No such file or directory
+./scripts/create_default_animations.sh: line 213: scripts/Monk/BlueNinja/idle_right.json: No such file or directory
+```
 
 # FLOW
 ---

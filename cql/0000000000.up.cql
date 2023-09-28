@@ -202,7 +202,7 @@ CREATE TABLE main.world_waypoint (
     y               bigint
 );
 
-CREATE INDEX ON main.world_waypoint(world_id);
+CREATE INDEX ON main.world_waypoint(cell_id);
 
 CREATE TABLE main.world_spawn (
     id              uuid PRIMARY KEY,

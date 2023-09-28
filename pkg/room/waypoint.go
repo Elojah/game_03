@@ -9,8 +9,8 @@ import (
 type WorldWaypoints []WorldWaypoint
 
 type FilterWorldWaypoint struct {
-	ID      ulid.ID
-	WorldID ulid.ID
+	ID     ulid.ID
+	CellID ulid.ID
 
 	State []byte
 	Size  int

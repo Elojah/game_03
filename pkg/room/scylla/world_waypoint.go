@@ -22,9 +22,9 @@ func (f filterWorldWaypoint) where() (string, []any) {
 		args = append(args, f.ID)
 	}
 
-	if f.WorldID != nil {
-		clause = append(clause, `world_id = ?`)
-		args = append(args, f.WorldID)
+	if f.CellID != nil {
+		clause = append(clause, `cell_id = ?`)
+		args = append(args, f.CellID)
 	}
 
 	b := strings.Builder{}
@@ -46,8 +46,8 @@ func (f filterWorldWaypoint) index() string {
 		cols = append(cols, f.ID.String())
 	}
 
-	if f.WorldID != nil {
-		cols = append(cols, f.WorldID.String())
+	if f.CellID != nil {
+		cols = append(cols, f.CellID.String())
 	}
 
 	return strings.Join(cols, " - ")

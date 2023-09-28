@@ -2,12 +2,17 @@ package app
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/elojah/game_03/pkg/entity"
 	"github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/room"
 	"github.com/elojah/game_03/pkg/ulid"
+)
+
+const (
+	waypointsBatchSize = 100
 )
 
 var _ room.App = (*App)(nil)
@@ -128,6 +133,8 @@ func (a App) CopyWorld(ctx context.Context, worldID ulid.ID) (ulid.ID, error) {
 	}
 
 	// Copy cells one by one
+	var waypoints []room.WorldWaypoint
+
 	for y := int64(0); y < copy.Height; y++ {
 		for x := int64(0); x < copy.Width; x++ {
 			wc, err := a.FetchWorldCell(ctx, room.FilterWorldCell{
@@ -151,30 +158,40 @@ func (a App) CopyWorld(ctx context.Context, worldID ulid.ID) (ulid.ID, error) {
 				return nil, err
 			}
 
-			wc.WorldID = copy.ID
-			wc.CellID = c.ID
-
-			if err := a.InsertWorldCell(ctx, wc); err != nil {
+			if err := a.InsertWorldCell(ctx, room.WorldCell{
+				WorldID: copy.ID,
+				CellID:  c.ID,
+				X:       wc.X,
+				Y:       wc.Y,
+			}); err != nil {
 				return nil, err
 			}
+
+			// Fetch & Copy waypoints
+			wps, _, err := a.FetchManyWorldWaypoint(ctx, room.FilterWorldWaypoint{
+				CellID: wc.CellID,
+				Size:   waypointsBatchSize,
+			})
+			if err != nil {
+				return nil, err
+			}
+
+			fmt.Println("found waypoints", len(wps))
+
+			for _, wp := range wps {
+				wp.CellID = c.ID
+				wp.WorldID = copy.ID
+
+				if err := a.InsertWorldWaypoint(ctx, wp); err != nil {
+					return nil, err
+				}
+			}
+
+			waypoints = append(waypoints, wps...)
 		}
 	}
 
-	// Fetch & Copy waypoints then populate them
-	wps, _, err := a.FetchManyWorldWaypoint(ctx, room.FilterWorldWaypoint{
-		WorldID: worldID,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	for _, wp := range wps {
-		if err := a.InsertWorldWaypoint(ctx, wp); err != nil {
-			return nil, err
-		}
-	}
-
-	if err := a.PopulateWaypoints(ctx, wps); err != nil {
+	if err := a.PopulateWaypoints(ctx, waypoints); err != nil {
 		return nil, err
 	}
 
