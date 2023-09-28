@@ -11,20 +11,18 @@ option (gogoproto.goproto_unrecognized_all) = false;
 option (gogoproto.goproto_enum_prefix_all) = false;
 option (gogoproto.goproto_registration) = true;
 
-import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "github.com/elojah/game_03/pkg/gogoproto/gogo.proto";
 
-import "google/protobuf/empty.proto";
+import "github.com/elojah/game_03/pkg/pbtypes/empty.proto";
 
 import "github.com/elojah/game_03/pkg/rtc/dto/rtc.proto";
-
-message _ {}
 
 service Core {
 	// Signal
     rpc Connect(dto.ConnectReq) returns (dto.SDP);
-    rpc SendICE(stream dto.ICECandidate) returns (google.protobuf.Empty);
-    rpc ReceiveICE(google.protobuf.Empty) returns (stream dto.ICECandidate);
+    rpc SendICE(dto.ICECandidate) returns (pbtypes.Empty);
+    rpc ReceiveICE(pbtypes.Empty) returns (stream dto.ICECandidate);
 
     // Ping
-    rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
+    rpc Ping(pbtypes.Empty) returns (pbtypes.Empty);
 }

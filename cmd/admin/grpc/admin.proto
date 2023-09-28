@@ -11,37 +11,35 @@ option (gogoproto.goproto_unrecognized_all) = false;
 option (gogoproto.goproto_enum_prefix_all) = false;
 option (gogoproto.goproto_registration) = true;
 
-import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "github.com/elojah/game_03/pkg/gogoproto/gogo.proto";
 
-import "google/protobuf/empty.proto";
-import "google/protobuf/wrappers.proto";
+import "github.com/elojah/game_03/pkg/pbtypes/empty.proto";
+import "github.com/elojah/game_03/pkg/pbtypes/string.proto";
 
 import "github.com/elojah/game_03/pkg/tile/dto/set.proto";
 import "github.com/elojah/game_03/pkg/entity/template.proto";
 import "github.com/elojah/game_03/pkg/entity/dto/animation.proto";
 import "github.com/elojah/game_03/pkg/entity/dto/template.proto";
 
-message _ {}
-
 service Admin {
 	// ### TECHNICAL ADMIN ###
 
     // DB migrations
-    rpc MigrateUp(google.protobuf.StringValue) returns (google.protobuf.Empty);
+    rpc MigrateUp(pbtypes.String) returns (pbtypes.Empty);
 
 	// Cookie secure management
-	rpc RotateCookieKeys(google.protobuf.Empty) returns (google.protobuf.Empty);
+	rpc RotateCookieKeys(pbtypes.Empty) returns (pbtypes.Empty);
 
 	// Ping
-	rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
+	rpc Ping(pbtypes.Empty) returns (pbtypes.Empty);
 
 	// ### GAME ADMIN ###
 
     // Map creation
     rpc CreateTileset(dto.CreateTilesetReq) returns (dto.CreateTilesetResp);
-    rpc CreateWorld(google.protobuf.Empty) returns (google.protobuf.StringValue);
+    rpc CreateWorld(pbtypes.Empty) returns (pbtypes.String);
 
     // Entity
 	rpc CreateTemplate(dto.CreateTemplateReq) returns (entity.Template);
-    rpc CreateAnimation(dto.CreateAnimationReq) returns (google.protobuf.Empty);
+    rpc CreateAnimation(dto.CreateAnimationReq) returns (pbtypes.Empty);
 }

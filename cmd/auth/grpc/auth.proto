@@ -11,24 +11,23 @@ option (gogoproto.goproto_unrecognized_all) = false;
 option (gogoproto.goproto_enum_prefix_all) = false;
 option (gogoproto.goproto_registration) = true;
 
-import "github.com/gogo/protobuf/gogoproto/gogo.proto";
-import "google/protobuf/empty.proto";
-import "google/protobuf/wrappers.proto";
+import "github.com/elojah/game_03/pkg/gogoproto/gogo.proto";
+
+import "github.com/elojah/game_03/pkg/pbtypes/empty.proto";
+import "github.com/elojah/game_03/pkg/pbtypes/string.proto";
 
 import "github.com/elojah/game_03/pkg/user/dto/user.proto";
 
-message _ {}
-
 service Auth {
     // Signin Twitch
-    rpc SigninTwitch(google.protobuf.StringValue) returns (dto.SigninResp);
+    rpc SigninTwitch(pbtypes.String) returns (dto.SigninResp);
 
 	// Signin Google
-	rpc SigninGoogle(google.protobuf.StringValue) returns (dto.SigninResp);
+	rpc SigninGoogle(pbtypes.String) returns (dto.SigninResp);
 
 	// Refresh token
-	rpc RefreshToken(google.protobuf.StringValue) returns (dto.SigninResp);
+	rpc RefreshToken(pbtypes.String) returns (dto.SigninResp);
 
     // Ping
-    rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
+    rpc Ping(pbtypes.Empty) returns (pbtypes.Empty);
 }

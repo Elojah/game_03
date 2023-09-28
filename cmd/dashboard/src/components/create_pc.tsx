@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from "react-router-dom";
 
-import { grpc } from '@improbable-eng/grpc-web';
+import * as grpc from 'grpc-web';
 import { getCookie } from 'typescript-cookie'
 
-import { API } from 'cmd/api/grpc/api_pb_service';
+import { APIClient } from 'cmd/api/grpc/ApiServiceClientPb';
 import { ListTemplateReq, ListTemplateResp } from 'pkg/entity/dto/template_pb';
 import { CreatePCReq } from 'pkg/entity/dto/pc_pb';
 import { PC } from 'pkg/entity/pc_pb';
@@ -39,55 +39,9 @@ export default () => {
 	// API Room
 	const [templates, setTemplates] = useState<{ templates: Template[], loaded: boolean }>({ templates: [], loaded: false })
 
-	const createPC = (req: CreatePCReq) => {
-		let md = new grpc.Metadata()
-		md.set('token', getCookie('access')!)
+	const client = new APIClient('https://api.legacyfactory.com:8082', null)
+	const metadata: grpc.Metadata = { 'token': getCookie('access')! }
 
-		const prom = new Promise<PC>((resolve, reject) => {
-			grpc.unary(API.CreatePC, {
-				metadata: md,
-				request: req,
-				host: 'https://api.legacyfactory.com:8082',
-				onEnd: res => {
-					const { status, statusMessage, headers, message, trailers } = res;
-					if (status !== grpc.Code.OK || !message) {
-						reject(res)
-
-						return
-					}
-
-					resolve(message as PC)
-				}
-			});
-		})
-
-		return prom
-	}
-
-	const listTemplates = (req: ListTemplateReq) => {
-		let md = new grpc.Metadata()
-		md.set('token', getCookie('access')!)
-
-		const prom = new Promise<ListTemplateResp>((resolve, reject) => {
-			grpc.unary(API.ListTemplate, {
-				metadata: md,
-				request: req,
-				host: 'https://api.legacyfactory.com:8082',
-				onEnd: res => {
-					const { status, statusMessage, headers, message, trailers } = res;
-					if (status !== grpc.Code.OK || !message) {
-						reject(res)
-
-						return
-					}
-
-					resolve(message as ListTemplateResp)
-				}
-			});
-		})
-
-		return prom
-	}
 
 	const refreshTemplates = () => {
 		const req = new ListTemplateReq()
@@ -95,7 +49,7 @@ export default () => {
 		req.setSize(100)
 		setTemplates({ templates: [], loaded: false })
 
-		listTemplates(req).then((result) => {
+		client.listTemplate(req, metadata).then((result) => {
 			console.log('found ', result.getTemplatesList().length, ' templates')
 
 			setTemplates({ templates: result.getTemplatesList(), loaded: true })
@@ -137,7 +91,7 @@ export default () => {
 		req.setEntitytemplate(selectedTemplate)
 		req.setRoomid(parse(roomID!))
 
-		createPC(req).then((result) => {
+		client.createPC(req, metadata).then((result) => {
 			console.log('pc created', ulid(result.getId_asU8()))
 
 			navigate('/rooms')

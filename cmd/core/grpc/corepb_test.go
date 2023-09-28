@@ -5,12 +5,12 @@ package grpc
 
 import (
 	fmt "fmt"
+	_ "github.com/elojah/game_03/pkg/gogoproto"
+	_ "github.com/elojah/game_03/pkg/pbtypes"
 	_ "github.com/elojah/game_03/pkg/rtc/dto"
-	_ "github.com/gogo/protobuf/gogoproto"
 	github_com_gogo_protobuf_jsonpb "github.com/gogo/protobuf/jsonpb"
 	github_com_gogo_protobuf_proto "github.com/gogo/protobuf/proto"
 	proto "github.com/gogo/protobuf/proto"
-	_ "github.com/gogo/protobuf/types"
 	golang_proto "github.com/golang/protobuf/proto"
 	go_parser "go/parser"
 	math "math"

@@ -5,14 +5,14 @@ import (
 	"time"
 
 	gerrors "github.com/elojah/game_03/pkg/errors"
+	"github.com/elojah/game_03/pkg/pbtypes"
 	"github.com/elojah/game_03/pkg/user/dto"
-	"github.com/gogo/protobuf/types"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-func (h *handler) RefreshToken(ctx context.Context, req *types.StringValue) (*dto.SigninResp, error) {
+func (h *handler) RefreshToken(ctx context.Context, req *pbtypes.String) (*dto.SigninResp, error) {
 	logger := log.With().Str("method", "refresh_token").Logger()
 
 	if req == nil {

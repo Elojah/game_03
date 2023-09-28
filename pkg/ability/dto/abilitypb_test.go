@@ -6,7 +6,7 @@ package dto
 import (
 	fmt "fmt"
 	_ "github.com/elojah/game_03/pkg/ability"
-	_ "github.com/gogo/protobuf/gogoproto"
+	_ "github.com/elojah/game_03/pkg/gogoproto"
 	github_com_gogo_protobuf_jsonpb "github.com/gogo/protobuf/jsonpb"
 	github_com_gogo_protobuf_proto "github.com/gogo/protobuf/proto"
 	proto "github.com/gogo/protobuf/proto"

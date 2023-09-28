@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
 
-import { grpc } from '@improbable-eng/grpc-web';
+import * as grpc from 'grpc-web';
 import { getCookie } from 'typescript-cookie'
 
-import { API } from 'cmd/api/grpc/api_pb_service';
+import { APIClient } from 'cmd/api/grpc/ApiServiceClientPb';
 import { ListWorldReq, ListWorldResp } from 'pkg/room/dto/world_pb';
 import { R } from 'pkg/room/room_pb';
 import { World } from 'pkg/room/world_pb';
@@ -35,56 +35,8 @@ export default () => {
 	// API Room
 	const [worlds, setWorlds] = useState<{ worlds: World[], loaded: boolean }>({ worlds: [], loaded: false })
 
-	const createRoom = (req: R) => {
-		let md = new grpc.Metadata()
-		md.set('token', getCookie('access')!)
-
-		const prom = new Promise<R>((resolve, reject) => {
-			grpc.unary(API.CreateRoom, {
-				metadata: md,
-				request: req,
-				host: 'https://api.legacyfactory.com:8082',
-				onEnd: res => {
-					const { status, statusMessage, headers, message, trailers } = res;
-					if (status !== grpc.Code.OK || !message) {
-						reject(res)
-
-						return
-					}
-
-					resolve(message as R)
-				}
-			});
-		})
-
-		return prom
-	}
-
-
-	const listWorlds = (req: ListWorldReq) => {
-		let md = new grpc.Metadata()
-		md.set('token', getCookie('access')!)
-
-		const prom = new Promise<ListWorldResp>((resolve, reject) => {
-			grpc.unary(API.ListWorld, {
-				metadata: md,
-				request: req,
-				host: 'https://api.legacyfactory.com:8082',
-				onEnd: res => {
-					const { status, statusMessage, headers, message, trailers } = res;
-					if (status !== grpc.Code.OK || !message) {
-						reject(res)
-
-						return
-					}
-
-					resolve(message as ListWorldResp)
-				}
-			});
-		})
-
-		return prom
-	}
+	const client = new APIClient('https://api.legacyfactory.com:8082', null)
+	const metadata: grpc.Metadata = { 'token': getCookie('access')! }
 
 	const refreshWorlds = () => {
 		const req = new ListWorldReq()
@@ -92,7 +44,7 @@ export default () => {
 		req.setSize(100)
 		setWorlds({ worlds: [], loaded: false })
 
-		listWorlds(req).then((result) => {
+		client.listWorld(req, metadata).then((result) => {
 			console.log('found ', result.getWorldsList().length, ' worlds')
 
 			setWorlds({ worlds: result.getWorldsList(), loaded: true })
@@ -134,7 +86,7 @@ export default () => {
 		req.setName(name)
 		req.setWorldid(selectedWorld)
 
-		createRoom(req).then((result) => {
+		client.createRoom(req, metadata).then((result) => {
 			console.log('room created', ulid(result.getId_asU8()))
 
 			navigate('/rooms')

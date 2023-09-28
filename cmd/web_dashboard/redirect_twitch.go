@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 
-	"github.com/gogo/protobuf/types"
+	"github.com/elojah/game_03/pkg/pbtypes"
 	"github.com/rs/zerolog/log"
 )
 
@@ -46,7 +46,7 @@ func (h handler) redirectTwitch(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Fetch JWT
-	jwt, err := h.AuthClient.SigninTwitch(ctx, &types.StringValue{Value: token.AccessToken})
+	jwt, err := h.AuthClient.SigninTwitch(ctx, &pbtypes.String{Value: token.AccessToken})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to signin")
 		http.Error(w, "failed to signin", http.StatusInternalServerError)

@@ -8,19 +8,19 @@ import (
 
 	"github.com/elojah/game_03/pkg/faction"
 	"github.com/elojah/game_03/pkg/geometry"
+	"github.com/elojah/game_03/pkg/pbtypes"
 	"github.com/elojah/game_03/pkg/room"
 	"github.com/elojah/game_03/pkg/tile"
 	"github.com/elojah/game_03/pkg/tile/template"
 	"github.com/elojah/game_03/pkg/tile/wang"
 	"github.com/elojah/game_03/pkg/ulid"
-	"github.com/gogo/protobuf/types"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 // CreateWorld creates a new randomly generated world setup for a new room.
-func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.StringValue, error) {
+func (h *handler) CreateWorld(ctx context.Context, req *pbtypes.Empty) (*pbtypes.String, error) {
 	logger := log.With().Str("method", "create_world").Logger()
 
 	height := int64(3)      //nolint: gomnd
@@ -42,7 +42,7 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 	if err := h.room.InsertWorld(ctx, w); err != nil {
 		logger.Error().Err(err).Msg("failed to create world")
 
-		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+		return &pbtypes.String{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
 	// #Create 3 factions
@@ -56,7 +56,7 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 		}); err != nil {
 			logger.Error().Err(err).Msg("failed to create faction")
 
-			return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+			return &pbtypes.String{}, status.New(codes.Internal, err.Error()).Err()
 		}
 	}
 
@@ -72,13 +72,13 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to fetch tileset")
 
-		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+		return &pbtypes.String{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
 	if err := ts.CheckGenerate(); err != nil {
 		logger.Error().Err(err).Msg("invalid tileset")
 
-		return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+		return &pbtypes.String{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
 	// Create island template and use it for spawns afterward
@@ -114,14 +114,14 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 			if err != nil {
 				logger.Error().Err(err).Msg("failed to create tilemap")
 
-				return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+				return &pbtypes.String{}, status.New(codes.Internal, err.Error()).Err()
 			}
 
 			raw, err := json.Marshal(m)
 			if err != nil {
 				logger.Error().Err(err).Msg("failed to marshal map")
 
-				return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+				return &pbtypes.String{}, status.New(codes.Internal, err.Error()).Err()
 			}
 
 			id := ulid.NewID()
@@ -130,13 +130,13 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 			if err != nil {
 				logger.Error().Err(err).Msg("failed to create file")
 
-				return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+				return &pbtypes.String{}, status.New(codes.Internal, err.Error()).Err()
 			}
 
 			if _, err := f.Write(raw); err != nil {
 				logger.Error().Err(err).Msg("failed to write file")
 
-				return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+				return &pbtypes.String{}, status.New(codes.Internal, err.Error()).Err()
 			}
 
 			c.Tilemap = id
@@ -146,7 +146,7 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 			if err := h.room.InsertCell(ctx, c); err != nil {
 				logger.Error().Err(err).Msg("failed to create cell")
 
-				return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+				return &pbtypes.String{}, status.New(codes.Internal, err.Error()).Err()
 			}
 
 			if err := h.room.InsertWorldCell(ctx, room.WorldCell{
@@ -157,7 +157,7 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 			}); err != nil {
 				logger.Error().Err(err).Msg("failed to create world cell")
 
-				return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+				return &pbtypes.String{}, status.New(codes.Internal, err.Error()).Err()
 			}
 
 			// assign cell id to waypoints
@@ -167,14 +167,14 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 				if err := h.room.InsertWorldWaypoint(ctx, wp); err != nil {
 					logger.Error().Err(err).Msg("failed to create world waypoint")
 
-					return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+					return &pbtypes.String{}, status.New(codes.Internal, err.Error()).Err()
 				}
 			}
 
 			if err := h.room.PopulateWaypoints(ctx, wps); err != nil {
 				logger.Error().Err(err).Msg("failed to populate waypoints")
 
-				return &types.StringValue{}, status.New(codes.Internal, err.Error()).Err()
+				return &pbtypes.String{}, status.New(codes.Internal, err.Error()).Err()
 			}
 
 			logger.Info().Str("tilemap_id", c.Tilemap.String()).Str("cell_id", c.ID.String()).Msg("cell created")
@@ -183,5 +183,5 @@ func (h *handler) CreateWorld(ctx context.Context, req *types.Empty) (*types.Str
 
 	logger.Info().Msg("success")
 
-	return &types.StringValue{Value: w.ID.String()}, nil
+	return &pbtypes.String{Value: w.ID.String()}, nil
 }

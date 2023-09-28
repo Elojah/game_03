@@ -1,11 +1,11 @@
 import React from 'react';
 import { useNavigate } from "react-router-dom";
 
-import { grpc } from '@improbable-eng/grpc-web';
+import * as grpc from 'grpc-web';
 
 import { getCookie } from 'typescript-cookie'
 
-import { API } from 'cmd/api/grpc/api_pb_service';
+import { APIClient } from 'cmd/api/grpc/ApiServiceClientPb';
 import { Room } from 'pkg/room/dto/room_pb';
 import { User } from 'pkg/room/user_pb';
 import { CreateRoomUserReq } from 'pkg/room/dto/user_pb';
@@ -29,36 +29,14 @@ export default (props: propRoomsRow) => {
 	const sid = ulid(id)
 	const name = room.getRoom()?.getName()
 
-	const createUser = (req: CreateRoomUserReq) => {
-		let md = new grpc.Metadata()
-		md.set('token', getCookie('access')!)
-
-		const prom = new Promise<User>((resolve, reject) => {
-			grpc.unary(API.CreateRoomUser, {
-				metadata: md,
-				request: req,
-				host: 'https://api.legacyfactory.com:8082',
-				onEnd: res => {
-					const { status, statusMessage, headers, message, trailers } = res;
-					if (status !== grpc.Code.OK || !message) {
-						reject(res)
-
-						return
-					}
-
-					resolve(message as User)
-				}
-			});
-		})
-
-		return prom
-	}
+	const client = new APIClient('https://api.legacyfactory.com:8082', null)
+	const metadata: grpc.Metadata = { 'token': getCookie('access')! }
 
 	const checkCreateUser = () => {
 		const req = new CreateRoomUserReq()
 		req.setRoomid(id)
 
-		createUser(req).then((result) => {
+		client.createRoomUser(req, metadata).then((result) => {
 			console.log('room joined')
 
 			navigate('/rooms')

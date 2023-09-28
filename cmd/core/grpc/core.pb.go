@@ -6,19 +6,15 @@ package grpc
 import (
 	context "context"
 	fmt "fmt"
+	_ "github.com/elojah/game_03/pkg/gogoproto"
+	pbtypes "github.com/elojah/game_03/pkg/pbtypes"
 	dto "github.com/elojah/game_03/pkg/rtc/dto"
-	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
-	types "github.com/gogo/protobuf/types"
 	golang_proto "github.com/golang/protobuf/proto"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	io "io"
 	math "math"
-	math_bits "math/bits"
-	reflect "reflect"
-	strings "strings"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -33,46 +29,6 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type X struct {
-}
-
-func (m *X) Reset()      { *m = X{} }
-func (*X) ProtoMessage() {}
-func (*X) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0272973b33a406b3, []int{0}
-}
-func (m *X) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *X) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_X.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *X) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_X.Merge(m, src)
-}
-func (m *X) XXX_Size() int {
-	return m.Size()
-}
-func (m *X) XXX_DiscardUnknown() {
-	xxx_messageInfo_X.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_X proto.InternalMessageInfo
-
-func init() {
-	proto.RegisterType((*X)(nil), "grpc._")
-	golang_proto.RegisterType((*X)(nil), "grpc._")
-}
-
 func init() {
 	proto.RegisterFile("github.com/elojah/game_03/cmd/core/grpc/core.proto", fileDescriptor_0272973b33a406b3)
 }
@@ -81,67 +37,27 @@ func init() {
 }
 
 var fileDescriptor_0272973b33a406b3 = []byte{
-	// 322 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x74, 0x8e, 0xb1, 0x4a, 0x03, 0x41,
-	0x10, 0x86, 0x6f, 0x30, 0x18, 0xd9, 0x46, 0xdc, 0xc2, 0xe2, 0x84, 0x29, 0xc4, 0xc2, 0xc6, 0xdd,
-	0x90, 0x40, 0xc0, 0xd6, 0x33, 0x60, 0xba, 0x90, 0x3c, 0x40, 0xb8, 0xec, 0xad, 0x9b, 0xd3, 0xdc,
-	0xed, 0x79, 0x6c, 0x04, 0x3b, 0x1f, 0xc1, 0xc7, 0xf0, 0x11, 0x2c, 0x53, 0xa6, 0x4c, 0x67, 0x4a,
-	0x6f, 0xaf, 0xb1, 0x4c, 0x69, 0x29, 0xb7, 0x89, 0x28, 0xc8, 0x55, 0x33, 0xff, 0x3f, 0xf3, 0xfd,
-	0xfc, 0xa4, 0xad, 0x62, 0x33, 0x9d, 0x4f, 0x98, 0xd0, 0x09, 0x97, 0x33, 0x7d, 0x17, 0x4e, 0xb9,
-	0x0a, 0x13, 0x39, 0x6e, 0x75, 0xb8, 0x48, 0x22, 0x2e, 0x74, 0x2e, 0xb9, 0xca, 0x33, 0xe1, 0x36,
-	0x96, 0xe5, 0xda, 0x68, 0xda, 0xa8, 0x0c, 0xff, 0xe2, 0x0f, 0xa9, 0xb4, 0xd2, 0xdc, 0x1d, 0x27,
-	0xf3, 0x5b, 0xa7, 0x9c, 0x70, 0xdb, 0x16, 0xf2, 0x4f, 0x94, 0xd6, 0x6a, 0x26, 0x7f, 0xbf, 0x64,
-	0x92, 0x99, 0xa7, 0xdd, 0x91, 0xd7, 0xb7, 0xc8, 0xee, 0x15, 0xcf, 0x8d, 0xe0, 0x91, 0xd1, 0xd5,
-	0xdc, 0x02, 0xa7, 0x7b, 0x04, 0xc6, 0xed, 0x77, 0x20, 0x8d, 0x40, 0xe7, 0x92, 0x9e, 0x91, 0x66,
-	0xa0, 0xd3, 0x54, 0x0a, 0x43, 0x0f, 0x59, 0x64, 0x34, 0xdb, 0xa9, 0xa1, 0x7c, 0xf0, 0x0f, 0x9c,
-	0x31, 0xba, 0x1e, 0xd0, 0x2e, 0x69, 0x8e, 0x64, 0x1a, 0xf5, 0x83, 0x1e, 0x3d, 0x72, 0x66, 0x3f,
-	0xe8, 0x05, 0x61, 0x1a, 0xc5, 0x51, 0x68, 0xa4, 0x7f, 0xcc, 0xb6, 0x05, 0xd9, 0x4f, 0x41, 0xd6,
-	0xab, 0x0a, 0x9e, 0x03, 0xbd, 0x24, 0x64, 0x28, 0x85, 0x8c, 0x1f, 0x65, 0x85, 0xd6, 0xfc, 0xf9,
-	0xff, 0x23, 0x5b, 0x40, 0xbb, 0xa4, 0x31, 0x88, 0x53, 0x55, 0x0b, 0xd5, 0xf8, 0x57, 0x37, 0xcb,
-	0x02, 0xbd, 0x55, 0x81, 0xde, 0xba, 0x40, 0x6f, 0x53, 0x20, 0x7c, 0x15, 0x08, 0xcf, 0x16, 0xe1,
-	0xd5, 0x22, 0xbc, 0x59, 0x84, 0x85, 0x45, 0x58, 0x5a, 0x84, 0x95, 0x45, 0xf8, 0xb0, 0x08, 0x9f,
-	0x16, 0xbd, 0x8d, 0x45, 0x78, 0x29, 0xd1, 0x5b, 0x94, 0x08, 0xab, 0x12, 0xbd, 0x75, 0x89, 0xde,
-	0x64, 0xdf, 0x25, 0x77, 0xbe, 0x03, 0x00, 0x00, 0xff, 0xff, 0x73, 0xed, 0xcc, 0xb3, 0xe8, 0x01,
-	0x00, 0x00,
-}
-
-func (this *X) Equal(that interface{}) bool {
-	if that == nil {
-		return this == nil
-	}
-
-	that1, ok := that.(*X)
-	if !ok {
-		that2, ok := that.(X)
-		if ok {
-			that1 = &that2
-		} else {
-			return false
-		}
-	}
-	if that1 == nil {
-		return this == nil
-	} else if this == nil {
-		return false
-	}
-	return true
-}
-func (this *X) GoString() string {
-	if this == nil {
-		return "nil"
-	}
-	s := make([]string, 0, 4)
-	s = append(s, "&grpc.X{")
-	s = append(s, "}")
-	return strings.Join(s, "")
-}
-func valueToGoStringCore(v interface{}, typ string) string {
-	rv := reflect.ValueOf(v)
-	if rv.IsNil() {
-		return "nil"
-	}
-	pv := reflect.Indirect(rv).Interface()
-	return fmt.Sprintf("func(v %v) *%v { return &v } ( %#v )", typ, typ, pv)
+	// 305 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x90, 0x3f, 0x4e, 0xc3, 0x30,
+	0x18, 0xc5, 0xfd, 0x49, 0x15, 0x45, 0x1e, 0x40, 0x78, 0xcc, 0xf0, 0x4d, 0x88, 0x09, 0xc5, 0xfd,
+	0x73, 0x03, 0x42, 0x25, 0xba, 0x55, 0xed, 0x01, 0x50, 0xea, 0x7c, 0x72, 0x03, 0x24, 0x0e, 0xc1,
+	0x20, 0x75, 0xe3, 0x08, 0x1c, 0x83, 0x0b, 0x20, 0x31, 0x76, 0xec, 0xd8, 0xb1, 0x23, 0x71, 0x16,
+	0xc6, 0x8e, 0x8c, 0x28, 0x6e, 0xa7, 0x56, 0xea, 0xe4, 0xf7, 0x9e, 0xdf, 0xcf, 0x7a, 0x32, 0xef,
+	0xe9, 0xd4, 0xce, 0x5e, 0xa7, 0xa1, 0x32, 0x99, 0xa4, 0x27, 0xf3, 0x10, 0xcf, 0xa4, 0x8e, 0x33,
+	0xba, 0xef, 0xf4, 0xa5, 0xca, 0x12, 0xa9, 0x4c, 0x49, 0x52, 0x97, 0x85, 0xf2, 0x2a, 0x2c, 0x4a,
+	0x63, 0x8d, 0x68, 0x35, 0x41, 0x70, 0x84, 0x2c, 0x1e, 0xb5, 0xd4, 0x46, 0x1b, 0x5f, 0xf7, 0x6a,
+	0x4b, 0x06, 0xdd, 0xe3, 0x4c, 0x31, 0xb5, 0xf3, 0x82, 0x5e, 0x24, 0x65, 0x85, 0x9d, 0xef, 0x10,
+	0x79, 0x1c, 0x29, 0xad, 0x92, 0x89, 0x35, 0xcd, 0xb9, 0x05, 0x7a, 0x5f, 0xc0, 0x5b, 0x91, 0x29,
+	0x49, 0x5c, 0xf2, 0x76, 0x64, 0xf2, 0x9c, 0x94, 0x15, 0xe7, 0x61, 0x62, 0x4d, 0xb8, 0x73, 0x63,
+	0x7a, 0x0e, 0x4e, 0x7d, 0x30, 0xb9, 0x1d, 0x89, 0x6b, 0xde, 0x9e, 0x50, 0x9e, 0x0c, 0xa3, 0x81,
+	0xb8, 0xf0, 0xe1, 0x30, 0x1a, 0x44, 0x71, 0x9e, 0xa4, 0x49, 0x6c, 0x29, 0x38, 0x0b, 0x77, 0x9b,
+	0xc2, 0x41, 0xb3, 0x49, 0x74, 0x39, 0x1f, 0x93, 0xa2, 0xf4, 0x8d, 0x1a, 0x60, 0xef, 0x36, 0x38,
+	0x7c, 0xa0, 0x03, 0xe2, 0x8a, 0xb7, 0x46, 0x69, 0xae, 0x0f, 0xca, 0x7b, 0xfe, 0xe6, 0x6e, 0x59,
+	0x21, 0x5b, 0x55, 0xc8, 0xd6, 0x15, 0xb2, 0x4d, 0x85, 0xf0, 0x57, 0x21, 0xbc, 0x3b, 0x84, 0x4f,
+	0x87, 0xf0, 0xed, 0x10, 0x16, 0x0e, 0x61, 0xe9, 0x10, 0x56, 0x0e, 0xe1, 0xc7, 0x21, 0xfc, 0x3a,
+	0x64, 0x1b, 0x87, 0xf0, 0x51, 0x23, 0x5b, 0xd4, 0x08, 0xab, 0x1a, 0xd9, 0xba, 0x46, 0x36, 0x3d,
+	0xf1, 0x1f, 0xd1, 0xff, 0x0f, 0x00, 0x00, 0xff, 0xff, 0xf4, 0x88, 0xc6, 0x27, 0xdc, 0x01, 0x00,
+	0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -158,10 +74,10 @@ const _ = grpc.SupportPackageIsVersion4
 type CoreClient interface {
 	// Signal
 	Connect(ctx context.Context, in *dto.ConnectReq, opts ...grpc.CallOption) (*dto.SDP, error)
-	SendICE(ctx context.Context, opts ...grpc.CallOption) (Core_SendICEClient, error)
-	ReceiveICE(ctx context.Context, in *types.Empty, opts ...grpc.CallOption) (Core_ReceiveICEClient, error)
+	SendICE(ctx context.Context, in *dto.ICECandidate, opts ...grpc.CallOption) (*pbtypes.Empty, error)
+	ReceiveICE(ctx context.Context, in *pbtypes.Empty, opts ...grpc.CallOption) (Core_ReceiveICEClient, error)
 	// Ping
-	Ping(ctx context.Context, in *types.Empty, opts ...grpc.CallOption) (*types.Empty, error)
+	Ping(ctx context.Context, in *pbtypes.Empty, opts ...grpc.CallOption) (*pbtypes.Empty, error)
 }
 
 type coreClient struct {
@@ -181,42 +97,17 @@ func (c *coreClient) Connect(ctx context.Context, in *dto.ConnectReq, opts ...gr
 	return out, nil
 }
 
-func (c *coreClient) SendICE(ctx context.Context, opts ...grpc.CallOption) (Core_SendICEClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_Core_serviceDesc.Streams[0], "/grpc.Core/SendICE", opts...)
+func (c *coreClient) SendICE(ctx context.Context, in *dto.ICECandidate, opts ...grpc.CallOption) (*pbtypes.Empty, error) {
+	out := new(pbtypes.Empty)
+	err := c.cc.Invoke(ctx, "/grpc.Core/SendICE", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &coreSendICEClient{stream}
-	return x, nil
+	return out, nil
 }
 
-type Core_SendICEClient interface {
-	Send(*dto.ICECandidate) error
-	CloseAndRecv() (*types.Empty, error)
-	grpc.ClientStream
-}
-
-type coreSendICEClient struct {
-	grpc.ClientStream
-}
-
-func (x *coreSendICEClient) Send(m *dto.ICECandidate) error {
-	return x.ClientStream.SendMsg(m)
-}
-
-func (x *coreSendICEClient) CloseAndRecv() (*types.Empty, error) {
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	m := new(types.Empty)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-func (c *coreClient) ReceiveICE(ctx context.Context, in *types.Empty, opts ...grpc.CallOption) (Core_ReceiveICEClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_Core_serviceDesc.Streams[1], "/grpc.Core/ReceiveICE", opts...)
+func (c *coreClient) ReceiveICE(ctx context.Context, in *pbtypes.Empty, opts ...grpc.CallOption) (Core_ReceiveICEClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_Core_serviceDesc.Streams[0], "/grpc.Core/ReceiveICE", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -247,8 +138,8 @@ func (x *coreReceiveICEClient) Recv() (*dto.ICECandidate, error) {
 	return m, nil
 }
 
-func (c *coreClient) Ping(ctx context.Context, in *types.Empty, opts ...grpc.CallOption) (*types.Empty, error) {
-	out := new(types.Empty)
+func (c *coreClient) Ping(ctx context.Context, in *pbtypes.Empty, opts ...grpc.CallOption) (*pbtypes.Empty, error) {
+	out := new(pbtypes.Empty)
 	err := c.cc.Invoke(ctx, "/grpc.Core/Ping", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -260,10 +151,10 @@ func (c *coreClient) Ping(ctx context.Context, in *types.Empty, opts ...grpc.Cal
 type CoreServer interface {
 	// Signal
 	Connect(context.Context, *dto.ConnectReq) (*dto.SDP, error)
-	SendICE(Core_SendICEServer) error
-	ReceiveICE(*types.Empty, Core_ReceiveICEServer) error
+	SendICE(context.Context, *dto.ICECandidate) (*pbtypes.Empty, error)
+	ReceiveICE(*pbtypes.Empty, Core_ReceiveICEServer) error
 	// Ping
-	Ping(context.Context, *types.Empty) (*types.Empty, error)
+	Ping(context.Context, *pbtypes.Empty) (*pbtypes.Empty, error)
 }
 
 // UnimplementedCoreServer can be embedded to have forward compatible implementations.
@@ -273,13 +164,13 @@ type UnimplementedCoreServer struct {
 func (*UnimplementedCoreServer) Connect(ctx context.Context, req *dto.ConnectReq) (*dto.SDP, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Connect not implemented")
 }
-func (*UnimplementedCoreServer) SendICE(srv Core_SendICEServer) error {
-	return status.Errorf(codes.Unimplemented, "method SendICE not implemented")
+func (*UnimplementedCoreServer) SendICE(ctx context.Context, req *dto.ICECandidate) (*pbtypes.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendICE not implemented")
 }
-func (*UnimplementedCoreServer) ReceiveICE(req *types.Empty, srv Core_ReceiveICEServer) error {
+func (*UnimplementedCoreServer) ReceiveICE(req *pbtypes.Empty, srv Core_ReceiveICEServer) error {
 	return status.Errorf(codes.Unimplemented, "method ReceiveICE not implemented")
 }
-func (*UnimplementedCoreServer) Ping(ctx context.Context, req *types.Empty) (*types.Empty, error) {
+func (*UnimplementedCoreServer) Ping(ctx context.Context, req *pbtypes.Empty) (*pbtypes.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
 }
 
@@ -305,34 +196,26 @@ func _Core_Connect_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Core_SendICE_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(CoreServer).SendICE(&coreSendICEServer{stream})
-}
-
-type Core_SendICEServer interface {
-	SendAndClose(*types.Empty) error
-	Recv() (*dto.ICECandidate, error)
-	grpc.ServerStream
-}
-
-type coreSendICEServer struct {
-	grpc.ServerStream
-}
-
-func (x *coreSendICEServer) SendAndClose(m *types.Empty) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func (x *coreSendICEServer) Recv() (*dto.ICECandidate, error) {
-	m := new(dto.ICECandidate)
-	if err := x.ServerStream.RecvMsg(m); err != nil {
+func _Core_SendICE_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(dto.ICECandidate)
+	if err := dec(in); err != nil {
 		return nil, err
 	}
-	return m, nil
+	if interceptor == nil {
+		return srv.(CoreServer).SendICE(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/grpc.Core/SendICE",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CoreServer).SendICE(ctx, req.(*dto.ICECandidate))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _Core_ReceiveICE_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(types.Empty)
+	m := new(pbtypes.Empty)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
@@ -353,7 +236,7 @@ func (x *coreReceiveICEServer) Send(m *dto.ICECandidate) error {
 }
 
 func _Core_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(types.Empty)
+	in := new(pbtypes.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -365,7 +248,7 @@ func _Core_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface
 		FullMethod: "/grpc.Core/Ping",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CoreServer).Ping(ctx, req.(*types.Empty))
+		return srv.(CoreServer).Ping(ctx, req.(*pbtypes.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -379,16 +262,15 @@ var _Core_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Core_Connect_Handler,
 		},
 		{
+			MethodName: "SendICE",
+			Handler:    _Core_SendICE_Handler,
+		},
+		{
 			MethodName: "Ping",
 			Handler:    _Core_Ping_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "SendICE",
-			Handler:       _Core_SendICE_Handler,
-			ClientStreams: true,
-		},
 		{
 			StreamName:    "ReceiveICE",
 			Handler:       _Core_ReceiveICE_Handler,
@@ -397,286 +279,3 @@ var _Core_serviceDesc = grpc.ServiceDesc{
 	},
 	Metadata: "github.com/elojah/game_03/cmd/core/grpc/core.proto",
 }
-
-func (m *X) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *X) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *X) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
-func encodeVarintCore(dAtA []byte, offset int, v uint64) int {
-	offset -= sovCore(v)
-	base := offset
-	for v >= 1<<7 {
-		dAtA[offset] = uint8(v&0x7f | 0x80)
-		v >>= 7
-		offset++
-	}
-	dAtA[offset] = uint8(v)
-	return base
-}
-func NewPopulatedX(r randyCore, easy bool) *X {
-	this := &X{}
-	if !easy && r.Intn(10) != 0 {
-	}
-	return this
-}
-
-type randyCore interface {
-	Float32() float32
-	Float64() float64
-	Int63() int64
-	Int31() int32
-	Uint32() uint32
-	Intn(n int) int
-}
-
-func randUTF8RuneCore(r randyCore) rune {
-	ru := r.Intn(62)
-	if ru < 10 {
-		return rune(ru + 48)
-	} else if ru < 36 {
-		return rune(ru + 55)
-	}
-	return rune(ru + 61)
-}
-func randStringCore(r randyCore) string {
-	v1 := r.Intn(100)
-	tmps := make([]rune, v1)
-	for i := 0; i < v1; i++ {
-		tmps[i] = randUTF8RuneCore(r)
-	}
-	return string(tmps)
-}
-func randUnrecognizedCore(r randyCore, maxFieldNumber int) (dAtA []byte) {
-	l := r.Intn(5)
-	for i := 0; i < l; i++ {
-		wire := r.Intn(4)
-		if wire == 3 {
-			wire = 5
-		}
-		fieldNumber := maxFieldNumber + r.Intn(100)
-		dAtA = randFieldCore(dAtA, r, fieldNumber, wire)
-	}
-	return dAtA
-}
-func randFieldCore(dAtA []byte, r randyCore, fieldNumber int, wire int) []byte {
-	key := uint32(fieldNumber)<<3 | uint32(wire)
-	switch wire {
-	case 0:
-		dAtA = encodeVarintPopulateCore(dAtA, uint64(key))
-		v2 := r.Int63()
-		if r.Intn(2) == 0 {
-			v2 *= -1
-		}
-		dAtA = encodeVarintPopulateCore(dAtA, uint64(v2))
-	case 1:
-		dAtA = encodeVarintPopulateCore(dAtA, uint64(key))
-		dAtA = append(dAtA, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
-	case 2:
-		dAtA = encodeVarintPopulateCore(dAtA, uint64(key))
-		ll := r.Intn(100)
-		dAtA = encodeVarintPopulateCore(dAtA, uint64(ll))
-		for j := 0; j < ll; j++ {
-			dAtA = append(dAtA, byte(r.Intn(256)))
-		}
-	default:
-		dAtA = encodeVarintPopulateCore(dAtA, uint64(key))
-		dAtA = append(dAtA, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
-	}
-	return dAtA
-}
-func encodeVarintPopulateCore(dAtA []byte, v uint64) []byte {
-	for v >= 1<<7 {
-		dAtA = append(dAtA, uint8(uint64(v)&0x7f|0x80))
-		v >>= 7
-	}
-	dAtA = append(dAtA, uint8(v))
-	return dAtA
-}
-func (m *X) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func sovCore(x uint64) (n int) {
-	return (math_bits.Len64(x|1) + 6) / 7
-}
-func sozCore(x uint64) (n int) {
-	return sovCore(uint64((x << 1) ^ uint64((int64(x) >> 63))))
-}
-func (this *X) String() string {
-	if this == nil {
-		return "nil"
-	}
-	s := strings.Join([]string{`&X{`,
-		`}`,
-	}, "")
-	return s
-}
-func valueToStringCore(v interface{}) string {
-	rv := reflect.ValueOf(v)
-	if rv.IsNil() {
-		return "nil"
-	}
-	pv := reflect.Indirect(rv).Interface()
-	return fmt.Sprintf("*%v", pv)
-}
-func (m *X) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowCore
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: _: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: _: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipCore(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthCore
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthCore
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func skipCore(dAtA []byte) (n int, err error) {
-	l := len(dAtA)
-	iNdEx := 0
-	depth := 0
-	for iNdEx < l {
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return 0, ErrIntOverflowCore
-			}
-			if iNdEx >= l {
-				return 0, io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		wireType := int(wire & 0x7)
-		switch wireType {
-		case 0:
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return 0, ErrIntOverflowCore
-				}
-				if iNdEx >= l {
-					return 0, io.ErrUnexpectedEOF
-				}
-				iNdEx++
-				if dAtA[iNdEx-1] < 0x80 {
-					break
-				}
-			}
-		case 1:
-			iNdEx += 8
-		case 2:
-			var length int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return 0, ErrIntOverflowCore
-				}
-				if iNdEx >= l {
-					return 0, io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				length |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if length < 0 {
-				return 0, ErrInvalidLengthCore
-			}
-			iNdEx += length
-		case 3:
-			depth++
-		case 4:
-			if depth == 0 {
-				return 0, ErrUnexpectedEndOfGroupCore
-			}
-			depth--
-		case 5:
-			iNdEx += 4
-		default:
-			return 0, fmt.Errorf("proto: illegal wireType %d", wireType)
-		}
-		if iNdEx < 0 {
-			return 0, ErrInvalidLengthCore
-		}
-		if depth == 0 {
-			return iNdEx, nil
-		}
-	}
-	return 0, io.ErrUnexpectedEOF
-}
-
-var (
-	ErrInvalidLengthCore        = fmt.Errorf("proto: negative length found during unmarshaling")
-	ErrIntOverflowCore          = fmt.Errorf("proto: integer overflow")
-	ErrUnexpectedEndOfGroupCore = fmt.Errorf("proto: unexpected end of group")
-)

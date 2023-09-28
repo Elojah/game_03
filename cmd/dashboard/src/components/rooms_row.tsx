@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
-import { grpc } from '@improbable-eng/grpc-web';
+import * as grpc from 'grpc-web';
 
 import { getCookie } from 'typescript-cookie'
 
-import { API } from 'cmd/api/grpc/api_pb_service';
+import { APIClient } from 'cmd/api/grpc/ApiServiceClientPb';
 import { Room } from 'pkg/room/dto/room_pb';
 import { ListPCReq, ListPCResp, PC } from 'pkg/entity/dto/pc_pb';
 
@@ -45,37 +45,15 @@ export default (props: propRoomsRow) => {
 	// API PC
 	const [pcs, setPCs] = useState<{ pcs: PC[], loaded: boolean }>({ pcs: [], loaded: false })
 
-	const listPCs = (req: ListPCReq) => {
-		let md = new grpc.Metadata()
-		md.set('token', getCookie('access')!)
-
-		const prom = new Promise<ListPCResp>((resolve, reject) => {
-			grpc.unary(API.ListPC, {
-				metadata: md,
-				request: req,
-				host: 'https://api.legacyfactory.com:8082',
-				onEnd: res => {
-					const { status, statusMessage, headers, message, trailers } = res;
-					if (status !== grpc.Code.OK || !message) {
-						reject(res)
-
-						return
-					}
-
-					resolve(message as ListPCResp)
-				}
-			});
-		})
-
-		return prom
-	}
+	const client = new APIClient('https://api.legacyfactory.com:8082', null)
+	const metadata: grpc.Metadata = { 'token': getCookie('access')! }
 
 	const refreshPCs = () => {
 		const req = new ListPCReq()
 		req.setRoomid(id)
 		req.setSize(100)
 		setPCs({ pcs: [], loaded: false })
-		listPCs(req).then((result) => {
+		client.listPC(req, metadata).then((result) => {
 			console.log('found ', result.getPcsList().length, ' pcs')
 
 			setPCs({ pcs: result.getPcsList(), loaded: true })

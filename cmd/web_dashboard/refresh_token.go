@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 
-	"github.com/gogo/protobuf/types"
+	"github.com/elojah/game_03/pkg/pbtypes"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -26,7 +26,7 @@ func (h handler) refreshToken(w http.ResponseWriter, r *http.Request) {
 	// Refresh with auth.
 	jwt, err := h.RefreshToken(
 		metadata.AppendToOutgoingContext(ctx, "token", rc.Value),
-		&types.StringValue{Value: ""},
+		&pbtypes.String{Value: ""},
 	)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to refresh")

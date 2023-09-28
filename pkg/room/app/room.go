@@ -25,7 +25,7 @@ type App struct {
 	Entity entity.App
 }
 
-// PopulateWaypoints
+// PopulateWaypoints add spawns to all waypoints.
 func (a App) PopulateWaypoints(ctx context.Context, ws room.WorldWaypoints) error {
 	if a.Entity == nil {
 		return errors.ErrMissingImplementation{Interface: "entity"}

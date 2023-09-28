@@ -8,19 +8,15 @@ import (
 	fmt "fmt"
 	entity "github.com/elojah/game_03/pkg/entity"
 	dto1 "github.com/elojah/game_03/pkg/entity/dto"
+	_ "github.com/elojah/game_03/pkg/gogoproto"
+	pbtypes "github.com/elojah/game_03/pkg/pbtypes"
 	dto "github.com/elojah/game_03/pkg/tile/dto"
-	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
-	types "github.com/gogo/protobuf/types"
 	golang_proto "github.com/golang/protobuf/proto"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	io "io"
 	math "math"
-	math_bits "math/bits"
-	reflect "reflect"
-	strings "strings"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -35,46 +31,6 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type X struct {
-}
-
-func (m *X) Reset()      { *m = X{} }
-func (*X) ProtoMessage() {}
-func (*X) Descriptor() ([]byte, []int) {
-	return fileDescriptor_c466ab583a6679eb, []int{0}
-}
-func (m *X) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *X) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_X.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *X) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_X.Merge(m, src)
-}
-func (m *X) XXX_Size() int {
-	return m.Size()
-}
-func (m *X) XXX_DiscardUnknown() {
-	xxx_messageInfo_X.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_X proto.InternalMessageInfo
-
-func init() {
-	proto.RegisterType((*X)(nil), "grpc._")
-	golang_proto.RegisterType((*X)(nil), "grpc._")
-}
-
 func init() {
 	proto.RegisterFile("github.com/elojah/game_03/cmd/admin/grpc/admin.proto", fileDescriptor_c466ab583a6679eb)
 }
@@ -83,74 +39,33 @@ func init() {
 }
 
 var fileDescriptor_c466ab583a6679eb = []byte{
-	// 438 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x91, 0xcf, 0x6a, 0x14, 0x41,
-	0x10, 0xc6, 0xa7, 0x49, 0x14, 0x6c, 0x51, 0x43, 0x83, 0x11, 0x46, 0xa9, 0x83, 0x77, 0xbb, 0x83,
-	0x2b, 0x2a, 0x1e, 0x84, 0xdd, 0x45, 0x10, 0x44, 0x90, 0xf8, 0xef, 0x18, 0x7a, 0x77, 0xca, 0x4e,
-	0x9b, 0x99, 0xe9, 0x76, 0xa6, 0x16, 0xd9, 0x9b, 0x8f, 0xe0, 0x63, 0xf8, 0x08, 0x1e, 0x73, 0x0c,
-	0x78, 0xd9, 0x63, 0x8e, 0x4e, 0xef, 0xc5, 0x63, 0x8e, 0x1e, 0x65, 0xfe, 0x24, 0x66, 0x35, 0x1b,
-	0x36, 0xb7, 0xee, 0xef, 0xab, 0x5f, 0x55, 0xf5, 0xd7, 0xfc, 0x81, 0xb1, 0xb4, 0x3b, 0x19, 0xc9,
-	0xb1, 0xcb, 0x14, 0xa6, 0xee, 0xa3, 0xde, 0x55, 0x46, 0x67, 0xb8, 0xb3, 0xd5, 0x53, 0xe3, 0x2c,
-	0x51, 0x3a, 0xc9, 0x6c, 0xae, 0x4c, 0xe1, 0xc7, 0xed, 0x51, 0xfa, 0xc2, 0x91, 0x13, 0xeb, 0xb5,
-	0x12, 0xdf, 0x3b, 0xc5, 0x1a, 0x67, 0x9c, 0x6a, 0xcc, 0xd1, 0xe4, 0x43, 0x73, 0x6b, 0x2e, 0xcd,
-	0xa9, 0x85, 0xe2, 0xdb, 0xc6, 0x39, 0x93, 0xe2, 0xdf, 0x2a, 0xcc, 0x3c, 0x4d, 0x3b, 0x13, 0xfe,
-	0x35, 0x3f, 0x17, 0xda, 0x7b, 0x2c, 0xca, 0xce, 0xdf, 0x5a, 0xbe, 0xa7, 0xdf, 0x33, 0x8a, 0x6c,
-	0x8a, 0x2a, 0x21, 0xa7, 0x4a, 0xa4, 0x8e, 0xe8, 0x9d, 0x4f, 0x60, 0x4e, 0x96, 0xa6, 0x8a, 0x30,
-	0xf3, 0xa9, 0x26, 0xec, 0xa0, 0xc7, 0x2b, 0x41, 0xf5, 0x20, 0x9d, 0xdb, 0x4c, 0x93, 0x75, 0x5d,
-	0x24, 0xf1, 0xa3, 0x95, 0xc9, 0xc5, 0x91, 0x77, 0xd7, 0x38, 0xdb, 0xb9, 0xff, 0x63, 0x8d, 0x5f,
-	0xea, 0xd7, 0x01, 0x8b, 0x3e, 0xbf, 0xf2, 0xd2, 0x9a, 0x42, 0x13, 0xbe, 0xf5, 0xe2, 0x8e, 0x6c,
-	0x63, 0x91, 0xc7, 0xb1, 0xc8, 0xd7, 0x54, 0xd8, 0xdc, 0xbc, 0xd3, 0xe9, 0x04, 0xe3, 0xcd, 0xff,
-	0xdc, 0x67, 0x75, 0xa2, 0x62, 0xc0, 0x37, 0xb6, 0x1d, 0x69, 0xc2, 0xa1, 0x73, 0x7b, 0x16, 0x5f,
-	0xe0, 0xb4, 0x14, 0x4b, 0x6a, 0x97, 0xf6, 0x78, 0xc8, 0xd7, 0x5f, 0xd9, 0xdc, 0x5c, 0x98, 0x7b,
-	0xca, 0xaf, 0x0d, 0x0b, 0xd4, 0x84, 0x6f, 0x6c, 0x8a, 0x25, 0x92, 0xb8, 0x29, 0x13, 0x72, 0x72,
-	0x41, 0xdb, 0xc6, 0x4f, 0xf1, 0xe6, 0x59, 0x72, 0xe9, 0xc5, 0x90, 0x5f, 0x6d, 0xc5, 0xf7, 0xae,
-	0x48, 0x93, 0xa5, 0xe3, 0xcf, 0x0d, 0x46, 0x3c, 0xe1, 0xd7, 0xbb, 0xce, 0x5d, 0xd4, 0x62, 0x61,
-	0x5c, 0x27, 0xd6, 0x6b, 0x6c, 0xc8, 0xf6, 0x63, 0xe4, 0x49, 0xe5, 0x80, 0xdf, 0x68, 0xcb, 0xfa,
-	0xc7, 0x1f, 0x2c, 0x6e, 0x9d, 0x82, 0x4f, 0xd4, 0xf6, 0x11, 0x67, 0x6e, 0x37, 0x78, 0x7e, 0x50,
-	0x41, 0x34, 0xab, 0x20, 0x3a, 0xac, 0x20, 0x3a, 0xaa, 0x80, 0xfd, 0xae, 0x80, 0x7d, 0x09, 0xc0,
-	0xbe, 0x05, 0x60, 0xdf, 0x03, 0xb0, 0xfd, 0x00, 0xec, 0x20, 0x00, 0x9b, 0x05, 0x60, 0x3f, 0x03,
-	0xb0, 0x5f, 0x01, 0xa2, 0xa3, 0x00, 0xec, 0xeb, 0x1c, 0xa2, 0xfd, 0x39, 0xb0, 0xd9, 0x1c, 0xa2,
-	0xc3, 0x39, 0x44, 0xa3, 0xcb, 0x4d, 0xe7, 0xde, 0x9f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x64, 0xb6,
-	0x9b, 0xc6, 0xa7, 0x03, 0x00, 0x00,
-}
-
-func (this *X) Equal(that interface{}) bool {
-	if that == nil {
-		return this == nil
-	}
-
-	that1, ok := that.(*X)
-	if !ok {
-		that2, ok := that.(X)
-		if ok {
-			that1 = &that2
-		} else {
-			return false
-		}
-	}
-	if that1 == nil {
-		return this == nil
-	} else if this == nil {
-		return false
-	}
-	return true
-}
-func (this *X) GoString() string {
-	if this == nil {
-		return "nil"
-	}
-	s := make([]string, 0, 4)
-	s = append(s, "&grpc.X{")
-	s = append(s, "}")
-	return strings.Join(s, "")
-}
-func valueToGoStringAdmin(v interface{}, typ string) string {
-	rv := reflect.ValueOf(v)
-	if rv.IsNil() {
-		return "nil"
-	}
-	pv := reflect.Indirect(rv).Interface()
-	return fmt.Sprintf("func(v %v) *%v { return &v } ( %#v )", typ, typ, pv)
+	// 413 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x91, 0xb1, 0x6b, 0x14, 0x41,
+	0x14, 0xc6, 0x77, 0x24, 0x0a, 0x8e, 0x98, 0x84, 0x01, 0x15, 0xb6, 0x78, 0xa5, 0x95, 0xcc, 0xc4,
+	0x3b, 0x41, 0x49, 0x21, 0xc4, 0x20, 0x08, 0x22, 0x48, 0x54, 0x2c, 0x65, 0xee, 0xf6, 0x31, 0x19,
+	0xb3, 0xbb, 0x33, 0xee, 0x3e, 0x8b, 0xeb, 0xfc, 0x13, 0xfc, 0x33, 0xfc, 0x13, 0x2c, 0x53, 0xa6,
+	0xbc, 0x32, 0xa5, 0x3b, 0xdb, 0x58, 0xa6, 0xd4, 0x4e, 0x76, 0x77, 0x3c, 0xbc, 0x8b, 0x9e, 0xd7,
+	0x3d, 0x3e, 0xbe, 0xdf, 0xfb, 0x66, 0xbe, 0xc7, 0x1f, 0x18, 0x4b, 0xc7, 0x1f, 0x27, 0x72, 0xea,
+	0x0a, 0x85, 0xb9, 0x7b, 0xaf, 0x8f, 0x95, 0xd1, 0x05, 0xbe, 0xdb, 0x1b, 0xab, 0x69, 0x91, 0x29,
+	0x9d, 0x15, 0xb6, 0x54, 0xa6, 0xf2, 0xd3, 0x61, 0x94, 0xbe, 0x72, 0xe4, 0xc4, 0x56, 0xa7, 0xa4,
+	0xa3, 0x7f, 0xb3, 0xfe, 0xc4, 0x28, 0xe3, 0x8c, 0xeb, 0xed, 0xfd, 0x34, 0x90, 0xe9, 0xfd, 0xf5,
+	0x8c, 0x9f, 0xd0, 0xcc, 0x63, 0xad, 0xb0, 0xf0, 0x34, 0x8b, 0xc8, 0x68, 0x33, 0xa4, 0xa6, 0xca,
+	0x96, 0x26, 0x32, 0x7b, 0xeb, 0x19, 0xb2, 0x39, 0xaa, 0x8c, 0x9c, 0xaa, 0x91, 0x22, 0x31, 0x5e,
+	0x4f, 0x60, 0x49, 0x96, 0x66, 0x8a, 0xb0, 0xf0, 0xb9, 0x26, 0x8c, 0xd0, 0xa3, 0x8d, 0xa0, 0x2e,
+	0x48, 0x97, 0xb6, 0xd0, 0x64, 0x5d, 0x6c, 0x30, 0x7d, 0xb8, 0x31, 0xb9, 0x1c, 0x39, 0xfa, 0x79,
+	0x85, 0x5f, 0x3d, 0xe8, 0x4e, 0x21, 0xee, 0xf1, 0xeb, 0x2f, 0xac, 0xa9, 0x34, 0xe1, 0x1b, 0x2f,
+	0x76, 0x64, 0xec, 0x41, 0xbe, 0xea, 0x7b, 0x48, 0xb7, 0x17, 0xc2, 0xd3, 0xae, 0x4b, 0x31, 0xe2,
+	0xbb, 0x47, 0x8e, 0x34, 0xe1, 0xa1, 0x73, 0x27, 0x16, 0x9f, 0xe3, 0xac, 0x16, 0x2b, 0x9e, 0x4b,
+	0xcc, 0x5d, 0xbe, 0xf5, 0xd2, 0x96, 0xe6, 0xbf, 0xbe, 0xc7, 0xfc, 0xe6, 0x61, 0x85, 0x9a, 0xf0,
+	0xb5, 0xcd, 0xb1, 0x46, 0x12, 0xb7, 0x64, 0x46, 0x4e, 0x2e, 0x69, 0x47, 0xf8, 0x21, 0xbd, 0xfd,
+	0x37, 0xb9, 0xf6, 0x42, 0xf2, 0x1b, 0x83, 0xf8, 0xd6, 0x55, 0x79, 0x76, 0x29, 0x6e, 0xf5, 0x6f,
+	0x62, 0x9f, 0x6f, 0xc7, 0x25, 0xb1, 0x1b, 0xb1, 0xb4, 0x39, 0x8a, 0x5d, 0xe2, 0xae, 0x1c, 0x9a,
+	0x94, 0x0b, 0xe7, 0x3e, 0xdf, 0x19, 0x6c, 0x07, 0xbf, 0x2f, 0x22, 0xee, 0xfc, 0x01, 0x2f, 0xd4,
+	0x8e, 0x5e, 0x79, 0xc8, 0x93, 0x67, 0x67, 0x0d, 0x24, 0xf3, 0x06, 0x92, 0xf3, 0x06, 0x92, 0x8b,
+	0x06, 0xd8, 0x8f, 0x06, 0xd8, 0xa7, 0x00, 0xec, 0x4b, 0x00, 0xf6, 0x35, 0x00, 0x3b, 0x0d, 0xc0,
+	0xce, 0x02, 0xb0, 0x79, 0x00, 0xf6, 0x2d, 0x00, 0xfb, 0x1e, 0x20, 0xb9, 0x08, 0xc0, 0x3e, 0xb7,
+	0x90, 0x9c, 0xb6, 0xc0, 0xe6, 0x2d, 0x24, 0xe7, 0x2d, 0x24, 0x93, 0x6b, 0xfd, 0x31, 0xc7, 0xbf,
+	0x02, 0x00, 0x00, 0xff, 0xff, 0x9a, 0xed, 0x0d, 0x98, 0x7f, 0x03, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -166,17 +81,17 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type AdminClient interface {
 	// DB migrations
-	MigrateUp(ctx context.Context, in *types.StringValue, opts ...grpc.CallOption) (*types.Empty, error)
+	MigrateUp(ctx context.Context, in *pbtypes.String, opts ...grpc.CallOption) (*pbtypes.Empty, error)
 	// Cookie secure management
-	RotateCookieKeys(ctx context.Context, in *types.Empty, opts ...grpc.CallOption) (*types.Empty, error)
+	RotateCookieKeys(ctx context.Context, in *pbtypes.Empty, opts ...grpc.CallOption) (*pbtypes.Empty, error)
 	// Ping
-	Ping(ctx context.Context, in *types.Empty, opts ...grpc.CallOption) (*types.Empty, error)
+	Ping(ctx context.Context, in *pbtypes.Empty, opts ...grpc.CallOption) (*pbtypes.Empty, error)
 	// Map creation
 	CreateTileset(ctx context.Context, in *dto.CreateTilesetReq, opts ...grpc.CallOption) (*dto.CreateTilesetResp, error)
-	CreateWorld(ctx context.Context, in *types.Empty, opts ...grpc.CallOption) (*types.StringValue, error)
+	CreateWorld(ctx context.Context, in *pbtypes.Empty, opts ...grpc.CallOption) (*pbtypes.String, error)
 	// Entity
 	CreateTemplate(ctx context.Context, in *dto1.CreateTemplateReq, opts ...grpc.CallOption) (*entity.Template, error)
-	CreateAnimation(ctx context.Context, in *dto1.CreateAnimationReq, opts ...grpc.CallOption) (*types.Empty, error)
+	CreateAnimation(ctx context.Context, in *dto1.CreateAnimationReq, opts ...grpc.CallOption) (*pbtypes.Empty, error)
 }
 
 type adminClient struct {
@@ -187,8 +102,8 @@ func NewAdminClient(cc *grpc.ClientConn) AdminClient {
 	return &adminClient{cc}
 }
 
-func (c *adminClient) MigrateUp(ctx context.Context, in *types.StringValue, opts ...grpc.CallOption) (*types.Empty, error) {
-	out := new(types.Empty)
+func (c *adminClient) MigrateUp(ctx context.Context, in *pbtypes.String, opts ...grpc.CallOption) (*pbtypes.Empty, error) {
+	out := new(pbtypes.Empty)
 	err := c.cc.Invoke(ctx, "/grpc.Admin/MigrateUp", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -196,8 +111,8 @@ func (c *adminClient) MigrateUp(ctx context.Context, in *types.StringValue, opts
 	return out, nil
 }
 
-func (c *adminClient) RotateCookieKeys(ctx context.Context, in *types.Empty, opts ...grpc.CallOption) (*types.Empty, error) {
-	out := new(types.Empty)
+func (c *adminClient) RotateCookieKeys(ctx context.Context, in *pbtypes.Empty, opts ...grpc.CallOption) (*pbtypes.Empty, error) {
+	out := new(pbtypes.Empty)
 	err := c.cc.Invoke(ctx, "/grpc.Admin/RotateCookieKeys", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -205,8 +120,8 @@ func (c *adminClient) RotateCookieKeys(ctx context.Context, in *types.Empty, opt
 	return out, nil
 }
 
-func (c *adminClient) Ping(ctx context.Context, in *types.Empty, opts ...grpc.CallOption) (*types.Empty, error) {
-	out := new(types.Empty)
+func (c *adminClient) Ping(ctx context.Context, in *pbtypes.Empty, opts ...grpc.CallOption) (*pbtypes.Empty, error) {
+	out := new(pbtypes.Empty)
 	err := c.cc.Invoke(ctx, "/grpc.Admin/Ping", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -223,8 +138,8 @@ func (c *adminClient) CreateTileset(ctx context.Context, in *dto.CreateTilesetRe
 	return out, nil
 }
 
-func (c *adminClient) CreateWorld(ctx context.Context, in *types.Empty, opts ...grpc.CallOption) (*types.StringValue, error) {
-	out := new(types.StringValue)
+func (c *adminClient) CreateWorld(ctx context.Context, in *pbtypes.Empty, opts ...grpc.CallOption) (*pbtypes.String, error) {
+	out := new(pbtypes.String)
 	err := c.cc.Invoke(ctx, "/grpc.Admin/CreateWorld", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -241,8 +156,8 @@ func (c *adminClient) CreateTemplate(ctx context.Context, in *dto1.CreateTemplat
 	return out, nil
 }
 
-func (c *adminClient) CreateAnimation(ctx context.Context, in *dto1.CreateAnimationReq, opts ...grpc.CallOption) (*types.Empty, error) {
-	out := new(types.Empty)
+func (c *adminClient) CreateAnimation(ctx context.Context, in *dto1.CreateAnimationReq, opts ...grpc.CallOption) (*pbtypes.Empty, error) {
+	out := new(pbtypes.Empty)
 	err := c.cc.Invoke(ctx, "/grpc.Admin/CreateAnimation", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -253,42 +168,42 @@ func (c *adminClient) CreateAnimation(ctx context.Context, in *dto1.CreateAnimat
 // AdminServer is the server API for Admin service.
 type AdminServer interface {
 	// DB migrations
-	MigrateUp(context.Context, *types.StringValue) (*types.Empty, error)
+	MigrateUp(context.Context, *pbtypes.String) (*pbtypes.Empty, error)
 	// Cookie secure management
-	RotateCookieKeys(context.Context, *types.Empty) (*types.Empty, error)
+	RotateCookieKeys(context.Context, *pbtypes.Empty) (*pbtypes.Empty, error)
 	// Ping
-	Ping(context.Context, *types.Empty) (*types.Empty, error)
+	Ping(context.Context, *pbtypes.Empty) (*pbtypes.Empty, error)
 	// Map creation
 	CreateTileset(context.Context, *dto.CreateTilesetReq) (*dto.CreateTilesetResp, error)
-	CreateWorld(context.Context, *types.Empty) (*types.StringValue, error)
+	CreateWorld(context.Context, *pbtypes.Empty) (*pbtypes.String, error)
 	// Entity
 	CreateTemplate(context.Context, *dto1.CreateTemplateReq) (*entity.Template, error)
-	CreateAnimation(context.Context, *dto1.CreateAnimationReq) (*types.Empty, error)
+	CreateAnimation(context.Context, *dto1.CreateAnimationReq) (*pbtypes.Empty, error)
 }
 
 // UnimplementedAdminServer can be embedded to have forward compatible implementations.
 type UnimplementedAdminServer struct {
 }
 
-func (*UnimplementedAdminServer) MigrateUp(ctx context.Context, req *types.StringValue) (*types.Empty, error) {
+func (*UnimplementedAdminServer) MigrateUp(ctx context.Context, req *pbtypes.String) (*pbtypes.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MigrateUp not implemented")
 }
-func (*UnimplementedAdminServer) RotateCookieKeys(ctx context.Context, req *types.Empty) (*types.Empty, error) {
+func (*UnimplementedAdminServer) RotateCookieKeys(ctx context.Context, req *pbtypes.Empty) (*pbtypes.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RotateCookieKeys not implemented")
 }
-func (*UnimplementedAdminServer) Ping(ctx context.Context, req *types.Empty) (*types.Empty, error) {
+func (*UnimplementedAdminServer) Ping(ctx context.Context, req *pbtypes.Empty) (*pbtypes.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
 }
 func (*UnimplementedAdminServer) CreateTileset(ctx context.Context, req *dto.CreateTilesetReq) (*dto.CreateTilesetResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateTileset not implemented")
 }
-func (*UnimplementedAdminServer) CreateWorld(ctx context.Context, req *types.Empty) (*types.StringValue, error) {
+func (*UnimplementedAdminServer) CreateWorld(ctx context.Context, req *pbtypes.Empty) (*pbtypes.String, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateWorld not implemented")
 }
 func (*UnimplementedAdminServer) CreateTemplate(ctx context.Context, req *dto1.CreateTemplateReq) (*entity.Template, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateTemplate not implemented")
 }
-func (*UnimplementedAdminServer) CreateAnimation(ctx context.Context, req *dto1.CreateAnimationReq) (*types.Empty, error) {
+func (*UnimplementedAdminServer) CreateAnimation(ctx context.Context, req *dto1.CreateAnimationReq) (*pbtypes.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAnimation not implemented")
 }
 
@@ -297,7 +212,7 @@ func RegisterAdminServer(s *grpc.Server, srv AdminServer) {
 }
 
 func _Admin_MigrateUp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(types.StringValue)
+	in := new(pbtypes.String)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -309,13 +224,13 @@ func _Admin_MigrateUp_Handler(srv interface{}, ctx context.Context, dec func(int
 		FullMethod: "/grpc.Admin/MigrateUp",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdminServer).MigrateUp(ctx, req.(*types.StringValue))
+		return srv.(AdminServer).MigrateUp(ctx, req.(*pbtypes.String))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Admin_RotateCookieKeys_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(types.Empty)
+	in := new(pbtypes.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -327,13 +242,13 @@ func _Admin_RotateCookieKeys_Handler(srv interface{}, ctx context.Context, dec f
 		FullMethod: "/grpc.Admin/RotateCookieKeys",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdminServer).RotateCookieKeys(ctx, req.(*types.Empty))
+		return srv.(AdminServer).RotateCookieKeys(ctx, req.(*pbtypes.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Admin_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(types.Empty)
+	in := new(pbtypes.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -345,7 +260,7 @@ func _Admin_Ping_Handler(srv interface{}, ctx context.Context, dec func(interfac
 		FullMethod: "/grpc.Admin/Ping",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdminServer).Ping(ctx, req.(*types.Empty))
+		return srv.(AdminServer).Ping(ctx, req.(*pbtypes.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -369,7 +284,7 @@ func _Admin_CreateTileset_Handler(srv interface{}, ctx context.Context, dec func
 }
 
 func _Admin_CreateWorld_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(types.Empty)
+	in := new(pbtypes.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -381,7 +296,7 @@ func _Admin_CreateWorld_Handler(srv interface{}, ctx context.Context, dec func(i
 		FullMethod: "/grpc.Admin/CreateWorld",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdminServer).CreateWorld(ctx, req.(*types.Empty))
+		return srv.(AdminServer).CreateWorld(ctx, req.(*pbtypes.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -458,286 +373,3 @@ var _Admin_serviceDesc = grpc.ServiceDesc{
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "github.com/elojah/game_03/cmd/admin/grpc/admin.proto",
 }
-
-func (m *X) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *X) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *X) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
-func encodeVarintAdmin(dAtA []byte, offset int, v uint64) int {
-	offset -= sovAdmin(v)
-	base := offset
-	for v >= 1<<7 {
-		dAtA[offset] = uint8(v&0x7f | 0x80)
-		v >>= 7
-		offset++
-	}
-	dAtA[offset] = uint8(v)
-	return base
-}
-func NewPopulatedX(r randyAdmin, easy bool) *X {
-	this := &X{}
-	if !easy && r.Intn(10) != 0 {
-	}
-	return this
-}
-
-type randyAdmin interface {
-	Float32() float32
-	Float64() float64
-	Int63() int64
-	Int31() int32
-	Uint32() uint32
-	Intn(n int) int
-}
-
-func randUTF8RuneAdmin(r randyAdmin) rune {
-	ru := r.Intn(62)
-	if ru < 10 {
-		return rune(ru + 48)
-	} else if ru < 36 {
-		return rune(ru + 55)
-	}
-	return rune(ru + 61)
-}
-func randStringAdmin(r randyAdmin) string {
-	v1 := r.Intn(100)
-	tmps := make([]rune, v1)
-	for i := 0; i < v1; i++ {
-		tmps[i] = randUTF8RuneAdmin(r)
-	}
-	return string(tmps)
-}
-func randUnrecognizedAdmin(r randyAdmin, maxFieldNumber int) (dAtA []byte) {
-	l := r.Intn(5)
-	for i := 0; i < l; i++ {
-		wire := r.Intn(4)
-		if wire == 3 {
-			wire = 5
-		}
-		fieldNumber := maxFieldNumber + r.Intn(100)
-		dAtA = randFieldAdmin(dAtA, r, fieldNumber, wire)
-	}
-	return dAtA
-}
-func randFieldAdmin(dAtA []byte, r randyAdmin, fieldNumber int, wire int) []byte {
-	key := uint32(fieldNumber)<<3 | uint32(wire)
-	switch wire {
-	case 0:
-		dAtA = encodeVarintPopulateAdmin(dAtA, uint64(key))
-		v2 := r.Int63()
-		if r.Intn(2) == 0 {
-			v2 *= -1
-		}
-		dAtA = encodeVarintPopulateAdmin(dAtA, uint64(v2))
-	case 1:
-		dAtA = encodeVarintPopulateAdmin(dAtA, uint64(key))
-		dAtA = append(dAtA, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
-	case 2:
-		dAtA = encodeVarintPopulateAdmin(dAtA, uint64(key))
-		ll := r.Intn(100)
-		dAtA = encodeVarintPopulateAdmin(dAtA, uint64(ll))
-		for j := 0; j < ll; j++ {
-			dAtA = append(dAtA, byte(r.Intn(256)))
-		}
-	default:
-		dAtA = encodeVarintPopulateAdmin(dAtA, uint64(key))
-		dAtA = append(dAtA, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
-	}
-	return dAtA
-}
-func encodeVarintPopulateAdmin(dAtA []byte, v uint64) []byte {
-	for v >= 1<<7 {
-		dAtA = append(dAtA, uint8(uint64(v)&0x7f|0x80))
-		v >>= 7
-	}
-	dAtA = append(dAtA, uint8(v))
-	return dAtA
-}
-func (m *X) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func sovAdmin(x uint64) (n int) {
-	return (math_bits.Len64(x|1) + 6) / 7
-}
-func sozAdmin(x uint64) (n int) {
-	return sovAdmin(uint64((x << 1) ^ uint64((int64(x) >> 63))))
-}
-func (this *X) String() string {
-	if this == nil {
-		return "nil"
-	}
-	s := strings.Join([]string{`&X{`,
-		`}`,
-	}, "")
-	return s
-}
-func valueToStringAdmin(v interface{}) string {
-	rv := reflect.ValueOf(v)
-	if rv.IsNil() {
-		return "nil"
-	}
-	pv := reflect.Indirect(rv).Interface()
-	return fmt.Sprintf("*%v", pv)
-}
-func (m *X) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowAdmin
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: _: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: _: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipAdmin(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthAdmin
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthAdmin
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func skipAdmin(dAtA []byte) (n int, err error) {
-	l := len(dAtA)
-	iNdEx := 0
-	depth := 0
-	for iNdEx < l {
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return 0, ErrIntOverflowAdmin
-			}
-			if iNdEx >= l {
-				return 0, io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		wireType := int(wire & 0x7)
-		switch wireType {
-		case 0:
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return 0, ErrIntOverflowAdmin
-				}
-				if iNdEx >= l {
-					return 0, io.ErrUnexpectedEOF
-				}
-				iNdEx++
-				if dAtA[iNdEx-1] < 0x80 {
-					break
-				}
-			}
-		case 1:
-			iNdEx += 8
-		case 2:
-			var length int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return 0, ErrIntOverflowAdmin
-				}
-				if iNdEx >= l {
-					return 0, io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				length |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if length < 0 {
-				return 0, ErrInvalidLengthAdmin
-			}
-			iNdEx += length
-		case 3:
-			depth++
-		case 4:
-			if depth == 0 {
-				return 0, ErrUnexpectedEndOfGroupAdmin
-			}
-			depth--
-		case 5:
-			iNdEx += 4
-		default:
-			return 0, fmt.Errorf("proto: illegal wireType %d", wireType)
-		}
-		if iNdEx < 0 {
-			return 0, ErrInvalidLengthAdmin
-		}
-		if depth == 0 {
-			return iNdEx, nil
-		}
-	}
-	return 0, io.ErrUnexpectedEOF
-}
-
-var (
-	ErrInvalidLengthAdmin        = fmt.Errorf("proto: negative length found during unmarshaling")
-	ErrIntOverflowAdmin          = fmt.Errorf("proto: integer overflow")
-	ErrUnexpectedEndOfGroupAdmin = fmt.Errorf("proto: unexpected end of group")
-)

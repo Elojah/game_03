@@ -3,16 +3,16 @@ package main
 import (
 	"github.com/elojah/game_03/cmd/core/grpc"
 	gerrors "github.com/elojah/game_03/pkg/errors"
+	"github.com/elojah/game_03/pkg/pbtypes"
 	"github.com/elojah/game_03/pkg/rtc"
 	"github.com/elojah/game_03/pkg/rtc/dto"
-	"github.com/gogo/protobuf/types"
 	"github.com/pion/webrtc/v3"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-func (h *handler) ReceiveICE(req *types.Empty, stream grpc.Core_ReceiveICEServer) error {
+func (h *handler) ReceiveICE(req *pbtypes.Empty, stream grpc.Core_ReceiveICEServer) error {
 	ctx := stream.Context()
 	logger := log.With().Str("method", "receive_ice").Logger()
 

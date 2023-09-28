@@ -6,19 +6,15 @@ package grpc
 import (
 	context "context"
 	fmt "fmt"
+	_ "github.com/elojah/game_03/pkg/gogoproto"
+	pbtypes "github.com/elojah/game_03/pkg/pbtypes"
 	dto "github.com/elojah/game_03/pkg/user/dto"
-	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
-	types "github.com/gogo/protobuf/types"
 	golang_proto "github.com/golang/protobuf/proto"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	io "io"
 	math "math"
-	math_bits "math/bits"
-	reflect "reflect"
-	strings "strings"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -33,46 +29,6 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type X struct {
-}
-
-func (m *X) Reset()      { *m = X{} }
-func (*X) ProtoMessage() {}
-func (*X) Descriptor() ([]byte, []int) {
-	return fileDescriptor_d94f16348cd64e2c, []int{0}
-}
-func (m *X) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *X) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_X.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *X) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_X.Merge(m, src)
-}
-func (m *X) XXX_Size() int {
-	return m.Size()
-}
-func (m *X) XXX_DiscardUnknown() {
-	xxx_messageInfo_X.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_X proto.InternalMessageInfo
-
-func init() {
-	proto.RegisterType((*X)(nil), "grpc._")
-	golang_proto.RegisterType((*X)(nil), "grpc._")
-}
-
 func init() {
 	proto.RegisterFile("github.com/elojah/game_03/cmd/auth/grpc/auth.proto", fileDescriptor_d94f16348cd64e2c)
 }
@@ -81,67 +37,26 @@ func init() {
 }
 
 var fileDescriptor_d94f16348cd64e2c = []byte{
-	// 324 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0xd0, 0xb1, 0x4e, 0xf3, 0x30,
-	0x10, 0x07, 0x70, 0x9f, 0xbe, 0xea, 0x1b, 0x22, 0x24, 0xa4, 0x0c, 0x0c, 0x01, 0xdd, 0xc0, 0x8e,
-	0x0d, 0xad, 0xc4, 0xc6, 0x00, 0x12, 0x82, 0x11, 0xb5, 0x15, 0x6b, 0x95, 0xa6, 0xae, 0x13, 0xda,
-	0xc4, 0x96, 0xe3, 0xa8, 0x62, 0xe3, 0x11, 0x78, 0x0c, 0x1e, 0x81, 0xb1, 0x63, 0xc7, 0x8e, 0x1d,
-	0x89, 0xb3, 0x30, 0x76, 0x44, 0x62, 0x41, 0x75, 0x8a, 0x8a, 0x40, 0x1d, 0x60, 0xbb, 0xbb, 0xbf,
-	0x7f, 0x3e, 0xcb, 0x5e, 0x53, 0x24, 0x26, 0x2e, 0xfa, 0x34, 0x92, 0x29, 0xe3, 0x63, 0x79, 0x17,
-	0xc6, 0x4c, 0x84, 0x29, 0xef, 0x1d, 0xb7, 0x58, 0x94, 0x0e, 0x58, 0x58, 0x98, 0x98, 0x09, 0xad,
-	0x22, 0x57, 0x51, 0xa5, 0xa5, 0x91, 0x7e, 0x63, 0x35, 0x08, 0x8e, 0xbe, 0x48, 0x21, 0x85, 0x64,
-	0x2e, 0xec, 0x17, 0x43, 0xd7, 0xb9, 0xc6, 0x55, 0x35, 0x0a, 0xf6, 0x85, 0x94, 0x62, 0xcc, 0x37,
-	0xa7, 0x78, 0xaa, 0xcc, 0xfd, 0x3a, 0xc4, 0xef, 0xe1, 0x44, 0x87, 0x4a, 0x71, 0x9d, 0xaf, 0xf3,
-	0x93, 0xed, 0xaf, 0x54, 0x23, 0xc1, 0x8a, 0x9c, 0x6b, 0x36, 0x30, 0xd2, 0x15, 0x35, 0x39, 0xfc,
-	0xe7, 0x41, 0xaf, 0xf9, 0x0e, 0x5e, 0xe3, 0xbc, 0x30, 0xb1, 0x7f, 0xe6, 0xed, 0x74, 0x12, 0x91,
-	0x25, 0x59, 0x77, 0x92, 0x98, 0x28, 0xf6, 0x0f, 0x68, 0xbd, 0x91, 0x7e, 0x6e, 0xa4, 0x1d, 0xa3,
-	0x93, 0x4c, 0xdc, 0x86, 0xe3, 0x82, 0x07, 0xbb, 0x74, 0x60, 0x24, 0xad, 0x41, 0x9b, 0xe7, 0x6a,
-	0xc3, 0xaf, 0x9c, 0xfa, 0x03, 0x6f, 0xf3, 0xa1, 0xe6, 0x79, 0xdc, 0x95, 0x23, 0x9e, 0xfd, 0x96,
-	0x9f, 0x7a, 0x8d, 0x9b, 0x24, 0x13, 0xfe, 0xde, 0x0f, 0x76, 0xb9, 0xfa, 0xc3, 0x60, 0xcb, 0xfc,
-	0xe2, 0x7a, 0x56, 0x22, 0x99, 0x97, 0x48, 0x16, 0x25, 0x92, 0x65, 0x89, 0xf0, 0x56, 0x22, 0x3c,
-	0x58, 0x84, 0x27, 0x8b, 0xf0, 0x6c, 0x11, 0xa6, 0x16, 0x61, 0x66, 0x11, 0xe6, 0x16, 0xe1, 0xc5,
-	0x22, 0xbc, 0x5a, 0x24, 0x4b, 0x8b, 0xf0, 0x58, 0x21, 0x99, 0x56, 0x08, 0xf3, 0x0a, 0xc9, 0xa2,
-	0x42, 0xd2, 0xff, 0xef, 0x6e, 0x6e, 0x7d, 0x04, 0x00, 0x00, 0xff, 0xff, 0xa5, 0x8e, 0x7c, 0xbb,
-	0x2e, 0x02, 0x00, 0x00,
-}
-
-func (this *X) Equal(that interface{}) bool {
-	if that == nil {
-		return this == nil
-	}
-
-	that1, ok := that.(*X)
-	if !ok {
-		that2, ok := that.(X)
-		if ok {
-			that1 = &that2
-		} else {
-			return false
-		}
-	}
-	if that1 == nil {
-		return this == nil
-	} else if this == nil {
-		return false
-	}
-	return true
-}
-func (this *X) GoString() string {
-	if this == nil {
-		return "nil"
-	}
-	s := make([]string, 0, 4)
-	s = append(s, "&grpc.X{")
-	s = append(s, "}")
-	return strings.Join(s, "")
-}
-func valueToGoStringAuth(v interface{}, typ string) string {
-	rv := reflect.ValueOf(v)
-	if rv.IsNil() {
-		return "nil"
-	}
-	pv := reflect.Indirect(rv).Interface()
-	return fmt.Sprintf("func(v %v) *%v { return &v } ( %#v )", typ, typ, pv)
+	// 298 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0xd0, 0xb1, 0x4e, 0xf3, 0x30,
+	0x14, 0x05, 0x60, 0x5f, 0xa9, 0xfa, 0x87, 0xe8, 0x17, 0x95, 0x32, 0x66, 0xb8, 0x23, 0xa3, 0x5d,
+	0xda, 0x27, 0x00, 0x09, 0xc1, 0x88, 0xda, 0xee, 0xa8, 0x49, 0x8c, 0x6d, 0xda, 0xc4, 0x56, 0xe2,
+	0x08, 0x75, 0xe3, 0x11, 0x78, 0x0c, 0x1e, 0x81, 0xb1, 0x03, 0x43, 0xc7, 0x8c, 0x1d, 0x89, 0xb3,
+	0x30, 0x76, 0x64, 0x44, 0x75, 0x2a, 0x90, 0x18, 0xaa, 0x6c, 0xc7, 0xd6, 0xf9, 0x74, 0xa4, 0x1b,
+	0x8c, 0x85, 0xb2, 0xb2, 0x8a, 0x69, 0xa2, 0x33, 0xc6, 0x57, 0xfa, 0x71, 0x21, 0x99, 0x58, 0x64,
+	0xfc, 0x7e, 0x34, 0x61, 0x49, 0x96, 0xb2, 0x45, 0x65, 0x25, 0x13, 0x85, 0x49, 0x7c, 0xa2, 0xa6,
+	0xd0, 0x56, 0x87, 0x83, 0xc3, 0x47, 0x74, 0x42, 0x9a, 0xa5, 0x60, 0x42, 0x0b, 0xed, 0xeb, 0x3e,
+	0x75, 0x32, 0xba, 0x38, 0x6d, 0x4c, 0x6c, 0xd7, 0x86, 0x97, 0x8c, 0x67, 0xc6, 0xae, 0x8f, 0x64,
+	0xdc, 0x8f, 0x94, 0xb6, 0x50, 0xb9, 0xe8, 0x37, 0x53, 0x95, 0xbc, 0x60, 0xa9, 0xd5, 0x3e, 0x74,
+	0x64, 0xfc, 0x0e, 0xc1, 0xe0, 0xb2, 0xb2, 0x32, 0x1c, 0x05, 0xff, 0x67, 0x4a, 0xe4, 0x2a, 0x9f,
+	0x3f, 0x29, 0x9b, 0xc8, 0x70, 0x48, 0x8f, 0x13, 0x74, 0xe6, 0x27, 0xa2, 0x21, 0x4d, 0xad, 0xa6,
+	0x5d, 0x67, 0xca, 0x4b, 0xf3, 0x2b, 0x6e, 0xb4, 0x16, 0x2b, 0xde, 0x4f, 0x4c, 0xf9, 0x43, 0xc1,
+	0x4b, 0x39, 0xd7, 0x4b, 0x9e, 0xf7, 0x10, 0xe7, 0xc1, 0xe0, 0x4e, 0xe5, 0x22, 0x3c, 0xfb, 0x69,
+	0x5e, 0x1f, 0x6e, 0x14, 0xfd, 0x79, 0x5f, 0xdd, 0x6e, 0x1b, 0x24, 0x75, 0x83, 0x64, 0xd7, 0x20,
+	0xd9, 0x37, 0x08, 0x5f, 0x0d, 0xc2, 0xb3, 0x43, 0x78, 0x75, 0x08, 0x6f, 0x0e, 0x61, 0xe3, 0x10,
+	0xb6, 0x0e, 0xa1, 0x76, 0x08, 0x1f, 0x0e, 0xe1, 0xd3, 0x21, 0xd9, 0x3b, 0x84, 0x97, 0x16, 0xc9,
+	0xa6, 0x45, 0xa8, 0x5b, 0x24, 0xbb, 0x16, 0x49, 0xfc, 0xcf, 0xdf, 0x65, 0xf2, 0x1d, 0x00, 0x00,
+	0xff, 0xff, 0x66, 0x7a, 0xec, 0x01, 0x21, 0x02, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -157,13 +72,13 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type AuthClient interface {
 	// Signin Twitch
-	SigninTwitch(ctx context.Context, in *types.StringValue, opts ...grpc.CallOption) (*dto.SigninResp, error)
+	SigninTwitch(ctx context.Context, in *pbtypes.String, opts ...grpc.CallOption) (*dto.SigninResp, error)
 	// Signin Google
-	SigninGoogle(ctx context.Context, in *types.StringValue, opts ...grpc.CallOption) (*dto.SigninResp, error)
+	SigninGoogle(ctx context.Context, in *pbtypes.String, opts ...grpc.CallOption) (*dto.SigninResp, error)
 	// Refresh token
-	RefreshToken(ctx context.Context, in *types.StringValue, opts ...grpc.CallOption) (*dto.SigninResp, error)
+	RefreshToken(ctx context.Context, in *pbtypes.String, opts ...grpc.CallOption) (*dto.SigninResp, error)
 	// Ping
-	Ping(ctx context.Context, in *types.Empty, opts ...grpc.CallOption) (*types.Empty, error)
+	Ping(ctx context.Context, in *pbtypes.Empty, opts ...grpc.CallOption) (*pbtypes.Empty, error)
 }
 
 type authClient struct {
@@ -174,7 +89,7 @@ func NewAuthClient(cc *grpc.ClientConn) AuthClient {
 	return &authClient{cc}
 }
 
-func (c *authClient) SigninTwitch(ctx context.Context, in *types.StringValue, opts ...grpc.CallOption) (*dto.SigninResp, error) {
+func (c *authClient) SigninTwitch(ctx context.Context, in *pbtypes.String, opts ...grpc.CallOption) (*dto.SigninResp, error) {
 	out := new(dto.SigninResp)
 	err := c.cc.Invoke(ctx, "/grpc.Auth/SigninTwitch", in, out, opts...)
 	if err != nil {
@@ -183,7 +98,7 @@ func (c *authClient) SigninTwitch(ctx context.Context, in *types.StringValue, op
 	return out, nil
 }
 
-func (c *authClient) SigninGoogle(ctx context.Context, in *types.StringValue, opts ...grpc.CallOption) (*dto.SigninResp, error) {
+func (c *authClient) SigninGoogle(ctx context.Context, in *pbtypes.String, opts ...grpc.CallOption) (*dto.SigninResp, error) {
 	out := new(dto.SigninResp)
 	err := c.cc.Invoke(ctx, "/grpc.Auth/SigninGoogle", in, out, opts...)
 	if err != nil {
@@ -192,7 +107,7 @@ func (c *authClient) SigninGoogle(ctx context.Context, in *types.StringValue, op
 	return out, nil
 }
 
-func (c *authClient) RefreshToken(ctx context.Context, in *types.StringValue, opts ...grpc.CallOption) (*dto.SigninResp, error) {
+func (c *authClient) RefreshToken(ctx context.Context, in *pbtypes.String, opts ...grpc.CallOption) (*dto.SigninResp, error) {
 	out := new(dto.SigninResp)
 	err := c.cc.Invoke(ctx, "/grpc.Auth/RefreshToken", in, out, opts...)
 	if err != nil {
@@ -201,8 +116,8 @@ func (c *authClient) RefreshToken(ctx context.Context, in *types.StringValue, op
 	return out, nil
 }
 
-func (c *authClient) Ping(ctx context.Context, in *types.Empty, opts ...grpc.CallOption) (*types.Empty, error) {
-	out := new(types.Empty)
+func (c *authClient) Ping(ctx context.Context, in *pbtypes.Empty, opts ...grpc.CallOption) (*pbtypes.Empty, error) {
+	out := new(pbtypes.Empty)
 	err := c.cc.Invoke(ctx, "/grpc.Auth/Ping", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -213,29 +128,29 @@ func (c *authClient) Ping(ctx context.Context, in *types.Empty, opts ...grpc.Cal
 // AuthServer is the server API for Auth service.
 type AuthServer interface {
 	// Signin Twitch
-	SigninTwitch(context.Context, *types.StringValue) (*dto.SigninResp, error)
+	SigninTwitch(context.Context, *pbtypes.String) (*dto.SigninResp, error)
 	// Signin Google
-	SigninGoogle(context.Context, *types.StringValue) (*dto.SigninResp, error)
+	SigninGoogle(context.Context, *pbtypes.String) (*dto.SigninResp, error)
 	// Refresh token
-	RefreshToken(context.Context, *types.StringValue) (*dto.SigninResp, error)
+	RefreshToken(context.Context, *pbtypes.String) (*dto.SigninResp, error)
 	// Ping
-	Ping(context.Context, *types.Empty) (*types.Empty, error)
+	Ping(context.Context, *pbtypes.Empty) (*pbtypes.Empty, error)
 }
 
 // UnimplementedAuthServer can be embedded to have forward compatible implementations.
 type UnimplementedAuthServer struct {
 }
 
-func (*UnimplementedAuthServer) SigninTwitch(ctx context.Context, req *types.StringValue) (*dto.SigninResp, error) {
+func (*UnimplementedAuthServer) SigninTwitch(ctx context.Context, req *pbtypes.String) (*dto.SigninResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SigninTwitch not implemented")
 }
-func (*UnimplementedAuthServer) SigninGoogle(ctx context.Context, req *types.StringValue) (*dto.SigninResp, error) {
+func (*UnimplementedAuthServer) SigninGoogle(ctx context.Context, req *pbtypes.String) (*dto.SigninResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SigninGoogle not implemented")
 }
-func (*UnimplementedAuthServer) RefreshToken(ctx context.Context, req *types.StringValue) (*dto.SigninResp, error) {
+func (*UnimplementedAuthServer) RefreshToken(ctx context.Context, req *pbtypes.String) (*dto.SigninResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RefreshToken not implemented")
 }
-func (*UnimplementedAuthServer) Ping(ctx context.Context, req *types.Empty) (*types.Empty, error) {
+func (*UnimplementedAuthServer) Ping(ctx context.Context, req *pbtypes.Empty) (*pbtypes.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
 }
 
@@ -244,7 +159,7 @@ func RegisterAuthServer(s *grpc.Server, srv AuthServer) {
 }
 
 func _Auth_SigninTwitch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(types.StringValue)
+	in := new(pbtypes.String)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -256,13 +171,13 @@ func _Auth_SigninTwitch_Handler(srv interface{}, ctx context.Context, dec func(i
 		FullMethod: "/grpc.Auth/SigninTwitch",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServer).SigninTwitch(ctx, req.(*types.StringValue))
+		return srv.(AuthServer).SigninTwitch(ctx, req.(*pbtypes.String))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Auth_SigninGoogle_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(types.StringValue)
+	in := new(pbtypes.String)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -274,13 +189,13 @@ func _Auth_SigninGoogle_Handler(srv interface{}, ctx context.Context, dec func(i
 		FullMethod: "/grpc.Auth/SigninGoogle",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServer).SigninGoogle(ctx, req.(*types.StringValue))
+		return srv.(AuthServer).SigninGoogle(ctx, req.(*pbtypes.String))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Auth_RefreshToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(types.StringValue)
+	in := new(pbtypes.String)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -292,13 +207,13 @@ func _Auth_RefreshToken_Handler(srv interface{}, ctx context.Context, dec func(i
 		FullMethod: "/grpc.Auth/RefreshToken",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServer).RefreshToken(ctx, req.(*types.StringValue))
+		return srv.(AuthServer).RefreshToken(ctx, req.(*pbtypes.String))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Auth_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(types.Empty)
+	in := new(pbtypes.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -310,7 +225,7 @@ func _Auth_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface
 		FullMethod: "/grpc.Auth/Ping",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServer).Ping(ctx, req.(*types.Empty))
+		return srv.(AuthServer).Ping(ctx, req.(*pbtypes.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -339,286 +254,3 @@ var _Auth_serviceDesc = grpc.ServiceDesc{
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "github.com/elojah/game_03/cmd/auth/grpc/auth.proto",
 }
-
-func (m *X) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *X) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *X) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
-func encodeVarintAuth(dAtA []byte, offset int, v uint64) int {
-	offset -= sovAuth(v)
-	base := offset
-	for v >= 1<<7 {
-		dAtA[offset] = uint8(v&0x7f | 0x80)
-		v >>= 7
-		offset++
-	}
-	dAtA[offset] = uint8(v)
-	return base
-}
-func NewPopulatedX(r randyAuth, easy bool) *X {
-	this := &X{}
-	if !easy && r.Intn(10) != 0 {
-	}
-	return this
-}
-
-type randyAuth interface {
-	Float32() float32
-	Float64() float64
-	Int63() int64
-	Int31() int32
-	Uint32() uint32
-	Intn(n int) int
-}
-
-func randUTF8RuneAuth(r randyAuth) rune {
-	ru := r.Intn(62)
-	if ru < 10 {
-		return rune(ru + 48)
-	} else if ru < 36 {
-		return rune(ru + 55)
-	}
-	return rune(ru + 61)
-}
-func randStringAuth(r randyAuth) string {
-	v1 := r.Intn(100)
-	tmps := make([]rune, v1)
-	for i := 0; i < v1; i++ {
-		tmps[i] = randUTF8RuneAuth(r)
-	}
-	return string(tmps)
-}
-func randUnrecognizedAuth(r randyAuth, maxFieldNumber int) (dAtA []byte) {
-	l := r.Intn(5)
-	for i := 0; i < l; i++ {
-		wire := r.Intn(4)
-		if wire == 3 {
-			wire = 5
-		}
-		fieldNumber := maxFieldNumber + r.Intn(100)
-		dAtA = randFieldAuth(dAtA, r, fieldNumber, wire)
-	}
-	return dAtA
-}
-func randFieldAuth(dAtA []byte, r randyAuth, fieldNumber int, wire int) []byte {
-	key := uint32(fieldNumber)<<3 | uint32(wire)
-	switch wire {
-	case 0:
-		dAtA = encodeVarintPopulateAuth(dAtA, uint64(key))
-		v2 := r.Int63()
-		if r.Intn(2) == 0 {
-			v2 *= -1
-		}
-		dAtA = encodeVarintPopulateAuth(dAtA, uint64(v2))
-	case 1:
-		dAtA = encodeVarintPopulateAuth(dAtA, uint64(key))
-		dAtA = append(dAtA, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
-	case 2:
-		dAtA = encodeVarintPopulateAuth(dAtA, uint64(key))
-		ll := r.Intn(100)
-		dAtA = encodeVarintPopulateAuth(dAtA, uint64(ll))
-		for j := 0; j < ll; j++ {
-			dAtA = append(dAtA, byte(r.Intn(256)))
-		}
-	default:
-		dAtA = encodeVarintPopulateAuth(dAtA, uint64(key))
-		dAtA = append(dAtA, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
-	}
-	return dAtA
-}
-func encodeVarintPopulateAuth(dAtA []byte, v uint64) []byte {
-	for v >= 1<<7 {
-		dAtA = append(dAtA, uint8(uint64(v)&0x7f|0x80))
-		v >>= 7
-	}
-	dAtA = append(dAtA, uint8(v))
-	return dAtA
-}
-func (m *X) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func sovAuth(x uint64) (n int) {
-	return (math_bits.Len64(x|1) + 6) / 7
-}
-func sozAuth(x uint64) (n int) {
-	return sovAuth(uint64((x << 1) ^ uint64((int64(x) >> 63))))
-}
-func (this *X) String() string {
-	if this == nil {
-		return "nil"
-	}
-	s := strings.Join([]string{`&X{`,
-		`}`,
-	}, "")
-	return s
-}
-func valueToStringAuth(v interface{}) string {
-	rv := reflect.ValueOf(v)
-	if rv.IsNil() {
-		return "nil"
-	}
-	pv := reflect.Indirect(rv).Interface()
-	return fmt.Sprintf("*%v", pv)
-}
-func (m *X) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowAuth
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: _: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: _: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipAuth(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthAuth
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthAuth
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func skipAuth(dAtA []byte) (n int, err error) {
-	l := len(dAtA)
-	iNdEx := 0
-	depth := 0
-	for iNdEx < l {
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return 0, ErrIntOverflowAuth
-			}
-			if iNdEx >= l {
-				return 0, io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		wireType := int(wire & 0x7)
-		switch wireType {
-		case 0:
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return 0, ErrIntOverflowAuth
-				}
-				if iNdEx >= l {
-					return 0, io.ErrUnexpectedEOF
-				}
-				iNdEx++
-				if dAtA[iNdEx-1] < 0x80 {
-					break
-				}
-			}
-		case 1:
-			iNdEx += 8
-		case 2:
-			var length int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return 0, ErrIntOverflowAuth
-				}
-				if iNdEx >= l {
-					return 0, io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				length |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if length < 0 {
-				return 0, ErrInvalidLengthAuth
-			}
-			iNdEx += length
-		case 3:
-			depth++
-		case 4:
-			if depth == 0 {
-				return 0, ErrUnexpectedEndOfGroupAuth
-			}
-			depth--
-		case 5:
-			iNdEx += 4
-		default:
-			return 0, fmt.Errorf("proto: illegal wireType %d", wireType)
-		}
-		if iNdEx < 0 {
-			return 0, ErrInvalidLengthAuth
-		}
-		if depth == 0 {
-			return iNdEx, nil
-		}
-	}
-	return 0, io.ErrUnexpectedEOF
-}
-
-var (
-	ErrInvalidLengthAuth        = fmt.Errorf("proto: negative length found during unmarshaling")
-	ErrIntOverflowAuth          = fmt.Errorf("proto: integer overflow")
-	ErrUnexpectedEndOfGroupAuth = fmt.Errorf("proto: unexpected end of group")
-)

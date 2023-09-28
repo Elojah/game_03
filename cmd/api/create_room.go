@@ -33,10 +33,9 @@ func (h *handler) CreateRoom(ctx context.Context, req *room.R) (*room.R, error) 
 			return &room.R{}, status.New(codes.NotFound, err.Error()).Err()
 		}
 
-		logger.Error().Err(err).Msg("failed to fetch world")
+		logger.Error().Err(err).Msg("failed to copy world")
 
 		return &room.R{}, status.New(codes.Internal, err.Error()).Err()
-
 	}
 
 	// #Set new room values

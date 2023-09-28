@@ -4,7 +4,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/gogo/protobuf/types"
+	"github.com/elojah/game_03/pkg/pbtypes"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -34,7 +34,7 @@ func (h handler) signinGoogle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Signin with auth.
-	jwt, err := h.SigninGoogle(ctx, &types.StringValue{Value: string(raw)})
+	jwt, err := h.SigninGoogle(ctx, &pbtypes.String{Value: string(raw)})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to signin")
 

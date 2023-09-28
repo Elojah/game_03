@@ -1,7 +1,5 @@
 import { GameObjects, Scene } from 'phaser';
-import { grpc } from '@improbable-eng/grpc-web';
-
-import { getCookie } from 'typescript-cookie'
+import * as grpc from 'grpc-web';
 
 import { Mutex, MutexInterface } from 'async-mutex';
 
@@ -11,35 +9,37 @@ import { Map as pbmap } from 'google-protobuf';
 
 import { ulid, parse } from '../lib/ulid'
 
-import { grpc as grpcapi } from 'cmd/api/grpc/api';
-import { grpc as grpccore } from 'cmd/core/grpc/core';
+import { APIClient } from 'cmd/api/grpc/ApiServiceClientPb';
+import { CoreClient } from 'cmd/core/grpc/CoreServiceClientPb';
 
-// import { ConnectReq, ICECandidate, SDP } from 'pkg/rtc/dto/rtc';
-import { dto as dtortc } from 'pkg/rtc/dto/rtc';
+import { ConnectReq, ICECandidate, SDP } from 'pkg/rtc/dto/rtc_pb';
 
-import { ability } from 'pkg/ability/ability';
-import { dto as abilitydto } from 'pkg/ability/dto/ability';
-import { ability as cast } from 'pkg/ability/cast';
+import * as Ability from 'pkg/ability/ability_pb';
+import * as AbilityDTO from 'pkg/ability/dto/ability_pb';
+import * as Cast from 'pkg/ability/cast_pb';
 
-import { entity as animation } from 'pkg/entity/animation';
-import { dto as animationdto } from 'pkg/entity/dto/animation';
+import * as Animation from 'pkg/entity/animation_pb';
+import * as AnimationDTO from 'pkg/entity/dto/animation_pb';
 
-import { entity } from 'pkg/entity/entity';
-import { dto as entitydto } from 'pkg/entity/dto/entity';
+import * as Entity from 'pkg/entity/entity_pb';
+import * as EntityDTO from 'pkg/entity/dto/entity_pb';
 
-import { entity as pc } from 'pkg/entity/pc';
-import { dto as pcdto } from 'pkg/entity/dto/pc';
+import * as PC from 'pkg/entity/pc_pb';
+import * as PCDTO from 'pkg/entity/dto/pc_pb';
 
-import { entity as pcpreferences } from 'pkg/entity/pc_preferences';
+import * as PCPreferences from 'pkg/entity/pc_preferences_pb';
 
-import { room as cell } from 'pkg/room/cell';
-import { dto as celldto } from 'pkg/room/dto/cell';
+import * as Cell from 'pkg/room/cell_pb';
+import * as CellDTO from 'pkg/room/dto/cell_pb';
 
-import { room as world } from 'pkg/room/world';
-import { dto as worlddto } from 'pkg/room/dto/world';
+import * as World from 'pkg/room/world_pb';
+import * as WorldDTO from 'pkg/room/dto/world_pb';
 
-import { Empty } from "google-protobuf/google/protobuf/empty";
-import { geometry } from 'pkg/geometry/geometry';
+import * as RTCDTO from 'pkg/rtc/dto/rtc_pb';
+
+import { Empty } from "pkg/pbtypes/empty_pb";
+
+import { Circle, Rect } from 'pkg/geometry/geometry_pb';
 
 const entitySpriteDepth = 42
 
@@ -63,10 +63,12 @@ enum Action {
   Hotkey15 = 16,
 };
 
+type valueof<T> = T[keyof T];
+
 type GraphicTarget = {
-  Type: ability.TargetType
+  Type: Ability.TargetType
   GroupID: string
-  Targets: Map<string, ability.Target>
+  Targets: Map<string, Ability.Target>
 }
 
 type GraphicEffect = {
@@ -75,22 +77,22 @@ type GraphicEffect = {
 }
 
 type GraphicAbility = {
-  A: ability.A
+  A: Ability.A
   // Targets by effect
   // Targets array define order in which target groups are defined
   Effects: Array<GraphicEffect>
 }
 
 type BodyEntity = {
-  E: entity.E
+  E: Entity.E
   Body: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
   Animations: Map<string, string>
-  Orientation: cell.Orientation
+  Orientation: Cell.Orientation
   Abilities: Map<string, GraphicAbility>
 }
 
 type GraphicEntity = {
-  E: entity.E
+  E: Entity.E
   Animations: Map<string, string>
   Direction: Phaser.Geom.Point
   Interpolation: number
@@ -119,7 +121,7 @@ function interpolateGraphicEntity(ge: GraphicEntity) {
 }
 
 type GraphicCell = {
-  Cell: cell.Cell
+  Cell: Cell.Cell
   Tilemap: Phaser.Tilemaps.Tilemap
   Objects: Map<string, Phaser.Physics.Arcade.StaticGroup>
   Colliders: Map<string, Phaser.Physics.Arcade.Collider>
@@ -129,19 +131,19 @@ type GraphicCell = {
 export class Game extends Scene {
 
   // Self
-  PC: pc.PC;
+  PC: PC.PC;
   Entity: BodyEntity;
   EntityID: string;
 
   // Cells & maps
-  Cells: Map<cell.Orientation, GraphicCell>
-  CellsByID: Map<string, cell.Orientation>
+  Cells: Map<Cell.Orientation, GraphicCell>
+  CellsByID: Map<string, Cell.Orientation>
   // Specific loader for cells
   CellLoader: Phaser.Loader.LoaderPlugin
   // Current world loaded
-  World: world.World
+  World: World.World
   // Client cell loading
-  Border: Map<cell.Orientation, number>
+  Border: Map<Cell.Orientation, number>
   // Background image
   Background: Phaser.GameObjects.TileSprite
   // Loading mutex
@@ -158,14 +160,14 @@ export class Game extends Scene {
   CurrentAnimationID: string | undefined
 
   // Abilities for entity
-  Abilities: Map<string, ability.A>
+  Abilities: Map<string, Ability.A>
 
   // Keys assignment
   Keys: Map<Action, Phaser.Input.Keyboard.Key>
 
   // Targets live variable
   Targeting: GraphicTarget | undefined
-  CastTargets: Map<string, cast.CastTarget>
+  CastTargets: Map<string, Cast.CastTarget>
 
   // Spritesheets already loaded
   SpriteSheets: Map<string, integer>
@@ -182,28 +184,32 @@ export class Game extends Scene {
 
   SendChannel: RTCDataChannel
 
-  APIClient: grpcapi.APIClient
+  APIClient: APIClient
 
-  CoreClient: grpccore.CoreClient
+  CoreClient: CoreClient
+
+  Metadata: grpc.Metadata
 
   constructor(config: string | Phaser.Types.Scenes.SettingsConfig) {
     super(config);
   }
 
-  init(p: pcdto.PC) {
-    this.APIClient = new grpcapi.APIClient('https://api.legacyfactory.com:8082', null)
-    this.CoreClient = new grpccore.CoreClient('https://core.legacyfactory.com:8083', null)
+  init(pc: PCDTO.PC) {
+    this.Metadata['token'] = this.registry.get('token')
 
-    this.PC = p.PC;
-    const e = p.Entity;
+    this.APIClient = new APIClient('https://api.legacyfactory.com:8082', null)
+    this.CoreClient = new CoreClient('https://core.legacyfactory.com:8083', null)
+
+    this.PC = pc.getPc() as PC.PC;
+    const e = pc.getEntity() as Entity.E;
     this.Entity = {
       E: e,
       Body: this.physics.add.sprite(0, 0, ''),
       Animations: new Map(),
-      Orientation: cell.Orientation.Down,
+      Orientation: Cell.Orientation.DOWN,
       Abilities: new Map()
     }
-    this.EntityID = ulid(this.Entity.E.ID)
+    this.EntityID = ulid(this.Entity.E.getId_asU8())
 
     this.Cells = new Map()
     this.CellsByID = new Map()
@@ -221,13 +227,13 @@ export class Game extends Scene {
 
     this.SpriteSheets = new Map()
 
-    this.World = new world.World()
+    this.World = new World.World()
 
     this.LoadMapMutex = new Mutex()
 
     const m = this.make.tilemap()
     this.Blank = {
-      Cell: new cell.Cell,
+      Cell: new Cell.Cell,
       Tilemap: m,
       Layers: new Map(),
       Colliders: new Map(),
@@ -264,21 +270,21 @@ export class Game extends Scene {
       console.log('channel send_entity opened')
       this.LoadMapMutex.waitForUnlock().then(() => {
         console.log('ticker send_entity start')
-        const id = ulid(this.Entity.E.ID)
+        const id = ulid(this.Entity.E.getId_asU8())
         this.SyncTimer = window.setInterval(() => {
 
-          const c = new cast.Cast()
+          const c = new Cast.Cast()
 
-          const pos = new geometry.Circle()
-          pos.X = this.Entity.E.X
-          pos.Y = this.Entity.E.Y
+          const pos = new Circle()
+          pos.setX(this.Entity.E.getX())
+          pos.setY(this.Entity.E.getY())
 
-          const target = new cast.CastTarget()
-          target.Circle = pos
+          const target = new Cast.CastTarget()
+          target.setCircle(pos)
 
-          c.Targets.set(id, target)
+          c.getTargetsMap().set(id, target)
           const now = Date.now()
-          c.At = now
+          c.setAt(now)
 
           this.SendChannel.send(c.serializeBinary())
 
@@ -294,7 +300,7 @@ export class Game extends Scene {
     re.onclose = () => { console.log('channel receive_entity closed') }
     re.onmessage = (m) => {
       console.log('message received on receive_entity')
-      const resp = entitydto.ListEntityResp.deserializeBinary(m.data)
+      const resp = EntityDTO.ListEntityResp.deserializeBinary(m.data)
 
       this.displayEntities(resp)
     }
@@ -305,14 +311,14 @@ export class Game extends Scene {
       .then(d => {
         local.setLocalDescription(d)
 
-        const req = new dtortc.ConnectReq()
-        const sdp = new dtortc.SDP()
-        sdp.Encoded = Buffer.from(JSON.stringify(d), 'binary').toString('base64')
-        req.SDP = sdp
-        req.PCID = this.PC.ID
-        req.WorldID = this.PC.WorldID
+        const req = new ConnectReq()
+        const sdp = new SDP()
+        sdp.setEncoded(Buffer.from(JSON.stringify(d), 'binary').toString('base64'))
+        req.setSdp(sdp)
+        req.setPcid(this.PC.getId_asU8())
+        req.setWorldid(this.PC.getWorldid_asU8())
 
-        this.coreConnect(req)
+        this.CoreClient.connect(req, this.Metadata)
           .then((resp) => {
             const answer = Buffer.from(resp.getEncoded(), 'base64').toString('ascii')
             local.setRemoteDescription(JSON.parse(answer))
@@ -321,16 +327,18 @@ export class Game extends Scene {
           })
           .then(() => {
             // receive ICE
-            this.receiveICE((candidate) => {
-              const ic = Buffer.from(candidate.getEncoded(), 'base64').toString('ascii')
+            const req = new Empty()
+            const stream = this.CoreClient.receiveICE(req, this.Metadata)
+            stream.on("data",
+              (candidate) => {
+                const ic = Buffer.from(candidate.getEncoded(), 'base64').toString('ascii')
 
-              console.log('ice candidate received from signal', ic)
+                console.log('ice candidate received from signal', ic)
 
-              local.addIceCandidate(JSON.parse(ic))
-            })
+                local.addIceCandidate(JSON.parse(ic))
+              })
 
             // send ICE
-            const send = this.sendICE()
             local.onicecandidate = (ic) => {
               if (!ic.candidate) {
                 return
@@ -338,9 +346,9 @@ export class Game extends Scene {
 
               console.log('ice candidate received', ic.candidate)
 
-              const req = new dtortc.ICECandidate()
-              req.Encoded = Buffer.from(JSON.stringify(ic.candidate)).toString('base64')
-              send.send(req)
+              const req = new ICECandidate()
+              req.setEncoded(Buffer.from(JSON.stringify(ic.candidate)).toString('base64'))
+              this.CoreClient.sendICE(req, this.Metadata)
 
               console.log('ice candidate sent to signal', ic.candidate)
             }
@@ -370,7 +378,7 @@ export class Game extends Scene {
     this.createUI()
     this.applyPCPreferences()
 
-    this.Loading = this.Entity.E.CellID
+    this.Loading = this.Entity.E.getCellid_asU8()
 
     // Load world & cell sync
     // Connect for entity send/receive
@@ -379,23 +387,20 @@ export class Game extends Scene {
         return this.LoadMapMutex.waitForUnlock()
       })
       .then(() => {
-        return this.listWorld((() => {
-          const req = new worlddto.ListWorldReq()
+        const req = new WorldDTO.ListWorldReq()
 
-          req.IDs = [this.PC.WorldID]
-          req.Size = 1
-
-          return req
-        })())
+        req.setIdsList([this.PC.getWorldid_asU8()])
+        req.setSize(1)
+        return this.APIClient.listWorld(req, this.Metadata)
       })
-      .then((ws: worlddto.ListWorldResp) => {
-        if (ws.Worlds.length != 1) {
+      .then((ws: WorldDTO.ListWorldResp) => {
+        if (ws.getWorldsList().length != 1) {
           console.log('failed to load world')
         } else {
-          this.World = ws.Worlds[0]
+          this.World = ws.getWorldsList()[0]
         }
 
-        return this.loadMap(cell.Orientation.None)
+        return this.loadMap(Cell.Orientation.NONE)
       }).then(() => {
         // post first loading launch
         // this.Cursors = this.input.keyboard!.createCursorKeys();
@@ -490,12 +495,12 @@ export class Game extends Scene {
 
     const abilityID = parse(abilityIDStr)
 
-    const c = new cast.Cast()
+    const c = new Cast.Cast()
 
-    c.AbilityID = abilityID
+    c.setAbilityid(abilityID)
 
     // overrided, used to bypass parse error
-    c.ID = abilityID
+    c.setId(abilityID)
 
     const la = this.Entity.Abilities.get(abilityIDStr)
 
@@ -530,7 +535,7 @@ export class Game extends Scene {
           // assign randomly and depile current cast targets
           const ct = this.CastTargets.entries().next().value
           this.CastTargets.delete(ct[0])
-          c.Targets.set(key, ct[1])
+          c.getTargetsMap().set(key, ct[1])
         })
       }
     }
@@ -540,24 +545,24 @@ export class Game extends Scene {
     return key.once('down', () => { this.prepareAbility(key, a) })
   }
 
-  launchAbility(c: cast.Cast) {
-    const ab = this.Abilities.get(ulid(c.ID))
+  launchAbility(c: Cast.Cast) {
+    const ab = this.Abilities.get(ulid(c.getAbilityid_asU8()))
     if (!ab) {
-      console.log('ability not found', ulid(c.ID))
+      console.log('ability not found', ulid(c.getAbilityid_asU8()))
       return
     }
 
-    const la = this.Entity.Abilities.get(ulid(c.ID))
+    const la = this.Entity.Abilities.get(ulid(c.getAbilityid_asU8()))
     if (!la) {
       return
     }
 
     const now = Date.now()
-    c.At = now
+    c.setAt(now)
 
     // Play cast animation on entity
     // this.Entity.Body.body.setVelocity(0)
-    // this.Entity.E.AnimationID =parse(animationID)
+    // this.Entity.E.setAnimationid(parse(animationID))
     // const duplicateID = this.Entity.Animations.get(animationID)
     // if (duplicateID) {
     // 	this.Entity?.Body?.play(duplicateID, true)
@@ -568,63 +573,63 @@ export class Game extends Scene {
     for (const e of la.Effects) {
       for (const t of e.Targets) {
         switch (t.Type) {
-          case ability.TargetType.NoneTarget: { break }
-          case ability.TargetType.Self: { break }
-          case ability.TargetType.Ally: {
+          case Ability.TargetType.NONETARGET: { break }
+          case Ability.TargetType.SELF: { break }
+          case Ability.TargetType.ALLY: {
             t.Targets.forEach((_, id) => {
-              const target = c.Targets.get(id)
+              const target = c.getTargetsMap().get(id)
               if (!target) {
                 return
               }
-              const e = this.Entities.get(ulid(target.ID))
+              const e = this.Entities.get(ulid(target.getId_asU8()))
               if (!e) {
                 return
               }
 
-              this.playCastAnimation(ulid(ab.Animation!), e.E.X, e.E.Y)
+              this.playCastAnimation(ulid(ab.getAnimation_asU8()!), e.E.getX(), e.E.getY())
             })
             break
           }
-          case ability.TargetType.Foe: {
+          case Ability.TargetType.FOE: {
             t.Targets.forEach((_, id) => {
-              const target = c.Targets.get(id)
+              const target = c.getTargetsMap().get(id)
               if (!target) {
                 return
               }
-              const e = this.Entities.get(ulid(target.ID))
+              const e = this.Entities.get(ulid(target.getId_asU8()))
               if (!e) {
                 return
               }
 
-              this.playCastAnimation(ulid(ab.Animation!), e.E.X, e.E.Y)
+              this.playCastAnimation(ulid(ab.getAnimation_asU8()!), e.E.getX(), e.E.getY())
             })
             break
           }
-          case ability.TargetType.Rect: {
+          case Ability.TargetType.RECT: {
             t.Targets.forEach((_, id) => {
-              const target = c.Targets.get(id)
+              const target = c.getTargetsMap().get(id)
               if (!target) {
                 return
               }
 
-              const x = target.Rect?.X!
-              const y = target.Rect?.Y!
+              const x = target.getRect()?.getX()!
+              const y = target.getRect()?.getY()!
 
-              this.playCastAnimation(ulid(ab.Animation!), x, y)
+              this.playCastAnimation(ulid(ab.getAnimation_asU8()!), x, y)
             })
             break
           }
-          case ability.TargetType.Circle: {
+          case Ability.TargetType.CIRCLE: {
             t.Targets.forEach((_, id) => {
-              const target = c.Targets.get(id)
+              const target = c.getTargetsMap().get(id)
               if (!target) {
                 return
               }
 
-              const x = target.Circle?.X!
-              const y = target.Circle?.Y!
+              const x = target.getCircle()?.getX()!
+              const y = target.getCircle()?.getY()!
 
-              this.playCastAnimation(ulid(ab.Animation!), x, y)
+              this.playCastAnimation(ulid(ab.getAnimation_asU8()!), x, y)
             })
             break
           }
@@ -663,34 +668,34 @@ export class Game extends Scene {
     // this.input.setDefaultCursor
 
     switch (gt.Type) {
-      case ability.TargetType.NoneTarget: { break }
-      case ability.TargetType.Self: {
-        const ct = new cast.CastTarget()
-        ct.ID = this.EntityID
+      case Ability.TargetType.NONETARGET: { break }
+      case Ability.TargetType.SELF: {
+        const ct = new Cast.CastTarget()
+        ct.setId(this.EntityID)
         this.CastTargets.set(this.EntityID, ct)
 
         // instantly returns instead of waiting confirmation
         return true
         // break
       }
-      case ability.TargetType.Ally:
-      case ability.TargetType.Foe: {
+      case Ability.TargetType.ALLY:
+      case Ability.TargetType.FOE: {
         // allies and foes are already on over targeting at creation
         // and enabled using this.Targeting set above
         break
       }
-      case ability.TargetType.Rect: {
+      case Ability.TargetType.RECT: {
         let n = 0
         const target = this.Targeting?.Targets.entries().next().value
 
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-          const ct = new cast.CastTarget()
-          const rect = new geometry.Rect()
-          rect.X = Math.round(pointer.worldX)
-          rect.Y = Math.round(pointer.worldY)
-          rect.Width = target[1].getWidth()
-          rect.Height = target[1].getHeight()
-          ct.Rect = rect
+          const ct = new Cast.CastTarget()
+          const rect = new Rect()
+          rect.setX(Math.round(pointer.worldX))
+          rect.setY(Math.round(pointer.worldY))
+          rect.setWidth(target[1].getWidth())
+          rect.setHeight(target[1].getHeight())
+          ct.setRect(rect)
           // ct.setCellid()
           this.CastTargets.set((n++).toString(), ct)
           if (n >= this.Targeting?.Targets.size!) {
@@ -701,18 +706,18 @@ export class Game extends Scene {
         })
         break
       }
-      case ability.TargetType.Circle: {
+      case Ability.TargetType.CIRCLE: {
         let n = 0
         const target = this.Targeting?.Targets.entries().next().value
 
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
           // add new circle
-          const ct = new cast.CastTarget()
-          const circle = new geometry.Circle()
-          circle.X = Math.round(pointer.worldX)
-          circle.Y = Math.round(pointer.worldY)
-          circle.Radius = target[1].getRadius()
-          ct.Circle = circle
+          const ct = new Cast.CastTarget()
+          const circle = new Circle()
+          circle.setX(Math.round(pointer.worldX))
+          circle.setY(Math.round(pointer.worldY))
+          circle.setRadius(target[1].getRadius())
+          ct.setCircle(circle)
           // ct.setCellid()
           this.CastTargets.set((n++).toString(), ct)
           if (n >= this.Targeting?.Targets.size!) {
@@ -749,14 +754,14 @@ export class Game extends Scene {
 
       const we = this.add.dom(200, 300).createFromCache('window-entity').setScrollFactor(0).setVisible(false)
 
-      document.getElementById('window-entity-name')!.innerHTML += this.Entity.E.Name
-      document.getElementById('window-entity-damage')!.innerHTML += this.Entity.E.Stats!.Damage.toString()
-      document.getElementById('window-entity-defense')!.innerHTML += this.Entity.E.Stats!.Defense.toString()
-      document.getElementById('window-entity-move-speed')!.innerHTML += this.Entity.E.Stats!.MoveSpeed.toString()
-      document.getElementById('window-entity-cast-speed')!.innerHTML += this.Entity.E.Stats!.CastSpeed.toString()
-      document.getElementById('window-entity-cooldown-reduction')!.innerHTML += this.Entity.E.Stats!.CooldownReduction.toString()
-      document.getElementById('window-entity-max-hp')!.innerHTML += this.Entity.E.Stats!.MaxHP.toString()
-      document.getElementById('window-entity-max-mp')!.innerHTML += this.Entity.E.Stats!.MaxMP.toString()
+      document.getElementById('window-entity-name')!.innerHTML += this.Entity.E.getName()
+      document.getElementById('window-entity-damage')!.innerHTML += this.Entity.E.getStats()!.getDamage().toString()
+      document.getElementById('window-entity-defense')!.innerHTML += this.Entity.E.getStats()!.getDefense().toString()
+      document.getElementById('window-entity-move-speed')!.innerHTML += this.Entity.E.getStats()!.getMovespeed().toString()
+      document.getElementById('window-entity-cast-speed')!.innerHTML += this.Entity.E.getStats()!.getCastspeed().toString()
+      document.getElementById('window-entity-cooldown-reduction')!.innerHTML += this.Entity.E.getStats()!.getCooldownreduction().toString()
+      document.getElementById('window-entity-max-hp')!.innerHTML += this.Entity.E.getStats()!.getMaxhp().toString()
+      document.getElementById('window-entity-max-mp')!.innerHTML += this.Entity.E.getStats()!.getMaxmp().toString()
 
       we.setVisible(true)
     })
@@ -774,10 +779,10 @@ export class Game extends Scene {
       const table = document.getElementById('window-ability-table')!
       const line = this.cache.html.get('window-ability-line') as string
       this.Abilities.forEach((ab, id) => {
-        const iconID = ulid(ab.Icon)
+        const iconID = ulid(ab.getIcon_asU8())
 
         const tmp = document.createElement('template')
-        tmp.innerHTML = line.replace('{{icon}}', iconID).replace('{{name}}', ab.Name).replace('{{id}}', id)
+        tmp.innerHTML = line.replace('{{icon}}', iconID).replace('{{name}}', ab.getName()).replace('{{id}}', id)
         const li = tmp.content.firstChild as Node
         table.appendChild(li)
 
@@ -844,9 +849,9 @@ export class Game extends Scene {
   }
 
   applyPCPreferences() {
-    this.getPCPreferences(this.PC).
-      then((result: pcpreferences.PCPreferences) => {
-        result.AbilityHotbars.forEach((abilityID: Uint8Array, hotbar: string) => {
+    this.APIClient.getPCPreferences(this.PC, this.Metadata).
+      then((result: PCPreferences.PCPreferences) => {
+        result.getAbilityhotbarsMap().forEach((abilityID: Uint8Array, hotbar: string) => {
           const target = document.getElementById(hotbar)
           if (!target) {
             return
@@ -855,7 +860,7 @@ export class Game extends Scene {
           const icon = document.createElement('img')
 
           const id = ulid(abilityID)
-          const iconID = this.Abilities.get(id)?.Icon
+          const iconID = this.Abilities.get(id)?.getIcon_asU8()
           icon.src = 'img/assets/' + iconID + '.png'
           icon.id = target.id + '-icon'
           icon.dataset['abilityID'] = id
@@ -893,42 +898,42 @@ export class Game extends Scene {
     if (this.Keys.get(Action.Up)?.isDown) {
       animationID = this.Entity.Animations.get('walk_up')
       this.Entity.Body.body.setVelocityY(-speed)
-      this.Entity.Orientation = cell.Orientation.Up
+      this.Entity.Orientation = Cell.Orientation.UP
     } else if (this.Keys.get(Action.Down)?.isDown) {
       animationID = this.Entity.Animations.get('walk_down')
       this.Entity.Body.body.setVelocityY(speed)
-      this.Entity.Orientation = cell.Orientation.Down
+      this.Entity.Orientation = Cell.Orientation.DOWN
     }
 
     if (this.Keys.get(Action.Right)?.isDown) {
       animationID = this.Entity.Animations.get('walk_right')
       this.Entity.Body.body.setVelocityX(speed)
-      this.Entity.Orientation = cell.Orientation.Right
+      this.Entity.Orientation = Cell.Orientation.RIGHT
     } else if (this.Keys.get(Action.Left)?.isDown) {
       animationID = this.Entity.Animations.get('walk_left')
       this.Entity.Body.body.setVelocityX(-speed)
-      this.Entity.Orientation = cell.Orientation.Left
+      this.Entity.Orientation = Cell.Orientation.LEFT
     }
 
     if (!animationID) {
       switch (this.Entity.Orientation) {
-        case cell.Orientation.Up:
+        case Cell.Orientation.UP:
           animationID = this.Entity.Animations.get('idle_up')
           break
-        case cell.Orientation.Right:
+        case Cell.Orientation.RIGHT:
           animationID = this.Entity.Animations.get('idle_right')
           break
-        case cell.Orientation.Down:
+        case Cell.Orientation.DOWN:
           animationID = this.Entity.Animations.get('idle_down')
           break
-        case cell.Orientation.Left:
+        case Cell.Orientation.LEFT:
           animationID = this.Entity.Animations.get('idle_left')
           break
       }
     }
 
     if (animationID) {
-      this.Entity.E.AnimationID = parse(animationID)
+      this.Entity.E.setAnimationid(parse(animationID))
 
       const duplicateID = this.Entity.Animations.get(animationID)
       if (duplicateID) {
@@ -951,47 +956,47 @@ export class Game extends Scene {
     this.updateBodyEntity()
     this.updateBackground()
 
-    let o: cell.Orientation = cell.Orientation.None
+    let o: Cell.Orientation = Cell.Orientation.NONE
     const x = this.Entity.Body.body.x
     const y = this.Entity.Body.body.y
-    const up = this.Border.get(cell.Orientation.Up)!
-    const right = this.Border.get(cell.Orientation.Right)!
-    const down = this.Border.get(cell.Orientation.Down)!
-    const left = this.Border.get(cell.Orientation.Left)!
+    const up = this.Border.get(Cell.Orientation.UP)!
+    const right = this.Border.get(Cell.Orientation.RIGHT)!
+    const down = this.Border.get(Cell.Orientation.DOWN)!
+    const left = this.Border.get(Cell.Orientation.LEFT)!
 
     if (y < up) {
       if (x < left) {
-        o = cell.Orientation.UpLeft
+        o = Cell.Orientation.UPLEFT
       } else if (x < right) {
-        o = cell.Orientation.Up
+        o = Cell.Orientation.UP
       } else {
-        o = cell.Orientation.UpRight
+        o = Cell.Orientation.UPRIGHT
       }
     } else if (y < down) {
       if (x < left) {
-        o = cell.Orientation.Left
+        o = Cell.Orientation.LEFT
       } else if (x < right) {
-        o = cell.Orientation.None
+        o = Cell.Orientation.NONE
       } else {
-        o = cell.Orientation.Right
+        o = Cell.Orientation.RIGHT
       }
     } else {
       if (x < left) {
-        o = cell.Orientation.DownLeft
+        o = Cell.Orientation.DOWNLEFT
       } else if (x < right) {
-        o = cell.Orientation.Down
+        o = Cell.Orientation.DOWN
       } else {
-        o = cell.Orientation.DownRight
+        o = Cell.Orientation.DOWNRIGHT
       }
     }
 
-    if (o != cell.Orientation.None && this.Loading == undefined) {
-      const id = this.Cells.get(o)?.Cell.ID
+    if (o != Cell.Orientation.NONE && this.Loading == undefined) {
+      const id = this.Cells.get(o)?.Cell.getId_asU8()
       this.Loading = id
 
 
       if (id) {
-        this.Entity.E.CellID = id
+        this.Entity.E.setCellid(id)
 
         this.loadMap(o).then(() => {
           console.log('loaded cell')
@@ -1002,12 +1007,12 @@ export class Game extends Scene {
     }
 
     // Move entity
-    this.Entity.E.X = Math.round(x)
-    this.Entity.E.Y = Math.round(y)
+    this.Entity.E.setX(Math.round(x))
+    this.Entity.E.setY(Math.round(y))
 
     this.Entities.forEach((e: GraphicEntity) => {
       // self reconciliation
-      if (ulid(e.E.ID) == ulid(this.Entity.E.ID)) {
+      if (ulid(e.E.getId_asU8()) == ulid(this.Entity.E.getId_asU8())) {
         return
       }
 
@@ -1018,7 +1023,7 @@ export class Game extends Scene {
       e?.Sprite.setX(x)
       e?.Sprite.setY(y)
 
-      const animationID = e.Animations.get(ulid(e.E.AnimationID))
+      const animationID = e.Animations.get(ulid(e.E.getAnimationid_asU8()))
       if (animationID) {
         e?.Sprite.play(animationID, true)
       }
@@ -1026,46 +1031,43 @@ export class Game extends Scene {
   }
 
   // Orientation o uses preload surrounded cells
-  // cell.Orientation.None loads everything
-  async loadMap(o: cell.Orientation) {
+  // Cell.Orientation.NONE loads everything
+  async loadMap(o: Cell.Orientation) {
     // call current pc cell
-    return this.listCell((() => {
-      const req = new celldto.ListCellReq()
+    const req = new CellDTO.ListCellReq()
 
-      req.IDs = [this.Entity.E.CellID]
-
-      return req
-    })())
-      .then((cells: celldto.ListCellResp) => {
+    req.setIdsList([this.Entity.E.getCellid_asU8()])
+    return this.APIClient.listCell(req, this.Metadata)
+      .then((cells: CellDTO.ListCellResp) => {
         // load current pc cell
-        if (cells.Cells.length != 1) {
+        if (cells.getCellsList().length != 1) {
           throw new Error('failed to load cell')
         }
 
-        const c = cells.Cells[0]
-        const contig = c.Contiguous
+        const c = cells.getCellsList()[0]
+        const contig = c.getContiguousMap() as pbmap<number, Uint8Array>
 
         let newCellIDs: Uint8Array[] = []
         let deletedCells: GraphicCell[] = []
 
         switch (o) {
-          case cell.Orientation.None:
+          case Cell.Orientation.NONE:
             // assign new cells to load
             newCellIDs.push(
-              contig.get(cell.Orientation.Up)!,
-              contig.get(cell.Orientation.UpRight)!,
-              contig.get(cell.Orientation.Right)!,
-              contig.get(cell.Orientation.DownRight)!,
-              contig.get(cell.Orientation.Down)!,
-              contig.get(cell.Orientation.DownLeft)!,
-              contig.get(cell.Orientation.Left)!,
-              contig.get(cell.Orientation.UpLeft)!,
+              contig.get(Cell.Orientation.UP)!,
+              contig.get(Cell.Orientation.UPRIGHT)!,
+              contig.get(Cell.Orientation.RIGHT)!,
+              contig.get(Cell.Orientation.DOWNRIGHT)!,
+              contig.get(Cell.Orientation.DOWN)!,
+              contig.get(Cell.Orientation.DOWNLEFT)!,
+              contig.get(Cell.Orientation.LEFT)!,
+              contig.get(Cell.Orientation.UPLEFT)!,
             )
 
             // assign cells to delete
             // ...
             // create new blank graphic cell from loaded cell
-            this.Cells.set(cell.Orientation.None, {
+            this.Cells.set(Cell.Orientation.NONE, {
               Cell: c,
               Tilemap: this.Blank.Tilemap,
               Layers: this.Blank.Layers,
@@ -1073,239 +1075,239 @@ export class Game extends Scene {
               Objects: this.Blank.Objects
             })
 
-            this.Cells.delete(cell.Orientation.Up)
-            this.Cells.delete(cell.Orientation.UpRight)
-            this.Cells.delete(cell.Orientation.Right)
-            this.Cells.delete(cell.Orientation.DownRight)
-            this.Cells.delete(cell.Orientation.Down)
-            this.Cells.delete(cell.Orientation.DownLeft)
-            this.Cells.delete(cell.Orientation.Left)
-            this.Cells.delete(cell.Orientation.UpLeft)
+            this.Cells.delete(Cell.Orientation.UP)
+            this.Cells.delete(Cell.Orientation.UPRIGHT)
+            this.Cells.delete(Cell.Orientation.RIGHT)
+            this.Cells.delete(Cell.Orientation.DOWNRIGHT)
+            this.Cells.delete(Cell.Orientation.DOWN)
+            this.Cells.delete(Cell.Orientation.DOWNLEFT)
+            this.Cells.delete(Cell.Orientation.LEFT)
+            this.Cells.delete(Cell.Orientation.UPLEFT)
             break;
-          case cell.Orientation.Up:
+          case Cell.Orientation.UP:
             // assign new cells to load
             newCellIDs.push(
-              contig.get(cell.Orientation.UpLeft)!,
-              contig.get(cell.Orientation.Up)!,
-              contig.get(cell.Orientation.UpRight)!,
+              contig.get(Cell.Orientation.UPLEFT)!,
+              contig.get(Cell.Orientation.UP)!,
+              contig.get(Cell.Orientation.UPRIGHT)!,
             )
 
             // assign cells to delete
             deletedCells.push(
-              this.Cells.get(cell.Orientation.DownLeft)!,
-              this.Cells.get(cell.Orientation.Down)!,
-              this.Cells.get(cell.Orientation.DownRight)!,
+              this.Cells.get(Cell.Orientation.DOWNLEFT)!,
+              this.Cells.get(Cell.Orientation.DOWN)!,
+              this.Cells.get(Cell.Orientation.DOWNRIGHT)!,
             )
             // shift preloaded
-            this.Cells.set(cell.Orientation.DownLeft, this.Cells.get(cell.Orientation.Left)!)
-            this.Cells.set(cell.Orientation.Down, this.Cells.get(cell.Orientation.None)!)
-            this.Cells.set(cell.Orientation.DownRight, this.Cells.get(cell.Orientation.Right)!)
-            this.Cells.set(cell.Orientation.Left, this.Cells.get(cell.Orientation.UpLeft)!)
-            this.Cells.set(cell.Orientation.None, this.Cells.get(cell.Orientation.Up)!)
-            this.Cells.set(cell.Orientation.Right, this.Cells.get(cell.Orientation.UpRight)!)
-            this.Cells.delete(cell.Orientation.UpLeft)
-            this.Cells.delete(cell.Orientation.Up)
-            this.Cells.delete(cell.Orientation.UpRight)
+            this.Cells.set(Cell.Orientation.DOWNLEFT, this.Cells.get(Cell.Orientation.LEFT)!)
+            this.Cells.set(Cell.Orientation.DOWN, this.Cells.get(Cell.Orientation.NONE)!)
+            this.Cells.set(Cell.Orientation.DOWNRIGHT, this.Cells.get(Cell.Orientation.RIGHT)!)
+            this.Cells.set(Cell.Orientation.LEFT, this.Cells.get(Cell.Orientation.UPLEFT)!)
+            this.Cells.set(Cell.Orientation.NONE, this.Cells.get(Cell.Orientation.UP)!)
+            this.Cells.set(Cell.Orientation.RIGHT, this.Cells.get(Cell.Orientation.UPRIGHT)!)
+            this.Cells.delete(Cell.Orientation.UPLEFT)
+            this.Cells.delete(Cell.Orientation.UP)
+            this.Cells.delete(Cell.Orientation.UPRIGHT)
             break;
-          case cell.Orientation.UpRight:
+          case Cell.Orientation.UPRIGHT:
             // assign new cells to load
             newCellIDs.push(
-              contig.get(cell.Orientation.UpLeft)!,
-              contig.get(cell.Orientation.Up)!,
-              contig.get(cell.Orientation.UpRight)!,
-              contig.get(cell.Orientation.Right)!,
-              contig.get(cell.Orientation.DownRight)!,
+              contig.get(Cell.Orientation.UPLEFT)!,
+              contig.get(Cell.Orientation.UP)!,
+              contig.get(Cell.Orientation.UPRIGHT)!,
+              contig.get(Cell.Orientation.RIGHT)!,
+              contig.get(Cell.Orientation.DOWNRIGHT)!,
             )
 
             // assign cells to delete
             deletedCells.push(
-              this.Cells.get(cell.Orientation.UpLeft)!,
-              this.Cells.get(cell.Orientation.Left)!,
-              this.Cells.get(cell.Orientation.DownLeft)!,
-              this.Cells.get(cell.Orientation.Down)!,
-              this.Cells.get(cell.Orientation.DownRight)!,
+              this.Cells.get(Cell.Orientation.UPLEFT)!,
+              this.Cells.get(Cell.Orientation.LEFT)!,
+              this.Cells.get(Cell.Orientation.DOWNLEFT)!,
+              this.Cells.get(Cell.Orientation.DOWN)!,
+              this.Cells.get(Cell.Orientation.DOWNRIGHT)!,
             )
             // shift preloaded
-            this.Cells.set(cell.Orientation.Left, this.Cells.get(cell.Orientation.Up)!)
-            this.Cells.set(cell.Orientation.DownLeft, this.Cells.get(cell.Orientation.None)!)
-            this.Cells.set(cell.Orientation.Down, this.Cells.get(cell.Orientation.Right)!)
-            this.Cells.set(cell.Orientation.None, this.Cells.get(cell.Orientation.UpRight)!)
-            this.Cells.delete(cell.Orientation.UpLeft)
-            this.Cells.delete(cell.Orientation.Up)
-            this.Cells.delete(cell.Orientation.UpRight)
-            this.Cells.delete(cell.Orientation.Right)
-            this.Cells.delete(cell.Orientation.DownRight)
+            this.Cells.set(Cell.Orientation.LEFT, this.Cells.get(Cell.Orientation.UP)!)
+            this.Cells.set(Cell.Orientation.DOWNLEFT, this.Cells.get(Cell.Orientation.NONE)!)
+            this.Cells.set(Cell.Orientation.DOWN, this.Cells.get(Cell.Orientation.RIGHT)!)
+            this.Cells.set(Cell.Orientation.NONE, this.Cells.get(Cell.Orientation.UPRIGHT)!)
+            this.Cells.delete(Cell.Orientation.UPLEFT)
+            this.Cells.delete(Cell.Orientation.UP)
+            this.Cells.delete(Cell.Orientation.UPRIGHT)
+            this.Cells.delete(Cell.Orientation.RIGHT)
+            this.Cells.delete(Cell.Orientation.DOWNRIGHT)
             break;
-          case cell.Orientation.Right:
+          case Cell.Orientation.RIGHT:
             // assign new cells to load
             newCellIDs.push(
-              contig.get(cell.Orientation.UpRight)!,
-              contig.get(cell.Orientation.Right)!,
-              contig.get(cell.Orientation.DownRight)!
+              contig.get(Cell.Orientation.UPRIGHT)!,
+              contig.get(Cell.Orientation.RIGHT)!,
+              contig.get(Cell.Orientation.DOWNRIGHT)!
             )
 
             // assign cells to delete
             deletedCells.push(
-              this.Cells.get(cell.Orientation.UpLeft)!,
-              this.Cells.get(cell.Orientation.Left)!,
-              this.Cells.get(cell.Orientation.DownLeft)!,
+              this.Cells.get(Cell.Orientation.UPLEFT)!,
+              this.Cells.get(Cell.Orientation.LEFT)!,
+              this.Cells.get(Cell.Orientation.DOWNLEFT)!,
             )
             // shift preloaded
-            this.Cells.set(cell.Orientation.UpLeft, this.Cells.get(cell.Orientation.Up)!)
-            this.Cells.set(cell.Orientation.Left, this.Cells.get(cell.Orientation.None)!)
-            this.Cells.set(cell.Orientation.DownLeft, this.Cells.get(cell.Orientation.Down)!)
-            this.Cells.set(cell.Orientation.Up, this.Cells.get(cell.Orientation.UpRight)!)
-            this.Cells.set(cell.Orientation.None, this.Cells.get(cell.Orientation.Right)!)
-            this.Cells.set(cell.Orientation.Down, this.Cells.get(cell.Orientation.DownRight)!)
-            this.Cells.delete(cell.Orientation.UpRight)
-            this.Cells.delete(cell.Orientation.Right)
-            this.Cells.delete(cell.Orientation.DownRight)
+            this.Cells.set(Cell.Orientation.UPLEFT, this.Cells.get(Cell.Orientation.UP)!)
+            this.Cells.set(Cell.Orientation.LEFT, this.Cells.get(Cell.Orientation.NONE)!)
+            this.Cells.set(Cell.Orientation.DOWNLEFT, this.Cells.get(Cell.Orientation.DOWN)!)
+            this.Cells.set(Cell.Orientation.UP, this.Cells.get(Cell.Orientation.UPRIGHT)!)
+            this.Cells.set(Cell.Orientation.NONE, this.Cells.get(Cell.Orientation.RIGHT)!)
+            this.Cells.set(Cell.Orientation.DOWN, this.Cells.get(Cell.Orientation.DOWNRIGHT)!)
+            this.Cells.delete(Cell.Orientation.UPRIGHT)
+            this.Cells.delete(Cell.Orientation.RIGHT)
+            this.Cells.delete(Cell.Orientation.DOWNRIGHT)
             break;
-          case cell.Orientation.DownRight:
+          case Cell.Orientation.DOWNRIGHT:
             // assign new cells to load
             newCellIDs.push(
-              contig.get(cell.Orientation.DownLeft)!,
-              contig.get(cell.Orientation.Down)!,
-              contig.get(cell.Orientation.DownRight)!,
-              contig.get(cell.Orientation.Right)!,
-              contig.get(cell.Orientation.UpRight)!,
+              contig.get(Cell.Orientation.DOWNLEFT)!,
+              contig.get(Cell.Orientation.DOWN)!,
+              contig.get(Cell.Orientation.DOWNRIGHT)!,
+              contig.get(Cell.Orientation.RIGHT)!,
+              contig.get(Cell.Orientation.UPRIGHT)!,
             )
 
             // assign cells to delete
             deletedCells.push(
-              this.Cells.get(cell.Orientation.UpLeft)!,
-              this.Cells.get(cell.Orientation.Left)!,
-              this.Cells.get(cell.Orientation.DownLeft)!,
-              this.Cells.get(cell.Orientation.Up)!,
-              this.Cells.get(cell.Orientation.UpRight)!,
+              this.Cells.get(Cell.Orientation.UPLEFT)!,
+              this.Cells.get(Cell.Orientation.LEFT)!,
+              this.Cells.get(Cell.Orientation.DOWNLEFT)!,
+              this.Cells.get(Cell.Orientation.UP)!,
+              this.Cells.get(Cell.Orientation.UPRIGHT)!,
             )
             // shift preloaded
-            this.Cells.set(cell.Orientation.Left, this.Cells.get(cell.Orientation.Down)!)
-            this.Cells.set(cell.Orientation.UpLeft, this.Cells.get(cell.Orientation.None)!)
-            this.Cells.set(cell.Orientation.Up, this.Cells.get(cell.Orientation.Right)!)
-            this.Cells.set(cell.Orientation.None, this.Cells.get(cell.Orientation.DownRight)!)
-            this.Cells.delete(cell.Orientation.DownLeft)
-            this.Cells.delete(cell.Orientation.Down)
-            this.Cells.delete(cell.Orientation.DownRight)
-            this.Cells.delete(cell.Orientation.Right)
-            this.Cells.delete(cell.Orientation.UpRight)
+            this.Cells.set(Cell.Orientation.LEFT, this.Cells.get(Cell.Orientation.DOWN)!)
+            this.Cells.set(Cell.Orientation.UPLEFT, this.Cells.get(Cell.Orientation.NONE)!)
+            this.Cells.set(Cell.Orientation.UP, this.Cells.get(Cell.Orientation.RIGHT)!)
+            this.Cells.set(Cell.Orientation.NONE, this.Cells.get(Cell.Orientation.DOWNRIGHT)!)
+            this.Cells.delete(Cell.Orientation.DOWNLEFT)
+            this.Cells.delete(Cell.Orientation.DOWN)
+            this.Cells.delete(Cell.Orientation.DOWNRIGHT)
+            this.Cells.delete(Cell.Orientation.RIGHT)
+            this.Cells.delete(Cell.Orientation.UPRIGHT)
             break;
-          case cell.Orientation.Down:
+          case Cell.Orientation.DOWN:
             // assign new cells to load
             newCellIDs.push(
-              contig.get(cell.Orientation.DownLeft)!,
-              contig.get(cell.Orientation.Down)!,
-              contig.get(cell.Orientation.DownRight)!,
+              contig.get(Cell.Orientation.DOWNLEFT)!,
+              contig.get(Cell.Orientation.DOWN)!,
+              contig.get(Cell.Orientation.DOWNRIGHT)!,
             )
 
             // assign cells to delete
             deletedCells.push(
-              this.Cells.get(cell.Orientation.UpLeft)!,
-              this.Cells.get(cell.Orientation.Up)!,
-              this.Cells.get(cell.Orientation.UpRight)!,
+              this.Cells.get(Cell.Orientation.UPLEFT)!,
+              this.Cells.get(Cell.Orientation.UP)!,
+              this.Cells.get(Cell.Orientation.UPRIGHT)!,
             )
             // shift preloaded
-            this.Cells.set(cell.Orientation.UpLeft, this.Cells.get(cell.Orientation.Left)!)
-            this.Cells.set(cell.Orientation.Up, this.Cells.get(cell.Orientation.None)!)
-            this.Cells.set(cell.Orientation.UpRight, this.Cells.get(cell.Orientation.Right)!)
-            this.Cells.set(cell.Orientation.Left, this.Cells.get(cell.Orientation.DownLeft)!)
-            this.Cells.set(cell.Orientation.None, this.Cells.get(cell.Orientation.Down)!)
-            this.Cells.set(cell.Orientation.Right, this.Cells.get(cell.Orientation.DownRight)!)
-            this.Cells.delete(cell.Orientation.DownLeft)
-            this.Cells.delete(cell.Orientation.Down)
-            this.Cells.delete(cell.Orientation.DownRight)
+            this.Cells.set(Cell.Orientation.UPLEFT, this.Cells.get(Cell.Orientation.LEFT)!)
+            this.Cells.set(Cell.Orientation.UP, this.Cells.get(Cell.Orientation.NONE)!)
+            this.Cells.set(Cell.Orientation.UPRIGHT, this.Cells.get(Cell.Orientation.RIGHT)!)
+            this.Cells.set(Cell.Orientation.LEFT, this.Cells.get(Cell.Orientation.DOWNLEFT)!)
+            this.Cells.set(Cell.Orientation.NONE, this.Cells.get(Cell.Orientation.DOWN)!)
+            this.Cells.set(Cell.Orientation.RIGHT, this.Cells.get(Cell.Orientation.DOWNRIGHT)!)
+            this.Cells.delete(Cell.Orientation.DOWNLEFT)
+            this.Cells.delete(Cell.Orientation.DOWN)
+            this.Cells.delete(Cell.Orientation.DOWNRIGHT)
             break;
-          case cell.Orientation.DownLeft:
+          case Cell.Orientation.DOWNLEFT:
             // assign new cells to load
             newCellIDs.push(
-              contig.get(cell.Orientation.DownRight)!,
-              contig.get(cell.Orientation.Down)!,
-              contig.get(cell.Orientation.DownLeft)!,
-              contig.get(cell.Orientation.Left)!,
-              contig.get(cell.Orientation.UpLeft)!,
+              contig.get(Cell.Orientation.DOWNRIGHT)!,
+              contig.get(Cell.Orientation.DOWN)!,
+              contig.get(Cell.Orientation.DOWNLEFT)!,
+              contig.get(Cell.Orientation.LEFT)!,
+              contig.get(Cell.Orientation.UPLEFT)!,
             )
 
             // assign cells to delete
             deletedCells.push(
-              this.Cells.get(cell.Orientation.UpLeft)!,
-              this.Cells.get(cell.Orientation.Up)!,
-              this.Cells.get(cell.Orientation.UpRight)!,
-              this.Cells.get(cell.Orientation.Right)!,
-              this.Cells.get(cell.Orientation.DownRight)!,
+              this.Cells.get(Cell.Orientation.UPLEFT)!,
+              this.Cells.get(Cell.Orientation.UP)!,
+              this.Cells.get(Cell.Orientation.UPRIGHT)!,
+              this.Cells.get(Cell.Orientation.RIGHT)!,
+              this.Cells.get(Cell.Orientation.DOWNRIGHT)!,
             )
             // shift preloaded
-            this.Cells.set(cell.Orientation.Right, this.Cells.get(cell.Orientation.Down)!)
-            this.Cells.set(cell.Orientation.UpRight, this.Cells.get(cell.Orientation.None)!)
-            this.Cells.set(cell.Orientation.Up, this.Cells.get(cell.Orientation.Left)!)
-            this.Cells.set(cell.Orientation.None, this.Cells.get(cell.Orientation.DownLeft)!)
-            this.Cells.delete(cell.Orientation.DownRight)
-            this.Cells.delete(cell.Orientation.Down)
-            this.Cells.delete(cell.Orientation.DownLeft)
-            this.Cells.delete(cell.Orientation.Left)
-            this.Cells.delete(cell.Orientation.UpLeft)
+            this.Cells.set(Cell.Orientation.RIGHT, this.Cells.get(Cell.Orientation.DOWN)!)
+            this.Cells.set(Cell.Orientation.UPRIGHT, this.Cells.get(Cell.Orientation.NONE)!)
+            this.Cells.set(Cell.Orientation.UP, this.Cells.get(Cell.Orientation.LEFT)!)
+            this.Cells.set(Cell.Orientation.NONE, this.Cells.get(Cell.Orientation.DOWNLEFT)!)
+            this.Cells.delete(Cell.Orientation.DOWNRIGHT)
+            this.Cells.delete(Cell.Orientation.DOWN)
+            this.Cells.delete(Cell.Orientation.DOWNLEFT)
+            this.Cells.delete(Cell.Orientation.LEFT)
+            this.Cells.delete(Cell.Orientation.UPLEFT)
             break;
-          case cell.Orientation.Left:
+          case Cell.Orientation.LEFT:
             // assign new cells to load
             newCellIDs.push(
-              contig.get(cell.Orientation.UpLeft)!,
-              contig.get(cell.Orientation.Left)!,
-              contig.get(cell.Orientation.DownLeft)!,
+              contig.get(Cell.Orientation.UPLEFT)!,
+              contig.get(Cell.Orientation.LEFT)!,
+              contig.get(Cell.Orientation.DOWNLEFT)!,
             )
 
             // assign cells to delete
             deletedCells.push(
-              this.Cells.get(cell.Orientation.UpRight)!,
-              this.Cells.get(cell.Orientation.Right)!,
-              this.Cells.get(cell.Orientation.DownRight)!,
+              this.Cells.get(Cell.Orientation.UPRIGHT)!,
+              this.Cells.get(Cell.Orientation.RIGHT)!,
+              this.Cells.get(Cell.Orientation.DOWNRIGHT)!,
             )
             // shift preloaded
-            this.Cells.set(cell.Orientation.UpRight, this.Cells.get(cell.Orientation.Up)!)
-            this.Cells.set(cell.Orientation.Right, this.Cells.get(cell.Orientation.None)!)
-            this.Cells.set(cell.Orientation.DownRight, this.Cells.get(cell.Orientation.Down)!)
-            this.Cells.set(cell.Orientation.Up, this.Cells.get(cell.Orientation.UpLeft)!)
-            this.Cells.set(cell.Orientation.None, this.Cells.get(cell.Orientation.Left)!)
-            this.Cells.set(cell.Orientation.Down, this.Cells.get(cell.Orientation.DownLeft)!)
-            this.Cells.delete(cell.Orientation.UpLeft)
-            this.Cells.delete(cell.Orientation.Left)
-            this.Cells.delete(cell.Orientation.DownLeft)
+            this.Cells.set(Cell.Orientation.UPRIGHT, this.Cells.get(Cell.Orientation.UP)!)
+            this.Cells.set(Cell.Orientation.RIGHT, this.Cells.get(Cell.Orientation.NONE)!)
+            this.Cells.set(Cell.Orientation.DOWNRIGHT, this.Cells.get(Cell.Orientation.DOWN)!)
+            this.Cells.set(Cell.Orientation.UP, this.Cells.get(Cell.Orientation.UPLEFT)!)
+            this.Cells.set(Cell.Orientation.NONE, this.Cells.get(Cell.Orientation.LEFT)!)
+            this.Cells.set(Cell.Orientation.DOWN, this.Cells.get(Cell.Orientation.DOWNLEFT)!)
+            this.Cells.delete(Cell.Orientation.UPLEFT)
+            this.Cells.delete(Cell.Orientation.LEFT)
+            this.Cells.delete(Cell.Orientation.DOWNLEFT)
             break;
-          case cell.Orientation.UpLeft:
+          case Cell.Orientation.UPLEFT:
             // assign new cells to load
             newCellIDs.push(
-              contig.get(cell.Orientation.UpRight)!,
-              contig.get(cell.Orientation.Up)!,
-              contig.get(cell.Orientation.UpLeft)!,
-              contig.get(cell.Orientation.Left)!,
-              contig.get(cell.Orientation.DownLeft)!,
+              contig.get(Cell.Orientation.UPRIGHT)!,
+              contig.get(Cell.Orientation.UP)!,
+              contig.get(Cell.Orientation.UPLEFT)!,
+              contig.get(Cell.Orientation.LEFT)!,
+              contig.get(Cell.Orientation.DOWNLEFT)!,
             )
 
             // assign cells to delete
             deletedCells.push(
-              this.Cells.get(cell.Orientation.UpRight)!,
-              this.Cells.get(cell.Orientation.Right)!,
-              this.Cells.get(cell.Orientation.DownRight)!,
-              this.Cells.get(cell.Orientation.Down)!,
-              this.Cells.get(cell.Orientation.DownLeft)!,
+              this.Cells.get(Cell.Orientation.UPRIGHT)!,
+              this.Cells.get(Cell.Orientation.RIGHT)!,
+              this.Cells.get(Cell.Orientation.DOWNRIGHT)!,
+              this.Cells.get(Cell.Orientation.DOWN)!,
+              this.Cells.get(Cell.Orientation.DOWNLEFT)!,
             )
             // shift preloaded
-            this.Cells.set(cell.Orientation.Right, this.Cells.get(cell.Orientation.Up)!)
-            this.Cells.set(cell.Orientation.DownRight, this.Cells.get(cell.Orientation.None)!)
-            this.Cells.set(cell.Orientation.Down, this.Cells.get(cell.Orientation.Left)!)
-            this.Cells.set(cell.Orientation.None, this.Cells.get(cell.Orientation.UpLeft)!)
-            this.Cells.delete(cell.Orientation.UpRight)
-            this.Cells.delete(cell.Orientation.Up)
-            this.Cells.delete(cell.Orientation.UpLeft)
-            this.Cells.delete(cell.Orientation.Left)
-            this.Cells.delete(cell.Orientation.DownLeft)
+            this.Cells.set(Cell.Orientation.RIGHT, this.Cells.get(Cell.Orientation.UP)!)
+            this.Cells.set(Cell.Orientation.DOWNRIGHT, this.Cells.get(Cell.Orientation.NONE)!)
+            this.Cells.set(Cell.Orientation.DOWN, this.Cells.get(Cell.Orientation.LEFT)!)
+            this.Cells.set(Cell.Orientation.NONE, this.Cells.get(Cell.Orientation.UPLEFT)!)
+            this.Cells.delete(Cell.Orientation.UPRIGHT)
+            this.Cells.delete(Cell.Orientation.UP)
+            this.Cells.delete(Cell.Orientation.UPLEFT)
+            this.Cells.delete(Cell.Orientation.LEFT)
+            this.Cells.delete(Cell.Orientation.DOWNLEFT)
             break;
         }
 
         // update border after none cell is up to date
-        const cn = this.Cells.get(cell.Orientation.None)!
-        this.Border.set(cell.Orientation.Up, cn.Cell.Y * this.World.CellHeight)
-        this.Border.set(cell.Orientation.Right, (cn.Cell.X + 1) * this.World.CellWidth)
-        this.Border.set(cell.Orientation.Down, (cn.Cell.Y + 1) * this.World.CellHeight)
-        this.Border.set(cell.Orientation.Left, cn.Cell.X * this.World.CellWidth)
+        const cn = this.Cells.get(Cell.Orientation.NONE)!
+        this.Border.set(Cell.Orientation.UP, cn.Cell.getY() * this.World.getCellheight())
+        this.Border.set(Cell.Orientation.RIGHT, (cn.Cell.getX() + 1) * this.World.getCellwidth())
+        this.Border.set(Cell.Orientation.DOWN, (cn.Cell.getY() + 1) * this.World.getCellheight())
+        this.Border.set(Cell.Orientation.LEFT, cn.Cell.getX() * this.World.getCellwidth())
 
         this.cleanCells(deletedCells).then(() => { console.log('finish to destroy unused tilemaps') })
 
@@ -1313,113 +1315,109 @@ export class Game extends Scene {
         this.CellsByID.clear()
         this.Cells.forEach((v, k) => {
           if (v) {
-            this.CellsByID.set(ulid(v.Cell.ID), k)
+            this.CellsByID.set(ulid(v.Cell.getId_asU8()), k)
           }
         })
 
-        return this.listCell((() => {
-          const req = new celldto.ListCellReq()
-
-          req.IDs = newCellIDs.filter((v) => (!(v == undefined)))
-
-          return req
-        })())
+        const req = new CellDTO.ListCellReq()
+        req.setIdsList(newCellIDs.filter((v) => (!(v == undefined))))
+        return this.APIClient.listCell(req, this.Metadata)
       })
-      .then((cells: celldto.ListCellResp) => {
+      .then((cells: CellDTO.ListCellResp) => {
 
         // map new loaded cells
-        const cellMap = new Map<string, cell.Cell>()
-        cells.Cells.map((v) => {
-          cellMap.set(ulid(v.ID), v)
+        const cellMap = new Map<string, Cell.Cell>()
+        cells.getCellsList().map((v) => {
+          cellMap.set(ulid(v.getId_asU8()), v)
         })
-        if (o == cell.Orientation.None) {
-          const c = this.Cells.get(cell.Orientation.None)!
-          cellMap.set(ulid(c?.Cell.ID), c.Cell)
+        if (o == Cell.Orientation.NONE) {
+          const c = this.Cells.get(Cell.Orientation.NONE)!
+          cellMap.set(ulid(c?.Cell.getId_asU8()), c.Cell)
         }
 
-        const contig = this.Cells.get(cell.Orientation.None)?.Cell.Contiguous!
-        if (o == cell.Orientation.None) {
-          contig.set(cell.Orientation.None, this.Cells.get(cell.Orientation.None)?.Cell.ID!)
+        const contig = this.Cells.get(Cell.Orientation.NONE)?.Cell.getContiguousMap() as pbmap<number, Uint8Array>
+        if (o == Cell.Orientation.NONE) {
+          contig.set(Cell.Orientation.NONE, this.Cells.get(Cell.Orientation.NONE)?.Cell.getId_asU8()!)
         }
 
         // must fit above loaded cells array
-        const loadedCells = new Array<cell.Orientation>()
+        const loadedCells = new Array<Cell.Orientation>()
         switch (o) {
-          case cell.Orientation.None:
+          case Cell.Orientation.NONE:
             loadedCells.push(
-              cell.Orientation.None,
-              cell.Orientation.Up,
-              cell.Orientation.UpRight,
-              cell.Orientation.Right,
-              cell.Orientation.DownRight,
-              cell.Orientation.Down,
-              cell.Orientation.DownLeft,
-              cell.Orientation.Left,
-              cell.Orientation.UpLeft
+              Cell.Orientation.NONE,
+              Cell.Orientation.UP,
+              Cell.Orientation.UPRIGHT,
+              Cell.Orientation.RIGHT,
+              Cell.Orientation.DOWNRIGHT,
+              Cell.Orientation.DOWN,
+              Cell.Orientation.DOWNLEFT,
+              Cell.Orientation.LEFT,
+              Cell.Orientation.UPLEFT
             )
             break;
-          case cell.Orientation.Up:
+          case Cell.Orientation.UP:
             loadedCells.push(
-              cell.Orientation.Up,
-              cell.Orientation.UpRight,
-              cell.Orientation.UpLeft
+              Cell.Orientation.UP,
+              Cell.Orientation.UPRIGHT,
+              Cell.Orientation.UPLEFT
             )
             break;
-          case cell.Orientation.UpRight:
+          case Cell.Orientation.UPRIGHT:
             loadedCells.push(
-              cell.Orientation.Up,
-              cell.Orientation.UpRight,
-              cell.Orientation.Right,
-              cell.Orientation.DownRight,
-              cell.Orientation.UpLeft
+              Cell.Orientation.UP,
+              Cell.Orientation.UPRIGHT,
+              Cell.Orientation.RIGHT,
+              Cell.Orientation.DOWNRIGHT,
+              Cell.Orientation.UPLEFT
             )
             break;
-          case cell.Orientation.Right:
+          case Cell.Orientation.RIGHT:
             loadedCells.push(
-              cell.Orientation.UpRight,
-              cell.Orientation.Right,
-              cell.Orientation.DownRight,
+              Cell.Orientation.UPRIGHT,
+              Cell.Orientation.RIGHT,
+              Cell.Orientation.DOWNRIGHT,
             )
             break;
-          case cell.Orientation.DownRight:
+          case Cell.Orientation.DOWNRIGHT:
             loadedCells.push(
-              cell.Orientation.UpRight,
-              cell.Orientation.Right,
-              cell.Orientation.DownRight,
-              cell.Orientation.Down,
-              cell.Orientation.DownLeft,
+              Cell.Orientation.UPRIGHT,
+              Cell.Orientation.RIGHT,
+              Cell.Orientation.DOWNRIGHT,
+              Cell.Orientation.DOWN,
+              Cell.Orientation.DOWNLEFT,
             )
             break;
-          case cell.Orientation.Down:
+          case Cell.Orientation.DOWN:
             loadedCells.push(
-              cell.Orientation.DownRight,
-              cell.Orientation.Down,
-              cell.Orientation.DownLeft,
+              Cell.Orientation.DOWNRIGHT,
+              Cell.Orientation.DOWN,
+              Cell.Orientation.DOWNLEFT,
             )
             break;
-          case cell.Orientation.DownLeft:
+          case Cell.Orientation.DOWNLEFT:
             loadedCells.push(
-              cell.Orientation.DownRight,
-              cell.Orientation.Down,
-              cell.Orientation.DownLeft,
-              cell.Orientation.Left,
-              cell.Orientation.UpLeft
+              Cell.Orientation.DOWNRIGHT,
+              Cell.Orientation.DOWN,
+              Cell.Orientation.DOWNLEFT,
+              Cell.Orientation.LEFT,
+              Cell.Orientation.UPLEFT
             )
             break;
-          case cell.Orientation.Left:
+          case Cell.Orientation.LEFT:
             loadedCells.push(
-              cell.Orientation.DownLeft,
-              cell.Orientation.Left,
-              cell.Orientation.UpLeft
+              Cell.Orientation.DOWNLEFT,
+              Cell.Orientation.LEFT,
+              Cell.Orientation.UPLEFT
             )
             break;
-          case cell.Orientation.UpLeft:
+          case Cell.Orientation.UPLEFT:
             loadedCells.push(
-              cell.Orientation.Up,
-              cell.Orientation.UpRight,
-              cell.Orientation.DownLeft,
-              cell.Orientation.Left,
-              cell.Orientation.UpLeft
+              Cell.Orientation.UP,
+              Cell.Orientation.UPRIGHT,
+              Cell.Orientation.DOWNLEFT,
+              Cell.Orientation.LEFT,
+              Cell.Orientation.UPLEFT
             )
             break;
         }
@@ -1449,7 +1447,7 @@ export class Game extends Scene {
             return
           }
 
-          const tm = ulid(c.Tilemap)
+          const tm = ulid(c.getTilemap_asU8())
           this.CellLoader.tilemapTiledJSON(tm, 'json/assets/' + tm + '.json')
 
           this.Cells.set(o, {
@@ -1459,13 +1457,13 @@ export class Game extends Scene {
             Colliders: new Map(),
             Objects: new Map(),
           })
-          this.CellsByID.set(ulid(c.ID), o)
+          this.CellsByID.set(ulid(c.getId_asU8()), o)
 
           const loadTM = () => {
             console.log('load_tilemap ', o)
 
             // create new cell
-            const map = this.make.tilemap({ key: tm, width: this.World.CellWidth, height: this.World.CellHeight })
+            const map = this.make.tilemap({ key: tm, width: this.World.getCellwidth(), height: this.World.getCellheight() })
 
             let sets = new Array<Phaser.Tilemaps.Tileset>()
 
@@ -1492,8 +1490,8 @@ export class Game extends Scene {
 
               cc.Tilemap = map
 
-              const x = c.X * this.World.CellWidth
-              const y = c.Y * this.World.CellHeight
+              const x = c.getX() * this.World.getCellwidth()
+              const y = c.getY() * this.World.getCellheight()
 
               map.layers.map((l) => {
                 const layer = map.createLayer(l.name, sets, x, y)
@@ -1573,7 +1571,7 @@ export class Game extends Scene {
   async cleanCells(cells: GraphicCell[]) {
     cells.map((c) => {
       if (c) {
-        console.log('clean cell', ulid(c.Cell.ID))
+        console.log('clean cell', ulid(c.Cell.getId_asU8()))
         c.Colliders.forEach((v, k) => {
           if (v.world) {
             v.destroy()
@@ -1631,21 +1629,21 @@ export class Game extends Scene {
     })
   }
 
-  async displayEntities(message: entitydto.ListEntityResp) {
+  async displayEntities(message: EntityDTO.ListEntityResp) {
     // load all entities
     let entityIDs: Uint8Array[] = []
 
-    message.Entities.forEach((entry: entity.E) => {
-      const id = ulid(entry.ID)
-      const meid = ulid(this.Entity.E.ID)
+    message.getEntitiesList().forEach((entry: Entity.E) => {
+      const id = ulid(entry.getId_asU8())
+      const meid = ulid(this.Entity.E.getId_asU8())
 
       // Set last tick to 0
       this.EntityLastTick.set(id, (this.EntityLastTick.get(id) || 0) + 1)
 
       if (this.Entities.has(id)) {
         // update state only
-        const x = entry.X //+ (this.Cells.get(this.CellsByID.get(ulid(entry.CellID))!)?.Cell.X! * this.World.getCellwidth())
-        const y = entry.Y //+ (this.Cells.get(this.CellsByID.get(ulid(entry.CellID))!)?.Cell.Y! * this.World.getCellheight())
+        const x = entry.getX() //+ (this.Cells.get(this.CellsByID.get(ulid(entry.getCellid_asU8()))!)?.Cell.getX()! * this.World.getCellwidth())
+        const y = entry.getY() //+ (this.Cells.get(this.CellsByID.get(ulid(entry.getCellid_asU8()))!)?.Cell.getY()! * this.World.getCellheight())
         updateGraphicEntity(this.Entities.get(id)!, x, y)
 
         this.Entities.get(id)!.E = entry
@@ -1655,20 +1653,20 @@ export class Game extends Scene {
         if (id == meid) {
           this.Entity.Body.destroy()
 
-          if (entry.Objects.length == 0) {
+          if (entry.getObjectsList().length == 0) {
             console.log('player entity has no collision body. set default')
-            this.Entity.Body = this.physics.add.sprite(entry.X, entry.Y, id).setSize(16, 16).setOffset(0, 0)
+            this.Entity.Body = this.physics.add.sprite(entry.getX(), entry.getY(), id).setSize(16, 16).setOffset(0, 0)
           } else {
             // pick first dynamic body from list to assign as main collision object
-            const obj = entry.Objects.at(0)!
-            this.Entity.Body = this.physics.add.sprite(entry.X, entry.Y, id).
-              setSize(obj.Width, obj.Height).
-              setOffset(obj.X, obj.Y)
+            const obj = entry.getObjectsList().at(0)!
+            this.Entity.Body = this.physics.add.sprite(entry.getX(), entry.getY(), id).
+              setSize(obj.getWidth(), obj.getHeight()).
+              setOffset(obj.getX(), obj.getY())
           }
 
           console.log('set body from server info')
-          this.Entity.E.X = entry.X
-          this.Entity.E.Y = entry.Y
+          this.Entity.E.setX(entry.getX())
+          this.Entity.E.setY(entry.getY())
 
           // local player sprite loaded, start camera follow
           this.cameras.main.startFollow(this.Entity.Body)
@@ -1677,7 +1675,7 @@ export class Game extends Scene {
           this.Entities.set(id, {
             E: entry,
             Animations: new Map(),
-            Direction: new Phaser.Geom.Point(entry.X, entry.Y),
+            Direction: new Phaser.Geom.Point(entry.getX(), entry.getY()),
             Interpolation: 0.00,
             Sprite: this.Entity.Body,
 
@@ -1685,16 +1683,16 @@ export class Game extends Scene {
             Colliders: new Map(),
           })
 
-          console.log("receive position from server:", this.Entity.E.X, this.Entity.E.Y)
+          console.log("receive position from server:", this.Entity.E.getX(), this.Entity.E.getY())
 
           // load own abilities
-          const req = new abilitydto.ListAbilityReq()
-          req.EntityID = this.Entity.E.ID
-          req.Size = 100
-          this.listAbility(req)
-            .then((resp: abilitydto.ListAbilityResp) => {
-              resp.Abilities.forEach((ab: ability.A) => {
-                const id = ulid(ab.ID)
+          const req = new AbilityDTO.ListAbilityReq()
+          req.setEntityid(this.Entity.E.getId_asU8())
+          req.setSize(100)
+          this.APIClient.listAbility(req, this.Metadata)
+            .then((resp: AbilityDTO.ListAbilityResp) => {
+              resp.getAbilitiesList().forEach((ab: Ability.A) => {
+                const id = ulid(ab.getId_asU8())
 
                 const ga: GraphicAbility = {
                   A: ab,
@@ -1703,18 +1701,18 @@ export class Game extends Scene {
 
                 // TODO: group targets in this.Entity.Ability
                 // Order to redefine ?
-                ab.Effects.forEach((e: ability.Effect, effectID: string) => {
+                ab.getEffectsMap().forEach((e: Ability.Effect, effectID: string) => {
                   const ge: GraphicEffect = {
                     ID: effectID,
                     Targets: new Array()
                   }
 
                   const targetsByGroup = new Map<string, GraphicTarget>()
-                  e.Targets.forEach((target: ability.Target, targetID: string) => {
-                    const groupID = ulid(target.GroupID)
+                  e.getTargetsMap().forEach((target: Ability.Target, targetID: string) => {
+                    const groupID = ulid(target.getGroupid_asU8())
                     if (!targetsByGroup.has(groupID)) {
                       targetsByGroup.set(groupID, {
-                        Type: target.Type,
+                        Type: target.getType(),
                         GroupID: groupID,
                         Targets: new Map()
                       })
@@ -1744,8 +1742,8 @@ export class Game extends Scene {
             })
             .catch((err) => { console.log(err) })
         } else if (this.Entities.has(meid)) {
-          const eid = ulid(entry.ID)
-          const sprite = this.add.sprite(entry.X, entry.Y, id)
+          const eid = ulid(entry.getId_asU8())
+          const sprite = this.add.sprite(entry.getX(), entry.getY(), id)
           sprite.setDepth(entitySpriteDepth - 1)
 
           // over targeting at sprite creation
@@ -1753,10 +1751,10 @@ export class Game extends Scene {
             if (this.Targeting &&
               this.Targeting.Targets.size < this.CastTargets.size &&
               !this.CastTargets.has(eid) &&
-              ((this.Targeting.Type == ability.TargetType.Foe && (entry.FactionID != this.Entity.E.FactionID)) ||
-                (this.Targeting.Type == ability.TargetType.Ally && (entry.FactionID == this.Entity.E.FactionID)))) {
-              const target = new cast.CastTarget()
-              target.ID = entry.ID
+              ((this.Targeting.Type == Ability.TargetType.FOE && (entry.getFactionid() != this.Entity.E.getFactionid())) ||
+                (this.Targeting.Type == Ability.TargetType.ALLY && (entry.getFactionid() == this.Entity.E.getFactionid())))) {
+              const target = new Cast.CastTarget()
+              target.setId(eid)
               this.CastTargets.set(eid, target)
             }
           })
@@ -1764,7 +1762,7 @@ export class Game extends Scene {
           let ge: GraphicEntity = {
             E: entry,
             Animations: new Map(),
-            Direction: new Phaser.Geom.Point(entry.X, entry.Y),
+            Direction: new Phaser.Geom.Point(entry.getX(), entry.getY()),
             Interpolation: 0.00, // default speed
             Sprite: sprite,
 
@@ -1772,20 +1770,20 @@ export class Game extends Scene {
             Colliders: new Map(),
           }
 
-          console.log('set entity: ', id, entry.X, entry.Y)
+          console.log('set entity: ', id, entry.getX(), entry.getY())
 
           // set collision objects
           // offset on layer position
-          const objects = entry.Objects
+          const objects = entry.getObjectsList()
           if (objects.length > 0) {
             const group = this.physics.add.staticGroup(objects.map((b) => {
-              console.log('set entity collision: ', id, b.X + ge.E.X, b.Y + ge.E.Y)
+              console.log('set entity collision: ', id, b.getX() + ge.E.getX(), b.getY() + ge.E.getY())
               return this.physics.add.
                 staticImage(
-                  ge.E.X + b.X,
-                  ge.E.Y + b.Y,
+                  ge.E.getX() + b.getX(),
+                  ge.E.getY() + b.getY(),
                   '').
-                setSize(b.Width, b.Height).
+                setSize(b.getWidth(), b.getHeight()).
                 setVisible(false).
                 setImmovable(true).
                 setOffset(0, 0)
@@ -1805,7 +1803,7 @@ export class Game extends Scene {
         }
 
         // load entity animations
-        entityIDs.push(entry.ID)
+        entityIDs.push(entry.getId_asU8())
       }
     })
 
@@ -1814,30 +1812,27 @@ export class Game extends Scene {
     }
 
     // load all animations
-    this.listAnimation((() => {
-      const req = new animationdto.ListAnimationReq()
+    const req = new AnimationDTO.ListAnimationReq()
 
-      req.setEntityidsList(entityIDs)
-      req.setSize(1000) // TODO: less random
-
-      return req
-    })())
-      .then((animations: animationdto.ListAnimationResp) => {
+    req.setEntityidsList(entityIDs)
+    req.setSize(1000) // TODO: less random
+    this.APIClient.listAnimation(req, this.Metadata)
+      .then((animations: AnimationDTO.ListAnimationResp) => {
         // load all current animations
-        animations.getAnimationsList().forEach((an: animation.Animation) => {
-          const id = ulid(an.ID)
-          const sheetID = ulid(an.SheetID)
-          const duplicateID = ulid(an.DuplicateID)
-          const entityID = ulid(an.EntityID)
+        animations.getAnimationsList().forEach((an: Animation.Animation) => {
+          const id = ulid(an.getId_asU8())
+          const sheetID = ulid(an.getSheetid_asU8())
+          const duplicateID = ulid(an.getDuplicateid_asU8())
+          const entityID = ulid(an.getEntityid_asU8())
 
           let anims = this.Entities.get(entityID)?.Animations!
 
           // loading self animations, change object + add named animations
-          if (entityID == ulid(this.Entity.E.ID)) {
+          if (entityID == ulid(this.Entity.E.getId_asU8())) {
             anims = this.Entity.Animations
 
-            console.log('set named animation:', an.Name, id)
-            anims.set(an.Name, id)
+            console.log('set named animation:', an.getName(), id)
+            anims.set(an.getName(), id)
           }
 
           // return if already loaded
@@ -1847,21 +1842,21 @@ export class Game extends Scene {
             return
           }
 
-          const loadAnim = (an: animation.Animation) => {
+          const loadAnim = (an: Animation.Animation) => {
             // Create animation
-            const seq = an.Sequence.length > 0 ? { frames: an.Sequence } : { start: an.Start, end: an.End };
+            const seq = an.getSequenceList().length > 0 ? { frames: an.getSequenceList() } : { start: an.getStart(), end: an.getEnd() };
             const newAnim = this.anims.create({
               key: duplicateID,
               frames: this.anims.generateFrameNumbers(
                 sheetID,
                 seq,
               ),
-              frameRate: an.Rate,
-              repeat: an.Repeat,
-              delay: an.Delay,
-              duration: an.Duration,
-              hideOnComplete: an.ShowAndHide,
-              showOnStart: an.ShowAndHide,
+              frameRate: an.getRate(),
+              repeat: an.getRepeat(),
+              delay: an.getDelay(),
+              duration: an.getDuration(),
+              hideOnComplete: an.getShowandhide(),
+              showOnStart: an.getShowandhide(),
             })
             if (!newAnim) {
               console.log('failed to load animation ' + duplicateID)
@@ -1879,12 +1874,12 @@ export class Game extends Scene {
             // load sprite sheet
 
             this.EntityLoader.spritesheet(sheetID, 'img/assets/' + sheetID + '.png', {
-              frameWidth: an.FrameWidth,
-              frameHeight: an.FrameHeight,
-              startFrame: an.FrameStart,
-              endFrame: an.FrameEnd,
-              margin: an.FrameMargin,
-              spacing: an.FrameSpacing,
+              frameWidth: an.getFramewidth(),
+              frameHeight: an.getFrameheight(),
+              startFrame: an.getFramestart(),
+              endFrame: an.getFrameend(),
+              margin: an.getFramemargin(),
+              spacing: an.getFramespacing(),
             }).once('filecomplete-spritesheet-' + sheetID, () => {
               // Add spritesheet to loaded
               this.SpriteSheets.set(sheetID, 1)
@@ -1898,151 +1893,120 @@ export class Game extends Scene {
       })
   }
 
-  // API Cell
-  listCell(req: celldto.ListCellReq) {
-    let md = new grpc.Metadata()
-    md.set('token', this.registry.get('token'))
+  // // API Cell
+  // listCell(req: CellDTO.ListCellReq) {
+  //   let md = new grpc.Metadata()
+  //   md.set('token', this.registry.get('token'))
 
-    const prom = new Promise<celldto.ListCellResp>((resolve, reject) => {
-      this.APIClient.ListCell(req, md, (res: celldto.ListCellResp) => { resolve(res) })
-    })
+  //   const prom = new Promise<CellDTO.ListCellResp>((resolve, reject) => {
+  //     this.APIClient.listCell(req, md, (res: CellDTO.ListCellResp) => { resolve(res) })
+  //   })
 
-    return prom
-  }
+  //   return prom
+  // }
 
-  // API Entity
-  listEntity(req: entitydto.ListEntityReq) {
-    let md = new grpc.Metadata()
-    md.set('token', this.registry.get('token'))
+  // // API Entity
+  // listEntity(req: EntityDTO.ListEntityReq) {
+  //   let md = new grpc.Metadata()
+  //   md.set('token', this.registry.get('token'))
 
-    const prom = new Promise<entitydto.ListEntityResp>((resolve, reject) => {
-      this.APIClient.ListEntity(req, md, (res: entitydto.ListEntityResp) => { resolve(res) })
-    });
+  //   const prom = new Promise<EntityDTO.ListEntityResp>((resolve, reject) => {
+  //     this.APIClient.listEntity(req, md, (res: EntityDTO.ListEntityResp) => { resolve(res) })
+  //   });
 
-    return prom
-  }
+  //   return prom
+  // }
 
-  // API Animation
-  listAnimation(req: animationdto.ListAnimationReq) {
-    let md = new grpc.Metadata()
-    md.set('token', this.registry.get('token'))
+  // // API Animation
+  // listAnimation(req: AnimationDTO.ListAnimationReq) {
+  //   let md = new grpc.Metadata()
+  //   md.set('token', this.registry.get('token'))
 
-    const prom = new Promise<animationdto.ListAnimationResp>((resolve, reject) => {
-      this.APIClient.ListAnimation(req, md, (res: animationdto.ListAnimationResp) => { resolve(res) })
-    });
+  //   const prom = new Promise<AnimationDTO.ListAnimationResp>((resolve, reject) => {
+  //     this.APIClient.listAnimation(req, md, (res: AnimationDTO.ListAnimationResp) => { resolve(res) })
+  //   });
 
-    return prom
-  }
+  //   return prom
+  // }
 
-  // API Ability
-  listAbility(req: abilitydto.ListAbilityReq) {
-    let md = new grpc.Metadata()
-    md.set('token', this.registry.get('token'))
+  // // API Ability
+  // listAbility(req: AbilityDTO.ListAbilityReq) {
+  //   let md = new grpc.Metadata()
+  //   md.set('token', this.registry.get('token'))
 
-    const prom = new Promise<abilitydto.ListAbilityResp>((resolve, reject) => {
-      this.APIClient.ListAbility(req, md, (res: abilitydto.ListAbilityResp) => { resolve(res) })
-    });
+  //   const prom = new Promise<AbilityDTO.ListAbilityResp>((resolve, reject) => {
+  //     this.APIClient.listAbility(req, md, (res: AbilityDTO.ListAbilityResp) => { resolve(res) })
+  //   });
 
-    return prom
-  }
+  //   return prom
+  // }
 
-  // API PC preferences
-  getPCPreferences(req: pc.PC) {
-    let md = new grpc.Metadata()
-    md.set('token', this.registry.get('token'))
+  // // API PC preferences
+  // getPCPreferences(req: PC.PC) {
+  //   let md = new grpc.Metadata()
+  //   md.set('token', this.registry.get('token'))
 
-    const prom = new Promise<pcpreferences.PCPreferences>((resolve, reject) => {
-      this.APIClient.GetPCPreferences(req, md, (res: pcpreferences.PCPreferences) => { resolve(res) })
-    });
+  //   const prom = new Promise<PCPreferences.PCPreferences>((resolve, reject) => {
+  //     this.APIClient.getPCPreferences(req, md, (res: PCPreferences.PCPreferences) => { resolve(res) })
+  //   });
 
-    return prom
-  }
+  //   return prom
+  // }
 
-  updatePCPreferences(req: pcpreferences.PCPreferences) {
-    let md = new grpc.Metadata()
-    md.set('token', this.registry.get('token'))
+  // updatePCPreferences(req: PCPreferences.PCPreferences) {
+  //   let md = new grpc.Metadata()
+  //   md.set('token', this.registry.get('token'))
 
-    const prom = new Promise<pcpreferences.PCPreferences>((resolve, reject) => {
-      this.APIClient.UpdatePCPreferences(req, md, (res: pcpreferences.PCPreferences) => { resolve(res) })
-    });
+  //   const prom = new Promise<PCPreferences.PCPreferences>((resolve, reject) => {
+  //     this.APIClient.updatePCPreferences(req, md, (res: PCPreferences.PCPreferences) => { resolve(res) })
+  //   });
 
-    return prom
-  }
+  //   return prom
+  // }
 
-  // API World
-  listWorld(req: worlddto.ListWorldReq) {
-    let md = new grpc.Metadata()
-    md.set('token', this.registry.get('token'))
+  // // API World
+  // listWorld(req: WorldDTO.ListWorldReq) {
+  //   let md = new grpc.Metadata()
+  //   md.set('token', this.registry.get('token'))
 
-    const prom = new Promise<worlddto.ListWorldResp>((resolve, reject) => {
-      this.APIClient.ListWorld(req, md, (res: worlddto.ListWorldResp) => { resolve(res) })
-    });
+  //   const prom = new Promise<WorldDTO.ListWorldResp>((resolve, reject) => {
+  //     this.APIClient.listWorld(req, md, (res: WorldDTO.ListWorldResp) => { resolve(res) })
+  //   });
 
-    return prom
-  }
+  //   return prom
+  // }
 
-  // RTC connection
-  sendICE(): grpc.Client<grpc.ProtobufMessage, grpc.ProtobufMessage> {
-    let client = grpc.client(Core.SendICE, {
-      host: 'https://core.legacyfactory.com:8083',
-    });
+  // // RTC connection
+  // sendICE(): grpc.Client<grpc.ProtobufMessage, grpc.ProtobufMessage> {
+  //   let md = new grpc.Metadata()
+  //   md.set('token', getCookie('access')!)
 
-    let md = new grpc.Metadata()
-    md.set('token', getCookie('access')!)
-    client.start(md)
+  //   let client = this.CoreClient.sendICE(md, (res: any) => {
+  //     console.log("received from send ice channel:", res)
+  //   })
+  //   // client.start(md)
 
-    return client
-  }
+  //   return client
+  // }
 
-  receiveICE(callback: (message: ICECandidate) => void) {
-    let md = new grpc.Metadata()
-    md.set('token', getCookie('access')!)
+  // receiveICE(callback: (message: RTCDTO.ICECandidate) => void) {
+  //   let md = new grpc.Metadata()
+  //   md.set('token', getCookie('access')!)
 
-    const prom = new Promise<string>((resolve, reject) => {
-      grpc.invoke(Core.ReceiveICE, {
-        metadata: md,
-        request: new Empty(),
-        host: 'https://core.legacyfactory.com:8083',
-        onMessage: (message: ICECandidate) => {
-          callback(message)
-        },
-        onEnd: (code: grpc.Code, message: string | undefined, trailers: grpc.Metadata) => {
-          if (code !== grpc.Code.OK || !message) {
-            reject('receive ICE:' + message)
+  //   const prom = new Promise<string>((resolve, reject) => {
+  //     const stream = this.CoreClient.receiveICE(new Empty(), md)
+  //     stream.on((message: RTCDTO.ICECandidate) => {
+  //       callback(message)
+  //     })
+  //   })
 
-            return
-          }
+  //   return prom
+  // }
 
-          resolve(message)
-        }
-      });
-    })
+  // coreConnect(req: RTCDTO.ConnectReq) {
+  //   let md = new grpc.Metadata()
+  //   md.set('token', getCookie('access')!)
 
-    return prom
-  }
-
-  coreConnect(req: ConnectReq) {
-    let md = new grpc.Metadata()
-    md.set('token', getCookie('access')!)
-
-    const prom = new Promise<SDP>((resolve, reject) => {
-      grpc.unary(Core.Connect, {
-        metadata: md,
-        request: req,
-        host: 'https://core.legacyfactory.com:8083',
-        onEnd: res => {
-          const { status, statusMessage, headers, message, trailers } = res;
-          if (status !== grpc.Code.OK || !message) {
-            reject(res)
-
-            return
-          }
-
-          resolve(message as SDP)
-        }
-      });
-    })
-
-    return prom
-  }
+  //   return this.CoreClient.connect(req, md)
+  // }
 }

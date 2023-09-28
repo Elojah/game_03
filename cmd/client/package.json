@@ -1,7 +1,9 @@
 {
 	"devDependencies": {
-		"@improbable-eng/grpc-web": "^0.13.0",
-		"google-protobuf": "^3.21.2",
+		"@grpc/grpc-js": "^1.9.4",
+		"@types/google-protobuf": "^3.15.7",
+		"grpc_tools_node_protoc_ts": "^5.3.3",
+		"grpc-web": "^1.4.2",
 		"phaser": "^3.60.0-beta.23",
 		"ts-loader": "^8.4.0",
 		"ts-protoc-gen": "^0.15.1-pre.a71b34e",
@@ -11,9 +13,11 @@
 		"webpack-cli": "^4.10.0"
 	},
 	"dependencies": {
-		"@types/google-protobuf": "^3.15.6",
+		"@types/google-protobuf": "^3.15.7",
 		"async-mutex": "^0.4.0",
 		"buffer": "^6.0.3",
+		"grpc-tools": "^1.12.4",
+		"protobufjs": "^7.2.5",
 		"protoc-gen-ts": "^0.8.6"
 	}
 }

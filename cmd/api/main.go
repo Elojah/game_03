@@ -158,13 +158,16 @@ func run(prog string, filename string) {
 
 	roomStore := &roomscylla.Store{Service: scyllas}
 	roomApp := roomapp.App{
-		Store:           roomStore,
-		StorePublic:     roomStore,
-		StoreCell:       roomStore,
-		StoreWorld:      roomStore,
-		StoreUser:       roomStore,
-		StoreWorldCell:  roomStore,
-		StoreWorldSpawn: roomStore,
+		Store:              roomStore,
+		StorePublic:        roomStore,
+		StoreCell:          roomStore,
+		StoreWorld:         roomStore,
+		StoreUser:          roomStore,
+		StoreWorldCell:     roomStore,
+		StoreWorldSpawn:    roomStore,
+		StoreWorldWaypoint: roomStore,
+
+		Entity: entityApp,
 	}
 
 	userStore := &userscylla.Store{Service: scyllas}

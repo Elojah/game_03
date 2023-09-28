@@ -11,9 +11,9 @@ option (gogoproto.goproto_unrecognized_all) = false;
 option (gogoproto.goproto_enum_prefix_all) = false;
 option (gogoproto.goproto_registration) = true;
 
-import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "github.com/elojah/game_03/pkg/gogoproto/gogo.proto";
 
-import "google/protobuf/empty.proto";
+import "github.com/elojah/game_03/pkg/pbtypes/empty.proto";
 
 import "github.com/elojah/game_03/pkg/ability/dto/ability.proto";
 import "github.com/elojah/game_03/pkg/entity/entity.proto";
@@ -31,8 +31,6 @@ import "github.com/elojah/game_03/pkg/room/dto/user.proto";
 import "github.com/elojah/game_03/pkg/room/dto/world.proto";
 import "github.com/elojah/game_03/pkg/twitch/dto/follow.proto";
 import "github.com/elojah/game_03/pkg/user/dto/session.proto";
-
-message _ {}
 
 service API {
 	// Session
@@ -75,5 +73,5 @@ service API {
     rpc ListFollow(dto.ListFollowReq) returns (dto.ListFollowResp);
 
     // Ping
-    rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
+    rpc Ping(pbtypes.Empty) returns (pbtypes.Empty);
 }

@@ -19,6 +19,7 @@ require (
 	github.com/oklog/ulid/v2 v2.1.0
 	github.com/panjf2000/ants/v2 v2.7.3
 	github.com/pion/webrtc/v3 v3.1.60
+	github.com/redis/rueidis v1.0.0
 	github.com/rs/zerolog v1.28.0
 	github.com/scylladb/gocqlx v1.5.0
 	github.com/xxtea/xxtea-go v0.0.0-20170828040851-35c4b17eecf6
@@ -61,7 +62,6 @@ require (
 	github.com/pion/transport/v2 v2.0.2 // indirect
 	github.com/pion/turn/v2 v2.1.0 // indirect
 	github.com/pion/udp/v2 v2.0.1 // indirect
-	github.com/redis/rueidis v1.0.0 // indirect
 	github.com/rs/cors v1.8.2 // indirect
 	github.com/scylladb/go-reflectx v1.0.1 // indirect
 	go.opencensus.io v0.23.0 // indirect
