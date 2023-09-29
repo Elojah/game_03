@@ -2,17 +2,18 @@ package app
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/elojah/game_03/pkg/entity"
 	"github.com/elojah/game_03/pkg/errors"
+	"github.com/elojah/game_03/pkg/faction"
 	"github.com/elojah/game_03/pkg/room"
 	"github.com/elojah/game_03/pkg/ulid"
 )
 
 const (
-	waypointsBatchSize = 100
+	factionBatchSize   = 10
+	waypointsBatchSize = 10
 )
 
 var _ room.App = (*App)(nil)
@@ -27,7 +28,8 @@ type App struct {
 	room.StoreWorldSpawn
 	room.StoreWorldWaypoint
 
-	Entity entity.App
+	Entity  entity.App
+	Faction faction.App
 }
 
 // PopulateWaypoints add spawns to all waypoints.
@@ -176,8 +178,6 @@ func (a App) CopyWorld(ctx context.Context, worldID ulid.ID) (ulid.ID, error) {
 				return nil, err
 			}
 
-			fmt.Println("found waypoints", len(wps))
-
 			for _, wp := range wps {
 				wp.CellID = c.ID
 				wp.WorldID = copy.ID
@@ -185,14 +185,31 @@ func (a App) CopyWorld(ctx context.Context, worldID ulid.ID) (ulid.ID, error) {
 				if err := a.InsertWorldWaypoint(ctx, wp); err != nil {
 					return nil, err
 				}
-			}
 
-			waypoints = append(waypoints, wps...)
+				waypoints = append(waypoints, wp)
+			}
 		}
 	}
 
 	if err := a.PopulateWaypoints(ctx, waypoints); err != nil {
 		return nil, err
+	}
+
+	// Fetch & Copy factions
+	factions, _, err := a.Faction.FetchMany(ctx, faction.Filter{
+		WorldID: worldID,
+		Size:    factionBatchSize,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	for _, fac := range factions {
+		fac.WorldID = copy.ID
+
+		if err := a.Faction.Insert(ctx, fac); err != nil {
+			return nil, err
+		}
 	}
 
 	return copy.ID, nil

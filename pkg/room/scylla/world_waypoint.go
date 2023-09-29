@@ -93,7 +93,10 @@ func (s Store) FetchWorldWaypoint(ctx context.Context, f room.FilterWorldWaypoin
 	return c, nil
 }
 
-func (s Store) FetchManyWorldWaypoint(ctx context.Context, f room.FilterWorldWaypoint) ([]room.WorldWaypoint, []byte, error) {
+func (s Store) FetchManyWorldWaypoint(
+	ctx context.Context,
+	f room.FilterWorldWaypoint,
+) ([]room.WorldWaypoint, []byte, error) {
 	if f.Size <= 0 {
 		return nil, nil, nil
 	}

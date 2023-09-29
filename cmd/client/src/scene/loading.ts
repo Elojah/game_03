@@ -23,7 +23,7 @@ export class Loading extends Scene {
   preload() { }
 
   create() {
-    this.Metadata['token'] = getCookie('access')!
+    this.Metadata = { 'token': getCookie('access')! }
 
     this.APIClient = new APIClient('https://api.legacyfactory.com:8082', null)
 

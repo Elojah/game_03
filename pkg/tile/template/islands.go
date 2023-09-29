@@ -147,10 +147,11 @@ func (t Islands) WorldWaypoints(r geometry.Rect, worldID ulid.ID, cellID ulid.ID
 		for j := r.X; j < r.X+int64(r.Width); j++ {
 			if t.waypoints[i][j] {
 				result = append(result, room.WorldWaypoint{
-					X:       j * (int64(pixelScale) / gridScale),
-					Y:       i * (int64(pixelScale) / gridScale),
+					ID:      ulid.NewID(),
 					CellID:  cellID,
 					WorldID: worldID,
+					X:       j * (int64(pixelScale) / gridScale),
+					Y:       i * (int64(pixelScale) / gridScale),
 				})
 			}
 		}

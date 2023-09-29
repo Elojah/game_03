@@ -60,6 +60,7 @@ $ go run ./scripts/write_tileset/main.go 'assets/external/Tilesets' 'assets/tile
   + [ ] [p3] Change dashboard/rooms to display post login (event/state propag)
   + [ ] [p2] !!! Feature remove one-tile grass paths frustrating in generation
   + [ ] [p2] Fix interpolation speed in game.ts (corresponding actual player speed)
+  + [ ] [p2] make populate error -> missing assets
   + [ ] [p1] Console warnings (webGL mostly)
   + [ ] [p0] Audio
   + [ ] [p0] Remove `Math.round()` in `game.ts` and set entity.X entity.Y as float64 to fit Phaser.Body x/y
@@ -80,10 +81,12 @@ $ go run ./scripts/write_tileset/main.go 'assets/external/Tilesets' 'assets/tile
   + [ ] [p0] Wrap animations/entitiy with red/green lights for clarity
   + [ ] [p0] How to learn abilities ? Boss & loot ?
   + [x] [p0] Duplicate world in `create_room` and use new copy
-    + [ ] Save (`store`) waypoints at world create and use them in `CopyWorld`
-  + [ ] [REFACTO] Move to grpc-web
+    + [x] Save (`store`) waypoints at world create and use them in `CopyWorld`
+  + [x] [REFACTO] Move to grpc-web
+  + [ ] [REFACTO] Move to web-transport
   + [ ] [REFACTO] Remove gogoprotobuf :(
-  + [ ] [p0] populate error
+
+
   ```sh
 ./scripts/create_default_animations.sh: line 24: scripts/Boy/BlueNinja/idle_right.json: No such file or directory
 ./scripts/create_default_animations.sh: line 29: scripts/Boy/BlueNinja/walk_up.json: No such file or directory

@@ -167,7 +167,8 @@ func run(prog string, filename string) {
 		StoreWorldSpawn:    roomStore,
 		StoreWorldWaypoint: roomStore,
 
-		Entity: entityApp,
+		Entity:  entityApp,
+		Faction: factionApp,
 	}
 
 	userStore := &userscylla.Store{Service: scyllas}

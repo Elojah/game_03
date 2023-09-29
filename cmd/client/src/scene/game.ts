@@ -6,6 +6,7 @@ import { Mutex, MutexInterface } from 'async-mutex';
 import { Buffer } from 'buffer'
 
 import { Map as pbmap } from 'google-protobuf';
+import { getCookie } from 'typescript-cookie'
 
 import { ulid, parse } from '../lib/ulid'
 
@@ -195,7 +196,9 @@ export class Game extends Scene {
   }
 
   init(pc: PCDTO.PC) {
-    this.Metadata['token'] = this.registry.get('token')
+    const wt = new WebTransport('https://api.legacyfactory.com:8082')
+
+    this.Metadata = { 'token': this.registry.get('token') }
 
     this.APIClient = new APIClient('https://api.legacyfactory.com:8082', null)
     this.CoreClient = new CoreClient('https://core.legacyfactory.com:8083', null)
@@ -248,19 +251,6 @@ export class Game extends Scene {
       iceServers: [{
         urls: [
           'stun:stun.l.google.com:19302',
-          'stun:stun1.l.google.com:19302',
-          'stun:stun2.l.google.com:19302',
-          'stun:stun3.l.google.com:19302',
-          'stun:stun4.l.google.com:19302',
-          'stun:stun.ekiga.net',
-          'stun:stun.ideasip.com',
-          'stun:stun.rixtelecom.se',
-          'stun:stun.schlund.de',
-          'stun:stun.stunprotocol.org:3478',
-          'stun:stun.voiparound.com',
-          'stun:stun.voipbuster.com',
-          'stun:stun.voipstunt.com',
-          'stun:stun.voxgratia.org',
         ]
       }]
     });
@@ -318,7 +308,9 @@ export class Game extends Scene {
         req.setPcid(this.PC.getId_asU8())
         req.setWorldid(this.PC.getWorldid_asU8())
 
-        this.CoreClient.connect(req, this.Metadata)
+        const metadata = { 'token': getCookie('access')! }
+
+        this.CoreClient.connect(req, metadata)
           .then((resp) => {
             const answer = Buffer.from(resp.getEncoded(), 'base64').toString('ascii')
             local.setRemoteDescription(JSON.parse(answer))
@@ -328,7 +320,7 @@ export class Game extends Scene {
           .then(() => {
             // receive ICE
             const req = new Empty()
-            const stream = this.CoreClient.receiveICE(req, this.Metadata)
+            const stream = this.CoreClient.receiveICE(req, metadata)
             stream.on("data",
               (candidate) => {
                 const ic = Buffer.from(candidate.getEncoded(), 'base64').toString('ascii')
@@ -348,7 +340,7 @@ export class Game extends Scene {
 
               const req = new ICECandidate()
               req.setEncoded(Buffer.from(JSON.stringify(ic.candidate)).toString('base64'))
-              this.CoreClient.sendICE(req, this.Metadata)
+              this.CoreClient.sendICE(req, metadata)
 
               console.log('ice candidate sent to signal', ic.candidate)
             }
