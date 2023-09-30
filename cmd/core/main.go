@@ -10,7 +10,9 @@ import (
 	"syscall"
 	"time"
 
-	coregrpc "github.com/elojah/game_03/cmd/core/grpc"
+	"github.com/quic-go/quic-go/http3"
+	"github.com/quic-go/webtransport-go"
+
 	abilityapp "github.com/elojah/game_03/pkg/ability/app"
 	abilityredis "github.com/elojah/game_03/pkg/ability/redis"
 	abilityscylla "github.com/elojah/game_03/pkg/ability/scylla"
@@ -23,13 +25,9 @@ import (
 	eventredis "github.com/elojah/game_03/pkg/event/redis"
 	roomapp "github.com/elojah/game_03/pkg/room/app"
 	roomscylla "github.com/elojah/game_03/pkg/room/scylla"
-	rtcapp "github.com/elojah/game_03/pkg/rtc/app"
-	rtcmem "github.com/elojah/game_03/pkg/rtc/mem"
 	userapp "github.com/elojah/game_03/pkg/user/app"
 	userredis "github.com/elojah/game_03/pkg/user/redis"
 	userscylla "github.com/elojah/game_03/pkg/user/scylla"
-	ggrpc "github.com/elojah/go-grpc"
-	"github.com/elojah/go-grpcweb"
 	ghttp "github.com/elojah/go-http"
 	glog "github.com/elojah/go-log"
 	"github.com/elojah/go-redis"
@@ -37,7 +35,6 @@ import (
 	"github.com/hashicorp/go-multierror"
 	"github.com/rs/zerolog/log"
 	_ "google.golang.org/grpc/encoding/gzip"
-	"google.golang.org/grpc/reflection"
 )
 
 const (
@@ -179,11 +176,6 @@ func run(prog string, filename string) {
 		return
 	}
 
-	rtcStore := rtcmem.NewStore()
-	rtcApp := rtcapp.App{
-		Store: &rtcStore,
-	}
-
 	eventCache := &eventredis.Cache{Service: rediss}
 	eventApp := eventapp.App{
 		Cache:   eventCache,
@@ -198,56 +190,30 @@ func run(prog string, filename string) {
 		entity:  entityApp,
 		event:   eventApp,
 		room:    roomApp,
-		rtc:     rtcApp,
 		user:    userApp,
 	}
 
-	if err := h.Dial(ctx); err != nil {
-		log.Error().Err(err).Msg("failed to dial handler")
-
-		return
+	// create a new webtransport.Server, listening on (UDP) port 443
+	s := webtransport.Server{
+		H3: http3.Server{Addr: cfg.HTTP.Port},
 	}
 
-	// init grpc ONLY server
-	grpccore := ggrpc.Service{}
-	grpccore.Register = func() {
-		reflection.Register(grpccore.Server)
-		coregrpc.RegisterCoreServer(grpccore.Server, &h)
-	}
+	// Create a new HTTP endpoint /webtransport.
+	http.HandleFunc("/webtransport", func(w http.ResponseWriter, r *http.Request) {
+		conn, err := s.Upgrade(w, r)
+		if err != nil {
+			log.Error().Err(err).Msg("failed to upgrade to webtransport")
+			w.WriteHeader(500)
 
-	if err := grpccore.Dial(ctx, cfg.GRPC); err != nil {
-		log.Error().Err(err).Msg("failed to dial grpc")
-
-		return
-	}
-
-	cs = append(cs, &grpccore)
-
-	go func() {
-		if err := grpccore.Serve(ctx); err != nil {
-			log.Error().Err(err).Msg("failed to serve grpc")
+			return
 		}
-	}()
 
-	// init grpc core server
-	grpcwcore := grpcweb.Service{}
-	grpcwcore.Register = func() {
-		coregrpc.RegisterCoreServer(grpcwcore.Server, &h)
-		// reflection.Register(grpcwcore.Server)
-		https.Handler = grpcwcore.WrappedGrpcServer
-	}
+		conn.ConnectionState().SupportsDatagrams
+	})
 
-	if err := grpcwcore.Dial(ctx, cfg.GRPCWeb); err != nil {
-		log.Error().Err(err).Msg("failed to dial grpcweb")
-
-		return
-	}
-
-	cs = append(cs, &grpcwcore)
-
-	// serve grpcweb core
+	// serve http web
 	go func() {
-		if err := https.Server.ListenAndServeTLS("", ""); err != nil {
+		if err := s.ListenAndServeTLS(cfg.HTTP.Cert, cfg.HTTP.Key); err != nil {
 			if errors.Is(err, http.ErrServerClosed) {
 				log.Info().Msg("http server closed")
 			} else {

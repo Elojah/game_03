@@ -4,8 +4,6 @@ import (
 	"context"
 
 	"github.com/elojah/game_03/pkg/user"
-	"github.com/elojah/go-grpc"
-	"github.com/elojah/go-grpcweb"
 	"github.com/elojah/go-http"
 	"github.com/elojah/go-redis"
 	"github.com/elojah/go-scylla"
@@ -13,11 +11,9 @@ import (
 )
 
 type config struct {
-	HTTP    http.Config    `json:"http"`
-	GRPCWeb grpcweb.Config `json:"grpcweb"`
-	GRPC    grpc.Config    `json:"grpc"`
-	Scylla  scylla.Config  `json:"scylla"`
-	Redis   redis.Config   `json:"redis"`
+	HTTP   http.Config   `json:"http"`
+	Scylla scylla.Config `json:"scylla"`
+	Redis  redis.Config  `json:"redis"`
 
 	Session user.ConfigSession `json:"session"`
 }
