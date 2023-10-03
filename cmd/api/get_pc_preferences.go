@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
 
 	"github.com/elojah/game_03/pkg/entity"
 	gerrors "github.com/elojah/game_03/pkg/errors"
@@ -19,24 +18,14 @@ func (h *handler) GetPCPreferences(ctx context.Context, req *entity.PC) (*entity
 	}
 
 	// #Authenticate
-	u, err := h.user.Auth(ctx, "access")
+	session, err := h.user.AuthSession(ctx)
 	if err != nil {
 		return &entity.PCPreferences{}, status.New(codes.Unauthenticated, err.Error()).Err()
 	}
 
-	if _, err := h.entity.FetchPC(ctx, entity.FilterPC{
-		ID:     req.ID,
-		UserID: u.ID,
-	}); err != nil {
-		if errors.As(err, &gerrors.ErrNotFound{}) {
-			logger.Error().Err(err).Msg("pc not found")
-
-			return &entity.PCPreferences{}, status.New(codes.NotFound, err.Error()).Err()
-		}
-
-		logger.Error().Err(err).Msg("failed to fetch template")
-
-		return &entity.PCPreferences{}, status.New(codes.Internal, err.Error()).Err()
+	// Check PC ID is session ID
+	if session.ID.Compare(req.ID) != 0 {
+		return &entity.PCPreferences{}, status.New(codes.PermissionDenied, gerrors.ErrPermissionForbidden{}.Error()).Err()
 	}
 
 	// #Fetch pc preferences

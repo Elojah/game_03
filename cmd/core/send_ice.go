@@ -20,7 +20,7 @@ func (h *handler) SendICE(ctx context.Context, req *dto.ICECandidate) (*pbtypes.
 		return &pbtypes.Empty{}, status.New(codes.Internal, gerrors.ErrNullRequest{}.Error()).Err()
 	}
 
-	// // #Authenticate
+	// #Authenticate
 	u, err := h.user.Auth(ctx, "access")
 	if err != nil {
 		return &pbtypes.Empty{}, status.New(codes.Unauthenticated, err.Error()).Err()

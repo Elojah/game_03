@@ -1,4 +1,4 @@
-import { GameObjects, Scene } from 'phaser';
+import { Scene } from 'phaser';
 import * as grpc from 'grpc-web';
 
 import { Mutex, MutexInterface } from 'async-mutex';
@@ -35,8 +35,6 @@ import * as CellDTO from 'pkg/room/dto/cell_pb';
 
 import * as World from 'pkg/room/world_pb';
 import * as WorldDTO from 'pkg/room/dto/world_pb';
-
-import * as RTCDTO from 'pkg/rtc/dto/rtc_pb';
 
 import { Empty } from "pkg/pbtypes/empty_pb";
 
@@ -189,16 +187,16 @@ export class Game extends Scene {
 
   CoreClient: CoreClient
 
-  Metadata: grpc.Metadata
+  MetadataAccess: grpc.Metadata
+  MetadataSession: grpc.Metadata
 
   constructor(config: string | Phaser.Types.Scenes.SettingsConfig) {
     super(config);
   }
 
   init(pc: PCDTO.PC) {
-    const wt = new WebTransport('https://api.legacyfactory.com:8082')
-
-    this.Metadata = { 'token': this.registry.get('token') }
+    this.MetadataAccess = { 'token': getCookie('access')! }
+    this.MetadataSession = { 'token': this.registry.get('token') }
 
     this.APIClient = new APIClient('https://api.legacyfactory.com:8082', null)
     this.CoreClient = new CoreClient('https://core.legacyfactory.com:8083', null)
@@ -251,6 +249,19 @@ export class Game extends Scene {
       iceServers: [{
         urls: [
           'stun:stun.l.google.com:19302',
+          'stun:stun1.l.google.com:19302',
+          'stun:stun2.l.google.com:19302',
+          'stun:stun3.l.google.com:19302',
+          'stun:stun4.l.google.com:19302',
+          'stun:stun.ekiga.net',
+          'stun:stun.ideasip.com',
+          'stun:stun.rixtelecom.se',
+          'stun:stun.schlund.de',
+          'stun:stun.stunprotocol.org:3478',
+          'stun:stun.voiparound.com',
+          'stun:stun.voipbuster.com',
+          'stun:stun.voipstunt.com',
+          'stun:stun.voxgratia.org',
         ]
       }]
     });
@@ -286,6 +297,7 @@ export class Game extends Scene {
     this.SendChannel.onmessage = (m) => { console.log('message received on send_entity:', m) }
 
     const re = local.createDataChannel('receive_entity')
+    re.binaryType = 'arraybuffer' // !IMPORTANT OR MESSAGES WILL BE EMPTY
     re.onopen = () => { console.log('channel receive_entity opened') }
     re.onclose = () => { console.log('channel receive_entity closed') }
     re.onmessage = (m) => {
@@ -308,9 +320,7 @@ export class Game extends Scene {
         req.setPcid(this.PC.getId_asU8())
         req.setWorldid(this.PC.getWorldid_asU8())
 
-        const metadata = { 'token': getCookie('access')! }
-
-        this.CoreClient.connect(req, metadata)
+        this.CoreClient.connect(req, this.MetadataAccess)
           .then((resp) => {
             const answer = Buffer.from(resp.getEncoded(), 'base64').toString('ascii')
             local.setRemoteDescription(JSON.parse(answer))
@@ -320,7 +330,7 @@ export class Game extends Scene {
           .then(() => {
             // receive ICE
             const req = new Empty()
-            const stream = this.CoreClient.receiveICE(req, metadata)
+            const stream = this.CoreClient.receiveICE(req, this.MetadataAccess)
             stream.on("data",
               (candidate) => {
                 const ic = Buffer.from(candidate.getEncoded(), 'base64').toString('ascii')
@@ -340,7 +350,7 @@ export class Game extends Scene {
 
               const req = new ICECandidate()
               req.setEncoded(Buffer.from(JSON.stringify(ic.candidate)).toString('base64'))
-              this.CoreClient.sendICE(req, metadata)
+              this.CoreClient.sendICE(req, this.MetadataAccess)
 
               console.log('ice candidate sent to signal', ic.candidate)
             }
@@ -383,7 +393,7 @@ export class Game extends Scene {
 
         req.setIdsList([this.PC.getWorldid_asU8()])
         req.setSize(1)
-        return this.APIClient.listWorld(req, this.Metadata)
+        return this.APIClient.listWorld(req, this.MetadataSession)
       })
       .then((ws: WorldDTO.ListWorldResp) => {
         if (ws.getWorldsList().length != 1) {
@@ -841,7 +851,7 @@ export class Game extends Scene {
   }
 
   applyPCPreferences() {
-    this.APIClient.getPCPreferences(this.PC, this.Metadata).
+    this.APIClient.getPCPreferences(this.PC, this.MetadataSession).
       then((result: PCPreferences.PCPreferences) => {
         result.getAbilityhotbarsMap().forEach((abilityID: Uint8Array, hotbar: string) => {
           const target = document.getElementById(hotbar)
@@ -1029,7 +1039,7 @@ export class Game extends Scene {
     const req = new CellDTO.ListCellReq()
 
     req.setIdsList([this.Entity.E.getCellid_asU8()])
-    return this.APIClient.listCell(req, this.Metadata)
+    return this.APIClient.listCell(req, this.MetadataSession)
       .then((cells: CellDTO.ListCellResp) => {
         // load current pc cell
         if (cells.getCellsList().length != 1) {
@@ -1313,7 +1323,7 @@ export class Game extends Scene {
 
         const req = new CellDTO.ListCellReq()
         req.setIdsList(newCellIDs.filter((v) => (!(v == undefined))))
-        return this.APIClient.listCell(req, this.Metadata)
+        return this.APIClient.listCell(req, this.MetadataSession)
       })
       .then((cells: CellDTO.ListCellResp) => {
 
@@ -1681,7 +1691,7 @@ export class Game extends Scene {
           const req = new AbilityDTO.ListAbilityReq()
           req.setEntityid(this.Entity.E.getId_asU8())
           req.setSize(100)
-          this.APIClient.listAbility(req, this.Metadata)
+          this.APIClient.listAbility(req, this.MetadataSession)
             .then((resp: AbilityDTO.ListAbilityResp) => {
               resp.getAbilitiesList().forEach((ab: Ability.A) => {
                 const id = ulid(ab.getId_asU8())
@@ -1730,6 +1740,7 @@ export class Game extends Scene {
               })
             })
             .then(() => {
+              console.log("connection established")
               this.Connected()
             })
             .catch((err) => { console.log(err) })
@@ -1808,7 +1819,7 @@ export class Game extends Scene {
 
     req.setEntityidsList(entityIDs)
     req.setSize(1000) // TODO: less random
-    this.APIClient.listAnimation(req, this.Metadata)
+    this.APIClient.listAnimation(req, this.MetadataSession)
       .then((animations: AnimationDTO.ListAnimationResp) => {
         // load all current animations
         animations.getAnimationsList().forEach((an: Animation.Animation) => {

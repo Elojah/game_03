@@ -179,7 +179,7 @@ func (h *handler) SendEntity(ctx context.Context, d *webrtc.DataChannel, pc enti
 							}
 
 							if len(state) == 0 {
-								logger.Info().Msg("success")
+								logger.Info().Int("count_entity", len(entities)).Msg("success")
 
 								return
 							}

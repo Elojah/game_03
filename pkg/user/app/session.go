@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"encoding/base64"
 	"strings"
 
 	"github.com/elojah/game_03/pkg/errors"
@@ -26,9 +27,14 @@ func (a App) AuthSession(ctx context.Context) (user.Session, error) {
 		return user.Session{}, errors.ErrMissingAuth{}
 	}
 
+	raw, err := base64.StdEncoding.DecodeString(token)
+	if err != nil {
+		return user.Session{}, errors.ErrMissingAuth{}
+	}
+
 	var ses user.Session
 
-	if err := ses.Decrypt(a.sessionKey, []byte(token)); err != nil {
+	if err := ses.Decrypt(a.sessionKey, raw); err != nil {
 		return user.Session{}, err
 	}
 

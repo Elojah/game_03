@@ -44,8 +44,8 @@ export class Loading extends Scene {
         req.setWorldid(worldID)
         return this.APIClient.createSession(req, this.Metadata)
       })
-      .then((result) => {
-        this.registry.set('token', result)
+      .then((result: CreateSessionResp) => {
+        this.registry.set('token', result.getToken_asB64())
         this.scene.transition({
           target: 'game',
           duration: 1000,
