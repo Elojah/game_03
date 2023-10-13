@@ -853,6 +853,8 @@ export class Game extends Scene {
   applyPCPreferences() {
     this.APIClient.getPCPreferences(this.PC, this.MetadataSession).
       then((result: PCPreferences.PCPreferences) => {
+        console.log("pc preferences, found ", result.getAbilityhotbarsMap().length)
+
         result.getAbilityhotbarsMap().forEach((abilityID: Uint8Array, hotbar: string) => {
           const target = document.getElementById(hotbar)
           if (!target) {
@@ -1895,121 +1897,4 @@ export class Game extends Scene {
         })
       })
   }
-
-  // // API Cell
-  // listCell(req: CellDTO.ListCellReq) {
-  //   let md = new grpc.Metadata()
-  //   md.set('token', this.registry.get('token'))
-
-  //   const prom = new Promise<CellDTO.ListCellResp>((resolve, reject) => {
-  //     this.APIClient.listCell(req, md, (res: CellDTO.ListCellResp) => { resolve(res) })
-  //   })
-
-  //   return prom
-  // }
-
-  // // API Entity
-  // listEntity(req: EntityDTO.ListEntityReq) {
-  //   let md = new grpc.Metadata()
-  //   md.set('token', this.registry.get('token'))
-
-  //   const prom = new Promise<EntityDTO.ListEntityResp>((resolve, reject) => {
-  //     this.APIClient.listEntity(req, md, (res: EntityDTO.ListEntityResp) => { resolve(res) })
-  //   });
-
-  //   return prom
-  // }
-
-  // // API Animation
-  // listAnimation(req: AnimationDTO.ListAnimationReq) {
-  //   let md = new grpc.Metadata()
-  //   md.set('token', this.registry.get('token'))
-
-  //   const prom = new Promise<AnimationDTO.ListAnimationResp>((resolve, reject) => {
-  //     this.APIClient.listAnimation(req, md, (res: AnimationDTO.ListAnimationResp) => { resolve(res) })
-  //   });
-
-  //   return prom
-  // }
-
-  // // API Ability
-  // listAbility(req: AbilityDTO.ListAbilityReq) {
-  //   let md = new grpc.Metadata()
-  //   md.set('token', this.registry.get('token'))
-
-  //   const prom = new Promise<AbilityDTO.ListAbilityResp>((resolve, reject) => {
-  //     this.APIClient.listAbility(req, md, (res: AbilityDTO.ListAbilityResp) => { resolve(res) })
-  //   });
-
-  //   return prom
-  // }
-
-  // // API PC preferences
-  // getPCPreferences(req: PC.PC) {
-  //   let md = new grpc.Metadata()
-  //   md.set('token', this.registry.get('token'))
-
-  //   const prom = new Promise<PCPreferences.PCPreferences>((resolve, reject) => {
-  //     this.APIClient.getPCPreferences(req, md, (res: PCPreferences.PCPreferences) => { resolve(res) })
-  //   });
-
-  //   return prom
-  // }
-
-  // updatePCPreferences(req: PCPreferences.PCPreferences) {
-  //   let md = new grpc.Metadata()
-  //   md.set('token', this.registry.get('token'))
-
-  //   const prom = new Promise<PCPreferences.PCPreferences>((resolve, reject) => {
-  //     this.APIClient.updatePCPreferences(req, md, (res: PCPreferences.PCPreferences) => { resolve(res) })
-  //   });
-
-  //   return prom
-  // }
-
-  // // API World
-  // listWorld(req: WorldDTO.ListWorldReq) {
-  //   let md = new grpc.Metadata()
-  //   md.set('token', this.registry.get('token'))
-
-  //   const prom = new Promise<WorldDTO.ListWorldResp>((resolve, reject) => {
-  //     this.APIClient.listWorld(req, md, (res: WorldDTO.ListWorldResp) => { resolve(res) })
-  //   });
-
-  //   return prom
-  // }
-
-  // // RTC connection
-  // sendICE(): grpc.Client<grpc.ProtobufMessage, grpc.ProtobufMessage> {
-  //   let md = new grpc.Metadata()
-  //   md.set('token', getCookie('access')!)
-
-  //   let client = this.CoreClient.sendICE(md, (res: any) => {
-  //     console.log("received from send ice channel:", res)
-  //   })
-  //   // client.start(md)
-
-  //   return client
-  // }
-
-  // receiveICE(callback: (message: RTCDTO.ICECandidate) => void) {
-  //   let md = new grpc.Metadata()
-  //   md.set('token', getCookie('access')!)
-
-  //   const prom = new Promise<string>((resolve, reject) => {
-  //     const stream = this.CoreClient.receiveICE(new Empty(), md)
-  //     stream.on((message: RTCDTO.ICECandidate) => {
-  //       callback(message)
-  //     })
-  //   })
-
-  //   return prom
-  // }
-
-  // coreConnect(req: RTCDTO.ConnectReq) {
-  //   let md = new grpc.Metadata()
-  //   md.set('token', getCookie('access')!)
-
-  //   return this.CoreClient.connect(req, md)
-  // }
 }
