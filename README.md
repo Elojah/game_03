@@ -17,7 +17,7 @@ Dev setup:
 $ docker-compose up -d # wait ~10 sec for scylla to boot
 $ cat docker/scylla/keyspace.cql | docker exec -i game_03_scylla cqlsh
 $ make admin && ./bin/game_03_admin config/admin/local.json
-$  grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '{"Value": "cql"}' -plaintext localhost:4282 grpc.Admin/MigrateUp
+$ grpcurl -v -import-path ../../.. -proto cmd/admin/grpc/admin.proto -d '{"Value": "cql"}' -plaintext localhost:4282 grpc.Admin/MigrateUp
 $ make populate
 $ make api && ./bin/game_03_api config/api/local.json
 $ make auth && ./bin/game_03_auth config/auth/local.json

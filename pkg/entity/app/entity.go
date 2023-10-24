@@ -234,9 +234,14 @@ func (a App) CreateDefaultAbilities(ctx context.Context, entityID ulid.ID) ([]en
 		return nil, err
 	}
 
-	return []entity.Ability{entity.Ability{
-		AbilityID: ab.ID,
-		EntityID:  entityID,
-	},
+	return []entity.Ability{
+		{
+			AbilityID: ab.ID,
+			EntityID:  entityID,
+		},
+		{
+			AbilityID: abRes.ID,
+			EntityID:  entityID,
+		},
 	}, nil
 }

@@ -231,7 +231,7 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 		AbilityHotbars: make(map[string]ulid.ID),
 	}
 	for i := 0; i < len(abilities) && i < 6; i++ {
-		pcp.AbilityHotbars[fmt.Sprintf("hotbar-0-%d", i)] = abilities[i].AbilityID
+		pcp.AbilityHotbars[fmt.Sprintf("hotkey-0-%d", i)] = abilities[i].AbilityID
 	}
 
 	if err := h.entity.InsertPCPreferences(ctx, pcp); err != nil {

@@ -378,7 +378,6 @@ export class Game extends Scene {
     this.Background.setDisplaySize(this.game.scale.width, this.game.scale.height)
 
     this.createUI()
-    this.applyPCPreferences()
 
     this.Loading = this.Entity.E.getCellid_asU8()
 
@@ -407,6 +406,7 @@ export class Game extends Scene {
         // post first loading launch
         // this.Cursors = this.input.keyboard!.createCursorKeys();
         this.createKeys()
+        this.applyPCPreferences()
 
         setInterval(() => {
           this.cleanEntities()
@@ -853,11 +853,13 @@ export class Game extends Scene {
   applyPCPreferences() {
     this.APIClient.getPCPreferences(this.PC, this.MetadataSession).
       then((result: PCPreferences.PCPreferences) => {
-        console.log("pc preferences, found ", result.getAbilityhotbarsMap().length)
+        console.log("pc preferences found: ", result.getAbilityhotbarsMap())
 
         result.getAbilityhotbarsMap().forEach((abilityID: Uint8Array, hotbar: string) => {
+          console.log("assign from preferences: ", ulid(abilityID), hotbar)
           const target = document.getElementById(hotbar)
           if (!target) {
+            console.log("pc preference target not found", hotbar)
             return
           }
 

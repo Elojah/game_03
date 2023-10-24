@@ -131,3 +131,6 @@ cp -r ./assets/external/NPC/Altar/01GTXTWQQ0GEK0SZZ83FXPDB3E.png cmd/client/dist
 # Map
 cp -r ./assets/external/Tilesets/01GHE0TD8VC0HJHAEGTWN0AF44.png cmd/client/dist/img/assets/01GHE0TD8VC0HJHAEGTWN0AF44.png # RuinsWall
 cp -r ./assets/external/Tilesets/01GMAP5JY8YRHZJ45TRWZA8VHM.png cmd/client/dist/img/assets/01GMAP5JY8YRHZJ45TRWZA8VHM.png # RuinsGrass
+
+# UI
+cp -r ./assets/external/UI/ability-000.png cmd/client/dist/img/assets/01H0N2PHEMG0DJSDVGV15CXA3M.png
