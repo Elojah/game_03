@@ -855,18 +855,19 @@ export class Game extends Scene {
       then((result: PCPreferences.PCPreferences) => {
         console.log("pc preferences found: ", result.getAbilityhotbarsMap())
 
-        result.getAbilityhotbarsMap().forEach((abilityID: Uint8Array, hotbar: string) => {
-          console.log("assign from preferences: ", ulid(abilityID), hotbar)
-          const target = document.getElementById(hotbar)
+        result.getAbilityhotbarsMap().forEach((abilityID: Uint8Array, hotkey: string) => {
+          console.log("assign from preferences: ", ulid(abilityID), hotkey)
+          const target = document.getElementById(hotkey)
           if (!target) {
-            console.log("pc preference target not found", hotbar)
+            console.log("pc preference target not found", hotkey)
             return
           }
 
           const icon = document.createElement('img')
 
           const id = ulid(abilityID)
-          const iconID = this.Abilities.get(id)?.getIcon_asU8()
+          const iconID = ulid(this.Abilities.get(id)?.getIcon_asU8()!)
+          console.log("assign icon:", iconID)
           icon.src = 'img/assets/' + iconID + '.png'
           icon.id = target.id + '-icon'
           icon.dataset['abilityID'] = id
