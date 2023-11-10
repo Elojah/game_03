@@ -35,6 +35,8 @@ import (
 	"github.com/elojah/go-redis"
 	"github.com/elojah/go-scylla"
 	"github.com/hashicorp/go-multierror"
+	"github.com/quic-go/quic-go/http3"
+	"github.com/quic-go/webtransport-go"
 	"github.com/rs/zerolog/log"
 	_ "google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/reflection"
@@ -173,6 +175,10 @@ func run(prog string, filename string) {
 		Cookie:       cookieApp,
 	}
 
+	s := webtransport.Server{
+		H3: http3.Server{Addr: ":443"},
+	}
+	_ = s
 	if err := userApp.Dial(ctx, cfg.Session); err != nil {
 		log.Error().Err(err).Msg("failed to dial user application")
 

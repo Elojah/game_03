@@ -133,12 +133,11 @@ CREATE TABLE main.entity_template (
 CREATE INDEX ON main.entity_template(name);
 
 CREATE TABLE main.entity_ability (
-    entity_id        uuid PRIMARY KEY,
+    entity_id        uuid,
     ability_id       uuid,
-	last_cast        bigint
+	last_cast        bigint,
+    PRIMARY KEY(entity_id, ability_id)
 );
-
-CREATE INDEX ON main.entity_ability(ability_id);
 
 CREATE TABLE main.entity_spawn (
     entity_id        uuid PRIMARY KEY,
