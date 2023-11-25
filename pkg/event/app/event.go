@@ -8,6 +8,7 @@ import (
 	"github.com/elojah/game_03/pkg/entity"
 	"github.com/elojah/game_03/pkg/errors"
 	"github.com/elojah/game_03/pkg/event"
+	"github.com/elojah/game_03/pkg/room"
 	"github.com/elojah/game_03/pkg/ulid"
 	"github.com/rs/zerolog/log"
 )
@@ -22,6 +23,7 @@ type App struct {
 
 	Entity  entity.App
 	Ability ability.App
+	Room    room.App
 }
 
 func (a App) Listen(ctx context.Context, entityID ulid.ID) error {
@@ -157,9 +159,7 @@ func (a App) apply(ctx context.Context, ev event.E, e entity.E) (entity.E, map[s
 			SourceID:       ev.Source.ID.String(),
 			TargetID:       e.ID.String(),
 		}
-	}
-
-	if targetType.Type == ability.Foe && e.FactionID.Compare(ev.Source.FactionID) == 0 {
+	} else if targetType.Type == ability.Foe && e.FactionID.Compare(ev.Source.FactionID) == 0 {
 		return e, nil, errors.ErrInvalidCastTargetFaction{
 			AbilityID:        ev.Effect.AbilityID.String(),
 			EffectID:         ev.Effect.EffectID.String(),
@@ -170,9 +170,7 @@ func (a App) apply(ctx context.Context, ev event.E, e entity.E) (entity.E, map[s
 			TargetID:         e.ID.String(),
 			TargetFactionID:  e.FactionID.String(),
 		}
-	}
-
-	if targetType.Type == ability.Ally && e.FactionID.Compare(ev.Source.FactionID) != 0 {
+	} else if targetType.Type == ability.Ally && e.FactionID.Compare(ev.Source.FactionID) != 0 {
 		return e, nil, errors.ErrInvalidCastTargetFaction{
 			AbilityID:        ev.Effect.AbilityID.String(),
 			EffectID:         ev.Effect.EffectID.String(),
@@ -224,10 +222,18 @@ func (a App) apply(ctx context.Context, ev event.E, e entity.E) (entity.E, map[s
 	// TODO: move entities
 	if targetType.MoveTarget.Move != ability.NoneMove {
 		// move destination
+
+		// TODO check targetType.TargetType validity
 		pos, ok := ev.Effect.Targets[targetType.MoveTarget.TargetID.String()]
 		if !ok {
-			// position not defined, ignore
-			return e, nil, nil
+			// position not defined, ignore if type is spawn and something else ?
+
+			// return e, nil, nil
+		}
+
+		x, y, err := a.fetchMoveTargetXY(ctx, targetType.MoveTarget, e)
+		if err != nil {
+			return e, nil, err
 		}
 
 		switch targetType.MoveTarget.Move {
@@ -239,19 +245,34 @@ func (a App) apply(ctx context.Context, ev event.E, e entity.E) (entity.E, map[s
 			}
 			// TODO: add default? animation
 		case ability.Teleport:
+			e.SetPosition(x, y)
+
 			// TODO: check distance depending on teleport range
 			// TODO: add specific animation
 		case ability.Push:
 			// TODO: add specific animation
 		}
 
-		e.SetPosition(pos.Circle.X, pos.Circle.Y)
+		e.SetPosition(x, y)
 	}
 
 	return e, events, nil
 }
 
+func (a App) fetchMoveTargetXY(ctx context.Context, mt ability.MoveTarget, e entity.E) (int64, int64, error) {
+	switch mt.TargetType {
+	case ability.NoneTarget:
+	case ability.Self:
+	case ability.Foe:
+	case ability.Ally:
+	case ability.Spawn:
+	case ability.Rect:
+	case ability.Circle:
+	}
+}
+
 // cast implements self cast animations and target events propagation.
+// NOT CALLED YET, TO BE IMPLEMENTED
 func (a App) cast(ctx context.Context, ev event.E, e entity.E) (entity.E, map[string]event.E, error) {
 	// self cast
 	ab, err := a.Ability.Fetch(ctx, ability.Filter{
@@ -321,7 +342,6 @@ func (a App) cast(ctx context.Context, ev event.E, e entity.E) (entity.E, map[st
 				continue
 			}
 
-			// TODO: Fill geometry options
 			// Check target validity and assign corresponding events
 			switch target.Type {
 			case ability.NoneTarget:
@@ -390,6 +410,8 @@ func (a App) cast(ctx context.Context, ev event.E, e entity.E) (entity.E, map[st
 						CurrentID: targetID,
 					},
 				}
+			case ability.Spawn:
+				return e, nil, errors.ErrNotImplemented{Version: "1.0.0"}
 			case ability.Rect:
 				return e, nil, errors.ErrNotImplemented{Version: "1.0.0"}
 			case ability.Circle:

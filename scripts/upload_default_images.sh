@@ -128,6 +128,9 @@ cp -r ./assets/external/Characters/Woman/Faceset.png cmd/dashboard/dist/img/asse
 # NPC
 cp -r ./assets/external/NPC/Altar/01GTXTWQQ0GEK0SZZ83FXPDB3E.png cmd/client/dist/img/assets/01GTXTWQQ0GEK0SZZ83FXPDB3E.png # Altar
 
+# Abilities
+cp -r ./assets/external/Abilities/01H1PKF558G77JMKAXB69H35PD.png cmd/client/dist/img/assets/01H1PKF558G77JMKAXB69H35PD.png # Green wheel
+
 # Map
 cp -r ./assets/external/Tilesets/01GHE0TD8VC0HJHAEGTWN0AF44.png cmd/client/dist/img/assets/01GHE0TD8VC0HJHAEGTWN0AF44.png # RuinsWall
 cp -r ./assets/external/Tilesets/01GMAP5JY8YRHZJ45TRWZA8VHM.png cmd/client/dist/img/assets/01GMAP5JY8YRHZJ45TRWZA8VHM.png # RuinsGrass

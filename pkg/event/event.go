@@ -48,7 +48,7 @@ type App interface {
 func NewEvents(sourceID ulid.ID, c ability.Cast) map[string]E {
 	result := make(map[string]E, 1)
 
-	// #Sepcial case: abilityID = sourceID -> use this case for move events
+	// #Special case: abilityID = sourceID -> use this case for move events
 	if target, ok := c.Targets[sourceID.String()]; ok && c.AbilityID.Compare(sourceID) == 0 {
 		ev := E{
 			ID:       ulid.NewID(),

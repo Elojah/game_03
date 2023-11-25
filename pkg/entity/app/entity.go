@@ -176,7 +176,7 @@ func (a App) CreateDefaultAbilities(ctx context.Context, entityID ulid.ID) ([]en
 		return nil, err
 	}
 
-	// basic ability: damage one foe
+	// basic ability: damage circle
 	abilityTemplate, err := a.FetchTemplate(ctx, entity.FilterTemplate{
 		Name: func(s string) *string { return &s }("ability"),
 	})

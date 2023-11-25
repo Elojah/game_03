@@ -40,6 +40,8 @@ import { Empty } from "pkg/pbtypes/empty_pb";
 
 import { Circle, Rect } from 'pkg/geometry/geometry_pb';
 
+const logger = require('pino')()
+
 const entitySpriteDepth = 42
 
 enum Action {
@@ -268,9 +270,9 @@ export class Game extends Scene {
 
     this.SendChannel = local.createDataChannel('send_entity')
     this.SendChannel.onopen = () => {
-      console.log('channel send_entity opened')
+      logger.info('channel send_entity opened')
       this.LoadMapMutex.waitForUnlock().then(() => {
-        console.log('ticker send_entity start')
+        logger.info('ticker send_entity start')
         const id = ulid(this.Entity.E.getId_asU8())
         this.SyncTimer = window.setInterval(() => {
 
@@ -289,25 +291,25 @@ export class Game extends Scene {
 
           this.SendChannel.send(c.serializeBinary())
 
-          console.log('send entity position at ' + now)
+          logger.info('send entity position at ' + now)
         }, 500)
       })
     }
-    this.SendChannel.onclose = () => { console.log('channel send_entity closed') }
-    this.SendChannel.onmessage = (m) => { console.log('message received on send_entity:', m) }
+    this.SendChannel.onclose = () => { logger.info('channel send_entity closed') }
+    this.SendChannel.onmessage = (m) => { logger.info('message received on send_entity:', m) }
 
     const re = local.createDataChannel('receive_entity')
     re.binaryType = 'arraybuffer' // !IMPORTANT OR MESSAGES WILL BE EMPTY
-    re.onopen = () => { console.log('channel receive_entity opened') }
-    re.onclose = () => { console.log('channel receive_entity closed') }
+    re.onopen = () => { logger.info('channel receive_entity opened') }
+    re.onclose = () => { logger.info('channel receive_entity closed') }
     re.onmessage = (m) => {
-      console.log('message received on receive_entity')
+      logger.info('message received on receive_entity')
       const resp = EntityDTO.ListEntityResp.deserializeBinary(m.data)
 
       this.displayEntities(resp)
     }
 
-    local.oniceconnectionstatechange = e => console.log('peer connection state change', local.iceConnectionState)
+    local.oniceconnectionstatechange = e => logger.info('peer connection state change', local.iceConnectionState)
 
     local.onnegotiationneeded = (e) => local.createOffer()
       .then(d => {
@@ -325,7 +327,7 @@ export class Game extends Scene {
             const answer = Buffer.from(resp.getEncoded(), 'base64').toString('ascii')
             local.setRemoteDescription(JSON.parse(answer))
 
-            console.log('connect success')
+            logger.info('connect success')
           })
           .then(() => {
             // receive ICE
@@ -335,7 +337,7 @@ export class Game extends Scene {
               (candidate) => {
                 const ic = Buffer.from(candidate.getEncoded(), 'base64').toString('ascii')
 
-                console.log('ice candidate received from signal', ic)
+                logger.info('ice candidate received from signal', ic)
 
                 local.addIceCandidate(JSON.parse(ic))
               })
@@ -346,21 +348,21 @@ export class Game extends Scene {
                 return
               }
 
-              console.log('ice candidate received', ic.candidate)
+              logger.info('ice candidate received', ic.candidate)
 
               const req = new ICECandidate()
               req.setEncoded(Buffer.from(JSON.stringify(ic.candidate)).toString('base64'))
               this.CoreClient.sendICE(req, this.MetadataAccess)
 
-              console.log('ice candidate sent to signal', ic.candidate)
+              logger.info('ice candidate sent to signal', ic.candidate)
             }
           })
           .then(() => {
-            console.log('ICE trickle setup')
+            logger.info('ICE trickle setup')
           })
-          .catch((err) => { console.log('failed to connect rtc', err) });
+          .catch((err) => { logger.info('failed to connect rtc', err) });
       })
-      .catch((err) => { console.log('failed to setup negotiation', err) });
+      .catch((err) => { logger.info('failed to setup negotiation', err) });
   }
 
   preload() {
@@ -396,7 +398,7 @@ export class Game extends Scene {
       })
       .then((ws: WorldDTO.ListWorldResp) => {
         if (ws.getWorldsList().length != 1) {
-          console.log('failed to load world')
+          logger.info('failed to load world')
         } else {
           this.World = ws.getWorldsList()[0]
         }
@@ -413,7 +415,7 @@ export class Game extends Scene {
         }, this.cleanEntitiesDelay)
       })
       .catch((err) => {
-        console.log('setup error', err)
+        logger.info('setup error', err)
       })
   }
 
@@ -548,13 +550,17 @@ export class Game extends Scene {
   }
 
   launchAbility(c: Cast.Cast) {
-    const ab = this.Abilities.get(ulid(c.getAbilityid_asU8()))
+    const abilityID = ulid(c.getAbilityid_asU8())
+
+    logger.info('launch ability ', abilityID)
+
+    const ab = this.Abilities.get(abilityID)
     if (!ab) {
-      console.log('ability not found', ulid(c.getAbilityid_asU8()))
+      logger.info('ability not found', abilityID)
       return
     }
 
-    const la = this.Entity.Abilities.get(ulid(c.getAbilityid_asU8()))
+    const la = this.Entity.Abilities.get(abilityID)
     if (!la) {
       return
     }
@@ -625,6 +631,7 @@ export class Game extends Scene {
             t.Targets.forEach((_, id) => {
               const target = c.getTargetsMap().get(id)
               if (!target) {
+                logger.info('target not found', id)
                 return
               }
 
@@ -641,17 +648,21 @@ export class Game extends Scene {
 
     this.SendChannel.send(c.serializeBinary())
 
-    console.log('send ability cast at ' + now)
+    logger.info('send ability cast at ' + now)
   }
 
   playCastAnimation(animationID: string, x: number, y: number) {
     const animID = this.Entity.Animations.get(animationID)
     if (!animID) {
+      logger.info('ability animation not found', animationID)
       return
     }
 
     const tmpanim = this.add.sprite(x, y, '').setVisible(false)
+
+    logger.info('play ability animation', animationID, x, y)
     tmpanim.play(animID)
+
     tmpanim.on('animationcomplete', () => {
       tmpanim.destroy()
     })
@@ -662,6 +673,8 @@ export class Game extends Scene {
     if (this.Targeting) {
       return false
     }
+
+    logger.info('select target on', key.keyCode)
 
     this.Targeting = gt
     this.CastTargets = new Map()
@@ -853,13 +866,13 @@ export class Game extends Scene {
   applyPCPreferences() {
     this.APIClient.getPCPreferences(this.PC, this.MetadataSession).
       then((result: PCPreferences.PCPreferences) => {
-        console.log("pc preferences found: ", result.getAbilityhotbarsMap())
+        logger.info("pc preferences found")
 
         result.getAbilityhotbarsMap().forEach((abilityID: Uint8Array, hotkey: string) => {
-          console.log("assign from preferences: ", ulid(abilityID), hotkey)
+          logger.info("assign from preferences: ", ulid(abilityID), hotkey)
           const target = document.getElementById(hotkey)
           if (!target) {
-            console.log("pc preference target not found", hotkey)
+            logger.info("pc preference target not found", hotkey)
             return
           }
 
@@ -867,7 +880,7 @@ export class Game extends Scene {
 
           const id = ulid(abilityID)
           const iconID = ulid(this.Abilities.get(id)?.getIcon_asU8()!)
-          console.log("assign icon:", iconID)
+          logger.info("assign icon:", iconID)
           icon.src = 'img/assets/' + iconID + '.png'
           icon.id = target.id + '-icon'
           icon.dataset['abilityID'] = id
@@ -891,7 +904,7 @@ export class Game extends Scene {
         })
       }).
       catch((error) => {
-        console.log(error)
+        logger.info(error)
       })
   }
 
@@ -1006,7 +1019,7 @@ export class Game extends Scene {
         this.Entity.E.setCellid(id)
 
         this.loadMap(o).then(() => {
-          console.log('loaded cell')
+          logger.info('loaded cell')
         })
       } else {
         // don't load cell, out of world
@@ -1316,7 +1329,7 @@ export class Game extends Scene {
         this.Border.set(Cell.Orientation.DOWN, (cn.Cell.getY() + 1) * this.World.getCellheight())
         this.Border.set(Cell.Orientation.LEFT, cn.Cell.getX() * this.World.getCellwidth())
 
-        this.cleanCells(deletedCells).then(() => { console.log('finish to destroy unused tilemaps') })
+        this.cleanCells(deletedCells).then(() => { logger.info('finish to destroy unused tilemaps') })
 
         // reassign cellsbyid with new cells
         this.CellsByID.clear()
@@ -1434,14 +1447,14 @@ export class Game extends Scene {
           const resetLoad = () => {
             loaded++
             if (loaded == loadedCells.length) {
-              console.log('loading unlock')
+              logger.info('loading unlock')
               this.Loading = undefined
             }
           }
 
           if (!contig.has(o)) {
             // world border
-            console.log('contig has no:', o)
+            logger.info('contig has no:', o)
             resetLoad()
             return
           }
@@ -1450,7 +1463,7 @@ export class Game extends Scene {
           if (!c) {
             // world border
             // TO INVESTIGATE, shouldn't happen ?
-            console.log('cell not found:', o)
+            logger.info('cell not found:', o)
             return
           }
 
@@ -1467,7 +1480,7 @@ export class Game extends Scene {
           this.CellsByID.set(ulid(c.getId_asU8()), o)
 
           const loadTM = () => {
-            console.log('load_tilemap ', o)
+            logger.info('load_tilemap ', o)
 
             // create new cell
             const map = this.make.tilemap({ key: tm, width: this.World.getCellwidth(), height: this.World.getCellheight() })
@@ -1478,13 +1491,13 @@ export class Game extends Scene {
               const ts = map.addTilesetImage(tsName)
 
               if (!ts) {
-                console.log('failed to add tileset image ' + tsName)
+                logger.info('failed to add tileset image ' + tsName)
                 return
               }
 
               sets.push(ts)
 
-              console.log('loaded TS ', sets.length, '/', map.tilesets.length)
+              logger.info('loaded TS ', sets.length, '/', map.tilesets.length)
               if (sets.length < map.tilesets.length) {
                 return
               }
@@ -1503,14 +1516,14 @@ export class Game extends Scene {
               map.layers.map((l) => {
                 const layer = map.createLayer(l.name, sets, x, y)
                 if (!layer) {
-                  console.log('failed to create layer:', l.name, x, y)
+                  logger.info('failed to create layer:', l.name, x, y)
                   return
                 }
 
                 // TODO: required or not ?
                 layer.setPipeline('main')
 
-                console.log('created layer:', l.name, x, y)
+                logger.info('created layer:', l.name, x, y)
                 cc.Layers.set(l.name, layer)
               })
 
@@ -1529,7 +1542,7 @@ export class Game extends Scene {
 
                 const collider = this.physics.add.collider(this.Entity.Body, group)
 
-                console.log('created object layer:', os.name)
+                logger.info('created object layer:', os.name)
                 cc.Colliders.set(os.name, collider)
               })
 
@@ -1543,9 +1556,9 @@ export class Game extends Scene {
                 loadTS(ts.name)
               } else {
                 this.CellLoader.image(ts.name, 'img/assets/' + ts.name + '.png')
-                console.log('add listener on ', 'filecomplete-image-' + ts.name)
+                logger.info('add listener on ', 'filecomplete-image-' + ts.name)
                 this.CellLoader.on('filecomplete-image-' + ts.name, () => {
-                  console.log('image completed on ', o)
+                  logger.info('image completed on ', o)
                   loadTS(ts.name)
                 })
               }
@@ -1556,21 +1569,21 @@ export class Game extends Scene {
           if (this.cache.tilemap.exists(tm)) {
             loadTM()
           } else {
-            console.log('add listener on ', 'filecomplete-tilemapJSON-' + tm)
+            logger.info('add listener on ', 'filecomplete-tilemapJSON-' + tm)
             this.CellLoader.on('filecomplete-tilemapJSON-' + tm, () => {
-              console.log('json completed on ', o)
+              logger.info('json completed on ', o)
               loadTM()
             })
           }
         })
 
         this.CellLoader.on('complete', () => {
-          console.log('reset loader')
+          logger.info('reset loader')
           this.CellLoader.removeAllListeners()
           this.CellLoader.reset()
         })
 
-        console.log('start global cell loading')
+        logger.info('start global cell loading')
         this.CellLoader.start()
       })
   }
@@ -1578,7 +1591,7 @@ export class Game extends Scene {
   async cleanCells(cells: GraphicCell[]) {
     cells.map((c) => {
       if (c) {
-        console.log('clean cell', ulid(c.Cell.getId_asU8()))
+        logger.info('clean cell', ulid(c.Cell.getId_asU8()))
         c.Colliders.forEach((v, k) => {
           if (v.world) {
             v.destroy()
@@ -1607,7 +1620,7 @@ export class Game extends Scene {
       }
     })
 
-    console.log('cleaning entities', ids)
+    logger.info('cleaning entities', ids)
 
     ids.forEach((id) => {
       let e = this.Entities.get(id)!
@@ -1661,7 +1674,7 @@ export class Game extends Scene {
           this.Entity.Body.destroy()
 
           if (entry.getObjectsList().length == 0) {
-            console.log('player entity has no collision body. set default')
+            logger.info('player entity has no collision body. set default')
             this.Entity.Body = this.physics.add.sprite(entry.getX(), entry.getY(), id).setSize(16, 16).setOffset(0, 0)
           } else {
             // pick first dynamic body from list to assign as main collision object
@@ -1671,7 +1684,7 @@ export class Game extends Scene {
               setOffset(obj.getX(), obj.getY())
           }
 
-          console.log('set body from server info')
+          logger.info('set body from server info')
           this.Entity.E.setX(entry.getX())
           this.Entity.E.setY(entry.getY())
 
@@ -1690,7 +1703,7 @@ export class Game extends Scene {
             Colliders: new Map(),
           })
 
-          console.log("receive position from server:", this.Entity.E.getX(), this.Entity.E.getY())
+          logger.info("receive position from server:", this.Entity.E.getX(), this.Entity.E.getY())
 
           // load own abilities
           const req = new AbilityDTO.ListAbilityReq()
@@ -1745,10 +1758,10 @@ export class Game extends Scene {
               })
             })
             .then(() => {
-              console.log("connection established")
+              logger.info("connection established")
               this.Connected()
             })
-            .catch((err) => { console.log(err) })
+            .catch((err) => { logger.info(err) })
         } else if (this.Entities.has(meid)) {
           const eid = ulid(entry.getId_asU8())
           const sprite = this.add.sprite(entry.getX(), entry.getY(), id)
@@ -1778,14 +1791,14 @@ export class Game extends Scene {
             Colliders: new Map(),
           }
 
-          console.log('set entity: ', id, entry.getX(), entry.getY())
+          logger.info('set entity: ', id, entry.getX(), entry.getY())
 
           // set collision objects
           // offset on layer position
           const objects = entry.getObjectsList()
           if (objects.length > 0) {
             const group = this.physics.add.staticGroup(objects.map((b) => {
-              console.log('set entity collision: ', id, b.getX() + ge.E.getX(), b.getY() + ge.E.getY())
+              logger.info('set entity collision: ', id, b.getX() + ge.E.getX(), b.getY() + ge.E.getY())
               return this.physics.add.
                 staticImage(
                   ge.E.getX() + b.getX(),
@@ -1801,7 +1814,7 @@ export class Game extends Scene {
 
             ge.Objects.set(id, group)
             ge.Colliders.set(id, collider)
-            console.log('created entity collision:', id)
+            logger.info('created entity collision:', id)
           }
 
           this.Entities.set(id, ge)
@@ -1839,7 +1852,7 @@ export class Game extends Scene {
           if (entityID == ulid(this.Entity.E.getId_asU8())) {
             anims = this.Entity.Animations
 
-            console.log('set named animation:', an.getName(), id)
+            logger.info('set named animation:', an.getName(), id)
             anims.set(an.getName(), id)
           }
 
@@ -1867,12 +1880,12 @@ export class Game extends Scene {
               showOnStart: an.getShowandhide(),
             })
             if (!newAnim) {
-              console.log('failed to load animation ' + duplicateID)
+              logger.info('failed to load animation ' + duplicateID)
 
               return
             }
 
-            console.log('set animation:', id, duplicateID)
+            logger.info('set animation:', id, duplicateID)
 
             // Add animation to entity animations
             anims.set(id, duplicateID)

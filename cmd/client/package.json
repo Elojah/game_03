@@ -17,6 +17,7 @@
 		"async-mutex": "^0.4.0",
 		"buffer": "^6.0.3",
 		"grpc-tools": "^1.12.4",
+		"pino": "^8.16.2",
 		"protobufjs": "^7.2.5",
 		"protoc-gen-ts": "^0.8.7"
 	}
