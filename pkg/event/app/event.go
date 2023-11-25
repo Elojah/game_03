@@ -222,16 +222,12 @@ func (a App) apply(ctx context.Context, ev event.E, e entity.E) (entity.E, map[s
 	// TODO: move entities
 	if targetType.MoveTarget.Move != ability.NoneMove {
 		// move destination
-
-		// TODO check targetType.TargetType validity
-		pos, ok := ev.Effect.Targets[targetType.MoveTarget.TargetID.String()]
+		ctarget, ok := ev.Effect.Targets[targetType.MoveTarget.TargetID.String()]
 		if !ok {
-			// position not defined, ignore if type is spawn and something else ?
-
-			// return e, nil, nil
+			return e, nil, nil
 		}
 
-		x, y, err := a.fetchMoveTargetXY(ctx, targetType.MoveTarget, e)
+		x, y, err := a.fetchMoveTargetXY(ctx, targetType.MoveTarget, ctarget, e)
 		if err != nil {
 			return e, nil, err
 		}
@@ -244,31 +240,75 @@ func (a App) apply(ctx context.Context, ev event.E, e entity.E) (entity.E, map[s
 				// TODO: check distance depending on current speed
 			}
 			// TODO: add default? animation
-		case ability.Teleport:
 			e.SetPosition(x, y)
-
+		case ability.Teleport:
 			// TODO: check distance depending on teleport range
 			// TODO: add specific animation
+
+			e.SetPosition(x, y)
 		case ability.Push:
 			// TODO: add specific animation
 		}
 
-		e.SetPosition(x, y)
 	}
 
 	return e, events, nil
 }
 
-func (a App) fetchMoveTargetXY(ctx context.Context, mt ability.MoveTarget, e entity.E) (int64, int64, error) {
+func (a App) fetchMoveTargetXY(ctx context.Context, mt ability.MoveTarget, ct ability.CastTarget, e entity.E) (int64, int64, error) {
 	switch mt.TargetType {
 	case ability.NoneTarget:
+		return 0, 0, errors.ErrInvalidTarget{}
 	case ability.Self:
+		return e.X, e.Y, nil
 	case ability.Foe:
+		foe, err := a.Entity.Fetch(ctx, entity.Filter{
+			ID: ct.ID,
+		})
+		if err != nil {
+			return 0, 0, err
+		}
+
+		return foe.X, foe.Y, nil
 	case ability.Ally:
+		ally, err := a.Entity.Fetch(ctx, entity.Filter{
+			ID: ct.ID,
+		})
+		if err != nil {
+			return 0, 0, err
+		}
+
+		return ally.X, ally.Y, nil
 	case ability.Spawn:
+		espawn, err := a.Entity.FetchSpawn(ctx, entity.FilterSpawn{
+			EntityID: e.ID,
+		})
+		if err != nil {
+			return 0, 0, err
+		}
+
+		spawn, err := a.Room.FetchWorldSpawn(ctx, room.FilterWorldSpawn{
+			ID: espawn.SpawnID,
+		})
+		if err != nil {
+			return 0, 0, err
+		}
+
+		target, err := a.Entity.Fetch(ctx, entity.Filter{
+			ID: spawn.EntityID,
+		})
+		if err != nil {
+			return 0, 0, err
+		}
+
+		return target.X, target.Y, nil
 	case ability.Rect:
+		return ct.Rect.X, ct.Rect.Y, nil
 	case ability.Circle:
+		return ct.Circle.X, ct.Circle.Y, nil
 	}
+
+	return 0, 0, errors.ErrInvalidTarget{}
 }
 
 // cast implements self cast animations and target events propagation.

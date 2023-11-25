@@ -187,6 +187,9 @@ func (h *handler) CreatePC(ctx context.Context, req *dto.CreatePCReq) (*entity.P
 		AnimationID: idle,
 		AnimationAt: 0,
 		Objects:     eTemplate.Objects,
+		// Name:        "",
+		// Stats: eTemplate.Stats,
+		// Effects: eTemplate.Effects,
 	}
 	if err := h.entity.InsertBackup(ctx, bu); err != nil {
 		logger.Error().Err(err).Msg("failed to create entity")
