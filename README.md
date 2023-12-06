@@ -88,13 +88,6 @@ $ go run ./scripts/write_tileset/main.go 'assets/external/Tilesets' 'assets/tile
   + [ ] [REFACTO] Remove gogoprotobuf :(
 
 
-  ```sh
-./scripts/create_default_animations.sh: line 24: scripts/Boy/BlueNinja/idle_right.json: No such file or directory
-./scripts/create_default_animations.sh: line 29: scripts/Boy/BlueNinja/walk_up.json: No such file or directory
-./scripts/create_default_animations.sh: line 177: scripts/Lion/BlueNinja/idle_right.json: No such file or directory
-./scripts/create_default_animations.sh: line 213: scripts/Monk/BlueNinja/idle_right.json: No such file or directory
-```
-
 # FLOW
 ---
 
