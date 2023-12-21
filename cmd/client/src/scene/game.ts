@@ -64,8 +64,6 @@ enum Action {
   Hotkey15 = 16,
 };
 
-type valueof<T> = T[keyof T];
-
 type GraphicTarget = {
   Type: Ability.TargetType
   GroupID: string
@@ -179,9 +177,9 @@ export class Game extends Scene {
   // Start load pc mutex before map
   LoadMapMutex: Mutex
 
-  SyncTimer: number
+  MapLoaded: MutexInterface.Releaser
 
-  Connected: MutexInterface.Releaser
+  SyncTimer: number
 
   SendChannel: RTCDataChannel
 
@@ -245,7 +243,7 @@ export class Game extends Scene {
   }
 
   async createConnection() {
-    this.Connected = await this.LoadMapMutex.acquire()
+    this.MapLoaded = await this.LoadMapMutex.acquire()
 
     const local = new RTCPeerConnection({
       iceServers: [{
@@ -449,52 +447,40 @@ export class Game extends Scene {
     })
   }
 
-  async prepareAbility(key: Phaser.Input.Keyboard.Key, a: Action) {
-    let eid = ''
+  static readonly hotkeyIcons = new Map<Action, string>([
+    [Action.Hotkey00, 'hotkey-0-0-icon'],
+    [Action.Hotkey01, 'hotkey-0-1-icon'],
+    [Action.Hotkey02, 'hotkey-0-2-icon'],
+    [Action.Hotkey03, 'hotkey-0-3-icon'],
+    [Action.Hotkey04, 'hotkey-0-4-icon'],
+    [Action.Hotkey05, 'hotkey-0-5-icon'],
+    [Action.Hotkey10, 'hotkey-1-0-icon'],
+    [Action.Hotkey11, 'hotkey-1-1-icon'],
+    [Action.Hotkey12, 'hotkey-1-2-icon'],
+    [Action.Hotkey13, 'hotkey-1-3-icon'],
+    [Action.Hotkey14, 'hotkey-1-4-icon'],
+    [Action.Hotkey15, 'hotkey-1-5-icon'],
+  ])
 
-    switch (a) {
-      case Action.Hotkey00:
-        eid = 'hotkey-0-0-icon'
-        break
-      case Action.Hotkey01:
-        eid = 'hotkey-0-1-icon'
-        break
-      case Action.Hotkey02:
-        eid = 'hotkey-0-2-icon'
-        break
-      case Action.Hotkey03:
-        eid = 'hotkey-0-3-icon'
-        break
-      case Action.Hotkey04:
-        eid = 'hotkey-0-4-icon'
-        break
-      case Action.Hotkey05:
-        eid = 'hotkey-0-5-icon'
-        break
-      case Action.Hotkey10:
-        eid = 'hotkey-1-0-icon'
-        break
-      case Action.Hotkey11:
-        eid = 'hotkey-1-1-icon'
-        break
-      case Action.Hotkey12:
-        eid = 'hotkey-1-2-icon'
-        break
-      case Action.Hotkey13:
-        eid = 'hotkey-1-3-icon'
-        break
-      case Action.Hotkey14:
-        eid = 'hotkey-1-4-icon'
-        break
-      case Action.Hotkey15:
-        eid = 'hotkey-1-5-icon'
-        break
+  async prepareAbility(key: Phaser.Input.Keyboard.Key, a: Action) {
+
+    const eid = Game.hotkeyIcons.get(a)
+
+    if (!eid) {
+      // should never happen
+      return
     }
 
     const abilityIDStr = document.getElementById(eid)?.dataset['abilityID']
     if (!abilityIDStr) {
       // no ability in hotkey
-      return key.once('down', () => { this.prepareAbility(key, a) })
+      return
+    }
+
+    if (this.Targeting) {
+      // cancel targeting
+      this.Targeting = undefined
+      this.CastTargets = new Map()
     }
 
     const abilityID = parse(abilityIDStr)
@@ -510,7 +496,7 @@ export class Game extends Scene {
 
     if (!la) {
       // ability not initialized locally
-      return key.once('down', () => { this.prepareAbility(key, a) })
+      return
     }
 
     // loop for multiple effects
@@ -523,12 +509,12 @@ export class Game extends Scene {
         const ok = await this.targetSelect(t, key)
         if (!ok) {
           // target selection failed
-          return key.once('down', () => { this.prepareAbility(key, a) })
+          return
         }
 
         // don't launch ability if we have zero targets
         if (this.CastTargets.size == 0) {
-          return key.once('down', () => { this.prepareAbility(key, a) })
+          return
         }
 
         t.Targets.forEach((target, key) => {
@@ -546,7 +532,7 @@ export class Game extends Scene {
 
     this.launchAbility(c)
 
-    return key.once('down', () => { this.prepareAbility(key, a) })
+    return
   }
 
   launchAbility(c: Cast.Cast) {
@@ -1759,7 +1745,7 @@ export class Game extends Scene {
             })
             .then(() => {
               logger.info("connection established")
-              this.Connected()
+              this.MapLoaded()
             })
             .catch((err) => { logger.info(err) })
         } else if (this.Entities.has(meid)) {
