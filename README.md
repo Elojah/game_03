@@ -138,6 +138,12 @@ Instead you can use `make populate` once from current directory to "load" local 
   + mage, long gameplan, need to consume buff on opponent to buff itself and gain big (ability ? resource ? buff ?)
   + thief, looking for specific timing/conditions (how to make that thief can't trigger himself those conditions, need to be opponent)
 
+- Targeting:
+  + Target each step
+  + foe/allies on hover
+  + confirm on click
+  + cancel current cast with other skills
+
 ### Unrelated
 ---
 

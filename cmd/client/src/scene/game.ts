@@ -44,25 +44,6 @@ const logger = require('pino')()
 
 const entitySpriteDepth = 42
 
-enum Action {
-  None = 0,
-  Up = 1,
-  Right = 2,
-  Down = 3,
-  Left = 4,
-  Hotkey00 = 5,
-  Hotkey01 = 6,
-  Hotkey02 = 7,
-  Hotkey03 = 8,
-  Hotkey04 = 9,
-  Hotkey05 = 10,
-  Hotkey10 = 11,
-  Hotkey11 = 12,
-  Hotkey12 = 13,
-  Hotkey13 = 14,
-  Hotkey14 = 15,
-  Hotkey15 = 16,
-};
 
 type GraphicTarget = {
   Type: Ability.TargetType
@@ -417,51 +398,6 @@ export class Game extends Scene {
       })
   }
 
-  createKeys() {
-    this.Keys.set(Action.Up, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.W)!)
-    this.Keys.set(Action.Right, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.D)!)
-    this.Keys.set(Action.Down, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S)!)
-    this.Keys.set(Action.Left, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.A)!)
-    this.Keys.set(Action.Hotkey00, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.ONE)!)
-    this.Keys.set(Action.Hotkey01, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.TWO)!)
-    this.Keys.set(Action.Hotkey02, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.THREE)!)
-    this.Keys.set(Action.Hotkey03, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR)!)
-    this.Keys.set(Action.Hotkey04, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.FIVE)!)
-    this.Keys.set(Action.Hotkey05, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.SIX)!)
-    this.Keys.set(Action.Hotkey10, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.SEVEN)!)
-    this.Keys.set(Action.Hotkey11, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.EIGHT)!)
-    this.Keys.set(Action.Hotkey12, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.NINE)!)
-    this.Keys.set(Action.Hotkey13, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.ZERO)!)
-    this.Keys.set(Action.Hotkey14, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.COMMA)!)
-    this.Keys.set(Action.Hotkey15, this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.PERIOD)!)
-
-    this.Keys.forEach((v, k) => {
-      if (k == Action.Up || k == Action.Right || k == Action.Down || k == Action.Left) {
-        // used in updateBodyEntity, no more usage here ftm ?
-        return
-      }
-
-      v.once('down', () => {
-        this.prepareAbility(v, k)
-      })
-    })
-  }
-
-  static readonly hotkeyIcons = new Map<Action, string>([
-    [Action.Hotkey00, 'hotkey-0-0-icon'],
-    [Action.Hotkey01, 'hotkey-0-1-icon'],
-    [Action.Hotkey02, 'hotkey-0-2-icon'],
-    [Action.Hotkey03, 'hotkey-0-3-icon'],
-    [Action.Hotkey04, 'hotkey-0-4-icon'],
-    [Action.Hotkey05, 'hotkey-0-5-icon'],
-    [Action.Hotkey10, 'hotkey-1-0-icon'],
-    [Action.Hotkey11, 'hotkey-1-1-icon'],
-    [Action.Hotkey12, 'hotkey-1-2-icon'],
-    [Action.Hotkey13, 'hotkey-1-3-icon'],
-    [Action.Hotkey14, 'hotkey-1-4-icon'],
-    [Action.Hotkey15, 'hotkey-1-5-icon'],
-  ])
-
   async prepareAbility(key: Phaser.Input.Keyboard.Key, a: Action) {
 
     const eid = Game.hotkeyIcons.get(a)
@@ -477,10 +413,12 @@ export class Game extends Scene {
       return
     }
 
+    // Replace with this.casting
     if (this.Targeting) {
       // cancel targeting
-      this.Targeting = undefined
-      this.CastTargets = new Map()
+      return
+      // this.Targeting = undefined
+      // this.CastTargets = new Map()
     }
 
     const abilityID = parse(abilityIDStr)
@@ -656,17 +594,16 @@ export class Game extends Scene {
 
   async targetSelect(gt: GraphicTarget, key: Phaser.Input.Keyboard.Key): Promise<boolean> {
     // check if already targeting
-    if (this.Targeting) {
-      return false
-    }
+    // if (this.Targeting) {
+    //   return false
+    // }
 
     logger.info('select target on', key.keyCode)
 
-    this.Targeting = gt
     this.CastTargets = new Map()
 
     // change cursor
-    // this.input.setDefaultCursor
+    this.input.manager.canvas.style.cursor = 'crosshair'
 
     switch (gt.Type) {
       case Ability.TargetType.NONETARGET: { break }
@@ -676,18 +613,23 @@ export class Game extends Scene {
         this.CastTargets.set(this.EntityID, ct)
 
         // instantly returns instead of waiting confirmation
+        this.input.manager.canvas.style.cursor = 'default'
+
         return true
-        // break
       }
-      case Ability.TargetType.ALLY:
+      // allies and foes are already on over targeting at creation
+      // and enabled using this.Targeting set above
+      case Ability.TargetType.ALLY: {
+        this.Targeting = gt
+        break
+      }
       case Ability.TargetType.FOE: {
-        // allies and foes are already on over targeting at creation
-        // and enabled using this.Targeting set above
+        this.Targeting = gt
         break
       }
       case Ability.TargetType.RECT: {
         let n = 0
-        const target = this.Targeting?.Targets.entries().next().value
+        const target = gt?.Targets.entries().next().value
 
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
           const ct = new Cast.CastTarget()
@@ -699,7 +641,7 @@ export class Game extends Scene {
           ct.setRect(rect)
           // ct.setCellid()
           this.CastTargets.set((n++).toString(), ct)
-          if (n >= this.Targeting?.Targets.size!) {
+          if (n >= gt?.Targets.size!) {
             key.emit('down')
 
             return
@@ -709,7 +651,7 @@ export class Game extends Scene {
       }
       case Ability.TargetType.CIRCLE: {
         let n = 0
-        const target = this.Targeting?.Targets.entries().next().value
+        const target = gt?.Targets.entries().next().value
 
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
           // add new circle
@@ -721,7 +663,7 @@ export class Game extends Scene {
           ct.setCircle(circle)
           // ct.setCellid()
           this.CastTargets.set((n++).toString(), ct)
-          if (n >= this.Targeting?.Targets.size!) {
+          if (n >= gt?.Targets.size!) {
             key.emit('down')
 
             return
@@ -737,6 +679,7 @@ export class Game extends Scene {
       key.once('down', () => {
         this.input.removeListener('pointerdown')
         this.Targeting = undefined
+        this.input.manager.canvas.style.cursor = 'default'
         accept(true)
       })
     })
