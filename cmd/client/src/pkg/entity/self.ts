@@ -8,19 +8,13 @@ import * as EntityDTO from 'pkg/entity/dto/entity_pb';
 import { Orientation } from "pkg/room/cell_pb";
 
 const logger = require('pino')({
-  name: 'entity_store',
+  name: 'entity_self',
   level: 'info',
 })
 
-const entitySpriteDepth = 42
+const selfSpriteDepth = 42
 
-export class Store {
-  constructor(
-    private selfID: string,
-    private physics: Phaser.Physics.Arcade.ArcadePhysics,
-    private cameras: Phaser.Cameras.Scene2D.CameraManager,
-  ) { }
-
+export class Self {
   private self: BodyEntity = {
     E: new E(),
     Body: this.physics.add.sprite(0, 0, ''),
@@ -28,59 +22,12 @@ export class Store {
     Orientation: Orientation.DOWN,
     Abilities: new Map()
   };
-  private store: Map<string, GEntity> = new Map();
 
-  // cleaning delay
-  private delay: number
-  private tick: Map<string, number>
-
-  public get(id: string): GEntity | undefined {
-    return this.store.get(id);
-  }
-
-  public set(id: string, entity: E): void {
-    const last = this.store.get(id);
-
-    if (last) {
-      // only update position
-      if (last.Direction.x != entity.getX() || last.Direction.y != entity.getY()) {
-        last.Interpolation = 0
-      }
-      last.Direction.x = entity.getX()
-      last.Direction.y = entity.getY()
-
-      this.store.set(id, last)
-
-      return
-    }
-
-
-  }
-
-  public update(): void {
-    this.store.forEach((e: GEntity) => {
-      // self reconciliation
-      if (ulid(e.E.getId_asU8()) == this.selfID) {
-        return
-      }
-
-      if (e.Interpolation < 1) {
-        e.Interpolation += 0.05
-      }
-
-      const x = e.Sprite.x + ((e.Direction.x - e.Sprite.x) * e.Interpolation)
-      const y = e.Sprite.y + ((e.Direction.y - e.Sprite.y) * e.Interpolation)
-      e?.Sprite.setX(x)
-      e?.Sprite.setY(y)
-
-      const animationID = e.Animations.get(ulid(e.E.getAnimationid_asU8()))
-      if (animationID) {
-        e?.Sprite.play(animationID, true)
-      }
-    })
-  }
-
-  public async initSelf(entity: E): Promise<void> {
+  constructor(
+    private entity: E,
+    private physics: Phaser.Physics.Arcade.ArcadePhysics,
+    private cameras: Phaser.Cameras.Scene2D.CameraManager,
+  ) {
     this.self.Body.destroy()
 
     const id = ulid(entity.getId_asU8())
@@ -97,23 +44,27 @@ export class Store {
     }
 
     logger.info('set body from server info')
-    this.self.E.setX(entity.getX())
-    this.self.E.setY(entity.getY())
 
+    this.self.E = entity
     // local player sprite loaded, start camera follow
     this.cameras.main.startFollow(this.self.Body)
-    this.self.Body.setDepth(entitySpriteDepth)
+    this.self.Body.setDepth(selfSpriteDepth)
 
-    this.store.set(id, {
-      E: entity,
-      Animations: new Map(),
-      Direction: new Phaser.Geom.Point(entity.getX(), entity.getY()),
-      Interpolation: 0.00,
-      Sprite: this.self.Body,
+    // init self abilities
+  }
 
-      Objects: new Map(),
-      Colliders: new Map(),
-    })
+  public init(entity: E): void {
+
+    // this.store.set(id, {
+    //   E: entity,
+    //   Animations: new Map(),
+    //   Direction: new Phaser.Geom.Point(entity.getX(), entity.getY()),
+    //   Interpolation: 0.00,
+    //   Sprite: this.self.Body,
+
+    //   Objects: new Map(),
+    //   Colliders: new Map(),
+    // })
 
     logger.info("receive position from server:", this.self.E.getX(), this.self.E.getY())
 
@@ -220,7 +171,7 @@ export class Store {
 
           // local player sprite loaded, start camera follow
           this.cameras.main.startFollow(this.self.Body)
-          this.self.Body.setDepth(entitySpriteDepth)
+          this.self.Body.setDepth(selfSpriteDepth)
 
           this.Entities.set(id, {
             E: entry,
@@ -295,7 +246,7 @@ export class Store {
         } else if (this.Entities.has(selfID)) {
           const eid = ulid(entry.getId_asU8())
           const sprite = this.add.sprite(entry.getX(), entry.getY(), id)
-          sprite.setDepth(entitySpriteDepth - 1)
+          sprite.setDepth(selfSpriteDepth - 1)
 
           // over targeting at sprite creation
           sprite.on('over', () => {

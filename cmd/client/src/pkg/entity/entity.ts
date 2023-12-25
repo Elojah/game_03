@@ -1,8 +1,8 @@
 import { E } from "pkg/entity/entity_pb"
 import { Orientation } from "pkg/room/cell_pb"
-import { Ability } from "../ability/ability"
+import { GAbility } from "../ability/ability"
 
-export type Entity = {
+export type GEntity = {
   E: E
   Animations: Map<string, string>
   Direction: Phaser.Geom.Point
@@ -19,5 +19,5 @@ export type BodyEntity = {
   Body: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
   Animations: Map<string, string>
   Orientation: Orientation
-  Abilities: Map<string, Ability>
+  Abilities: Map<string, GAbility>
 }
